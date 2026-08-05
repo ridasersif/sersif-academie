@@ -39,7 +39,7 @@ export default function Background3D() {
     const mouse = {
       x: -1000,
       y: -1000,
-      radius: 140, // Repulsion radius
+      radius: 160, // Wider repulsion radius
       active: false,
     };
 
@@ -86,13 +86,13 @@ export default function Background3D() {
 
     const initParticles = () => {
       particles = [];
-      // Dynamic count based on screen area (around 100-140 on desktop)
-      const count = Math.min(Math.floor((width * height) / 9000), 150);
+      // Large swarm of ant particles (around 350-500 on desktop)
+      const count = Math.min(Math.floor((width * height) / 1800), 500);
 
       for (let i = 0; i < count; i++) {
-        // Ant-like base velocity (slightly erratic speed)
+        // Ant-like base velocity (erratic ant speed)
         const angle = Math.random() * Math.PI * 2;
-        const speed = 0.6 + Math.random() * 0.9;
+        const speed = 0.7 + Math.random() * 1.1;
         const vx = Math.cos(angle) * speed;
         const vy = Math.sin(angle) * speed;
 
@@ -103,7 +103,7 @@ export default function Background3D() {
           vy,
           baseVx: vx,
           baseVy: vy,
-          radius: 1.8 + Math.random() * 2.2,
+          radius: 1.5 + Math.random() * 2.0,
           color: particleColors[Math.floor(Math.random() * particleColors.length)],
         });
       }
@@ -118,7 +118,7 @@ export default function Background3D() {
       ctx.clearRect(0, 0, width, height);
 
       // Draw connecting lines between nearby particles
-      const lineDist = 90;
+      const lineDist = 65;
       const lineColor = isDark ? "rgba(255, 255, 255," : "rgba(30, 41, 59,";
 
       for (let i = 0; i < particles.length; i++) {

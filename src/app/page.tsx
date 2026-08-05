@@ -1,8 +1,9 @@
 import Link from "next/link";
 import Image from "next/image";
 import { ThemeToggle } from "@/components/theme-toggle";
+import MusicPlayer from "@/components/MusicPlayer";
 import Background3D from "@/components/Background3D";
-import { BookOpen, CheckCircle, Lightbulb } from "lucide-react";
+import { BookOpen, CheckCircle, Lightbulb, ArrowRight } from "lucide-react";
 
 export default function Home() {
   return (
@@ -23,7 +24,7 @@ export default function Home() {
           </h1>
         </div>
         
-        <div className="flex items-center gap-4 sm:gap-6">
+        <div className="flex items-center gap-3 sm:gap-5">
           <nav>
             <ul className="flex space-x-3 sm:space-x-5 text-xs sm:text-sm font-semibold">
               <li>
@@ -39,6 +40,7 @@ export default function Home() {
             </ul>
           </nav>
           <div className="h-3 sm:h-4 w-px bg-border"></div>
+          <MusicPlayer />
           <ThemeToggle />
         </div>
       </header>
@@ -47,22 +49,22 @@ export default function Home() {
       <main className="flex-1 flex flex-col w-full z-10">
         
         {/* --- Hero Section --- */}
-        <section className="flex flex-col items-center justify-center pt-16 pb-20 px-4 sm:px-8 text-center w-full min-h-[85vh]">
+        <section className="flex flex-col items-center justify-center py-8 sm:py-12 px-4 sm:px-8 text-center w-full min-h-[calc(100vh-60px)]">
           <div className="w-full max-w-4xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-1000 flex flex-col items-center">
             
-            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight mb-4 sm:mb-6 text-foreground leading-[1.15]">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight mb-3 text-foreground leading-[1.15]">
               Préparez-vous avec <br className="hidden sm:block" />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-indigo-500">Sersif Académie</span>
             </h2>
             
-            <p className="text-sm sm:text-base md:text-lg text-muted-foreground mb-10 max-w-2xl mx-auto leading-relaxed font-medium">
+            <p className="text-xs sm:text-sm md:text-base text-muted-foreground mb-6 max-w-xl mx-auto leading-relaxed font-medium">
               Et maximisez considérablement vos chances de réussite au concours de l'enseignement en <span className="text-foreground">Physique</span> et <span className="text-foreground">Chimie</span>.
             </p>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full max-w-3xl">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 w-full max-w-3xl">
               <Link href="/physique" className="group block text-left w-full">
                 <div className="h-full bg-card/70 backdrop-blur-md border border-border/80 rounded-2xl overflow-hidden hover:border-primary/50 hover:shadow-xl hover:shadow-primary/10 transition-all duration-300 transform group-hover:-translate-y-1">
-                  <div className="relative w-full h-48 sm:h-56 bg-muted overflow-hidden">
+                  <div className="relative w-full h-40 sm:h-44 md:h-48 bg-muted overflow-hidden">
                     <Image 
                       src="/physics.png" 
                       alt="Physique" 
@@ -71,8 +73,8 @@ export default function Home() {
                       priority
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
-                    <div className="absolute bottom-5 left-5 text-white z-10">
-                      <h3 className="text-xl font-bold mb-1 tracking-tight">Physique</h3>
+                    <div className="absolute bottom-4 left-4 text-white z-10">
+                      <h3 className="text-lg sm:text-xl font-bold mb-1 tracking-tight">Physique</h3>
                       <p className="text-white/80 text-xs font-medium line-clamp-1">Mécanique, Électromagnétisme, Thermodynamique...</p>
                     </div>
                   </div>
@@ -81,7 +83,7 @@ export default function Home() {
 
               <Link href="/chimie" className="group block text-left w-full">
                 <div className="h-full bg-card/70 backdrop-blur-md border border-border/80 rounded-2xl overflow-hidden hover:border-emerald-500/50 hover:shadow-xl hover:shadow-emerald-500/10 transition-all duration-300 transform group-hover:-translate-y-1">
-                  <div className="relative w-full h-48 sm:h-56 bg-muted overflow-hidden">
+                  <div className="relative w-full h-40 sm:h-44 md:h-48 bg-muted overflow-hidden">
                     <Image 
                       src="/chemistry.png" 
                       alt="Chimie" 
@@ -90,8 +92,8 @@ export default function Home() {
                       priority
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
-                    <div className="absolute bottom-5 left-5 text-white z-10">
-                      <h3 className="text-xl font-bold mb-1 tracking-tight">Chimie</h3>
+                    <div className="absolute bottom-4 left-4 text-white z-10">
+                      <h3 className="text-lg sm:text-xl font-bold mb-1 tracking-tight">Chimie</h3>
                       <p className="text-white/80 text-xs font-medium line-clamp-1">Atomistique, Cinétique, Thermochimie...</p>
                     </div>
                   </div>

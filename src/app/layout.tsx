@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
+import { AudioProvider } from "@/context/AudioContext";
 import "./globals.css";
 
 // Using Inter font for a very clean, Apple-like / Vercel-like aesthetic
@@ -25,7 +26,9 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          {children}
+          <AudioProvider>
+            {children}
+          </AudioProvider>
         </ThemeProvider>
       </body>
     </html>
