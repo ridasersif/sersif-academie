@@ -1,54 +1,243 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import * as THREE from "three";
 import LatexMath from "@/components/ui/LatexMath";
-import { Zap } from "lucide-react";
+import { Zap, Eye } from "lucide-react";
 
 export default function VectorProductSimulator() {
+  const mountRef = useRef<HTMLDivElement | null>(null);
   const [normU, setNormU] = useState(4.0);
   const [normV, setNormV] = useState(3.4);
   const [angleDeg, setAngleDeg] = useState(45);
 
+  const sceneRef = useRef<THREE.Scene | null>(null);
+  const uArrowRef = useRef<THREE.ArrowHelper | null>(null);
+  const vArrowRef = useRef<THREE.ArrowHelper | null>(null);
+  const crossArrowRef = useRef<THREE.ArrowHelper | null>(null);
+  const parMeshRef = useRef<THREE.Mesh | null>(null);
+  const perpSquareRef = useRef<THREE.LineSegments | null>(null);
+
   const angleRad = (angleDeg * Math.PI) / 180;
-  
-  // Produit Scalaire
   const dotProduct = normU * normV * Math.cos(angleRad);
-  
-  // Produit Vectoriel (Norme)
   const crossProductNorm = normU * normV * Math.sin(angleRad);
 
-  // SVG Diagram Coordinates (Slender & Elegant)
-  const scale = 18; // pixels per unit
-  const originX = 50;
-  const originY = 130;
+  useEffect(() => {
+    const container = mountRef.current;
+    if (!container) return;
 
-  // Vector U along horizontal
-  const ux = originX + normU * scale;
-  const uy = originY;
+    container.innerHTML = "";
+    const width = container.clientWidth || 300;
+    const height = container.clientHeight || 220;
 
-  // Vector V rotated by angleDeg
-  const vx = originX + normV * scale * Math.cos(angleRad);
-  const vy = originY - normV * scale * Math.sin(angleRad);
+    let webglSupported = false;
+    try {
+      const testCanvas = document.createElement("canvas");
+      webglSupported = !!(window.WebGLRenderingContext && (testCanvas.getContext("webgl") || testCanvas.getContext("experimental-webgl")));
+    } catch (e) {
+      webglSupported = false;
+    }
 
-  // Projection of V onto U
-  const projX = originX + normV * scale * Math.cos(angleRad);
-  const projY = originY;
+    if (!webglSupported) {
+      return;
+    }
+
+    // 1. Scene, Camera, Renderer
+    const scene = new THREE.Scene();
+    sceneRef.current = scene;
+    scene.background = new THREE.Color(0x090d16);
+
+    const camera = new THREE.PerspectiveCamera(40, width / height, 0.1, 1000);
+    camera.position.set(5.5, 4.5, 6.5);
+    camera.lookAt(0, 1.2, 0);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setSize(width, height);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    container.appendChild(renderer.domElement);
+
+    // 2. Lights
+    const ambientLight = new THREE.AmbientLight(0xffffff, 1.2);
+    scene.add(ambientLight);
+
+    const dirLight = new THREE.DirectionalLight(0x38bdf8, 1.5);
+    dirLight.position.set(8, 12, 8);
+    scene.add(dirLight);
+
+    // 3. Ground Grid Helper
+    const gridHelper = new THREE.GridHelper(8, 8, 0x3b82f6, 0x1e293b);
+    gridHelper.position.y = 0;
+    scene.add(gridHelper);
+
+    // 4. Ground Plane Axes (X: Cyan, Z: Purple)
+    const axesLen = 4.0;
+    const xAxis = new THREE.ArrowHelper(new THREE.Vector3(1, 0, 0), new THREE.Vector3(0, 0, 0), axesLen, 0x334155, 0.15, 0.05);
+    const zAxis = new THREE.ArrowHelper(new THREE.Vector3(0, 0, 1), new THREE.Vector3(0, 0, 0), axesLen, 0x334155, 0.15, 0.05);
+    scene.add(xAxis, zAxis);
+
+    // 5. Dynamic 3D Vectors
+    // U Arrow (Cyan)
+    const uArrow = new THREE.ArrowHelper(new THREE.Vector3(1, 0, 0), new THREE.Vector3(0, 0, 0), normU * 0.7, 0x38bdf8, 0.25, 0.08);
+    scene.add(uArrow);
+    uArrowRef.current = uArrow;
+
+    // V Arrow (Purple)
+    const vArrow = new THREE.ArrowHelper(new THREE.Vector3(1, 0, 0), new THREE.Vector3(0, 0, 0), normV * 0.7, 0xc084fc, 0.25, 0.08);
+    scene.add(vArrow);
+    vArrowRef.current = vArrow;
+
+    // Cross Product Arrow u ∧ v (Rose Red - Vertically Upwards along +Y axis!)
+    const crossArrow = new THREE.ArrowHelper(new THREE.Vector3(0, 1, 0), new THREE.Vector3(0, 0, 0), 2.5, 0xf43f5e, 0.28, 0.09);
+    scene.add(crossArrow);
+    crossArrowRef.current = crossArrow;
+
+    // 6. Translucent Parallelogram Mesh (Area = ||u ∧ v||)
+    const parMat = new THREE.MeshBasicMaterial({
+      color: 0xf43f5e,
+      transparent: true,
+      opacity: 0.25,
+      side: THREE.DoubleSide,
+    });
+    const parMesh = new THREE.Mesh(new THREE.BufferGeometry(), parMat);
+    scene.add(parMesh);
+    parMeshRef.current = parMesh;
+
+    // 7. Right-Angle Symbol (Perpendicularity Marker ⊥)
+    const squareMat = new THREE.LineBasicMaterial({ color: 0xf43f5e, linewidth: 2 });
+    const sqPts = [
+      new THREE.Vector3(0.3, 0, 0), new THREE.Vector3(0.3, 0.3, 0),
+      new THREE.Vector3(0.3, 0.3, 0), new THREE.Vector3(0, 0.3, 0),
+    ];
+    const sqGeo = new THREE.BufferGeometry().setFromPoints(sqPts);
+    const perpSquare = new THREE.LineSegments(sqGeo, squareMat);
+    scene.add(perpSquare);
+    perpSquareRef.current = perpSquare;
+
+    // 8. Orbit Controls (Mouse Drag)
+    let isDragging = false;
+    let prevX = 0;
+    let prevY = 0;
+    let camSpherical = new THREE.Spherical().setFromVector3(camera.position);
+
+    const onStart = (clientX: number, clientY: number) => {
+      isDragging = true;
+      prevX = clientX;
+      prevY = clientY;
+    };
+
+    const onMove = (clientX: number, clientY: number) => {
+      if (!isDragging) return;
+      const deltaX = clientX - prevX;
+      const deltaY = clientY - prevY;
+
+      camSpherical.theta -= deltaX * 0.008;
+      camSpherical.phi = Math.max(0.1, Math.min(Math.PI / 2 - 0.05, camSpherical.phi - deltaY * 0.008));
+
+      camera.position.setFromSpherical(camSpherical);
+      camera.lookAt(0, 1.2, 0);
+
+      prevX = clientX;
+      prevY = clientY;
+    };
+
+    const onEnd = () => {
+      isDragging = false;
+    };
+
+    const domElem = renderer.domElement;
+    domElem.addEventListener("mousedown", (e) => onStart(e.clientX, e.clientY));
+    window.addEventListener("mousemove", (e) => onMove(e.clientX, e.clientY));
+    window.addEventListener("mouseup", onEnd);
+
+    domElem.addEventListener("touchstart", (e) => {
+      if (e.touches.length === 1) onStart(e.touches[0].clientX, e.touches[0].clientY);
+    }, { passive: true });
+    window.addEventListener("touchmove", (e) => {
+      if (e.touches.length === 1) onMove(e.touches[0].clientX, e.touches[0].clientY);
+    }, { passive: true });
+    window.addEventListener("touchend", onEnd);
+
+    const handleResize = () => {
+      if (!container) return;
+      const newW = container.clientWidth;
+      const newH = container.clientHeight;
+      camera.aspect = newW / newH;
+      camera.updateProjectionMatrix();
+      renderer.setSize(newW, newH);
+    };
+    window.addEventListener("resize", handleResize);
+
+    let animId: number;
+    const animate = () => {
+      animId = requestAnimationFrame(animate);
+      renderer.render(scene, camera);
+    };
+    animate();
+
+    return () => {
+      cancelAnimationFrame(animId);
+      window.removeEventListener("resize", handleResize);
+      if (container) container.innerHTML = "";
+      renderer.dispose();
+    };
+  }, []);
+
+  // Update 3D Vector Geometries
+  useEffect(() => {
+    if (!uArrowRef.current || !vArrowRef.current || !crossArrowRef.current || !parMeshRef.current) return;
+
+    const rad = (angleDeg * Math.PI) / 180;
+    const s = 0.55; // scale factor
+
+    // Vector U along ground +X axis
+    const uVec = new THREE.Vector3(normU * s, 0, 0);
+    uArrowRef.current.setLength(normU * s, 0.22, 0.07);
+
+    // Vector V in ground plane at angle rad
+    const vVec = new THREE.Vector3(normV * s * Math.cos(rad), 0, -normV * s * Math.sin(rad));
+    const dirV = vVec.clone().normalize();
+    vArrowRef.current.setDirection(dirV);
+    vArrowRef.current.setLength(normV * s, 0.22, 0.07);
+
+    // Cross Product u ∧ v vector (Strictly Orthogonal upwards along +Y)
+    const cpNorm = (normU * normV * Math.sin(rad)) * s * 0.5;
+    const cpLength = Math.max(0.1, Math.min(3.8, cpNorm));
+    crossArrowRef.current.setLength(cpLength, 0.25, 0.08);
+    crossArrowRef.current.visible = angleDeg > 0 && angleDeg < 180;
+
+    // Parallelogram Mesh (0, uVec, uVec + vVec, vVec)
+    const parGeo = new THREE.BufferGeometry();
+    const positions = [
+      0, 0, 0,
+      uVec.x, uVec.y, uVec.z,
+      uVec.x + vVec.x, uVec.y + vVec.y, uVec.z + vVec.z,
+
+      0, 0, 0,
+      uVec.x + vVec.x, uVec.y + vVec.y, uVec.z + vVec.z,
+      vVec.x, vVec.y, vVec.z,
+    ];
+    parGeo.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
+    parGeo.computeVertexNormals();
+
+    parMeshRef.current.geometry.dispose();
+    parMeshRef.current.geometry = parGeo;
+  }, [normU, normV, angleDeg]);
 
   return (
-    <div className="bg-slate-950/90 border border-slate-800 rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-xl my-6 w-full max-w-full overflow-hidden">
+    <div className="bg-slate-950/90 border border-slate-800 rounded-2xl sm:rounded-3xl p-3 sm:p-5 shadow-xl my-6 w-full max-w-full overflow-hidden">
       
       {/* Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 mb-4 pb-3 border-b border-slate-800">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 mb-3 pb-3 border-b border-slate-800">
         <div className="flex items-center gap-2">
           <div className="w-7 h-7 rounded-lg bg-cyan-500/20 text-cyan-400 flex items-center justify-center font-bold">
             <Zap className="w-4 h-4" />
           </div>
           <div>
-            <h3 className="text-sm font-extrabold text-white leading-tight">
-              Simulateur Vectoriel Interactif (Produit Scalaire & Vectoriel)
+            <h3 className="text-xs sm:text-sm font-extrabold text-white leading-tight">
+              Simulateur 3D Interactif • Produit Vectoriel Orthogonal (u ∧ v ⊥ Plan)
             </h3>
             <p className="text-[11px] text-slate-400 font-medium">
-              Faites varier les longueurs et l'angle θ pour observer les résultats en temps réel
+              Observez la perpendicularité 3D stricte du vecteur résultat <span className="text-rose-400 font-bold">u ∧ v</span> au plan (u, v)
             </p>
           </div>
         </div>
@@ -59,61 +248,30 @@ export default function VectorProductSimulator() {
       </div>
 
       {/* Grid Layout */}
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
         
-        {/* SVG Vector Interactive Diagram - Slender Vectors & Sharp Arrow Heads */}
-        <div className="md:col-span-6 bg-slate-900/90 p-3 sm:p-4 rounded-xl sm:rounded-2xl border border-slate-800 flex flex-col items-center justify-center min-h-[220px]">
-          <svg width="100%" height="180" viewBox="0 0 240 160" className="w-full max-w-[280px] overflow-visible">
-            {/* Fine Grid Axes */}
-            <line x1="10" y1={originY} x2="230" y2={originY} stroke="#334155" strokeWidth="0.8" strokeDasharray="3,3" />
-            <line x1={originX} y1="10" x2={originX} y2="150" stroke="#334155" strokeWidth="0.8" strokeDasharray="3,3" />
+        {/* 3D WebGL Vector Interactive Canvas */}
+        <div className="md:col-span-6 bg-slate-900/90 rounded-xl sm:rounded-2xl border border-slate-800 relative h-[210px] overflow-hidden cursor-grab active:cursor-grabbing">
+          <div ref={mountRef} className="w-full h-full" />
 
-            {/* Projection Line */}
-            <line x1={vx} y1={vy} x2={projX} y2={projY} stroke="#64748b" strokeWidth="1" strokeDasharray="3,3" />
+          {/* View Drag Badge */}
+          <div className="absolute top-2 right-2 bg-slate-950/80 backdrop-blur-md px-2 py-1 rounded-lg border border-white/10 text-[10px] text-slate-300 flex items-center gap-1">
+            <Eye className="w-3 h-3 text-cyan-400" />
+            <span>Glisser en 3D</span>
+          </div>
 
-            {/* Angle Arc */}
-            <path
-              d={`M ${originX + 22} ${originY} A 22 22 0 0 0 ${originX + 22 * Math.cos(angleRad)} ${originY - 22 * Math.sin(angleRad)}`}
-              fill="none"
-              stroke="#f59e0b"
-              strokeWidth="1.5"
-            />
-            <text x={originX + 28} y={originY - 8} fill="#f59e0b" fontSize="10" fontWeight="bold">θ</text>
-
-            {/* Vector U (Cyan) - Slender line (strokeWidth=2) */}
-            <line x1={originX} y1={originY} x2={ux} y2={uy} stroke="#38bdf8" strokeWidth="2" markerEnd="url(#sharpArrowU)" />
-            <text x={ux + 5} y={uy + 4} fill="#38bdf8" fontSize="11" fontWeight="bold">u</text>
-
-            {/* Vector V (Purple) - Slender line (strokeWidth=2) */}
-            <line x1={originX} y1={originY} x2={vx} y2={vy} stroke="#c084fc" strokeWidth="2" markerEnd="url(#sharpArrowV)" />
-            <text x={vx + (vx >= originX ? 5 : -12)} y={vy - 4} fill="#c084fc" fontSize="11" fontWeight="bold">v</text>
-
-            {/* Vector Cross Product Result (Rose Upward) */}
-            <line x1={originX} y1={originY} x2={originX} y2={Math.max(15, originY - crossProductNorm * 8)} stroke="#f43f5e" strokeWidth="1.8" strokeDasharray="3,2" markerEnd="url(#sharpArrowCross)" />
-            <text x={originX + 6} y={Math.max(20, originY - crossProductNorm * 8 + 4)} fill="#f43f5e" fontSize="10" fontWeight="extrabold">u ∧ v</text>
-
-            {/* Sharp, Slender Arrow Head Markers */}
-            <defs>
-              <marker id="sharpArrowU" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse">
-                <path d="M 0 1.5 L 10 5 L 0 8.5 z" fill="#38bdf8" />
-              </marker>
-              <marker id="sharpArrowV" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse">
-                <path d="M 0 1.5 L 10 5 L 0 8.5 z" fill="#c084fc" />
-              </marker>
-              <marker id="sharpArrowCross" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="3.5" markerHeight="3.5" orient="auto-start-reverse">
-                <path d="M 0 1.5 L 10 5 L 0 8.5 z" fill="#f43f5e" />
-              </marker>
-            </defs>
-          </svg>
-          <span className="text-[11px] text-slate-400 mt-2 font-mono text-center">
-            {angleDeg === 90 ? "⚠️ Vectors Orthogonaux (u ⊥ v => u · v = 0)" : angleDeg === 0 || angleDeg === 180 ? "⚠️ Vectors Colinéaires (u // v => u ∧ v = 0)" : `Angle θ = ${angleDeg}°`}
-          </span>
+          {/* Legend Badge */}
+          <div className="absolute bottom-2 left-2 bg-slate-950/90 backdrop-blur-md px-2 py-1 rounded-lg border border-white/10 text-[10px] font-mono text-slate-300 flex items-center gap-2">
+            <span className="text-cyan-400 font-bold">u</span>
+            <span className="text-purple-400 font-bold">v</span>
+            <span className="text-rose-400 font-extrabold">u ∧ v (⊥ Plan)</span>
+          </div>
         </div>
 
         {/* Live Calculation Results */}
-        <div className="md:col-span-6 space-y-3">
+        <div className="md:col-span-6 space-y-2.5">
           
-          <div className="p-3.5 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex flex-col justify-between">
+          <div className="p-3 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex flex-col justify-between">
             <div className="flex items-center justify-between mb-1">
               <span className="text-xs font-bold text-cyan-400">Produit Scalaire (u · v):</span>
               <span className="text-sm font-black font-mono text-cyan-300">{dotProduct.toFixed(2)}</span>
@@ -123,7 +281,7 @@ export default function VectorProductSimulator() {
             </p>
           </div>
 
-          <div className="p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/30 flex flex-col justify-between">
+          <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 flex flex-col justify-between">
             <div className="flex items-center justify-between mb-1">
               <span className="text-xs font-bold text-rose-400">Norme du Produit Vectoriel (||u ∧ v||):</span>
               <span className="text-sm font-black font-mono text-rose-300">{crossProductNorm.toFixed(2)}</span>
@@ -138,9 +296,9 @@ export default function VectorProductSimulator() {
       </div>
 
       {/* Sliders Controls Panel - Slender H-1.5 Tracks */}
-      <div className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-3 bg-slate-900/60 p-3 rounded-xl border border-slate-800">
+      <div className="mt-3 grid grid-cols-1 sm:grid-cols-3 gap-2.5 bg-slate-900/60 p-2.5 rounded-xl border border-slate-800">
         <div>
-          <label className="text-xs font-bold text-slate-200 flex items-center justify-between mb-1.5">
+          <label className="text-xs font-bold text-slate-200 flex items-center justify-between mb-1">
             <span>Longueur ||u||:</span>
             <span className="text-cyan-400 font-extrabold">{normU.toFixed(1)}</span>
           </label>
@@ -156,7 +314,7 @@ export default function VectorProductSimulator() {
         </div>
 
         <div>
-          <label className="text-xs font-bold text-slate-200 flex items-center justify-between mb-1.5">
+          <label className="text-xs font-bold text-slate-200 flex items-center justify-between mb-1">
             <span>Longueur ||v||:</span>
             <span className="text-purple-400 font-extrabold">{normV.toFixed(1)}</span>
           </label>
@@ -172,8 +330,8 @@ export default function VectorProductSimulator() {
         </div>
 
         <div>
-          <label className="text-xs font-bold text-slate-200 flex items-center justify-between mb-1.5">
-            <span>Angle Entre Vectors (θ):</span>
+          <label className="text-xs font-bold text-slate-200 flex items-center justify-between mb-1">
+            <span>Angle Entre Vecteurs (θ):</span>
             <span className="text-amber-400 font-extrabold">{angleDeg}°</span>
           </label>
           <input

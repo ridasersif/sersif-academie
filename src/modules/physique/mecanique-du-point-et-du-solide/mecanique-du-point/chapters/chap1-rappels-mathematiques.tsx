@@ -4,7 +4,8 @@ import React, { useState } from "react";
 import LatexMath from "@/components/ui/LatexMath";
 import ThreeDCoordinateCanvas from "../components/ThreeDCoordinateCanvas";
 import VectorProductSimulator from "../components/VectorProductSimulator";
-import { ChevronDown, ChevronUp, Sparkles, BookOpen, Compass, Activity } from "lucide-react";
+import DifferentialOperators3DSimulator from "../components/DifferentialOperators3DSimulator";
+import { ChevronDown, ChevronUp, Sparkles, BookOpen, Compass } from "lucide-react";
 
 export default function Chap1RappelsMathematiques() {
   const [showCylProof, setShowCylProof] = useState(false);
@@ -16,7 +17,7 @@ export default function Chap1RappelsMathematiques() {
       {/* SECTION 1: PRODUIT SCALAIRE, VECTORIEL & MIXTE AVEC SIMULATEUR INTERACTIF */}
       <section className="bg-card/90 border border-border/80 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 shadow-sm w-full max-w-full overflow-x-hidden">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400 text-xs font-extrabold mb-3">
-          <span>Partie 1 • Outils Vectoriels & Simulateur Interactif</span>
+          <span>Partie 1 • Outils Vectoriels & Simulateur 3D Interactif</span>
         </div>
         
         <h2 className="text-xl sm:text-2xl font-black mb-3 sm:mb-4 text-foreground leading-tight">
@@ -135,7 +136,7 @@ export default function Chap1RappelsMathematiques() {
 
         </div>
 
-        {/* INTERACTIVE VECTOR PRODUCT SIMULATOR WIDGET */}
+        {/* INTERACTIVE THREE.JS 3D VECTOR PRODUCT SIMULATOR WIDGET */}
         <VectorProductSimulator />
 
         {/* C. Produit Mixte & Volume 3D */}
@@ -160,7 +161,7 @@ export default function Chap1RappelsMathematiques() {
         </div>
       </section>
 
-      {/* SECTION 2: FORMULES DE DÉRIVATION VECTORIELLE */}
+      {/* SECTION 2: FORMULES DE DÉRIVATION VECTORIELLE (PROOFS EXCLUSIVELY FOR COMPOSITE FUNCTION WITH PERFECT LATEX DELTA SYMBOLS) */}
       <section className="bg-card/90 border border-border/80 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 shadow-sm w-full max-w-full overflow-x-hidden">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-extrabold mb-3">
           <span>Partie 2 • Dérivation Vectorielle</span>
@@ -174,17 +175,17 @@ export default function Chap1RappelsMathematiques() {
           {/* Dérivation Scalaire Usuelle */}
           <div className="p-4 sm:p-5 rounded-xl sm:rounded-2xl bg-muted/30 border border-border/50">
             <h3 className="text-xs sm:text-sm font-bold text-foreground mb-3">A. Formules de Dérivation Usuelles</h3>
-            <div className="space-y-2.5 font-mono text-xs">
-              <div className="p-2 sm:p-2.5 rounded-lg bg-card border border-border/40 flex items-center justify-between gap-2 overflow-x-auto">
-                <span className="shrink-0 text-muted-foreground">Produit:</span>
+            <div className="space-y-2 font-mono text-xs">
+              <div className="p-2 sm:p-2.5 rounded-lg bg-card border border-border/40 flex items-center justify-start gap-3 sm:gap-4 overflow-x-auto">
+                <span className="shrink-0 text-muted-foreground font-sans font-bold w-16 sm:w-20 text-[11px]">Produit:</span>
                 <LatexMath math="(f \cdot g)' = f'g + fg'" />
               </div>
-              <div className="p-2 sm:p-2.5 rounded-lg bg-card border border-border/40 flex items-center justify-between gap-2 overflow-x-auto">
-                <span className="shrink-0 text-muted-foreground">Quotient:</span>
+              <div className="p-2 sm:p-2.5 rounded-lg bg-card border border-border/40 flex items-center justify-start gap-3 sm:gap-4 overflow-x-auto">
+                <span className="shrink-0 text-muted-foreground font-sans font-bold w-16 sm:w-20 text-[11px]">Quotient:</span>
                 <LatexMath math="\left(\frac{f}{g}\right)' = \frac{f'g - fg'}{g^2}" />
               </div>
-              <div className="p-2 sm:p-2.5 rounded-lg bg-card border border-border/40 flex items-center justify-between gap-2 overflow-x-auto">
-                <span className="shrink-0 text-muted-foreground">Composée:</span>
+              <div className="p-2 sm:p-2.5 rounded-lg bg-card border border-border/40 flex items-center justify-start gap-3 sm:gap-4 overflow-x-auto">
+                <span className="shrink-0 text-muted-foreground font-sans font-bold w-16 sm:w-20 text-[11px]">Composée:</span>
                 <LatexMath math="(f(g(t)))' = g'(t) \cdot f'(g(t))" />
               </div>
             </div>
@@ -193,17 +194,17 @@ export default function Chap1RappelsMathematiques() {
           {/* Dérivation de Produits Vectoriels par rapport au temps t */}
           <div className="p-4 sm:p-5 rounded-xl sm:rounded-2xl bg-muted/30 border border-border/50">
             <h3 className="text-xs sm:text-sm font-bold text-foreground mb-3">B. Dérivation de Vecteurs par rapport au Temps t</h3>
-            <div className="space-y-2.5 font-mono text-xs">
-              <div className="p-2 sm:p-2.5 rounded-lg bg-card border border-border/40 flex items-center justify-between gap-2 overflow-x-auto">
-                <span className="shrink-0 text-muted-foreground">Scalaire:</span>
+            <div className="space-y-2 font-mono text-xs">
+              <div className="p-2 sm:p-2.5 rounded-lg bg-card border border-border/40 flex items-center justify-start gap-3 sm:gap-4 overflow-x-auto">
+                <span className="shrink-0 text-muted-foreground font-sans font-bold w-16 sm:w-20 text-[11px]">Scalaire:</span>
                 <LatexMath math="\frac{d}{dt}(\vec{u} \cdot \vec{v}) = \frac{d\vec{u}}{dt} \cdot \vec{v} + \vec{u} \cdot \frac{d\vec{v}}{dt}" />
               </div>
-              <div className="p-2 sm:p-2.5 rounded-lg bg-card border border-border/40 flex items-center justify-between gap-2 overflow-x-auto">
-                <span className="shrink-0 text-muted-foreground">Vectoriel:</span>
+              <div className="p-2 sm:p-2.5 rounded-lg bg-card border border-border/40 flex items-center justify-start gap-3 sm:gap-4 overflow-x-auto">
+                <span className="shrink-0 text-muted-foreground font-sans font-bold w-16 sm:w-20 text-[11px]">Vectoriel:</span>
                 <LatexMath math="\frac{d}{dt}(\vec{u} \wedge \vec{v}) = \frac{d\vec{u}}{dt} \wedge \vec{v} + \vec{u} \wedge \frac{d\vec{v}}{dt}" />
               </div>
-              <div className="p-2 sm:p-2.5 rounded-lg bg-card border border-border/40 flex items-center justify-between gap-2 overflow-x-auto">
-                <span className="shrink-0 text-muted-foreground">Vecteur × f:</span>
+              <div className="p-2 sm:p-2.5 rounded-lg bg-card border border-border/40 flex items-center justify-start gap-3 sm:gap-4 overflow-x-auto">
+                <span className="shrink-0 text-muted-foreground font-sans font-bold w-16 sm:w-20 text-[11px]">Vecteur × f:</span>
                 <LatexMath math="\frac{d}{dt}(f(t) \vec{u}) = f'(t) \vec{u} + f(t) \frac{d\vec{u}}{dt}" />
               </div>
             </div>
@@ -211,25 +212,87 @@ export default function Chap1RappelsMathematiques() {
         </div>
       </section>
 
-      {/* SECTION 3: THREE.JS 3D INTERACTIVE COORDINATE CANVAS WITH VISUAL ANGLES PHI AND THETA */}
+      {/* SECTION 3: THREE.JS 3D INTERACTIVE COORDINATE CANVAS & POSITION VECTOR OM SUMMARY */}
       <section className="bg-card/90 border border-border/80 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 shadow-sm w-full max-w-full overflow-x-hidden">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 text-purple-600 dark:text-purple-400 text-xs font-extrabold mb-3">
-          <span>Partie 3 • Three.js 3D WebGL Canvas & Angles Visuels (φ, θ)</span>
+          <span>Partie 3 • Repères 3D & Vecteur de Position OM</span>
         </div>
 
         <h2 className="text-xl sm:text-2xl font-black mb-2 text-foreground leading-tight">
-          3. Repères & Volumes 3D avec Visualization des Angles (φ, θ)
+          3. Repères 3D & Expression du Vecteur de Position <LatexMath math="\vec{OM}" />
         </h2>
 
         <p className="text-xs text-muted-foreground font-medium mb-3 sm:mb-4">
-          Visualisez directement les <strong>arcs et secteurs d'angles 3D</strong> (l'angle azimutal <span className="text-emerald-400 font-bold">φ</span> en vert et l'angle zénithal <span className="text-amber-400 font-bold">θ</span> en or).
+          Visualisez le point <LatexMath math="M" /> dans les 3 systèmes de coordonnées et comprenez la construction exacte du vecteur position <LatexMath math="\vec{OM}" />.
         </p>
 
-        {/* Three.js WebGL Canvas Component with Visual 3D Angle Arcs */}
+        {/* Three.js WebGL Canvas Component */}
         <ThreeDCoordinateCanvas />
+
+        {/* EXPLICIT POSITION VECTOR OM CARDS FOR ALL 3 COORDINATE SYSTEMS */}
+        <div className="mt-6 p-4 sm:p-6 rounded-2xl bg-slate-950 border border-slate-800 text-white">
+          <h3 className="text-sm sm:text-base font-bold text-cyan-400 mb-3 flex items-center gap-2">
+            <Compass className="w-5 h-5 text-cyan-400" />
+            <span>Expression du Vecteur de Position <LatexMath math="\vec{OM}" /> et Explications Physiques</span>
+          </h3>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            
+            {/* 1. Cartésien */}
+            <div className="p-3.5 rounded-xl bg-slate-900 border border-slate-800 flex flex-col justify-between">
+              <div>
+                <span className="text-xs font-bold text-purple-400 block mb-1 font-sans">1. Repère Cartésien</span>
+                <div className="p-2 rounded-lg bg-slate-950 border border-slate-800 text-center font-mono text-xs text-purple-300 mb-2">
+                  <LatexMath math="\vec{OM} = x\vec{i} + y\vec{j} + z\vec{k}" block />
+                </div>
+                <p className="text-[11px] text-slate-300 leading-relaxed font-sans">
+                  <strong>Pourquoi?</strong> Le point <LatexMath math="M" /> est repéré par ses 3 projections orthogonales indépendantes sur les axes fixes <LatexMath math="OX, OY, OZ" />. Les vecteurs unitaires <LatexMath math="(\vec{i},\vec{j},\vec{k})" /> sont <strong>fixes dans le temps</strong>.
+                </p>
+              </div>
+              <div className="mt-2 text-[10px] text-slate-400 font-mono border-t border-slate-800/80 pt-1.5">
+                Norme: <LatexMath math="\|\vec{OM}\| = \sqrt{x^2 + y^2 + z^2}" />
+              </div>
+            </div>
+
+            {/* 2. Cylindrique */}
+            <div className="p-3.5 rounded-xl bg-slate-900 border border-slate-800 flex flex-col justify-between">
+              <div>
+                <span className="text-xs font-bold text-emerald-400 block mb-1 font-sans">2. Repère Cylindrique</span>
+                <div className="p-2 rounded-lg bg-slate-950 border border-slate-800 text-center font-mono text-xs text-emerald-300 mb-2">
+                  <LatexMath math="\vec{OM} = \rho\vec{e}_\rho + z\vec{e}_z" block />
+                </div>
+                <p className="text-[11px] text-slate-300 leading-relaxed font-sans">
+                  <strong>Pourquoi?</strong> Décomposition vectorielle: la projection sur le plan horizontal <LatexMath math="\vec{OH} = \rho\vec{e}_\rho" /> + le déplacement vertical <LatexMath math="z\vec{e}_z" />.<br />
+                  <span className="text-amber-400 font-semibold">Remarque:</span> L'angle <LatexMath math="\phi" /> n'apparaît pas car il est déjà intégré dans <LatexMath math="\vec{e}_\rho = \cos\phi\vec{i} + \sin\phi\vec{j}" />!
+                </p>
+              </div>
+              <div className="mt-2 text-[10px] text-slate-400 font-mono border-t border-slate-800/80 pt-1.5">
+                Norme: <LatexMath math="\|\vec{OM}\| = \sqrt{\rho^2 + z^2}" />
+              </div>
+            </div>
+
+            {/* 3. Sphérique */}
+            <div className="p-3.5 rounded-xl bg-slate-900 border border-slate-800 flex flex-col justify-between">
+              <div>
+                <span className="text-xs font-bold text-amber-400 block mb-1 font-sans">3. Repère Sphérique</span>
+                <div className="p-2 rounded-lg bg-slate-950 border border-slate-800 text-center font-mono text-xs text-amber-300 mb-2">
+                  <LatexMath math="\vec{OM} = r\vec{e}_r" block />
+                </div>
+                <p className="text-[11px] text-slate-300 leading-relaxed font-sans">
+                  <strong>Pourquoi?</strong> Par définition, le vecteur unitaire radial <LatexMath math="\vec{e}_r" /> pointe directement de <LatexMath math="O" /> vers <LatexMath math="M" />. Donc <LatexMath math="\vec{OM}" /> a pour norme <LatexMath math="r" /> selon <LatexMath math="\vec{e}_r" />.<br />
+                  Les angles <LatexMath math="\theta" /> et <LatexMath math="\phi" /> définissent l'orientation du vecteur unitaire mobile <LatexMath math="\vec{e}_r(\theta, \phi)" />!
+                </p>
+              </div>
+              <div className="mt-2 text-[10px] text-slate-400 font-mono border-t border-slate-800/80 pt-1.5">
+                Norme: <LatexMath math="\|\vec{OM}\| = r" />
+              </div>
+            </div>
+
+          </div>
+        </div>
       </section>
 
-      {/* SECTION 4: DÉRIVATION DES VECTEURS DE LA BASE MOBILE (CORRECTED COMPACT EQUALITY & STEP-BY-STEP PROOFS) */}
+      {/* SECTION 4: DÉRIVATION DES VECTEURS DE LA BASE MOBILE */}
       <section className="bg-card/90 border border-border/80 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 shadow-sm w-full max-w-full overflow-x-hidden">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 text-xs font-extrabold mb-3">
           <span>Partie 4 • Dérivation des Bases Mobiles</span>
@@ -343,7 +406,7 @@ export default function Chap1RappelsMathematiques() {
         </div>
       </section>
 
-      {/* SECTION 5: OPÉRATEURS DIFFÉRENTIELS COMPLETE (NABLA FIRST + GRAD, DIV, ROT, LAPLACIEN & PHYSICAL MEANING SVG) */}
+      {/* SECTION 5: OPÉRATEURS DIFFÉRENTIELS & SIMULATEUR 3D WEBGL INTERACTIF */}
       <section className="bg-card/90 border border-border/80 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 shadow-sm w-full max-w-full overflow-x-hidden">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-500/10 text-rose-600 dark:text-rose-400 text-xs font-extrabold mb-3">
           <span>Partie 5 • Champs & Opérateurs Différentiels</span>
@@ -461,79 +524,8 @@ export default function Chap1RappelsMathematiques() {
             </div>
           </div>
 
-          {/* E. INTERPRÉTATION PHYSIQUE VISUELLE (GRAD, DIV, ROT SVG DIAGRAMS) */}
-          <div className="p-4 sm:p-6 rounded-2xl bg-slate-950 border border-slate-800 text-white">
-            <h3 className="text-sm sm:text-base font-bold text-cyan-400 mb-4 flex items-center gap-2">
-              <Activity className="w-4 h-4" />
-              <span>Interprétation Physique Visuelle des Opérateurs</span>
-            </h3>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center text-xs">
-              
-              {/* 1. Gradient SVG */}
-              <div className="p-3 rounded-xl bg-slate-900 border border-slate-800 flex flex-col items-center">
-                <span className="font-bold text-cyan-300 mb-2">1. Gradient (Pente Maximale)</span>
-                <svg width="160" height="100" viewBox="0 0 160 100" className="w-full max-w-[160px]">
-                  <ellipse cx="80" cy="50" rx="70" ry="35" fill="none" stroke="#334155" strokeWidth="1" />
-                  <ellipse cx="80" cy="50" rx="45" ry="22" fill="none" stroke="#475569" strokeWidth="1" />
-                  <ellipse cx="80" cy="50" rx="20" ry="10" fill="#0284c7" fillOpacity="0.3" stroke="#38bdf8" strokeWidth="1" />
-                  
-                  {/* Gradient Vector */}
-                  <line x1="80" y1="50" x2="120" y2="25" stroke="#38bdf8" strokeWidth="2.5" markerEnd="url(#gradArrow)" />
-                  <text x="125" y="22" fill="#38bdf8" fontSize="10" fontWeight="bold">grad f</text>
-                  
-                  <defs>
-                    <marker id="gradArrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
-                      <path d="M 0 0 L 10 5 L 0 10 z" fill="#38bdf8" />
-                    </marker>
-                  </defs>
-                </svg>
-                <p className="text-[10px] text-slate-400 mt-2">Pointe vers les valeurs de <LatexMath math="f" /> croissantes</p>
-              </div>
-
-              {/* 2. Divergence SVG */}
-              <div className="p-3 rounded-xl bg-slate-900 border border-slate-800 flex flex-col items-center">
-                <span className="font-bold text-emerald-300 mb-2">2. Divergence (Source / Flux)</span>
-                <svg width="160" height="100" viewBox="0 0 160 100" className="w-full max-w-[160px]">
-                  <circle cx="80" cy="50" r="8" fill="#10b981" />
-                  
-                  {/* Outward Flow Vectors */}
-                  <line x1="80" y1="50" x2="130" y2="50" stroke="#34d399" strokeWidth="2" markerEnd="url(#divArrow)" />
-                  <line x1="80" y1="50" x2="30" y2="50" stroke="#34d399" strokeWidth="2" markerEnd="url(#divArrow)" />
-                  <line x1="80" y1="50" x2="80" y2="10" stroke="#34d399" strokeWidth="2" markerEnd="url(#divArrow)" />
-                  <line x1="80" y1="50" x2="80" y2="90" stroke="#34d399" strokeWidth="2" markerEnd="url(#divArrow)" />
-                  
-                  <defs>
-                    <marker id="divArrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
-                      <path d="M 0 0 L 10 5 L 0 10 z" fill="#34d399" />
-                    </marker>
-                  </defs>
-                </svg>
-                <p className="text-[10px] text-slate-400 mt-2">div &gt; 0: Source de fluide (Flux sortant net)</p>
-              </div>
-
-              {/* 3. Rotationnel SVG */}
-              <div className="p-3 rounded-xl bg-slate-900 border border-slate-800 flex flex-col items-center">
-                <span className="font-bold text-amber-300 mb-2">3. Rotationnel (Tourbillon)</span>
-                <svg width="160" height="100" viewBox="0 0 160 100" className="w-full max-w-[160px]">
-                  <path d="M 40 50 A 40 25 0 1 1 120 50" fill="none" stroke="#f59e0b" strokeWidth="2" markerEnd="url(#rotArrow)" />
-                  <line x1="80" y1="50" x2="80" y2="15" stroke="#f43f5e" strokeWidth="2.5" markerEnd="url(#rotArrowUp)" />
-                  <text x="88" y="20" fill="#f43f5e" fontSize="10" fontWeight="bold">rot A</text>
-
-                  <defs>
-                    <marker id="rotArrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
-                      <path d="M 0 0 L 10 5 L 0 10 z" fill="#f59e0b" />
-                    </marker>
-                    <marker id="rotArrowUp" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
-                      <path d="M 0 0 L 10 5 L 0 10 z" fill="#f43f5e" />
-                    </marker>
-                  </defs>
-                </svg>
-                <p className="text-[10px] text-slate-400 mt-2">rot ≠ 0: Rotation locale du fluide (Tourbillon)</p>
-              </div>
-
-            </div>
-          </div>
+          {/* E. NEW DYNAMIC INTERACTIVE 3D WEBGL DIFFERENTIAL OPERATORS SIMULATOR */}
+          <DifferentialOperators3DSimulator />
 
         </div>
       </section>
