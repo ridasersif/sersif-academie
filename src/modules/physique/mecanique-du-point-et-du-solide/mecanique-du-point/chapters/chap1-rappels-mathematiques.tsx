@@ -1,11 +1,15 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import LatexMath from "@/components/ui/LatexMath";
 import ThreeDCoordinateCanvas from "../components/ThreeDCoordinateCanvas";
 import VectorProductSimulator from "../components/VectorProductSimulator";
+import { ChevronDown, ChevronUp, Sparkles, BookOpen, Compass, Activity } from "lucide-react";
 
 export default function Chap1RappelsMathematiques() {
+  const [showCylProof, setShowCylProof] = useState(false);
+  const [showSphProof, setShowSphProof] = useState(false);
+
   return (
     <div className="space-y-6 sm:space-y-8 w-full max-w-full overflow-x-hidden">
       
@@ -218,81 +222,177 @@ export default function Chap1RappelsMathematiques() {
         </h2>
 
         <p className="text-xs text-muted-foreground font-medium mb-3 sm:mb-4">
-          Visualisez directement les <strong>arcs d'angles 3D</strong> (l'angle azimutal <span className="text-emerald-400 font-bold">φ</span> en vert et l'angle zénithal <span className="text-amber-400 font-bold">θ</span> en or).
+          Visualisez directement les <strong>arcs et secteurs d'angles 3D</strong> (l'angle azimutal <span className="text-emerald-400 font-bold">φ</span> en vert et l'angle zénithal <span className="text-amber-400 font-bold">θ</span> en or).
         </p>
 
         {/* Three.js WebGL Canvas Component with Visual 3D Angle Arcs */}
         <ThreeDCoordinateCanvas />
       </section>
 
-      {/* SECTION 4: DÉRIVATION DES VECTEURS DE LA BASE MOBILE */}
+      {/* SECTION 4: DÉRIVATION DES VECTEURS DE LA BASE MOBILE (CORRECTED COMPACT EQUALITY & STEP-BY-STEP PROOFS) */}
       <section className="bg-card/90 border border-border/80 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 shadow-sm w-full max-w-full overflow-x-hidden">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 text-xs font-extrabold mb-3">
-          <span>Partie 4 • Dérivation des Base Mobiles</span>
+          <span>Partie 4 • Dérivation des Bases Mobiles</span>
         </div>
 
         <h2 className="text-xl sm:text-2xl font-black mb-3 sm:mb-4 text-foreground leading-tight">
-          4. Dérivation des Vecteurs de Base Locaux par rapport au Temps
+          4. Dérivation des Vecteurs de Base Locaux par rapport au Temps (avec Démonstrations)
         </h2>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+        {/* Compact Formulas Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-6">
+          
           {/* Base Cylindrique */}
-          <div className="p-4 sm:p-5 rounded-xl sm:rounded-2xl bg-muted/30 border border-border/50">
-            <h3 className="text-xs sm:text-sm font-bold text-amber-600 dark:text-amber-400 mb-3">A. Base Cylindrique <LatexMath math="(\vec{e}_\rho, \vec{e}_\phi, \vec{e}_z)" /></h3>
-            <div className="space-y-2.5 font-mono text-xs">
-              <div className="p-2 sm:p-2.5 rounded-lg bg-card border border-border/40 flex items-center justify-between gap-2 overflow-x-auto">
-                <span className="shrink-0"><LatexMath math="\frac{d\vec{e}_\rho}{dt} :" /></span>
-                <LatexMath math="\dot{\phi} \vec{e}_\phi" />
+          <div className="p-4 sm:p-5 rounded-xl sm:rounded-2xl bg-muted/30 border border-border/50 flex flex-col justify-between">
+            <div>
+              <h3 className="text-xs sm:text-sm font-bold text-amber-500 mb-3 flex items-center justify-between">
+                <span>A. Base Cylindrique <LatexMath math="(\vec{e}_\rho, \vec{e}_\phi, \vec{e}_z)" /></span>
+              </h3>
+              
+              <div className="space-y-2 font-mono text-xs">
+                <div className="p-2.5 rounded-xl bg-card border border-border/40 flex items-center justify-start gap-3">
+                  <LatexMath math="\frac{d\vec{e}_\rho}{dt} = \dot{\phi} \vec{e}_\phi" />
+                </div>
+                <div className="p-2.5 rounded-xl bg-card border border-border/40 flex items-center justify-start gap-3">
+                  <LatexMath math="\frac{d\vec{e}_\phi}{dt} = -\dot{\phi} \vec{e}_\rho" />
+                </div>
+                <div className="p-2.5 rounded-xl bg-card border border-border/40 flex items-center justify-start gap-3">
+                  <LatexMath math="\frac{d\vec{e}_z}{dt} = \vec{0}" />
+                </div>
               </div>
-              <div className="p-2 sm:p-2.5 rounded-lg bg-card border border-border/40 flex items-center justify-between gap-2 overflow-x-auto">
-                <span className="shrink-0"><LatexMath math="\frac{d\vec{e}_\phi}{dt} :" /></span>
-                <LatexMath math="-\dot{\phi} \vec{e}_\rho" />
-              </div>
-              <div className="p-2 sm:p-2.5 rounded-lg bg-card border border-border/40 flex items-center justify-between gap-2 overflow-x-auto">
-                <span className="shrink-0"><LatexMath math="\frac{d\vec{e}_z}{dt} :" /></span>
-                <LatexMath math="\vec{0}" />
-              </div>
+            </div>
+
+            {/* Accordion Toggle Demonstration Cylindrique */}
+            <div className="mt-4 pt-3 border-t border-border/40">
+              <button
+                onClick={() => setShowCylProof(!showCylProof)}
+                className="w-full flex items-center justify-between text-xs font-bold text-amber-400 hover:text-amber-300 transition-all p-2 rounded-lg bg-amber-500/10 border border-amber-500/20"
+              >
+                <span className="flex items-center gap-1.5">
+                  <BookOpen className="w-3.5 h-3.5" />
+                  <span>Démonstration Détaillée (Base Cylindrique)</span>
+                </span>
+                {showCylProof ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+              </button>
+
+              {showCylProof && (
+                <div className="mt-3 p-3 rounded-xl bg-slate-950 border border-slate-800 text-[11px] font-mono text-slate-300 space-y-2 leading-relaxed animate-in fade-in duration-200">
+                  <p className="text-amber-400 font-bold">1. Expression des vecteurs dans la base fixe (i, j, k):</p>
+                  <p><LatexMath math="\vec{e}_\rho = \cos\phi\,\vec{i} + \sin\phi\,\vec{j}" /></p>
+                  <p><LatexMath math="\vec{e}_\phi = -\sin\phi\,\vec{i} + \cos\phi\,\vec{j}" /></p>
+                  
+                  <p className="text-amber-400 font-bold mt-2">2. Dérivation par rapport au temps t:</p>
+                  <p><LatexMath math="\frac{d\vec{e}_\rho}{dt} = \frac{d(\cos\phi)}{dt}\vec{i} + \frac{d(\sin\phi)}{dt}\vec{j} = -\dot{\phi}\sin\phi\,\vec{i} + \dot{\phi}\cos\phi\,\vec{j}" /></p>
+                  <p><LatexMath math="\implies \frac{d\vec{e}_\rho}{dt} = \dot{\phi}\left(-\sin\phi\,\vec{i} + \cos\phi\,\vec{j}\right) = \dot{\phi} \vec{e}_\phi" className="text-cyan-400 font-bold" /></p>
+                  
+                  <p className="mt-2"><LatexMath math="\frac{d\vec{e}_\phi}{dt} = -\dot{\phi}\cos\phi\,\vec{i} - \dot{\phi}\sin\phi\,\vec{j} = -\dot{\phi}\left(\cos\phi\,\vec{i} + \sin\phi\,\vec{j}\right) = -\dot{\phi}\vec{e}_\rho" className="text-rose-400 font-bold" /></p>
+                </div>
+              )}
             </div>
           </div>
 
           {/* Base Sphérique */}
-          <div className="p-4 sm:p-5 rounded-xl sm:rounded-2xl bg-muted/30 border border-border/50">
-            <h3 className="text-xs sm:text-sm font-bold text-amber-600 dark:text-amber-400 mb-3">B. Base Sphérique <LatexMath math="(\vec{e}_r, \vec{e}_\theta, \vec{e}_\phi)" /></h3>
-            <div className="space-y-2.5 font-mono text-xs">
-              <div className="p-2 sm:p-2.5 rounded-lg bg-card border border-border/40 flex items-center justify-between gap-2 overflow-x-auto">
-                <span className="shrink-0"><LatexMath math="\frac{d\vec{e}_r}{dt} :" /></span>
-                <LatexMath math="\dot{\theta} \vec{e}_\theta + \dot{\phi}\sin\theta \vec{e}_\phi" />
-              </div>
-              <div className="p-2 sm:p-2.5 rounded-lg bg-card border border-border/40 flex items-center justify-between gap-2 overflow-x-auto">
-                <span className="shrink-0"><LatexMath math="\frac{d\vec{e}_\theta}{dt} :" /></span>
-                <LatexMath math="-\dot{\theta} \vec{e}_r + \dot{\phi}\cos\theta \vec{e}_\phi" />
-              </div>
-              <div className="p-2 sm:p-2.5 rounded-lg bg-card border border-border/40 flex items-center justify-between gap-2 overflow-x-auto">
-                <span className="shrink-0"><LatexMath math="\frac{d\vec{e}_\phi}{dt} :" /></span>
-                <LatexMath math="-\dot{\phi} (\sin\theta \vec{e}_r + \cos\theta \vec{e}_\theta)" />
+          <div className="p-4 sm:p-5 rounded-xl sm:rounded-2xl bg-muted/30 border border-border/50 flex flex-col justify-between">
+            <div>
+              <h3 className="text-xs sm:text-sm font-bold text-amber-500 mb-3 flex items-center justify-between">
+                <span>B. Base Sphérique <LatexMath math="(\vec{e}_r, \vec{e}_\theta, \vec{e}_\phi)" /></span>
+              </h3>
+              
+              <div className="space-y-2 font-mono text-xs">
+                <div className="p-2.5 rounded-xl bg-card border border-border/40 flex items-center justify-start gap-3">
+                  <LatexMath math="\frac{d\vec{e}_r}{dt} = \dot{\theta} \vec{e}_\theta + \dot{\phi}\sin\theta \vec{e}_\phi" />
+                </div>
+                <div className="p-2.5 rounded-xl bg-card border border-border/40 flex items-center justify-start gap-3">
+                  <LatexMath math="\frac{d\vec{e}_\theta}{dt} = -\dot{\theta} \vec{e}_r + \dot{\phi}\cos\theta \vec{e}_\phi" />
+                </div>
+                <div className="p-2.5 rounded-xl bg-card border border-border/40 flex items-center justify-start gap-3">
+                  <LatexMath math="\frac{d\vec{e}_\phi}{dt} = -\dot{\phi}(\sin\theta \vec{e}_r + \cos\theta \vec{e}_\theta)" />
+                </div>
               </div>
             </div>
+
+            {/* Accordion Toggle Demonstration Sphérique */}
+            <div className="mt-4 pt-3 border-t border-border/40">
+              <button
+                onClick={() => setShowSphProof(!showSphProof)}
+                className="w-full flex items-center justify-between text-xs font-bold text-amber-400 hover:text-amber-300 transition-all p-2 rounded-lg bg-amber-500/10 border border-amber-500/20"
+              >
+                <span className="flex items-center gap-1.5">
+                  <BookOpen className="w-3.5 h-3.5" />
+                  <span>Démonstration Détaillée (Base Sphérique)</span>
+                </span>
+                {showSphProof ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+              </button>
+
+              {showSphProof && (
+                <div className="mt-3 p-3 rounded-xl bg-slate-950 border border-slate-800 text-[11px] font-mono text-slate-300 space-y-2 leading-relaxed animate-in fade-in duration-200">
+                  <p className="text-amber-400 font-bold">1. Formule de dérivation composée à 2 variables θ(t) et φ(t):</p>
+                  <p><LatexMath math="\frac{d\vec{e}_r}{dt} = \frac{\partial\vec{e}_r}{\partial\theta}\dot{\theta} + \frac{\partial\vec{e}_r}{\partial\phi}\dot{\phi}" /></p>
+                  
+                  <p className="text-amber-400 font-bold mt-2">2. Dérivées partielles de e_r(θ, φ):</p>
+                  <p><LatexMath math="\vec{e}_r = \sin\theta\cos\phi\,\vec{i} + \sin\theta\sin\phi\,\vec{j} + \cos\theta\,\vec{k}" /></p>
+                  <p><LatexMath math="\frac{\partial\vec{e}_r}{\partial\theta} = \cos\theta\cos\phi\,\vec{i} + \cos\theta\sin\phi\,\vec{j} - \sin\theta\,\vec{k} = \vec{e}_\theta" /></p>
+                  <p><LatexMath math="\frac{\partial\vec{e}_r}{\partial\phi} = -\sin\theta\sin\phi\,\vec{i} + \sin\theta\cos\phi\,\vec{j} = \sin\theta\,\vec{e}_\phi" /></p>
+                  
+                  <p className="text-cyan-400 font-bold mt-2"><LatexMath math="\implies \frac{d\vec{e}_r}{dt} = \dot{\theta}\vec{e}_\theta + \dot{\phi}\sin\theta\vec{e}_\phi" /></p>
+                </div>
+              )}
+            </div>
           </div>
+
         </div>
       </section>
 
-      {/* SECTION 5: OPÉRATEURS DIFFÉRENTIELS (NABLA, GRAD, DIV, ROT, CIRCULATION) */}
+      {/* SECTION 5: OPÉRATEURS DIFFÉRENTIELS COMPLETE (NABLA FIRST + GRAD, DIV, ROT, LAPLACIEN & PHYSICAL MEANING SVG) */}
       <section className="bg-card/90 border border-border/80 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 shadow-sm w-full max-w-full overflow-x-hidden">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-500/10 text-rose-600 dark:text-rose-400 text-xs font-extrabold mb-3">
           <span>Partie 5 • Champs & Opérateurs Différentiels</span>
         </div>
 
         <h2 className="text-xl sm:text-2xl font-black mb-3 sm:mb-4 text-foreground leading-tight">
-          5. Opérateurs Différentiels : Nabla, Gradient, Divergence, Rotationnel & Circulation
+          5. Opérateurs Différentiels : Nabla, Gradient, Divergence, Rotationnel & Laplacien
         </h2>
 
-        <div className="space-y-4">
-          {/* Gradient */}
-          <div className="p-3.5 sm:p-4 rounded-xl sm:rounded-2xl bg-muted/30 border border-border/50">
-            <h3 className="text-xs sm:text-sm font-bold text-foreground mb-3 flex flex-wrap items-center justify-between gap-1">
-              <span>A. Opérateur Gradient : <LatexMath math="\vec{\mathrm{grad}}(f) = \vec{\nabla}f" /></span>
-              <span className="text-[10px] sm:text-xs text-muted-foreground">Champ scalaire → vectoriel</span>
+        <div className="space-y-6">
+          
+          {/* A. L'OPÉRATEUR NABLA (EXPLICIT FIRST) */}
+          <div className="p-4 sm:p-5 rounded-xl sm:rounded-2xl bg-rose-500/10 border border-rose-500/30">
+            <h3 className="text-sm sm:text-base font-bold text-rose-400 mb-2 flex items-center gap-2">
+              <Sparkles className="w-4 h-4" />
+              <span>A. L'Opérateur Nabla <LatexMath math="\vec{\nabla}" /> dans les 3 Repères (Fondamentale)</span>
             </h3>
+            <p className="text-xs text-muted-foreground leading-relaxed mb-3">
+              L'opérateur Nabla <LatexMath math="\vec{\nabla}" /> est un vecteur d'opérateurs de dérivation spatiale. Il constitue la base de tous les opérateurs (Grad, Div, Rot, Laplacien):
+            </p>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 font-mono text-xs text-center">
+              <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 text-rose-300 overflow-x-auto custom-scrollbar">
+                <div className="text-xs font-sans font-bold text-slate-400 mb-1">Repère Cartésien</div>
+                <LatexMath math="\vec{\nabla} = \frac{\partial}{\partial x}\vec{i} + \frac{\partial}{\partial y}\vec{j} + \frac{\partial}{\partial z}\vec{k}" block />
+              </div>
+
+              <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 text-cyan-300 overflow-x-auto custom-scrollbar">
+                <div className="text-xs font-sans font-bold text-slate-400 mb-1">Repère Cylindrique</div>
+                <LatexMath math="\vec{\nabla} = \frac{\partial}{\partial \rho}\vec{e}_\rho + \frac{1}{\rho}\frac{\partial}{\partial \phi}\vec{e}_\phi + \frac{\partial}{\partial z}\vec{e}_z" block />
+              </div>
+
+              <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 text-amber-300 overflow-x-auto custom-scrollbar">
+                <div className="text-xs font-sans font-bold text-slate-400 mb-1">Repère Sphérique</div>
+                <LatexMath math="\vec{\nabla} = \frac{\partial}{\partial r}\vec{e}_r + \frac{1}{r}\frac{\partial}{\partial \theta}\vec{e}_\theta + \frac{1}{r\sin\theta}\frac{\partial}{\partial \phi}\vec{e}_\phi" block />
+              </div>
+            </div>
+          </div>
+
+          {/* B. GRADIENT */}
+          <div className="p-4 sm:p-5 rounded-xl sm:rounded-2xl bg-muted/30 border border-border/50">
+            <h3 className="text-xs sm:text-sm font-bold text-foreground mb-2 flex flex-wrap items-center justify-between gap-1">
+              <span>B. Opérateur Gradient : <LatexMath math="\vec{\mathrm{grad}}(f) = \vec{\nabla}f" /></span>
+              <span className="text-[10px] sm:text-xs text-cyan-400 font-mono">Champ Scalaire → Champ Vectoriel</span>
+            </h3>
+            <p className="text-xs text-muted-foreground mb-3">
+              Le gradient pointe dans la direction de la <strong>variation maximale</strong> de la fonction scalaire <LatexMath math="f" />.
+            </p>
+            
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 font-mono text-xs text-center">
               <div className="p-2.5 rounded-xl bg-card border border-border/40 overflow-x-auto custom-scrollbar">
                 <div className="text-[10px] text-muted-foreground font-sans font-bold mb-1">Cartésien</div>
@@ -309,39 +409,132 @@ export default function Chap1RappelsMathematiques() {
             </div>
           </div>
 
-          {/* Divergence & Rotationnel */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="p-3.5 sm:p-4 rounded-xl sm:rounded-2xl bg-muted/30 border border-border/50">
-              <h3 className="text-xs sm:text-sm font-bold text-foreground mb-1">B. Divergence : <LatexMath math="\mathrm{div}(\vec{A}) = \vec{\nabla} \cdot \vec{A}" /></h3>
-              <p className="text-[11px] sm:text-xs text-muted-foreground font-medium mb-2">Flux sortant net par unité de volume (scalaire).</p>
-              <div className="p-2.5 sm:p-3 rounded-xl bg-card border border-border/40 text-center font-bold overflow-x-auto custom-scrollbar">
-                <LatexMath math="\mathrm{div}(\vec{A}) = \frac{\partial A_x}{\partial x} + \frac{\partial A_y}{\partial y} + \frac{\partial A_z}{\partial z}" block />
-              </div>
-            </div>
+          {/* C. DIVERGENCE */}
+          <div className="p-4 sm:p-5 rounded-xl sm:rounded-2xl bg-muted/30 border border-border/50">
+            <h3 className="text-xs sm:text-sm font-bold text-foreground mb-2 flex flex-wrap items-center justify-between gap-1">
+              <span>C. Divergence : <LatexMath math="\mathrm{div}(\vec{A}) = \vec{\nabla} \cdot \vec{A}" /></span>
+              <span className="text-[10px] sm:text-xs text-emerald-400 font-mono">Champ Vectoriel → Champ Scalaire</span>
+            </h3>
+            <p className="text-xs text-muted-foreground mb-3">
+              Mesure le <strong>flux sortant net</strong> par unité de volume autour d'un point (Source si div &gt; 0, Puits si div &lt; 0).
+            </p>
 
-            <div className="p-3.5 sm:p-4 rounded-xl sm:rounded-2xl bg-muted/30 border border-border/50">
-              <h3 className="text-xs sm:text-sm font-bold text-foreground mb-1">C. Rotationnel : <LatexMath math="\vec{\mathrm{rot}}(\vec{A}) = \vec{\nabla} \wedge \vec{A}" /></h3>
-              <p className="text-[11px] sm:text-xs text-muted-foreground font-medium mb-2">Circulation locale / tourbillonnement (vecteur).</p>
-              <div className="p-2.5 sm:p-3 rounded-xl bg-card border border-border/40 text-center font-bold overflow-x-auto custom-scrollbar">
-                <LatexMath math="\vec{\mathrm{rot}}(\vec{A}) = \left(\frac{\partial A_z}{\partial y} - \frac{\partial A_y}{\partial z}\right)\vec{i} + \dots" block />
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 font-mono text-xs text-center">
+              <div className="p-2.5 rounded-xl bg-card border border-border/40 overflow-x-auto custom-scrollbar">
+                <div className="text-[10px] text-muted-foreground font-sans font-bold mb-1">Cartésien</div>
+                <LatexMath math="\frac{\partial A_x}{\partial x} + \frac{\partial A_y}{\partial y} + \frac{\partial A_z}{\partial z}" />
+              </div>
+              <div className="p-2.5 rounded-xl bg-card border border-border/40 overflow-x-auto custom-scrollbar">
+                <div className="text-[10px] text-muted-foreground font-sans font-bold mb-1">Cylindrique</div>
+                <LatexMath math="\frac{1}{\rho}\frac{\partial(\rho A_\rho)}{\partial \rho} + \frac{1}{\rho}\frac{\partial A_\phi}{\partial \phi} + \frac{\partial A_z}{\partial z}" />
+              </div>
+              <div className="p-2.5 rounded-xl bg-card border border-border/40 overflow-x-auto custom-scrollbar">
+                <div className="text-[10px] text-muted-foreground font-sans font-bold mb-1">Sphérique</div>
+                <LatexMath math="\frac{1}{r^2}\frac{\partial(r^2 A_r)}{\partial r} + \frac{1}{r\sin\theta}\frac{\partial(\sin\theta A_\theta)}{\partial \theta} + \frac{1}{r\sin\theta}\frac{\partial A_\phi}{\partial \phi}" />
               </div>
             </div>
           </div>
 
-          {/* Circulation & Flux (Stokes & Ostrogradsky) */}
-          <div className="p-4 sm:p-5 rounded-xl sm:rounded-2xl bg-cyan-500/5 border border-cyan-500/20">
-            <h3 className="text-xs sm:text-sm font-bold text-cyan-600 dark:text-cyan-400 mb-2">D. Circulation, Flux & Théorèmes d'Intégration</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 text-xs font-mono">
-              <div className="p-3 rounded-xl bg-card border border-border/40 text-center overflow-x-auto custom-scrollbar">
-                <div className="font-sans font-bold text-foreground mb-1 text-[11px] sm:text-xs">Théorème d'Ostrogradsky (Flux):</div>
-                <LatexMath math="\iint_S \vec{A} \cdot d\vec{S} = \iiint_V \mathrm{div}(\vec{A})\,dV" block />
+          {/* D. ROTATIONNEL */}
+          <div className="p-4 sm:p-5 rounded-xl sm:rounded-2xl bg-muted/30 border border-border/50">
+            <h3 className="text-xs sm:text-sm font-bold text-foreground mb-2 flex flex-wrap items-center justify-between gap-1">
+              <span>D. Rotationnel : <LatexMath math="\vec{\mathrm{rot}}(\vec{A}) = \vec{\nabla} \wedge \vec{A}" /></span>
+              <span className="text-[10px] sm:text-xs text-amber-400 font-mono">Champ Vectoriel → Champ Vectoriel</span>
+            </h3>
+            <p className="text-xs text-muted-foreground mb-3">
+              Mesure la <strong>circulation locale / tourbillonnement</strong> d'un champ vectoriel autour d'un point.
+            </p>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 font-mono text-xs text-center">
+              <div className="p-2.5 rounded-xl bg-card border border-border/40 overflow-x-auto custom-scrollbar">
+                <div className="text-[10px] text-muted-foreground font-sans font-bold mb-1">Cartésien</div>
+                <LatexMath math="\begin{vmatrix}\vec{i} & \vec{j} & \vec{k} \\ \frac{\partial}{\partial x} & \frac{\partial}{\partial y} & \frac{\partial}{\partial z} \\ A_x & A_y & A_z\end{vmatrix}" />
               </div>
-              <div className="p-3 rounded-xl bg-card border border-border/40 text-center overflow-x-auto custom-scrollbar">
-                <div className="font-sans font-bold text-foreground mb-1 text-[11px] sm:text-xs">Théorème de Stokes (Circulation):</div>
-                <LatexMath math="\oint_C \vec{A} \cdot d\vec{\ell} = \iint_S \vec{\mathrm{rot}}(\vec{A}) \cdot d\vec{S}" block />
+              <div className="p-2.5 rounded-xl bg-card border border-border/40 overflow-x-auto custom-scrollbar">
+                <div className="text-[10px] text-muted-foreground font-sans font-bold mb-1">Cylindrique</div>
+                <LatexMath math="\frac{1}{\rho}\begin{vmatrix}\vec{e}_\rho & \rho\vec{e}_\phi & \vec{e}_z \\ \frac{\partial}{\partial \rho} & \frac{\partial}{\partial \phi} & \frac{\partial}{\partial z} \\ A_\rho & \rho A_\phi & A_z\end{vmatrix}" />
+              </div>
+              <div className="p-2.5 rounded-xl bg-card border border-border/40 overflow-x-auto custom-scrollbar">
+                <div className="text-[10px] text-muted-foreground font-sans font-bold mb-1">Sphérique</div>
+                <LatexMath math="\frac{1}{r^2\sin\theta}\begin{vmatrix}\vec{e}_r & r\vec{e}_\theta & r\sin\theta\vec{e}_\phi \\ \frac{\partial}{\partial r} & \frac{\partial}{\partial \theta} & \frac{\partial}{\partial \phi} \\ A_r & r A_\theta & r\sin\theta A_\phi\end{vmatrix}" />
               </div>
             </div>
           </div>
+
+          {/* E. INTERPRÉTATION PHYSIQUE VISUELLE (GRAD, DIV, ROT SVG DIAGRAMS) */}
+          <div className="p-4 sm:p-6 rounded-2xl bg-slate-950 border border-slate-800 text-white">
+            <h3 className="text-sm sm:text-base font-bold text-cyan-400 mb-4 flex items-center gap-2">
+              <Activity className="w-4 h-4" />
+              <span>Interprétation Physique Visuelle des Opérateurs</span>
+            </h3>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center text-xs">
+              
+              {/* 1. Gradient SVG */}
+              <div className="p-3 rounded-xl bg-slate-900 border border-slate-800 flex flex-col items-center">
+                <span className="font-bold text-cyan-300 mb-2">1. Gradient (Pente Maximale)</span>
+                <svg width="160" height="100" viewBox="0 0 160 100" className="w-full max-w-[160px]">
+                  <ellipse cx="80" cy="50" rx="70" ry="35" fill="none" stroke="#334155" strokeWidth="1" />
+                  <ellipse cx="80" cy="50" rx="45" ry="22" fill="none" stroke="#475569" strokeWidth="1" />
+                  <ellipse cx="80" cy="50" rx="20" ry="10" fill="#0284c7" fillOpacity="0.3" stroke="#38bdf8" strokeWidth="1" />
+                  
+                  {/* Gradient Vector */}
+                  <line x1="80" y1="50" x2="120" y2="25" stroke="#38bdf8" strokeWidth="2.5" markerEnd="url(#gradArrow)" />
+                  <text x="125" y="22" fill="#38bdf8" fontSize="10" fontWeight="bold">grad f</text>
+                  
+                  <defs>
+                    <marker id="gradArrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+                      <path d="M 0 0 L 10 5 L 0 10 z" fill="#38bdf8" />
+                    </marker>
+                  </defs>
+                </svg>
+                <p className="text-[10px] text-slate-400 mt-2">Pointe vers les valeurs de <LatexMath math="f" /> croissantes</p>
+              </div>
+
+              {/* 2. Divergence SVG */}
+              <div className="p-3 rounded-xl bg-slate-900 border border-slate-800 flex flex-col items-center">
+                <span className="font-bold text-emerald-300 mb-2">2. Divergence (Source / Flux)</span>
+                <svg width="160" height="100" viewBox="0 0 160 100" className="w-full max-w-[160px]">
+                  <circle cx="80" cy="50" r="8" fill="#10b981" />
+                  
+                  {/* Outward Flow Vectors */}
+                  <line x1="80" y1="50" x2="130" y2="50" stroke="#34d399" strokeWidth="2" markerEnd="url(#divArrow)" />
+                  <line x1="80" y1="50" x2="30" y2="50" stroke="#34d399" strokeWidth="2" markerEnd="url(#divArrow)" />
+                  <line x1="80" y1="50" x2="80" y2="10" stroke="#34d399" strokeWidth="2" markerEnd="url(#divArrow)" />
+                  <line x1="80" y1="50" x2="80" y2="90" stroke="#34d399" strokeWidth="2" markerEnd="url(#divArrow)" />
+                  
+                  <defs>
+                    <marker id="divArrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+                      <path d="M 0 0 L 10 5 L 0 10 z" fill="#34d399" />
+                    </marker>
+                  </defs>
+                </svg>
+                <p className="text-[10px] text-slate-400 mt-2">div &gt; 0: Source de fluide (Flux sortant net)</p>
+              </div>
+
+              {/* 3. Rotationnel SVG */}
+              <div className="p-3 rounded-xl bg-slate-900 border border-slate-800 flex flex-col items-center">
+                <span className="font-bold text-amber-300 mb-2">3. Rotationnel (Tourbillon)</span>
+                <svg width="160" height="100" viewBox="0 0 160 100" className="w-full max-w-[160px]">
+                  <path d="M 40 50 A 40 25 0 1 1 120 50" fill="none" stroke="#f59e0b" strokeWidth="2" markerEnd="url(#rotArrow)" />
+                  <line x1="80" y1="50" x2="80" y2="15" stroke="#f43f5e" strokeWidth="2.5" markerEnd="url(#rotArrowUp)" />
+                  <text x="88" y="20" fill="#f43f5e" fontSize="10" fontWeight="bold">rot A</text>
+
+                  <defs>
+                    <marker id="rotArrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+                      <path d="M 0 0 L 10 5 L 0 10 z" fill="#f59e0b" />
+                    </marker>
+                    <marker id="rotArrowUp" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+                      <path d="M 0 0 L 10 5 L 0 10 z" fill="#f43f5e" />
+                    </marker>
+                  </defs>
+                </svg>
+                <p className="text-[10px] text-slate-400 mt-2">rot ≠ 0: Rotation locale du fluide (Tourbillon)</p>
+              </div>
+
+            </div>
+          </div>
+
         </div>
       </section>
 

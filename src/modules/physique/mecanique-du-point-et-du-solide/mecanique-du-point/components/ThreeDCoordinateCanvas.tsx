@@ -12,11 +12,16 @@ export default function ThreeDCoordinateCanvas() {
   const [coordType, setCoordType] = useState<CoordSystem>("cylindrique");
   const [showVolumeShape, setShowVolumeShape] = useState(true);
 
-  // Control Sliders State
+  // Control Sliders State: Cylindrical/Spherical (r, phi, theta, z)
   const [r, setR] = useState(3.0);
   const [phi, setPhi] = useState(60);
   const [theta, setTheta] = useState(45);
   const [zVal, setZVal] = useState(2.0);
+
+  // Control Sliders State: Cartesian (x, y, z)
+  const [xVal, setXVal] = useState(2.5);
+  const [yVal, setYVal] = useState(2.0);
+  const [cartZVal, setCartZVal] = useState(2.0);
 
   const sceneRef = useRef<THREE.Scene | null>(null);
   const mMeshRef = useRef<THREE.Mesh | null>(null);
@@ -27,14 +32,19 @@ export default function ThreeDCoordinateCanvas() {
   const ezArrowRef = useRef<THREE.ArrowHelper | null>(null);
   const ethetaArrowRef = useRef<THREE.ArrowHelper | null>(null);
 
-  // 3D Volume Shapes Refs
-  const cylinderMeshRef = useRef<THREE.Mesh | null>(null);
-  const sphereMeshRef = useRef<THREE.Mesh | null>(null);
-  const boxMeshRef = useRef<THREE.Mesh | null>(null);
+  // 3D Volume Groups
+  const cylinderGroupRef = useRef<THREE.Group | null>(null);
+  const sphereGroupRef = useRef<THREE.Group | null>(null);
+  const boxGroupRef = useRef<THREE.Group | null>(null);
 
-  // Visual 3D Angle Arcs Line Refs
-  const phiArcLineRef = useRef<THREE.Line | null>(null);
-  const thetaArcLineRef = useRef<THREE.Line | null>(null);
+  // Visual 3D Angle Filled Sector Meshes
+  const phiSectorMeshRef = useRef<THREE.Mesh | null>(null);
+  const thetaSectorMeshRef = useRef<THREE.Mesh | null>(null);
+
+  // Spherical Specific References
+  const sphMeshSolidRef = useRef<THREE.Mesh | null>(null);
+  const sphLatitudeLineRef = useRef<THREE.Line | null>(null);
+  const sphGroundCircleLineRef = useRef<THREE.Line | null>(null);
 
   useEffect(() => {
     const container = mountRef.current;
@@ -86,10 +96,10 @@ export default function ThreeDCoordinateCanvas() {
     container.appendChild(renderer.domElement);
 
     // 2. Lights
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.9);
+    const ambientLight = new THREE.AmbientLight(0xffffff, 1.2);
     scene.add(ambientLight);
 
-    const dirLight1 = new THREE.DirectionalLight(0x00f0ff, 1.2);
+    const dirLight1 = new THREE.DirectionalLight(0x38bdf8, 1.5);
     dirLight1.position.set(10, 15, 10);
     scene.add(dirLight1);
 
@@ -102,75 +112,132 @@ export default function ThreeDCoordinateCanvas() {
     gridHelper.position.y = 0;
     scene.add(gridHelper);
 
-    // 4. Main Axes (Slender Arrow Heads: headLength=0.25, headWidth=0.08)
+    // 4. Main Axes (X: Coral Red, Y: Emerald Green, Z: Cyan Blue)
     const axesLen = 5.0;
-    const xAxis = new THREE.ArrowHelper(new THREE.Vector3(1, 0, 0), new THREE.Vector3(0, 0, 0), axesLen, 0xf87171, 0.25, 0.08);
-    const yAxis = new THREE.ArrowHelper(new THREE.Vector3(0, 1, 0), new THREE.Vector3(0, 0, 0), axesLen, 0x34d399, 0.25, 0.08);
-    const zAxis = new THREE.ArrowHelper(new THREE.Vector3(0, 0, 1), new THREE.Vector3(0, 0, 0), axesLen, 0x38bdf8, 0.25, 0.08);
+    const xAxis = new THREE.ArrowHelper(new THREE.Vector3(1, 0, 0), new THREE.Vector3(0, 0, 0), axesLen, 0xf87171, 0.22, 0.07);
+    const yAxis = new THREE.ArrowHelper(new THREE.Vector3(0, 1, 0), new THREE.Vector3(0, 0, 0), axesLen, 0x34d399, 0.22, 0.07);
+    const zAxis = new THREE.ArrowHelper(new THREE.Vector3(0, 0, 1), new THREE.Vector3(0, 0, 0), axesLen, 0x38bdf8, 0.22, 0.07);
     scene.add(xAxis, yAxis, zAxis);
 
-    // 5. Translucent 3D Volume Shapes Materials
-    const shapeMatCyl = new THREE.MeshStandardMaterial({
+    // --- A. CYLINDER GROUP ---
+    const cylinderGroup = new THREE.Group();
+    scene.add(cylinderGroup);
+    cylinderGroupRef.current = cylinderGroup;
+
+    const cylGeo = new THREE.CylinderGeometry(1, 1, 1, 32);
+    const cylMatSolid = new THREE.MeshStandardMaterial({
       color: 0x06b6d4,
       transparent: true,
-      opacity: 0.22,
-      side: THREE.DoubleSide,
-      roughness: 0.3,
-    });
-
-    const shapeMatSph = new THREE.MeshStandardMaterial({
-      color: 0xf59e0b,
-      transparent: true,
       opacity: 0.18,
-      wireframe: true,
       side: THREE.DoubleSide,
+      roughness: 0.2,
     });
+    const cylMeshSolid = new THREE.Mesh(cylGeo, cylMatSolid);
+    cylinderGroup.add(cylMeshSolid);
 
-    const shapeMatBox = new THREE.MeshStandardMaterial({
+    const cylEdgesGeo = new THREE.EdgesGeometry(cylGeo);
+    const cylEdgesMat = new THREE.LineBasicMaterial({ color: 0x38bdf8, linewidth: 1.5 });
+    const cylWireframe = new THREE.LineSegments(cylEdgesGeo, cylEdgesMat);
+    cylinderGroup.add(cylWireframe);
+
+    // --- B. BEAUTIFUL GLASS SPHERE GROUP ---
+    const sphereGroup = new THREE.Group();
+    scene.add(sphereGroup);
+    sphereGroupRef.current = sphereGroup;
+
+    // 1. Electric Glass Sphere Mesh (Transparent Ice Cyan, Opacity 0.10)
+    const sphGeo = new THREE.SphereGeometry(1, 36, 28);
+    const sphMatSolid = new THREE.MeshStandardMaterial({
+      color: 0x0ea5e9,
+      transparent: true,
+      opacity: 0.10,
+      side: THREE.DoubleSide,
+      roughness: 0.1,
+      metalness: 0.2,
+    });
+    const sphMeshSolid = new THREE.Mesh(sphGeo, sphMatSolid);
+    sphereGroup.add(sphMeshSolid);
+    sphMeshSolidRef.current = sphMeshSolid;
+
+    // 2. Latitude Circle Line at height y passing right through M
+    const sphLatMat = new THREE.LineBasicMaterial({ color: 0x38bdf8, linewidth: 2 });
+    const sphLatLine = new THREE.Line(new THREE.BufferGeometry(), sphLatMat);
+    sphereGroup.add(sphLatLine);
+    sphLatitudeLineRef.current = sphLatLine;
+
+    // 3. Ground Circle Line (Equator r_xy)
+    const sphGroundMat = new THREE.LineDashedMaterial({ color: 0x3b82f6, dashSize: 0.15, gapSize: 0.08, opacity: 0.6, transparent: true });
+    const sphGroundLine = new THREE.Line(new THREE.BufferGeometry(), sphGroundMat);
+    sphereGroup.add(sphGroundLine);
+    sphGroundCircleLineRef.current = sphGroundLine;
+
+    // --- C. BOX GROUP ---
+    const boxGroup = new THREE.Group();
+    scene.add(boxGroup);
+    boxGroupRef.current = boxGroup;
+
+    const boxGeo = new THREE.BoxGeometry(1, 1, 1);
+    const boxMatSolid = new THREE.MeshStandardMaterial({
       color: 0xa855f7,
       transparent: true,
-      opacity: 0.22,
+      opacity: 0.2,
       side: THREE.DoubleSide,
     });
+    const boxMeshSolid = new THREE.Mesh(boxGeo, boxMatSolid);
+    boxGroup.add(boxMeshSolid);
 
-    // Cylindre Mesh
-    const cylGeo = new THREE.CylinderGeometry(1, 1, 1, 32);
-    const cylMesh = new THREE.Mesh(cylGeo, shapeMatCyl);
-    scene.add(cylMesh);
-    cylinderMeshRef.current = cylMesh;
+    const boxEdgesGeo = new THREE.EdgesGeometry(boxGeo);
+    const boxEdgesMat = new THREE.LineBasicMaterial({ color: 0xc084fc, linewidth: 1.5 });
+    const boxWireframe = new THREE.LineSegments(boxEdgesGeo, boxEdgesMat);
+    boxGroup.add(boxWireframe);
 
-    // Sphère Mesh
-    const sphGeo = new THREE.SphereGeometry(1, 32, 24);
-    const sphMesh = new THREE.Mesh(sphGeo, shapeMatSph);
-    scene.add(sphMesh);
-    sphereMeshRef.current = sphMesh;
+    // 6. 100% GUARANTEED VIBRANT FILLED ANGLE SECTOR MESHES
+    // A. Phi Sector (Emerald Green)
+    const phiSectorMat = new THREE.MeshBasicMaterial({
+      color: 0x10b981, // Emerald Green
+      transparent: true,
+      opacity: 0.55,
+      side: THREE.DoubleSide,
+      depthTest: false,
+    });
+    const phiSectorMesh = new THREE.Mesh(new THREE.RingGeometry(0, 1.5, 32, 1, 0, Math.PI / 3), phiSectorMat);
+    phiSectorMesh.renderOrder = 999;
+    scene.add(phiSectorMesh);
+    phiSectorMeshRef.current = phiSectorMesh;
 
-    // Box Mesh
-    const boxGeo = new THREE.BoxGeometry(1, 1, 1);
-    const boxMesh = new THREE.Mesh(boxGeo, shapeMatBox);
-    scene.add(boxMesh);
-    boxMeshRef.current = boxMesh;
+    // B. Theta Sector (Amber Gold)
+    const thetaSectorMat = new THREE.MeshBasicMaterial({
+      color: 0xf59e0b, // Amber Gold
+      transparent: true,
+      opacity: 0.55,
+      side: THREE.DoubleSide,
+      depthTest: false,
+    });
+    const thetaSectorMesh = new THREE.Mesh(new THREE.RingGeometry(0, 1.5, 32, 1, 0, Math.PI / 4), thetaSectorMat);
+    thetaSectorMesh.renderOrder = 999;
+    scene.add(thetaSectorMesh);
+    thetaSectorMeshRef.current = thetaSectorMesh;
 
-    // 6. Point M Mesh (Slender Sphere Geometry)
-    const mGeo = new THREE.SphereGeometry(0.12, 32, 32);
+    // 7. Point M Mesh (Glowing Sphere)
+    const mGeo = new THREE.SphereGeometry(0.13, 32, 32);
     const mMats = new THREE.MeshStandardMaterial({
       color: 0xc084fc,
       emissive: 0x9333ea,
-      emissiveIntensity: 0.8,
+      emissiveIntensity: 0.9,
       roughness: 0.1,
     });
     const mMesh = new THREE.Mesh(mGeo, mMats);
     scene.add(mMesh);
     mMeshRef.current = mMesh;
 
-    // 7. Vector OM Line
-    const omMat = new THREE.LineBasicMaterial({ color: 0xc084fc, linewidth: 2 });
+    // 8. Vector OM Line
+    const omMat = new THREE.LineBasicMaterial({ color: 0xc084fc, linewidth: 2.5 });
     const omGeo = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0, 0, 0), new THREE.Vector3(1, 1, 1)]);
     const omLine = new THREE.Line(omGeo, omMat);
     scene.add(omLine);
     omLineRef.current = omLine;
 
-    // 8. Projection Line (Dashed)
+    // 9. Projection Line (Dashed)
     const projMat = new THREE.LineDashedMaterial({ color: 0x94a3b8, dashSize: 0.2, gapSize: 0.1 });
     const projGeo = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0, 0, 0), new THREE.Vector3(1, 0, 1), new THREE.Vector3(1, 1, 1)]);
     const projLine = new THREE.Line(projGeo, projMat);
@@ -178,20 +245,7 @@ export default function ThreeDCoordinateCanvas() {
     scene.add(projLine);
     projLineRef.current = projLine;
 
-    // 9. Visual 3D Angle Arcs
-    const phiArcMat = new THREE.LineBasicMaterial({ color: 0x34d399, linewidth: 2 });
-    const phiArcGeo = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0, 0, 0), new THREE.Vector3(1, 0, 0)]);
-    const phiArcLine = new THREE.Line(phiArcGeo, phiArcMat);
-    scene.add(phiArcLine);
-    phiArcLineRef.current = phiArcLine;
-
-    const thetaArcMat = new THREE.LineBasicMaterial({ color: 0xf59e0b, linewidth: 2 });
-    const thetaArcGeo = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 1, 0)]);
-    const thetaArcLine = new THREE.Line(thetaArcGeo, thetaArcMat);
-    scene.add(thetaArcLine);
-    thetaArcLineRef.current = thetaArcLine;
-
-    // 10. Basis Vector Arrow Helpers at M (Slender: headLength=0.2, headWidth=0.07)
+    // 10. Basis Vector Arrow Helpers at M
     const erhoArrow = new THREE.ArrowHelper(new THREE.Vector3(1, 0, 0), new THREE.Vector3(0, 0, 0), 1.2, 0xf43f5e, 0.2, 0.07);
     const ephiArrow = new THREE.ArrowHelper(new THREE.Vector3(0, 1, 0), new THREE.Vector3(0, 0, 0), 1.2, 0x10b981, 0.2, 0.07);
     const ezArrow = new THREE.ArrowHelper(new THREE.Vector3(0, 0, 1), new THREE.Vector3(0, 0, 0), 1.2, 0x38bdf8, 0.2, 0.07);
@@ -289,7 +343,7 @@ export default function ThreeDCoordinateCanvas() {
     };
   }, []);
 
-  // Update 3D Vector, 3D Geometries & 3D Visual Angle Arcs
+  // Update 3D Vector & Dynamically Scale/Orient Filled Ring Sector Geometries
   useEffect(() => {
     if (!sceneRef.current || !mMeshRef.current || !omLineRef.current) return;
 
@@ -299,12 +353,12 @@ export default function ThreeDCoordinateCanvas() {
     let mx = 0, my = 0, mz = 0;
 
     if (coordType === "cartesien") {
-      mx = r * Math.cos(phiRad);
-      my = Math.max(0.1, zVal);
-      mz = r * Math.sin(phiRad);
+      mx = xVal;
+      my = yVal;
+      mz = cartZVal;
     } else if (coordType === "cylindrique") {
       mx = r * Math.cos(phiRad);
-      my = Math.max(0.1, zVal);
+      my = zVal;
       mz = r * Math.sin(phiRad);
     } else if (coordType === "spherique") {
       mx = r * Math.sin(thetaRad) * Math.cos(phiRad);
@@ -325,66 +379,107 @@ export default function ThreeDCoordinateCanvas() {
       projLineRef.current.computeLineDistances();
     }
 
-    // Dynamic 3D Geometries Scaling & Positioning
+    // Dynamic 3D Geometries
     const rhoVal = Math.sqrt(mx * mx + mz * mz) || 0.1;
 
-    if (cylinderMeshRef.current) {
-      cylinderMeshRef.current.visible = showVolumeShape && coordType === "cylindrique";
+    // 1. CYLINDER
+    if (cylinderGroupRef.current) {
+      cylinderGroupRef.current.visible = showVolumeShape && coordType === "cylindrique";
       if (coordType === "cylindrique") {
-        cylinderMeshRef.current.scale.set(rhoVal, my, rhoVal);
-        cylinderMeshRef.current.position.set(0, my / 2, 0);
+        const absHeight = Math.max(0.1, Math.abs(my));
+        cylinderGroupRef.current.scale.set(rhoVal, absHeight, rhoVal);
+        cylinderGroupRef.current.position.set(0, my / 2, 0);
       }
     }
 
-    if (sphereMeshRef.current) {
-      sphereMeshRef.current.visible = showVolumeShape && coordType === "spherique";
-      if (coordType === "spherique") {
-        const radiusSph = mPos.length() || 0.1;
-        sphereMeshRef.current.scale.set(radiusSph, radiusSph, radiusSph);
-        sphereMeshRef.current.position.set(0, 0, 0);
+    // 2. ELEGANT GLASS SPHERE
+    if (sphereGroupRef.current) {
+      const showSph = showVolumeShape && coordType === "spherique";
+      sphereGroupRef.current.visible = showSph;
+
+      if (showSph) {
+        const rSph = mPos.length() || 0.1;
+        const latRadius = rSph * Math.sin(thetaRad);
+        const latY = rSph * Math.cos(thetaRad);
+
+        if (sphMeshSolidRef.current) {
+          sphMeshSolidRef.current.scale.set(rSph, rSph, rSph);
+        }
+
+        // Latitude Circle at height y passing right through point M
+        if (sphLatitudeLineRef.current) {
+          const latPts: THREE.Vector3[] = [];
+          for (let i = 0; i <= 64; i++) {
+            const a = (i * 2 * Math.PI) / 64;
+            latPts.push(new THREE.Vector3(latRadius * Math.cos(a), latY, latRadius * Math.sin(a)));
+          }
+          sphLatitudeLineRef.current.geometry.setFromPoints(latPts);
+        }
+
+        // Ground Circle Line (Sphere equator in XZ plane)
+        if (sphGroundCircleLineRef.current) {
+          const gndPts: THREE.Vector3[] = [];
+          for (let i = 0; i <= 64; i++) {
+            const a = (i * 2 * Math.PI) / 64;
+            gndPts.push(new THREE.Vector3(rSph * Math.cos(a), 0, rSph * Math.sin(a)));
+          }
+          sphGroundCircleLineRef.current.geometry.setFromPoints(gndPts);
+          sphGroundCircleLineRef.current.computeLineDistances();
+        }
       }
     }
 
-    if (boxMeshRef.current) {
-      boxMeshRef.current.visible = showVolumeShape && coordType === "cartesien";
+    // 3. BOX
+    if (boxGroupRef.current) {
+      boxGroupRef.current.visible = showVolumeShape && coordType === "cartesien";
       if (coordType === "cartesien") {
         const bx = Math.abs(mx) || 0.1;
         const by = Math.abs(my) || 0.1;
         const bz = Math.abs(mz) || 0.1;
-        boxMeshRef.current.scale.set(bx, by, bz);
-        boxMeshRef.current.position.set(mx / 2, my / 2, mz / 2);
+        boxGroupRef.current.scale.set(bx, by, bz);
+        boxGroupRef.current.position.set(mx / 2, my / 2, mz / 2);
       }
     }
 
-    // Render 3D Visual Angle Arcs
-    if (phiArcLineRef.current) {
-      phiArcLineRef.current.visible = coordType !== "cartesien";
-      if (coordType !== "cartesien") {
-        const arcPoints: THREE.Vector3[] = [];
-        const radiusArc = 1.3;
-        const segments = 24;
-        for (let i = 0; i <= segments; i++) {
-          const a = (phiRad * i) / segments;
-          arcPoints.push(new THREE.Vector3(radiusArc * Math.cos(a), 0, radiusArc * Math.sin(a)));
-        }
-        phiArcLineRef.current.geometry.setFromPoints(arcPoints);
+    // --- 100% GUARANTEED FILLED ANGLE SECTORS USING RingGeometry ---
+
+    // A. PHI SECTOR (Emerald Green filled pie slice on XZ ground plane)
+    const phiRadius = Math.max(1.2, Math.min(2.5, rhoVal));
+
+    if (phiSectorMeshRef.current) {
+      const showPhi = coordType !== "cartesien" && phi > 0;
+      phiSectorMeshRef.current.visible = showPhi;
+
+      if (showPhi) {
+        phiSectorMeshRef.current.geometry.dispose();
+        // RingGeometry(0, radius, 32, 1, 0, phiRad)
+        const ringGeo = new THREE.RingGeometry(0, phiRadius, 32, 1, 0, phiRad);
+        phiSectorMeshRef.current.geometry = ringGeo;
+        
+        // Orient onto XZ ground plane (rotation.x = Math.PI / 2)
+        phiSectorMeshRef.current.rotation.set(Math.PI / 2, 0, 0);
+        phiSectorMeshRef.current.position.set(0, 0.01, 0); // slightly above grid
       }
     }
 
-    if (thetaArcLineRef.current) {
-      thetaArcLineRef.current.visible = coordType === "spherique";
-      if (coordType === "spherique") {
-        const arcPoints: THREE.Vector3[] = [];
-        const radiusArc = 1.1;
-        const segments = 24;
-        for (let i = 0; i <= segments; i++) {
-          const a = (thetaRad * i) / segments;
-          const px = radiusArc * Math.sin(a) * Math.cos(phiRad);
-          const py = radiusArc * Math.cos(a);
-          const pz = radiusArc * Math.sin(a) * Math.sin(phiRad);
-          arcPoints.push(new THREE.Vector3(px, py, pz));
-        }
-        thetaArcLineRef.current.geometry.setFromPoints(arcPoints);
+    // B. THETA SECTOR (Amber Gold filled pie slice in vertical plane O-Z-M)
+    const thetaRadius = Math.max(1.2, Math.min(2.5, mPos.length()));
+
+    if (thetaSectorMeshRef.current) {
+      const showTheta = coordType === "spherique" && theta > 0;
+      thetaSectorMeshRef.current.visible = showTheta;
+
+      if (showTheta) {
+        thetaSectorMeshRef.current.geometry.dispose();
+        
+        // RingGeometry starting from top (+Z axis, theta=0) down to thetaRad
+        // In local 2D plane: theta goes from 0 to thetaRad
+        const ringGeo = new THREE.RingGeometry(0, thetaRadius, 32, 1, Math.PI / 2 - thetaRad, thetaRad);
+        thetaSectorMeshRef.current.geometry = ringGeo;
+        
+        // Rotate around Y axis by phiRad to align with vector OM projection plane!
+        thetaSectorMeshRef.current.rotation.set(0, -phiRad, 0);
+        thetaSectorMeshRef.current.position.set(0, 0, 0);
       }
     }
 
@@ -471,7 +566,7 @@ export default function ThreeDCoordinateCanvas() {
       if (ephiArrowRef.current) ephiArrowRef.current.visible = true;
       if (ezArrowRef.current) ezArrowRef.current.visible = true;
     }
-  }, [coordType, r, phi, theta, zVal, showVolumeShape]);
+  }, [coordType, r, phi, theta, zVal, xVal, yVal, cartZVal, showVolumeShape]);
 
   return (
     <div className="bg-card/90 border border-border/80 rounded-2xl sm:rounded-3xl p-3 sm:p-5 shadow-xl my-4 w-full max-w-full overflow-hidden">
@@ -481,7 +576,7 @@ export default function ThreeDCoordinateCanvas() {
         <div className="flex items-center gap-2">
           <Compass className="w-4 h-4 sm:w-5 sm:h-5 text-cyan-400 shrink-0" />
           <h3 className="text-xs sm:text-sm font-extrabold text-foreground leading-tight">
-            Simulateur 3D WebGL • Angles Visuels (φ, θ) & Formes 3D
+            Simulateur 3D WebGL • Formes 3D & Secteurs d'Angles (φ, θ)
           </h3>
         </div>
 
@@ -533,14 +628,23 @@ export default function ThreeDCoordinateCanvas() {
 
         {/* Visual Angle Badges */}
         <div className="absolute top-2 left-2 sm:top-3 sm:left-3 bg-slate-900/90 backdrop-blur-md px-2.5 py-1.5 rounded-xl border border-white/10 text-[10px] sm:text-[11px] font-semibold text-slate-300 flex flex-wrap items-center gap-2">
-          <div className="flex items-center gap-1 text-emerald-400 font-bold">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 inline-block" />
-            <span>Angle Azimutal φ = {phi}°</span>
-          </div>
-          {coordType === "spherique" && (
-            <div className="flex items-center gap-1 text-amber-400 font-bold">
-              <span className="w-2 h-2 rounded-full bg-amber-400 inline-block" />
-              <span>Angle Zénithal θ = {theta}°</span>
+          {coordType !== "cartesien" ? (
+            <>
+              <div className="flex items-center gap-1 text-emerald-400 font-bold">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 inline-block" />
+                <span>Secteur Azimutal φ = {phi}°</span>
+              </div>
+              {coordType === "spherique" && (
+                <div className="flex items-center gap-1 text-amber-400 font-bold">
+                  <span className="w-2 h-2 rounded-full bg-amber-400 inline-block" />
+                  <span>Secteur Zénithal θ = {theta}°</span>
+                </div>
+              )}
+            </>
+          ) : (
+            <div className="flex items-center gap-1 text-purple-400 font-bold">
+              <span className="w-2 h-2 rounded-full bg-purple-400 inline-block" />
+              <span>Cube Cartésien (x={xVal.toFixed(1)}, y={yVal.toFixed(1)}, z={cartZVal.toFixed(1)})</span>
             </div>
           )}
         </div>
@@ -585,70 +689,125 @@ export default function ThreeDCoordinateCanvas() {
         </div>
       </div>
 
-      {/* Sliders Controls Panel - Slender H-1.5 Tracks */}
+      {/* Sliders Controls Panel */}
       <div className="mt-3 grid grid-cols-1 sm:grid-cols-3 gap-2.5 bg-muted/30 p-2.5 sm:p-4 rounded-xl sm:rounded-2xl border border-border/40 w-full overflow-hidden">
-        <div className="w-full">
-          <label className="text-[11px] sm:text-xs font-bold text-foreground flex items-center justify-between mb-1.5">
-            <span>Rayon / Dimension (r / ρ):</span>
-            <span className="text-cyan-400 font-extrabold">{r.toFixed(1)} u</span>
-          </label>
-          <input
-            type="range"
-            min="1.0"
-            max="4.5"
-            step="0.1"
-            value={r}
-            onChange={(e) => setR(Number(e.target.value))}
-            className="w-full accent-cyan-400 cursor-pointer h-1.5 bg-slate-800 rounded-lg"
-          />
-        </div>
+        
+        {coordType === "cartesien" ? (
+          <>
+            <div className="w-full">
+              <label className="text-[11px] sm:text-xs font-bold text-foreground flex items-center justify-between mb-1.5">
+                <span>Dimension X (x):</span>
+                <span className="text-red-400 font-extrabold">{xVal.toFixed(1)} u</span>
+              </label>
+              <input
+                type="range"
+                min="-4.0"
+                max="4.0"
+                step="0.2"
+                value={xVal}
+                onChange={(e) => setXVal(Number(e.target.value))}
+                className="w-full accent-red-400 cursor-pointer h-1.5 bg-slate-800 rounded-lg"
+              />
+            </div>
 
-        <div className="w-full">
-          <label className="text-[11px] sm:text-xs font-bold text-foreground flex items-center justify-between mb-1.5">
-            <span>Angle Azimutal (φ):</span>
-            <span className="text-emerald-400 font-extrabold">{phi}°</span>
-          </label>
-          <input
-            type="range"
-            min="0"
-            max="360"
-            value={phi}
-            onChange={(e) => setPhi(Number(e.target.value))}
-            className="w-full accent-emerald-400 cursor-pointer h-1.5 bg-slate-800 rounded-lg"
-          />
-        </div>
+            <div className="w-full">
+              <label className="text-[11px] sm:text-xs font-bold text-foreground flex items-center justify-between mb-1.5">
+                <span>Dimension Y / Hauteur (y):</span>
+                <span className="text-emerald-400 font-extrabold">{yVal.toFixed(1)} u</span>
+              </label>
+              <input
+                type="range"
+                min="-4.0"
+                max="4.0"
+                step="0.2"
+                value={yVal}
+                onChange={(e) => setYVal(Number(e.target.value))}
+                className="w-full accent-emerald-400 cursor-pointer h-1.5 bg-slate-800 rounded-lg"
+              />
+            </div>
 
-        {coordType === "spherique" ? (
-          <div className="w-full">
-            <label className="text-[11px] sm:text-xs font-bold text-foreground flex items-center justify-between mb-1.5">
-              <span>Angle Zénithal (θ):</span>
-              <span className="text-amber-400 font-extrabold">{theta}°</span>
-            </label>
-            <input
-              type="range"
-              min="0"
-              max="180"
-              value={theta}
-              onChange={(e) => setTheta(Number(e.target.value))}
-              className="w-full accent-amber-400 cursor-pointer h-1.5 bg-slate-800 rounded-lg"
-            />
-          </div>
+            <div className="w-full">
+              <label className="text-[11px] sm:text-xs font-bold text-foreground flex items-center justify-between mb-1.5">
+                <span>Dimension Z (z):</span>
+                <span className="text-cyan-400 font-extrabold">{cartZVal.toFixed(1)} u</span>
+              </label>
+              <input
+                type="range"
+                min="-4.0"
+                max="4.0"
+                step="0.2"
+                value={cartZVal}
+                onChange={(e) => setCartZVal(Number(e.target.value))}
+                className="w-full accent-cyan-400 cursor-pointer h-1.5 bg-slate-800 rounded-lg"
+              />
+            </div>
+          </>
         ) : (
-          <div className="w-full">
-            <label className="text-[11px] sm:text-xs font-bold text-foreground flex items-center justify-between mb-1.5">
-              <span>Hauteur (z):</span>
-              <span className="text-purple-400 font-extrabold">{zVal.toFixed(1)} u</span>
-            </label>
-            <input
-              type="range"
-              min="0.5"
-              max="4.0"
-              step="0.1"
-              value={zVal}
-              onChange={(e) => setZVal(Number(e.target.value))}
-              className="w-full accent-purple-400 cursor-pointer h-1.5 bg-slate-800 rounded-lg"
-            />
-          </div>
+          <>
+            <div className="w-full">
+              <label className="text-[11px] sm:text-xs font-bold text-foreground flex items-center justify-between mb-1.5">
+                <span>Rayon / Distance (r / ρ):</span>
+                <span className="text-cyan-400 font-extrabold">{r.toFixed(1)} u</span>
+              </label>
+              <input
+                type="range"
+                min="1.0"
+                max="4.5"
+                step="0.1"
+                value={r}
+                onChange={(e) => setR(Number(e.target.value))}
+                className="w-full accent-cyan-400 cursor-pointer h-1.5 bg-slate-800 rounded-lg"
+              />
+            </div>
+
+            <div className="w-full">
+              <label className="text-[11px] sm:text-xs font-bold text-foreground flex items-center justify-between mb-1.5">
+                <span>Angle Azimutal (φ):</span>
+                <span className="text-emerald-400 font-extrabold">{phi}°</span>
+              </label>
+              <input
+                type="range"
+                min="0"
+                max="360"
+                value={phi}
+                onChange={(e) => setPhi(Number(e.target.value))}
+                className="w-full accent-emerald-400 cursor-pointer h-1.5 bg-slate-800 rounded-lg"
+              />
+            </div>
+
+            {coordType === "spherique" ? (
+              <div className="w-full">
+                <label className="text-[11px] sm:text-xs font-bold text-foreground flex items-center justify-between mb-1.5">
+                  <span>Angle Zénithal (θ):</span>
+                  <span className="text-amber-400 font-extrabold">{theta}°</span>
+                </label>
+                <input
+                  type="range"
+                  min="0"
+                  max="180"
+                  value={theta}
+                  onChange={(e) => setTheta(Number(e.target.value))}
+                  className="w-full accent-amber-400 cursor-pointer h-1.5 bg-slate-800 rounded-lg"
+                />
+              </div>
+            ) : (
+              <div className="w-full">
+                <label className="text-[11px] sm:text-xs font-bold text-foreground flex items-center justify-between mb-1.5">
+                  <span>Hauteur (z) [Négatif & Positif]:</span>
+                  <span className={`font-extrabold ${zVal < 0 ? "text-rose-400" : "text-purple-400"}`}>{zVal.toFixed(1)} u</span>
+                </label>
+                <input
+                  type="range"
+                  min="-3.0"
+                  max="4.0"
+                  step="0.2"
+                  value={zVal}
+                  onChange={(e) => setZVal(Number(e.target.value))}
+                  className="w-full accent-purple-400 cursor-pointer h-1.5 bg-slate-800 rounded-lg"
+                />
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>
