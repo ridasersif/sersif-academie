@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
 import { AudioProvider } from "@/context/AudioContext";
 import "./globals.css";
+import "katex/dist/katex.min.css";
 
 // Using Inter font for a very clean, Apple-like / Vercel-like aesthetic
 const inter = Inter({ subsets: ["latin"] });
