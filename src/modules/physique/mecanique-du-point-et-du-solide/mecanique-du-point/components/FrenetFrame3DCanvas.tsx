@@ -26,36 +26,72 @@ export default function FrenetFrame3DCanvas() {
   const timeRef = useRef<number>(0);
 
   useEffect(() => {
-    if (!mountRef.current) return;
     const container = mountRef.current;
-    let width = container.clientWidth || 600;
-    let height = container.clientHeight || 360;
+    if (!container) return;
+
+    // Clear any previous canvas
+    container.innerHTML = "";
 
     // 1. Scene, Camera, Renderer
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0x030712);
 
-    const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
-    camera.position.set(7.5, 6.5, 9.5);
-    camera.lookAt(0, 0, 0);
+    const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 1000);
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setSize(width, height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     container.appendChild(renderer.domElement);
 
+    // Dynamic Sizing & Camera Adjustment for Mobile/Desktop Responsive Centering
+    const updateSize = () => {
+      if (!container) return;
+      const width = container.clientWidth || container.getBoundingClientRect().width || 600;
+      const height = container.clientHeight || container.getBoundingClientRect().height || 360;
+      
+      const aspect = width / height;
+      camera.aspect = aspect;
+
+      // Adjust Field of View dynamically for mobile screens to keep scene perfectly centered!
+      if (width < 640) {
+        camera.fov = 55;
+      } else {
+        camera.fov = 44;
+      }
+
+      camera.updateProjectionMatrix();
+      renderer.setSize(width, height, false);
+      renderer.render(scene, camera);
+    };
+
     // 2. Lights
-    scene.add(new THREE.AmbientLight(0xffffff, 0.9));
-    const dLight = new THREE.DirectionalLight(0xffffff, 1.2);
+    scene.add(new THREE.AmbientLight(0xffffff, 0.95));
+    const dLight = new THREE.DirectionalLight(0xffffff, 1.25);
     dLight.position.set(5, 10, 7);
     scene.add(dLight);
 
-    // 3. Grid
+    // 3. Grid centered at Origin (y = 0 for perfect balance)
     const grid = new THREE.GridHelper(12, 24, 0x334155, 0x1e293b);
-    grid.position.y = -1.2;
+    grid.position.y = 0;
     scene.add(grid);
 
-    // 4. 3D Curvilinear Trajectory Equations (3D Wavy Curve with varying curvature)
+    // --- REPERE FIXE GALILEEN R0(O, x0, y0, z0) AT ORIGIN O(0,0,0) ---
+    const galileanGroup = new THREE.Group();
+    scene.add(galileanGroup);
+
+    // Origin O Marker
+    const oGeo = new THREE.SphereGeometry(0.12, 16, 16);
+    const oMat = new THREE.MeshStandardMaterial({ color: 0x3b82f6, emissive: 0x1d4ed8, emissiveIntensity: 0.8 });
+    const oMesh = new THREE.Mesh(oGeo, oMat);
+    oMesh.position.set(0, 0, 0);
+    galileanGroup.add(oMesh);
+
+    // Axes x0, y0, z0 of R0
+    const x0Arrow = new THREE.ArrowHelper(new THREE.Vector3(1, 0, 0), new THREE.Vector3(0, 0, 0), 3.2, 0x3b82f6, 0.25, 0.12);
+    const y0Arrow = new THREE.ArrowHelper(new THREE.Vector3(0, 1, 0), new THREE.Vector3(0, 0, 0), 3.2, 0x3b82f6, 0.25, 0.12);
+    const z0Arrow = new THREE.ArrowHelper(new THREE.Vector3(0, 0, 1), new THREE.Vector3(0, 0, 0), 3.2, 0x3b82f6, 0.25, 0.12);
+    galileanGroup.add(x0Arrow, y0Arrow, z0Arrow);
+
+    // 4. 3D Fixed Curvilinear Trajectory C in R0
     const getPosAt = (u: number): THREE.Vector3 => {
       const x = 3.2 * Math.cos(u);
       const y = 0.85 * Math.sin(2 * u);
@@ -77,10 +113,10 @@ export default function FrenetFrame3DCanvas() {
       return v2.sub(v1).divideScalar(2 * du);
     };
 
-    // Draw full 3D Curvilinear Trajectory Path
+    // Draw full 3D Curvilinear Trajectory Path C
     const trajGroup = new THREE.Group();
     scene.add(trajGroup);
-    const numTrajPts = 200;
+    const numTrajPts = 240;
     const trajPts: THREE.Vector3[] = [];
     for (let i = 0; i <= numTrajPts; i++) {
       const u = (i / numTrajPts) * Math.PI * 2;
@@ -89,8 +125,7 @@ export default function FrenetFrame3DCanvas() {
     const trajGeo = new THREE.BufferGeometry().setFromPoints(trajPts);
     const trajMat = new THREE.LineBasicMaterial({
       color: 0x38bdf8,
-      transparent: true,
-      opacity: 0.65,
+      linewidth: 2,
     });
     const trajLine = new THREE.LineLoop(trajGeo, trajMat);
     trajGroup.add(trajLine);
@@ -123,7 +158,7 @@ export default function FrenetFrame3DCanvas() {
     const particleMesh = new THREE.Mesh(particleGeo, particleMat);
     scene.add(particleMesh);
 
-    // Frenet Frame Vector Helpers (tau: Cyan, n: Emerald, b: Rose)
+    // Frenet Frame Vector Helpers (tau: Cyan, n: Emerald, b: Rose) attached to M(t)
     const tauArrow = new THREE.ArrowHelper(new THREE.Vector3(1, 0, 0), new THREE.Vector3(0, 0, 0), 1.6, 0x06b6d4, 0.22, 0.12);
     const nArrow = new THREE.ArrowHelper(new THREE.Vector3(0, 1, 0), new THREE.Vector3(0, 0, 0), 1.6, 0x10b981, 0.22, 0.12);
     const bArrow = new THREE.ArrowHelper(new THREE.Vector3(0, 0, 1), new THREE.Vector3(0, 0, 0), 1.6, 0xf43f5e, 0.22, 0.12);
@@ -141,18 +176,18 @@ export default function FrenetFrame3DCanvas() {
     const radiusLine = new THREE.Line(radiusLineGeo, radiusLineMat);
     scene.add(radiusLine);
 
-    // Orbit Controls
+    // Perfectly Centered Orbit Camera Controls
     let isDragging = false;
     let prevMouse = { x: 0, y: 0 };
-    let cameraAngleX = 0.7;
-    let cameraAngleY = 0.4;
-    const cameraRadius = 11.5;
+    let cameraAngleX = 0.6;
+    let cameraAngleY = 0.32; // Balanced angle so scene is centered vertically!
+    const cameraRadius = 9.2; // Compact distance so scene fills the box perfectly
 
     const updateCameraPosition = () => {
       camera.position.x = cameraRadius * Math.sin(cameraAngleX) * Math.cos(cameraAngleY);
       camera.position.y = cameraRadius * Math.sin(cameraAngleY);
       camera.position.z = cameraRadius * Math.cos(cameraAngleX) * Math.cos(cameraAngleY);
-      camera.lookAt(0, 0, 0);
+      camera.lookAt(0, 0.2, 0); // Targeted dead center!
     };
     updateCameraPosition();
 
@@ -174,25 +209,21 @@ export default function FrenetFrame3DCanvas() {
 
     const onMouseUp = () => { isDragging = false; };
 
-    const handleResize = () => {
-      if (!container) return;
-      width = container.clientWidth || 600;
-      height = container.clientHeight || 360;
-      camera.aspect = width / height;
-      camera.updateProjectionMatrix();
-      renderer.setSize(width, height);
-    };
-
     const domElement = renderer.domElement;
     domElement.addEventListener("mousedown", onMouseDown);
     window.addEventListener("mousemove", onMouseMove);
     window.addEventListener("mouseup", onMouseUp);
-    window.addEventListener("resize", handleResize);
 
-    // Animation & Physics Loop along 3D Curvilinear Trajectory
+    // ResizeObserver for INSTANT responsive updates
+    const resizeObserver = new ResizeObserver(() => {
+      updateSize();
+    });
+    resizeObserver.observe(container);
+
+    // Physics Animation Loop
     let lastTime = performance.now();
 
-    const animate = (now: number) => {
+    const renderFrame = (now: number) => {
       const delta = (now - lastTime) / 1000;
       lastTime = now;
 
@@ -202,7 +233,7 @@ export default function FrenetFrame3DCanvas() {
 
       const u = timeRef.current;
 
-      // 1. Position, Velocity, Acceleration in 3D
+      // Position, Velocity, Acceleration in R0
       const pos = getPosAt(u);
       const vel = getVelAt(u);
       const acc = getAccAt(u);
@@ -232,7 +263,7 @@ export default function FrenetFrame3DCanvas() {
       // Center of Curvature C = pos + Rc * n
       const centerC = pos.clone().add(n.clone().multiplyScalar(Rc_val));
 
-      // Particle Position
+      // Update Mesh positions
       particleMesh.position.copy(pos);
       centerMesh.position.copy(centerC);
 
@@ -289,7 +320,7 @@ export default function FrenetFrame3DCanvas() {
       oscLine.computeLineDistances();
       osculatingCircleGroup.add(oscLine);
 
-      // Update stats UI state
+      // Update stats state
       setStats({
         speed: vNorm,
         rc: Rc_val,
@@ -299,33 +330,35 @@ export default function FrenetFrame3DCanvas() {
       });
 
       renderer.render(scene, camera);
-      animFrameRef.current = requestAnimationFrame(animate);
+      animFrameRef.current = requestAnimationFrame(renderFrame);
     };
 
-    animFrameRef.current = requestAnimationFrame(animate);
+    // Render immediate first frame synchronously!
+    updateSize();
+    renderFrame(performance.now());
 
     return () => {
       if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
+      resizeObserver.disconnect();
       domElement.removeEventListener("mousedown", onMouseDown);
       window.removeEventListener("mousemove", onMouseMove);
       window.removeEventListener("mouseup", onMouseUp);
-      window.removeEventListener("resize", handleResize);
       if (container.contains(domElement)) container.removeChild(domElement);
     };
   }, [isPlaying, speedMultiplier]);
 
   return (
-    <div className="p-3 sm:p-6 rounded-2xl sm:rounded-3xl bg-slate-950 border border-slate-800 text-white shadow-xl">
+    <div className="p-3 sm:p-5 rounded-2xl sm:rounded-3xl bg-slate-950 border border-slate-800 text-white shadow-xl max-w-full overflow-hidden">
       
       {/* Title Bar & Buttons */}
-      <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+      <div className="flex flex-wrap items-center justify-between gap-2.5 mb-3">
         <div>
           <h3 className="text-xs sm:text-base font-bold text-cyan-400 flex items-center gap-2">
             <Compass className="w-4 h-4 text-cyan-400 flex-shrink-0" />
-            <span>Simulateur 3D Interactif : Repère de Frenet <LatexMath math="(\vec{\tau}, \vec{n}, \vec{b})" /> sur Trajectoire Curviligne 3D</span>
+            <span>Repère Fixe Galiléen <LatexMath math="\mathcal{R}_0(O, x_0, y_0, z_0)" /> & Repère Mobile de Frenet <LatexMath math="(\vec{\tau}, \vec{n}, \vec{b})" /></span>
           </h3>
-          <p className="text-[11px] sm:text-xs text-slate-400">
-            Observez le déplacement sur la trajectoire 3D $s(t)$, le cercle osculateur de centre $C$, le rayon de courbure $R_c$, et l'accélération <LatexMath math="\vec{\gamma} = a_T\vec{\tau} + a_N\vec{n}" />.
+          <p className="text-[10px] sm:text-xs text-slate-400">
+            Observez le repère fixe galiléen <LatexMath math="\mathcal{R}_0" />, la trajectoire 3D <LatexMath math="s(t)" />, le repère mobile de Frenet attaché à <LatexMath math="M" />, et le cercle osculateur.
           </p>
         </div>
 
@@ -358,29 +391,32 @@ export default function FrenetFrame3DCanvas() {
         </div>
       </div>
 
-      {/* 3D WebGL Canvas */}
-      <div className="relative rounded-2xl overflow-hidden border border-slate-800 bg-slate-950">
-        <div ref={mountRef} className="w-full h-[320px] sm:h-[380px] cursor-grab active:cursor-grabbing" />
+      {/* 3D WebGL Canvas (Centered & Responsive for Mobile/Desktop) */}
+      <div className="relative rounded-2xl overflow-hidden border border-slate-800 bg-slate-950 min-h-[280px] sm:min-h-[360px] w-full flex items-center justify-center">
+        <div ref={mountRef} className="w-full h-[280px] sm:h-[360px] cursor-grab active:cursor-grabbing" />
 
-        {/* Floating Vector Legend Overlay (Togglable via Eye Button!) */}
+        {/* Floating Vector Legend Overlay */}
         {showLegend && (
-          <div className="absolute top-2.5 left-2.5 sm:top-3 sm:left-3 bg-slate-900/90 backdrop-blur-md p-2.5 sm:p-3 rounded-xl border border-slate-800 text-[10px] sm:text-[11px] font-mono space-y-1 shadow-lg pointer-events-none z-10 max-w-[260px] sm:max-w-none">
-            <div className="text-[11px] font-sans font-bold text-slate-300 border-b border-slate-800 pb-1 mb-1">
-              Repère & Composantes Intrinsèques :
+          <div className="absolute top-2 left-2 sm:top-3 sm:left-3 bg-slate-900/90 backdrop-blur-md p-2 sm:p-3 rounded-xl border border-slate-800 text-[9.5px] sm:text-[11px] font-mono space-y-1 shadow-lg pointer-events-none z-10 max-w-[220px] sm:max-w-none">
+            <div className="text-[10px] sm:text-[11px] font-sans font-bold text-blue-400 border-b border-slate-800 pb-0.5 mb-1">
+              • Repère Fixe Galiléen R0(O, x0, y0, z0)
             </div>
-            <div className="flex items-center gap-2 text-cyan-400 font-bold">
-              <span className="w-2.5 h-1 rounded-full bg-cyan-400 inline-block" />
+            <div className="text-[10px] sm:text-[11px] font-sans font-bold text-slate-300 pb-0.5">
+              • Repère Mobile de Frenet (M) :
+            </div>
+            <div className="flex items-center gap-1.5 text-cyan-400 font-bold">
+              <span className="w-2 h-1 rounded-full bg-cyan-400 inline-block" />
               <span>Vecteur Tangent τ (Cyan)</span>
             </div>
-            <div className="flex items-center gap-2 text-emerald-400 font-bold">
-              <span className="w-2.5 h-1 rounded-full bg-emerald-400 inline-block" />
+            <div className="flex items-center gap-1.5 text-emerald-400 font-bold">
+              <span className="w-2 h-1 rounded-full bg-emerald-400 inline-block" />
               <span>Vecteur Normal n (Émeraude → Centre C)</span>
             </div>
-            <div className="flex items-center gap-2 text-rose-400 font-bold">
-              <span className="w-2.5 h-1 rounded-full bg-rose-400 inline-block" />
+            <div className="flex items-center gap-1.5 text-rose-400 font-bold">
+              <span className="w-2 h-1 rounded-full bg-rose-400 inline-block" />
               <span>Vecteur Binormal b (Rose)</span>
             </div>
-            <div className="pt-1 border-t border-slate-800/80 space-y-0.5 text-[9.5px] sm:text-[10px]">
+            <div className="pt-1 border-t border-slate-800/80 space-y-0.5 text-[9px] sm:text-[10px]">
               <div className="text-amber-400 font-bold">Rayon de courbure Rc = {stats.rc.toFixed(2)} m</div>
               <div className="text-purple-400 font-bold">a_N = v²/Rc = {stats.aN.toFixed(2)} m/s²</div>
               <div className="text-yellow-400 font-bold">a_T = dv/dt = {stats.aT.toFixed(2)} m/s²</div>
@@ -396,7 +432,7 @@ export default function FrenetFrame3DCanvas() {
       </div>
 
       {/* Sliders Controls Panel */}
-      <div className="mt-3 sm:mt-4 flex flex-wrap items-center justify-between gap-3 p-3 rounded-xl bg-slate-900 border border-slate-800 text-xs font-mono">
+      <div className="mt-2.5 sm:mt-3 flex flex-wrap items-center justify-between gap-2.5 p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-xs font-mono">
         <div className="flex items-center gap-2">
           <span className="text-slate-300">Vitesse de simulation:</span>
           <input
@@ -406,13 +442,13 @@ export default function FrenetFrame3DCanvas() {
             step="0.1"
             value={speedMultiplier}
             onChange={(e) => setSpeedMultiplier(parseFloat(e.target.value))}
-            className="w-24 sm:w-36 accent-cyan-500 cursor-pointer"
+            className="w-20 sm:w-36 accent-cyan-500 cursor-pointer"
           />
           <span className="text-cyan-400 font-bold">{speedMultiplier.toFixed(1)}x</span>
         </div>
 
-        <div className="text-slate-400 text-[11px]">
-          Trajectoire Curviligne 3D : <span className="text-amber-400 font-bold">Rayon $R_c(s)$ variable en temps réel</span>
+        <div className="text-slate-400 text-[10.5px] sm:text-[11px]">
+          Repère Galiléen Fixe <LatexMath math="\mathcal{R}_0" /> + <span className="text-amber-400 font-bold">Frenet mobile en <LatexMath math="M(t)" /></span>
         </div>
       </div>
 

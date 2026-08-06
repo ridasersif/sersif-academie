@@ -15,33 +15,51 @@ export default function RelativeMotion3DCanvas() {
   const animFrameRef = useRef<number | null>(null);
 
   useEffect(() => {
-    if (!mountRef.current) return;
     const container = mountRef.current;
-    let width = container.clientWidth || 600;
-    let height = container.clientHeight || 360;
+    if (!container) return;
+
+    // Clear previous canvas
+    container.innerHTML = "";
 
     // 1. Scene, Camera, Renderer
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0x030712);
 
-    const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
-    camera.position.set(7, 7, 10);
-    camera.lookAt(0, 0, 0);
+    const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 1000);
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setSize(width, height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     container.appendChild(renderer.domElement);
 
+    const updateSize = () => {
+      if (!container) return;
+      const width = container.clientWidth || container.getBoundingClientRect().width || 600;
+      const height = container.clientHeight || container.getBoundingClientRect().height || 360;
+      
+      const aspect = width / height;
+      camera.aspect = aspect;
+
+      // Adjust Field of View dynamically for mobile screens to keep scene perfectly centered!
+      if (width < 640) {
+        camera.fov = 55;
+      } else {
+        camera.fov = 44;
+      }
+
+      camera.updateProjectionMatrix();
+      renderer.setSize(width, height, false);
+      renderer.render(scene, camera);
+    };
+
     // Lights
-    scene.add(new THREE.AmbientLight(0xffffff, 0.8));
-    const dirLight = new THREE.DirectionalLight(0xffffff, 1.2);
+    scene.add(new THREE.AmbientLight(0xffffff, 0.95));
+    const dirLight = new THREE.DirectionalLight(0xffffff, 1.25);
     dirLight.position.set(5, 10, 7);
     scene.add(dirLight);
 
-    // Fixed Frame R(O, i, j, k) - Dark Grid & Axes
+    // Fixed Frame R(O, i, j, k) - Dark Grid & Axes (Centered at Origin y = 0)
     const gridR = new THREE.GridHelper(10, 20, 0x334155, 0x1e293b);
-    gridR.position.y = -0.01;
+    gridR.position.y = 0;
     scene.add(gridR);
 
     const fixedAxes = new THREE.Group();
@@ -78,18 +96,18 @@ export default function RelativeMotion3DCanvas() {
     const acArrow = new THREE.ArrowHelper(new THREE.Vector3(1, 0, 0), new THREE.Vector3(0, 0, 0), 1, 0xf43f5e, 0.3, 0.18);
     scene.add(vrArrow, veArrow, vaArrow, acArrow);
 
-    // Orbit Controls & Mobile Resize
+    // Perfectly Centered Orbit Camera Controls
     let isDragging = false;
     let prevMouse = { x: 0, y: 0 };
     let cameraAngleX = 0.6;
-    let cameraAngleY = 0.5;
-    const cameraRadius = 12;
+    let cameraAngleY = 0.32; // Balanced angle for dead-center view!
+    const cameraRadius = 10.0;
 
     const updateCameraPosition = () => {
       camera.position.x = cameraRadius * Math.sin(cameraAngleX) * Math.cos(cameraAngleY);
       camera.position.y = cameraRadius * Math.sin(cameraAngleY);
       camera.position.z = cameraRadius * Math.cos(cameraAngleX) * Math.cos(cameraAngleY);
-      camera.lookAt(0, 0.5, 0);
+      camera.lookAt(0, 0.2, 0); // Targeted dead center!
     };
 
     updateCameraPosition();
@@ -112,20 +130,16 @@ export default function RelativeMotion3DCanvas() {
 
     const onMouseUp = () => { isDragging = false; };
 
-    const handleResize = () => {
-      if (!container) return;
-      width = container.clientWidth || 600;
-      height = container.clientHeight || 360;
-      camera.aspect = width / height;
-      camera.updateProjectionMatrix();
-      renderer.setSize(width, height);
-    };
-
     const domElement = renderer.domElement;
     domElement.addEventListener("mousedown", onMouseDown);
     window.addEventListener("mousemove", onMouseMove);
     window.addEventListener("mouseup", onMouseUp);
-    window.addEventListener("resize", handleResize);
+
+    // ResizeObserver for instant responsive sizing
+    const resizeObserver = new ResizeObserver(() => {
+      updateSize();
+    });
+    resizeObserver.observe(container);
 
     // Animation Loop
     let time = 0;
@@ -143,13 +157,13 @@ export default function RelativeMotion3DCanvas() {
       const thetaR1 = omega * time;
       mobileFrameGroup.rotation.y = thetaR1;
 
-      // Position of M in R1 (sliding outward on X1 axis)
+      // Position of M in R1
       const rM = ((vRel * time) % 3.2) + 0.5;
       const posLocal = new THREE.Vector3(rM, 0, 0);
       const posWorld = posLocal.clone().applyAxisAngle(new THREE.Vector3(0, 1, 0), thetaR1);
       pointMMesh.position.copy(posWorld);
 
-      // Relative Velocity Vr (in R1 direction, along X1 axis)
+      // Relative Velocity Vr
       const vrLocal = new THREE.Vector3(vRel, 0, 0);
       const vrWorld = vrLocal.clone().applyAxisAngle(new THREE.Vector3(0, 1, 0), thetaR1);
 
@@ -192,29 +206,30 @@ export default function RelativeMotion3DCanvas() {
       animFrameRef.current = requestAnimationFrame(animate);
     };
 
-    animFrameRef.current = requestAnimationFrame(animate);
+    updateSize();
+    animate(performance.now());
 
     return () => {
       if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
+      resizeObserver.disconnect();
       domElement.removeEventListener("mousedown", onMouseDown);
       window.removeEventListener("mousemove", onMouseMove);
       window.removeEventListener("mouseup", onMouseUp);
-      window.removeEventListener("resize", handleResize);
       if (container.contains(domElement)) container.removeChild(domElement);
     };
   }, [omega, vRel, isPlaying]);
 
   return (
-    <div className="p-3 sm:p-6 rounded-2xl sm:rounded-3xl bg-slate-950 border border-slate-800 text-white shadow-xl">
+    <div className="p-3 sm:p-5 rounded-2xl sm:rounded-3xl bg-slate-950 border border-slate-800 text-white shadow-xl max-w-full overflow-hidden">
       
       {/* Title & Top Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+      <div className="flex flex-wrap items-center justify-between gap-2.5 mb-3">
         <div>
           <h3 className="text-xs sm:text-base font-bold text-amber-400 flex items-center gap-2">
             <Sparkles className="w-4 h-4 text-amber-400 flex-shrink-0" />
             <span>Simulateur 3D Interactif : Repère Fixe <LatexMath math="\mathcal{R}" /> & Mobile Tournant <LatexMath math="\mathcal{R}_1(\vec{\Omega})" /></span>
           </h3>
-          <p className="text-[11px] sm:text-xs text-slate-400 flex flex-wrap items-center gap-1">
+          <p className="text-[10px] sm:text-xs text-slate-400 flex flex-wrap items-center gap-1">
             <span>Visualisation 3D du repère mobile tournant à la vitesse</span> <LatexMath math="\vec{\Omega}" /><span>, et de la composition</span> <LatexMath math="\vec{V}_a = \vec{V}_r + \vec{V}_e" /><span>.</span>
           </p>
         </div>
@@ -239,30 +254,30 @@ export default function RelativeMotion3DCanvas() {
         </div>
       </div>
 
-      {/* 3D WebGL Canvas */}
-      <div className="relative rounded-2xl overflow-hidden border border-slate-800 bg-slate-950">
-        <div ref={mountRef} className="w-full h-[320px] sm:h-[380px] cursor-grab active:cursor-grabbing" />
+      {/* 3D WebGL Canvas (Centered & Responsive for Mobile/Desktop) */}
+      <div className="relative rounded-2xl overflow-hidden border border-slate-800 bg-slate-950 min-h-[280px] sm:min-h-[360px] w-full flex items-center justify-center">
+        <div ref={mountRef} className="w-full h-[280px] sm:h-[360px] cursor-grab active:cursor-grabbing" />
 
-        {/* Floating Overlay Legend (Togglable via Eye Button!) */}
+        {/* Floating Overlay Legend */}
         {showLegend && (
-          <div className="absolute top-2.5 left-2.5 sm:top-3 sm:left-3 bg-slate-900/90 backdrop-blur-md p-2.5 sm:p-3 rounded-xl border border-slate-800 text-[10px] sm:text-[11px] font-mono space-y-1 shadow-lg pointer-events-none z-10 max-w-[260px] sm:max-w-none">
-            <div className="text-[11px] font-sans font-bold text-amber-400 border-b border-slate-800 pb-1 mb-1">
+          <div className="absolute top-2 left-2 sm:top-3 sm:left-3 bg-slate-900/90 backdrop-blur-md p-2 sm:p-3 rounded-xl border border-slate-800 text-[9.5px] sm:text-[11px] font-mono space-y-1 shadow-lg pointer-events-none z-10 max-w-[220px] sm:max-w-none">
+            <div className="text-[10px] sm:text-[11px] font-sans font-bold text-amber-400 border-b border-slate-800 pb-0.5 mb-1">
               Composition des Vitesses & Coriolis :
             </div>
-            <div className="flex items-center gap-2 text-emerald-400 font-bold">
-              <span className="w-2.5 h-1 rounded-full bg-emerald-400 inline-block" />
+            <div className="flex items-center gap-1.5 text-emerald-400 font-bold">
+              <span className="w-2 h-1 rounded-full bg-emerald-400 inline-block" />
               <span>Vitesse Relative Vr (Vert)</span>
             </div>
-            <div className="flex items-center gap-2 text-amber-400 font-bold">
-              <span className="w-2.5 h-1 rounded-full bg-amber-400 inline-block" />
+            <div className="flex items-center gap-1.5 text-amber-400 font-bold">
+              <span className="w-2 h-1 rounded-full bg-amber-400 inline-block" />
               <span>Vitesse d'Entraînement Ve = Ω ∧ O1M (Ambre)</span>
             </div>
-            <div className="flex items-center gap-2 text-cyan-400 font-bold">
-              <span className="w-2.5 h-1 rounded-full bg-cyan-400 inline-block" />
+            <div className="flex items-center gap-1.5 text-cyan-400 font-bold">
+              <span className="w-2 h-1 rounded-full bg-cyan-400 inline-block" />
               <span>Vitesse Absolue Va = Vr + Ve (Cyan)</span>
             </div>
-            <div className="flex items-center gap-2 text-rose-400 font-bold pt-1 border-t border-slate-800/80">
-              <span className="w-2.5 h-1 rounded-full bg-rose-400 inline-block" />
+            <div className="flex items-center gap-1.5 text-rose-400 font-bold pt-1 border-t border-slate-800/80">
+              <span className="w-2 h-1 rounded-full bg-rose-400 inline-block" />
               <span>Accélération de Coriolis γc = 2 Ω ∧ Vr (Rose)</span>
             </div>
           </div>
@@ -270,7 +285,7 @@ export default function RelativeMotion3DCanvas() {
       </div>
 
       {/* Sliders Controls Panel */}
-      <div className="mt-3 sm:mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3 p-3 rounded-xl bg-slate-900 border border-slate-800 text-xs font-mono">
+      <div className="mt-2.5 sm:mt-3 grid grid-cols-1 sm:grid-cols-2 gap-2.5 p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-xs font-mono">
         
         <div className="flex flex-col gap-1">
           <div className="flex justify-between text-slate-300">
