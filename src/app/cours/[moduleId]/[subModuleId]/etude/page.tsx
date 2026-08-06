@@ -16,6 +16,34 @@ import {
 } from "lucide-react";
 import { COURSES_DATA } from "@/data/courses";
 
+// Helper function to synchronously compute active chapter index before 1st render
+function getInitialChapterIndex(subModuleId: string, totalChapters: number): number {
+  if (typeof window === "undefined") return 0;
+  try {
+    // 1. URL search parameter ?chap=X (1-indexed)
+    const params = new URLSearchParams(window.location.search);
+    const chapParam = params.get("chap");
+    if (chapParam !== null) {
+      const parsed = parseInt(chapParam, 10) - 1;
+      if (!isNaN(parsed) && parsed >= 0 && parsed < totalChapters) {
+        return parsed;
+      }
+    }
+
+    // 2. localStorage persistence
+    const saved = localStorage.getItem(`sersif_active_chap_${subModuleId}`);
+    if (saved !== null) {
+      const parsed = parseInt(saved, 10);
+      if (!isNaN(parsed) && parsed >= 0 && parsed < totalChapters) {
+        return parsed;
+      }
+    }
+  } catch (err) {
+    console.error("Error reading saved chapter index:", err);
+  }
+  return 0;
+}
+
 export default function EtudePage({ params }: { params: Promise<{ moduleId: string; subModuleId: string }> }) {
   const resolvedParams = use(params);
   const { moduleId, subModuleId } = resolvedParams;
@@ -25,8 +53,37 @@ export default function EtudePage({ params }: { params: Promise<{ moduleId: stri
 
   const chapters = MECANIQUE_DU_POINT_CHAPTERS;
 
-  const [activeChapterIndex, setActiveChapterIndex] = useState(0);
+  // Lazy state initializer: synchronously reads URL & localStorage BEFORE first render!
+  const [activeChapterIndex, setActiveChapterIndex] = useState<number>(() => {
+    return getInitialChapterIndex(subModuleId, chapters.length);
+  });
+
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  // Sync state changes to URL search params and localStorage
+  const handleChapterChange = (newIndex: number) => {
+    if (newIndex < 0 || newIndex >= chapters.length) return;
+    setActiveChapterIndex(newIndex);
+    if (typeof window !== "undefined") {
+      try {
+        localStorage.setItem(`sersif_active_chap_${subModuleId}`, String(newIndex));
+        const url = new URL(window.location.href);
+        url.searchParams.set("chap", String(newIndex + 1));
+        window.history.replaceState({}, "", url.toString());
+      } catch (err) {
+        console.error("Error saving chapter state:", err);
+      }
+    }
+  };
+
+  // Double-check mount fallback in case window was not ready during SSR
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const initial = getInitialChapterIndex(subModuleId, chapters.length);
+    if (initial !== activeChapterIndex) {
+      setActiveChapterIndex(initial);
+    }
+  }, [subModuleId]);
 
   // Close mobile drawer when resizing to desktop
   useEffect(() => {
@@ -50,8 +107,8 @@ export default function EtudePage({ params }: { params: Promise<{ moduleId: stri
     );
   }
 
-  const currentChapter = chapters[activeChapterIndex];
-  const ChapterComponent = currentChapter.component;
+  const currentChapter = chapters[activeChapterIndex] || chapters[0];
+  const ChapterComponent = currentChapter?.component;
 
   return (
     <div className="min-h-screen flex flex-col font-sans selection:bg-primary/20 bg-background text-foreground relative w-full">
@@ -81,7 +138,7 @@ export default function EtudePage({ params }: { params: Promise<{ moduleId: stri
           <div className="flex items-center gap-1.5 text-[11px] sm:text-xs font-bold text-foreground min-w-0 truncate">
             <span className="text-primary truncate max-w-[90px] sm:max-w-none">{subModule.title}</span>
             <span className="text-muted-foreground font-normal shrink-0">/</span>
-            <span className="text-foreground truncate font-extrabold">Chap {currentChapter.num}: {currentChapter.title}</span>
+            <span className="text-foreground truncate font-extrabold">Chap {currentChapter?.num}: {currentChapter?.title}</span>
           </div>
         </div>
 
@@ -92,30 +149,33 @@ export default function EtudePage({ params }: { params: Promise<{ moduleId: stri
         </div>
       </header>
 
-      {/* Main Workspace Layout - Parent container without overflow-x-hidden to allow sticky sidebar */}
+      {/* Main Workspace Layout */}
       <div className="flex-1 flex w-full relative items-start">
         
         {/* Dark Backdrop Overlay on Mobile/Tablet when sidebar drawer is open */}
         {sidebarOpen && (
           <div 
             onClick={() => setSidebarOpen(false)}
-            className="fixed inset-0 bg-black/60 backdrop-blur-xs z-40 lg:hidden transition-opacity"
+            className="fixed inset-0 bg-black/60 backdrop-blur-xs z-40 lg:hidden animate-in fade-in duration-200"
           />
         )}
 
-        {/* --- LEFT SIDEBAR: STICKY DESKTOP (lg:sticky top-14) + SLIDE-OVER MOBILE DRAWER --- */}
+        {/* --- LEFT SIDEBAR (STICKY ON DESKTOP, DRAWER ON MOBILE) --- */}
         <aside 
-          className={`w-64 bg-card/98 backdrop-blur-md border-r border-border/60 flex flex-col justify-between shrink-0 h-[calc(100vh-56px)] transition-all duration-300 ${
-            sidebarOpen
-              ? "fixed top-14 left-0 z-50 shadow-2xl translate-x-0"
-              : "fixed top-14 left-0 z-50 shadow-2xl -translate-x-full lg:translate-x-0 lg:sticky lg:top-14 lg:z-30 lg:shadow-none"
-          }`}
+          className={`
+            fixed lg:sticky top-14 left-0 z-40
+            w-72 sm:w-80 h-[calc(100vh-56px)] 
+            bg-card border-r border-border/80 
+            flex flex-col shrink-0 shadow-xl lg:shadow-none
+            transition-transform duration-300 ease-in-out
+            ${sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
+          `}
         >
           {/* Sidebar Header */}
-          <div className="p-3.5 border-b border-border/40 flex items-center justify-between bg-muted/20 shrink-0">
+          <div className="p-3.5 border-b border-border/60 flex items-center justify-between bg-muted/20 shrink-0">
             <div className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-lg bg-primary/10 text-primary flex items-center justify-center font-bold">
-                <Layers className="w-3.5 h-3.5" />
+              <div className="p-1.5 rounded-lg bg-primary/10 text-primary">
+                <Layers className="w-4 h-4" />
               </div>
               <div>
                 <h3 className="text-xs font-extrabold text-foreground tracking-tight">Sommaire du Cours</h3>
@@ -141,7 +201,7 @@ export default function EtudePage({ params }: { params: Promise<{ moduleId: stri
                 <button
                   key={chap.id}
                   onClick={() => {
-                    setActiveChapterIndex(idx);
+                    handleChapterChange(idx);
                     setSidebarOpen(false); // Auto close mobile drawer upon selection
                   }}
                   className={`w-full text-left p-2.5 rounded-xl transition-all flex items-center gap-2.5 border ${
@@ -168,7 +228,7 @@ export default function EtudePage({ params }: { params: Promise<{ moduleId: stri
             })}
           </div>
 
-          {/* Sidebar Footer Progress (Always visible at bottom of sidebar) */}
+          {/* Sidebar Footer Progress */}
           <div className="p-3 border-t border-border/40 bg-muted/10 shrink-0">
             <div className="flex items-center justify-between text-[11px] font-bold mb-1.5">
               <span className="text-muted-foreground">Progression</span>
@@ -195,10 +255,10 @@ export default function EtudePage({ params }: { params: Promise<{ moduleId: stri
                 <div>
                   <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
                     <h2 className="text-xl sm:text-2xl font-black text-foreground tracking-tight">
-                      Chapitre {currentChapter.num}: {currentChapter.title}
+                      Chapitre {currentChapter?.num}: {currentChapter?.title}
                     </h2>
                     <span className="px-3 py-1 rounded-full bg-primary/10 text-primary text-[11px] sm:text-xs font-extrabold border border-primary/20">
-                      {currentChapter.subtitle}
+                      {currentChapter?.subtitle}
                     </span>
                   </div>
 
@@ -207,7 +267,7 @@ export default function EtudePage({ params }: { params: Promise<{ moduleId: stri
                       <BookOpen className="w-6 h-6" />
                     </div>
                     <h3 className="text-base font-bold text-foreground mb-1">
-                      Espace de cours direct • {currentChapter.title}
+                      Espace de cours direct • {currentChapter?.title}
                     </h3>
                     <p className="text-xs text-muted-foreground max-w-md mx-auto font-medium leading-relaxed">
                       Le composant modulaire pour ce chapitre est prêt à recevoir le cours et les visualisations 3D.
@@ -221,7 +281,7 @@ export default function EtudePage({ params }: { params: Promise<{ moduleId: stri
           {/* Navigation Controls: Previous / Next Chapter */}
           <div className="pt-5 my-5 border-t border-border/40 flex items-center justify-between gap-3">
             <button
-              onClick={() => setActiveChapterIndex(Math.max(0, activeChapterIndex - 1))}
+              onClick={() => handleChapterChange(Math.max(0, activeChapterIndex - 1))}
               disabled={activeChapterIndex === 0}
               className={`py-2.5 px-3.5 sm:px-4 rounded-xl text-xs font-bold flex items-center gap-1.5 border transition-all ${
                 activeChapterIndex === 0
@@ -234,7 +294,7 @@ export default function EtudePage({ params }: { params: Promise<{ moduleId: stri
             </button>
 
             <button
-              onClick={() => setActiveChapterIndex(Math.min(chapters.length - 1, activeChapterIndex + 1))}
+              onClick={() => handleChapterChange(Math.min(chapters.length - 1, activeChapterIndex + 1))}
               disabled={activeChapterIndex === chapters.length - 1}
               className={`py-2.5 px-3.5 sm:px-4 rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-sm transition-all ${
                 activeChapterIndex === chapters.length - 1
@@ -248,7 +308,9 @@ export default function EtudePage({ params }: { params: Promise<{ moduleId: stri
           </div>
 
         </main>
+
       </div>
+
     </div>
   );
 }
