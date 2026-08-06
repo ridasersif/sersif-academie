@@ -6,6 +6,7 @@ import KinematicsTrajectory3DCanvas from "../components/KinematicsTrajectory3DCa
 import FrenetFrame3DCanvas from "../components/FrenetFrame3DCanvas";
 import RelativeMotion3DCanvas from "../components/RelativeMotion3DCanvas";
 import ChaslesReferenceFrames3DCanvas from "../components/ChaslesReferenceFrames3DCanvas";
+import ExerciseCircleRolling3DCanvas from "../components/ExerciseCircleRolling3DCanvas";
 import { ChevronDown, ChevronUp, Sparkles, BookOpen, Compass, Activity, Target, CheckCircle2, RefreshCw, Zap, ArrowRight } from "lucide-react";
 
 export default function Chap2CinematiqueDuPoint() {
@@ -639,51 +640,8 @@ export default function Chap2CinematiqueDuPoint() {
           7. Exercices d'Application Résolus (CPGE / Concours)
         </h2>
 
-        {/* Exercice 1 */}
-        <div className="p-4 sm:p-5 rounded-2xl bg-muted/30 border border-border/50 mb-4">
-          <div className="flex items-center justify-between mb-2">
-            <h3 className="text-xs sm:text-sm font-bold text-indigo-400 flex items-center gap-2">
-              <Target className="w-4 h-4 text-indigo-400" />
-              <span>Exercice 1 : Étude d'un Mouvement Hélicoïdal 3D en Coordonnées Cylindriques</span>
-            </h3>
-            <span className="text-[10px] px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-300 font-mono">Concours CPGE</span>
-          </div>
-
-          <p className="text-xs text-muted-foreground leading-relaxed mb-3">
-            Dans un repère cylindrique <LatexMath math="(O, \vec{e}_\rho, \vec{e}_\phi, \vec{e}_z)" />, une particule <LatexMath math="M" /> se déplace selon les équations horaires :<br />
-            <LatexMath math="\rho(t) = R = \text{Cte}" />, <LatexMath math="\phi(t) = \omega t" /> (avec <LatexMath math="\omega = \text{Cte}" />), et <LatexMath math="z(t) = h \omega t" />.<br />
-            1. Calculer les composantes et la norme du vecteur vitesse <LatexMath math="\vec{V}(M/\mathcal{R})" />.<br />
-            2. Calculer les composantes du vecteur accélération <LatexMath math="\vec{\gamma}(M/\mathcal{R})" />.
-          </p>
-
-          <button
-            onClick={() => setShowEx1Solution(!showEx1Solution)}
-            className="flex items-center gap-2 text-xs font-bold text-indigo-400 hover:text-indigo-300 transition-all p-2 rounded-lg bg-indigo-500/10 border border-indigo-500/20"
-          >
-            <BookOpen className="w-3.5 h-3.5" />
-            <span>{showEx1Solution ? "Masquer la Solution" : "Afficher la Solution Détaillée (Exercice 1)"}</span>
-            {showEx1Solution ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-          </button>
-
-          {showEx1Solution && (
-            <div className="mt-3 p-3.5 rounded-xl bg-slate-950 border border-slate-800 text-[11px] font-mono text-slate-300 space-y-2 leading-relaxed animate-in fade-in duration-200">
-              <p className="text-indigo-400 font-bold flex items-center gap-1.5">
-                <CheckCircle2 className="w-3.5 h-3.5" />
-                <span>1. Calcul de la vitesse V :</span>
-              </p>
-              <p>• <LatexMath math="\dot{\rho} = 0" />, <LatexMath math="\dot{\phi} = \omega" />, <LatexMath math="\dot{z} = h\omega" /></p>
-              <p>• <LatexMath math="\vec{V}(M/\mathcal{R}) = \dot{\rho}\vec{e}_\rho + \rho\dot{\phi}\vec{e}_\phi + \dot{z}\vec{e}_z = R\omega\vec{e}_\phi + h\omega\vec{e}_z" /></p>
-              <p>• Norme constante : <LatexMath math="V = \sqrt{(R\omega)^2 + (h\omega)^2} = \omega\sqrt{R^2 + h^2}" className="text-cyan-400 font-bold" /></p>
-
-              <p className="text-indigo-400 font-bold flex items-center gap-1.5 mt-3">
-                <CheckCircle2 className="w-3.5 h-3.5" />
-                <span>2. Calcul de l'accélération gamma :</span>
-              </p>
-              <p>• <LatexMath math="\ddot{\rho} = 0" />, <LatexMath math="\ddot{\phi} = 0" />, <LatexMath math="\ddot{z} = 0" /></p>
-              <p>• <LatexMath math="\vec{\gamma}(M/\mathcal{R}) = (\ddot{\rho} - \rho\dot{\phi}^2)\vec{e}_\rho + (\rho\ddot{\phi} + 2\dot{\rho}\dot{\phi})\vec{e}_\phi + \ddot{z}\vec{e}_z = -R\omega^2 \vec{e}_\rho" className="text-rose-400 font-bold" /></p>
-            </div>
-          )}
-        </div>
+        {/* Exercice 1 - Cercle tournant et point matériel (Du Tableau) */}
+        <ExerciseCircleRolling3DCanvas />
 
         {/* Exercice 2 */}
         <div className="p-4 sm:p-5 rounded-2xl bg-muted/30 border border-border/50 mb-4">
