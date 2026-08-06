@@ -5,6 +5,7 @@ import LatexMath from "@/components/ui/LatexMath";
 import KinematicsTrajectory3DCanvas from "../components/KinematicsTrajectory3DCanvas";
 import FrenetFrame3DCanvas from "../components/FrenetFrame3DCanvas";
 import RelativeMotion3DCanvas from "../components/RelativeMotion3DCanvas";
+import ChaslesReferenceFrames3DCanvas from "../components/ChaslesReferenceFrames3DCanvas";
 import { ChevronDown, ChevronUp, Sparkles, BookOpen, Compass, Activity, Target, CheckCircle2, RefreshCw, Zap, ArrowRight } from "lucide-react";
 
 export default function Chap2CinematiqueDuPoint() {
@@ -420,79 +421,9 @@ export default function Chap2CinematiqueDuPoint() {
           6. Formule de Bour, Composition des Vitesses et des Accélérations (Coriolis)
         </h2>
 
-        {/* 2D REFERENCE FRAMES SVG DIAGRAM */}
-        <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 mb-6">
-          <h3 className="text-xs sm:text-sm font-bold text-amber-400 mb-3 flex items-center gap-2">
-            <Sparkles className="w-4 h-4" />
-            <span>Schéma Géométrique 2D : Référentiel Fixe <LatexMath math="\mathcal{R}_0(O)" />, Référentiel Mobile <LatexMath math="\mathcal{R}_1(O_1)" /> et Relation de Chasles</span>
-          </h3>
-
-          <div className="flex justify-center items-center py-2 overflow-x-auto">
-            <svg viewBox="0 0 540 320" className="w-full max-w-lg h-auto">
-              <defs>
-                <marker id="arrowRed" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-                  <path d="M 0 0 L 10 5 L 0 10 z" fill="#ef4444" />
-                </marker>
-                <marker id="arrowBlue" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-                  <path d="M 0 0 L 10 5 L 0 10 z" fill="#3b82f6" />
-                </marker>
-                <marker id="arrowCyan" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-                  <path d="M 0 0 L 10 5 L 0 10 z" fill="#06b6d4" />
-                </marker>
-                <marker id="arrowAmber" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-                  <path d="M 0 0 L 10 5 L 0 10 z" fill="#f59e0b" />
-                </marker>
-                <marker id="arrowEmerald" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-                  <path d="M 0 0 L 10 5 L 0 10 z" fill="#10b981" />
-                </marker>
-              </defs>
-
-              {/* Fixed Frame R0(O, i0, j0) */}
-              <g stroke="#64748b" strokeWidth="2">
-                <line x1="60" y1="260" x2="220" y2="260" markerEnd="url(#arrowBlue)" />
-                <line x1="60" y1="260" x2="60" y2="100" markerEnd="url(#arrowBlue)" />
-              </g>
-              <circle cx="60" cy="260" r="4" fill="#3b82f6" />
-              <text x="45" y="275" fill="#3b82f6" fontSize="13" fontWeight="bold" fontFamily="monospace">O (R0 Fixe)</text>
-              <text x="200" y="280" fill="#94a3b8" fontSize="11" fontFamily="monospace">x0</text>
-              <text x="45" y="95" fill="#94a3b8" fontSize="11" fontFamily="monospace">y0</text>
-
-              {/* Mobile Frame R1(O1, i1, j1) Rotated */}
-              <g stroke="#a855f7" strokeWidth="2" strokeDasharray="4,3">
-                <line x1="220" y1="180" x2="370" y2="120" markerEnd="url(#arrowRed)" />
-                <line x1="220" y1="180" x2="160" y2="40" markerEnd="url(#arrowRed)" />
-              </g>
-              <circle cx="220" cy="180" r="4" fill="#ef4444" />
-              <text x="225" y="200" fill="#ef4444" fontSize="13" fontWeight="bold" fontFamily="monospace">O1 (R1 Mobile)</text>
-              <text x="375" y="120" fill="#a855f7" fontSize="11" fontFamily="monospace">x1</text>
-              <text x="150" y="35" fill="#a855f7" fontSize="11" fontFamily="monospace">y1</text>
-
-              {/* Rotation arc Omega */}
-              <path d="M 270,180 A 50 50 0 0 0 255,150" fill="none" stroke="#f59e0b" strokeWidth="2" markerEnd="url(#arrowAmber)" />
-              <text x="275" y="165" fill="#f59e0b" fontSize="12" fontWeight="bold" fontFamily="monospace">Ω(R1/R0)</text>
-
-              {/* Point M */}
-              <circle cx="430" cy="70" r="6" fill="#f59e0b" />
-              <text x="442" y="65" fill="#f59e0b" fontSize="14" fontWeight="bold" fontFamily="monospace">M (Point Matériel)</text>
-
-              {/* Vectors Chasles */}
-              {/* OO1 vector (Amber) */}
-              <line x1="60" y1="260" x2="214" y2="184" stroke="#f59e0b" strokeWidth="2.5" markerEnd="url(#arrowAmber)" />
-              <text x="120" y="235" fill="#f59e0b" fontSize="12" fontWeight="bold" fontFamily="monospace">OO1</text>
-
-              {/* O1M vector (Emerald) */}
-              <line x1="220" y1="180" x2="424" y2="74" stroke="#10b981" strokeWidth="2.5" markerEnd="url(#arrowEmerald)" />
-              <text x="325" y="120" fill="#10b981" fontSize="12" fontWeight="bold" fontFamily="monospace">O1M</text>
-
-              {/* OM vector (Cyan) */}
-              <line x1="60" y1="260" x2="424" y2="74" stroke="#06b6d4" strokeWidth="3" markerEnd="url(#arrowCyan)" />
-              <text x="220" y="130" fill="#06b6d4" fontSize="13" fontWeight="bold" fontFamily="monospace">OM = OO1 + O1M</text>
-            </svg>
-          </div>
-
-          <div className="p-3 rounded-xl bg-slate-900 border border-slate-800 text-center font-mono text-xs text-amber-300 mt-2">
-            Relation de Chasles Vectorielle : <LatexMath math="\vec{OM} = \vec{OO}_1 + \vec{O_1 M}" />
-          </div>
+        {/* 3D REFERENCE FRAMES & CHASLES CANVAS */}
+        <div className="mb-6">
+          <ChaslesReferenceFrames3DCanvas />
         </div>
 
         {/* Formule de Bour Card */}
@@ -543,27 +474,89 @@ export default function Chap2CinematiqueDuPoint() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
           
           {/* Composition des Vitesses */}
-          <div className="p-4 rounded-xl bg-muted/30 border border-border/50">
-            <h3 className="font-bold text-cyan-400 text-xs sm:text-sm mb-2">B. Loi de Composition des Vitesses</h3>
-            <div className="p-2.5 rounded-lg bg-slate-950 border border-slate-800 text-center font-mono text-xs font-bold text-cyan-300 mb-2">
+          <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 shadow-md">
+            <h3 className="font-bold text-cyan-400 text-xs sm:text-sm mb-3 flex items-center gap-2">
+              <Zap className="w-4 h-4 text-cyan-400" />
+              <span>B. Loi de Composition des Vitesses</span>
+            </h3>
+
+            {/* Vitesse Absolue Banner */}
+            <div className="p-3 rounded-xl bg-cyan-500/10 border border-cyan-500/40 text-center font-mono text-xs sm:text-sm font-bold text-cyan-300 mb-3 shadow-inner">
+              <span className="text-slate-400 text-[11px] block font-sans mb-1">Vitesse Absolue (Dans le repère fixe R0) :</span>
               <LatexMath math="\vec{V}_a(M) = \vec{V}_r(M) + \vec{V}_e(M)" block />
             </div>
-            <div className="text-[11px] text-muted-foreground space-y-1 font-sans">
-              <p>• <strong>Vitesse Relative :</strong> <LatexMath math="\vec{V}_r(M) = \vec{V}(M/\mathcal{R}_1) = \left[\frac{d\vec{O_1 M}}{dt}\right]_{\mathcal{R}_1}" /></p>
-              <p>• <strong>Vitesse d'Entraînement :</strong> <LatexMath math="\vec{V}_e(M) = \vec{V}(O_1/\mathcal{R}_0) + \vec{\Omega}(\mathcal{R}_1/\mathcal{R}_0) \wedge \vec{O_1 M}" /></p>
+
+            <div className="space-y-2 text-xs font-sans">
+              {/* Vitesse Relative */}
+              <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/40 transition-all hover:border-emerald-500/60 shadow-sm">
+                <span className="font-bold text-emerald-400 flex items-center gap-1.5 mb-1">
+                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 inline-block" />
+                  <span>Vitesse Relative Vr (dans R1 mobile) :</span>
+                </span>
+                <div className="font-mono text-[11px] text-emerald-200">
+                  <LatexMath math="\vec{V}_r(M) = \vec{V}(M/\mathcal{R}_1) = \left[\frac{d\vec{O_1 M}}{dt}\right]_{\mathcal{R}_1}" />
+                </div>
+              </div>
+
+              {/* Vitesse d'Entraînement */}
+              <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/40 transition-all hover:border-amber-500/60 shadow-sm">
+                <span className="font-bold text-amber-400 flex items-center gap-1.5 mb-1">
+                  <span className="w-2.5 h-2.5 rounded-full bg-amber-400 inline-block" />
+                  <span>Vitesse d'Entraînement Ve :</span>
+                </span>
+                <div className="font-mono text-[11px] text-amber-200">
+                  <LatexMath math="\vec{V}_e(M) = \vec{V}(O_1/\mathcal{R}_0) + \vec{\Omega}(\mathcal{R}_1/\mathcal{R}_0) \wedge \vec{O_1 M}" />
+                </div>
+              </div>
             </div>
           </div>
 
           {/* Composition des Accélérations */}
-          <div className="p-4 rounded-xl bg-muted/30 border border-border/50">
-            <h3 className="font-bold text-rose-400 text-xs sm:text-sm mb-2">C. Loi de Composition des Accélérations</h3>
-            <div className="p-2.5 rounded-lg bg-slate-950 border border-slate-800 text-center font-mono text-xs font-bold text-rose-300 mb-2">
+          <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 shadow-md">
+            <h3 className="font-bold text-rose-400 text-xs sm:text-sm mb-3 flex items-center gap-2">
+              <Zap className="w-4 h-4 text-rose-400" />
+              <span>C. Loi de Composition des Accélérations</span>
+            </h3>
+
+            {/* Accélération Absolue Banner */}
+            <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/40 text-center font-mono text-xs sm:text-sm font-bold text-rose-300 mb-3 shadow-inner">
+              <span className="text-slate-400 text-[11px] block font-sans mb-1">Accélération Absolue (Dans le repère fixe R0) :</span>
               <LatexMath math="\vec{\gamma}_a(M) = \vec{\gamma}_r(M) + \vec{\gamma}_e(M) + \vec{\gamma}_c(M)" block />
             </div>
-            <div className="text-[11px] text-muted-foreground space-y-1 font-sans">
-              <p>• <strong>Accélération Relative :</strong> <LatexMath math="\vec{\gamma}_r(M) = \vec{\gamma}(M/\mathcal{R}_1)" /></p>
-              <p>• <strong>Accélération d'Entraînement :</strong> <LatexMath math="\vec{\gamma}_e(M) = \vec{\gamma}(O_1/\mathcal{R}_0) + \frac{d\vec{\Omega}}{dt}\Big|_{\mathcal{R}_0} \wedge \vec{O_1 M} + \vec{\Omega} \wedge (\vec{\Omega} \wedge \vec{O_1 M})" /></p>
-              <p>• <strong>Accélération de Coriolis :</strong> <LatexMath math="\vec{\gamma}_c(M) = 2 \vec{\Omega}(\mathcal{R}_1/\mathcal{R}_0) \wedge \vec{V}_r(M)" className="text-rose-400 font-bold" /></p>
+
+            <div className="space-y-2 text-xs font-sans">
+              {/* Accélération Relative */}
+              <div className="p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/40 transition-all hover:border-emerald-500/60 shadow-sm">
+                <span className="font-bold text-emerald-400 flex items-center gap-1.5 mb-0.5">
+                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 inline-block" />
+                  <span>Accélération Relative γr :</span>
+                </span>
+                <div className="font-mono text-[11px] text-emerald-200">
+                  <LatexMath math="\vec{\gamma}_r(M) = \vec{\gamma}(M/\mathcal{R}_1)" />
+                </div>
+              </div>
+
+              {/* Accélération d'Entraînement */}
+              <div className="p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/40 transition-all hover:border-amber-500/60 shadow-sm">
+                <span className="font-bold text-amber-400 flex items-center gap-1.5 mb-0.5">
+                  <span className="w-2.5 h-2.5 rounded-full bg-amber-400 inline-block" />
+                  <span>Accélération d'Entraînement γe :</span>
+                </span>
+                <div className="font-mono text-[11px] text-amber-200">
+                  <LatexMath math="\vec{\gamma}_e(M) = \vec{\gamma}(O_1/\mathcal{R}_0) + \frac{d\vec{\Omega}}{dt}\Big|_{\mathcal{R}_0} \wedge \vec{O_1 M} + \vec{\Omega} \wedge (\vec{\Omega} \wedge \vec{O_1 M})" />
+                </div>
+              </div>
+
+              {/* Accélération de Coriolis (Glowing Box) */}
+              <div className="p-3 rounded-xl bg-rose-500/20 border-2 border-rose-500/70 shadow-lg shadow-rose-500/10 transition-all hover:border-rose-400">
+                <span className="font-extrabold text-rose-400 flex items-center gap-1.5 mb-1 text-xs">
+                  <Sparkles className="w-3.5 h-3.5 text-rose-400 animate-spin" />
+                  <span>Accélération Complementaire de Coriolis γc (Essentiel) :</span>
+                </span>
+                <div className="font-mono text-[11px] font-bold text-rose-200">
+                  <LatexMath math="\vec{\gamma}_c(M) = 2 \vec{\Omega}(\mathcal{R}_1/\mathcal{R}_0) \wedge \vec{V}_r(M)" />
+                </div>
+              </div>
             </div>
           </div>
 
@@ -605,7 +598,7 @@ export default function Chap2CinematiqueDuPoint() {
           >
             <span className="flex items-center gap-1.5">
               <BookOpen className="w-4 h-4" />
-              <span>Démonstration Détaillée (Page 11 des cours Sersif Académie) : Obtention de l'Accélération de Coriolis gamma_c = 2 Omega ^ Vr</span>
+              <span>Démonstration Détaillée : Établissement et Origine de l'Accélération de Coriolis <LatexMath math="\vec{\gamma}_c = 2\vec{\Omega} \wedge \vec{V}_r" /></span>
             </span>
             {showCompAccProof ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
           </button>
