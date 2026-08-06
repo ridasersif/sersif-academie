@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
-import { Sparkles, RefreshCw, Compass } from "lucide-react";
+import { Sparkles, Compass } from "lucide-react";
 import LatexMath from "@/components/ui/LatexMath";
 
 export default function FrenetFrame3DCanvas() {
@@ -23,8 +23,8 @@ export default function FrenetFrame3DCanvas() {
   useEffect(() => {
     if (!mountRef.current) return;
     const container = mountRef.current;
-    const width = container.clientWidth || 600;
-    const height = 400;
+    let width = container.clientWidth || 600;
+    let height = container.clientHeight || 360;
 
     // 1. Scene, Camera, Renderer
     const scene = new THREE.Scene();
@@ -50,15 +50,9 @@ export default function FrenetFrame3DCanvas() {
     grid.position.y = -0.01;
     scene.add(grid);
 
-    // 4. Osculating Circle & Trajectory Curve
+    // 4. Osculating Circle & Curvilinear Trajectory Arc s(t)
     const osculatingCircleGroup = new THREE.Group();
     scene.add(osculatingCircleGroup);
-
-    // Center of curvature C is at (-radius, 0, 0)
-    // Point M is at (0, 0, 0)
-    // Tangent tau is along +Z axis
-    // Normal n is along -X axis (pointing towards center C)
-    // Binormal b is along +Y axis
 
     const rebuildOsculatingCircle = (r: number) => {
       osculatingCircleGroup.clear();
@@ -68,12 +62,10 @@ export default function FrenetFrame3DCanvas() {
         -r, 0, // ax, aY (Center C)
         r, r, // xRadius, yRadius
         0, 2 * Math.PI, // aStartAngle, aEndAngle
-        false, // aClockwise
-        0 // aRotation
+        false, 0
       );
 
-      const points2D = curve.getPoints(100);
-      // Map 2D (x,y) ellipse to 3D (x, z) horizontal plane
+      const points2D = curve.getPoints(120);
       const points3D = points2D.map(p => new THREE.Vector3(p.x, 0, p.y));
       const geometry = new THREE.BufferGeometry().setFromPoints(points3D);
       const material = new THREE.LineDashedMaterial({
@@ -87,7 +79,7 @@ export default function FrenetFrame3DCanvas() {
       circleLine.computeLineDistances();
       osculatingCircleGroup.add(circleLine);
 
-      // Center of curvature C sphere marker
+      // Center of curvature C marker sphere
       const centerGeo = new THREE.SphereGeometry(0.12, 16, 16);
       const centerMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8 });
       const centerMesh = new THREE.Mesh(centerGeo, centerMat);
@@ -102,6 +94,27 @@ export default function FrenetFrame3DCanvas() {
       const radiusLine = new THREE.Line(radiusGeo, new THREE.LineDashedMaterial({ color: 0x06b6d4, dashSize: 0.15, gapSize: 0.1 }));
       radiusLine.computeLineDistances();
       osculatingCircleGroup.add(radiusLine);
+
+      // Highlight Curvilinear Arc s(t) from M0 to M
+      const arcCurve = new THREE.EllipseCurve(
+        -r, 0, r, r,
+        -Math.PI / 4, 0, // Arc segment
+        false, 0
+      );
+      const arcPoints2D = arcCurve.getPoints(40);
+      const arcPoints3D = arcPoints2D.map(p => new THREE.Vector3(p.x, 0, p.y));
+      const arcGeo = new THREE.BufferGeometry().setFromPoints(arcPoints3D);
+      const arcMat = new THREE.LineBasicMaterial({ color: 0xf59e0b, linewidth: 3 });
+      const arcLine = new THREE.Line(arcGeo, arcMat);
+      osculatingCircleGroup.add(arcLine);
+
+      // Origin point M0 marker
+      const m0Geo = new THREE.SphereGeometry(0.1, 16, 16);
+      const m0Mat = new THREE.MeshBasicMaterial({ color: 0xf59e0b });
+      const m0Mesh = new THREE.Mesh(m0Geo, m0Mat);
+      const startP = arcPoints3D[0];
+      m0Mesh.position.copy(startP);
+      osculatingCircleGroup.add(m0Mesh);
     };
 
     rebuildOsculatingCircle(radius);
@@ -118,25 +131,17 @@ export default function FrenetFrame3DCanvas() {
     scene.add(particleMesh);
 
     // 6. Frenet Vectors (\tau, n, b)
-    // \tau (Tangent) - Cyan along +Z
     const tauArrow = new THREE.ArrowHelper(new THREE.Vector3(0, 0, 1), new THREE.Vector3(0, 0, 0), 1.8, 0x06b6d4, 0.25, 0.15);
-    // \vec{n} (Normal) - Emerald along -X (towards C)
     const nArrow = new THREE.ArrowHelper(new THREE.Vector3(-1, 0, 0), new THREE.Vector3(0, 0, 0), 1.8, 0x10b981, 0.25, 0.15);
-    // \vec{b} (Binormal) - Rose along +Y
     const bArrow = new THREE.ArrowHelper(new THREE.Vector3(0, 1, 0), new THREE.Vector3(0, 0, 0), 1.8, 0xf43f5e, 0.25, 0.15);
-    
     scene.add(tauArrow, nArrow, bArrow);
 
-    // 7. Acceleration Vector & Components (a_t \tau + a_n n)
+    // 7. Acceleration Vectors (a_T \tau + a_N n)
     const atArrow = new THREE.ArrowHelper(new THREE.Vector3(0, 0, 1), new THREE.Vector3(0, 0, 0), 1, 0xfacc15, 0.2, 0.1);
     const anArrow = new THREE.ArrowHelper(new THREE.Vector3(-1, 0, 0), new THREE.Vector3(0, 0, 0), 1, 0xa855f7, 0.2, 0.1);
-    
-    // Total Acceleration a
     const aTotalArrow = new THREE.ArrowHelper(new THREE.Vector3(-1, 0, 1).normalize(), new THREE.Vector3(0, 0, 0), 1, 0xec4899, 0.3, 0.18);
-
     scene.add(atArrow, anArrow, aTotalArrow);
 
-    // Update acceleration arrows lengths
     const updateAccelerationArrows = () => {
       const scale = 0.35;
       const atLen = Math.max(at * scale, 0.05);
@@ -155,7 +160,7 @@ export default function FrenetFrame3DCanvas() {
 
     updateAccelerationArrows();
 
-    // 8. Orbit Drag Controls
+    // 8. Orbit Drag Controls & Resize Listener
     let isDragging = false;
     let prevMouse = { x: 0, y: 0 };
     let cameraAngleX = 0.7;
@@ -189,12 +194,21 @@ export default function FrenetFrame3DCanvas() {
 
     const onMouseUp = () => { isDragging = false; };
 
+    const handleResize = () => {
+      if (!container) return;
+      width = container.clientWidth || 600;
+      height = container.clientHeight || 360;
+      camera.aspect = width / height;
+      camera.updateProjectionMatrix();
+      renderer.setSize(width, height);
+    };
+
     const domElement = renderer.domElement;
     domElement.addEventListener("mousedown", onMouseDown);
     window.addEventListener("mousemove", onMouseMove);
     window.addEventListener("mouseup", onMouseUp);
+    window.addEventListener("resize", handleResize);
 
-    // Render loop
     const animate = () => {
       renderer.render(scene, camera);
       animFrameRef.current = requestAnimationFrame(animate);
@@ -206,65 +220,61 @@ export default function FrenetFrame3DCanvas() {
       domElement.removeEventListener("mousedown", onMouseDown);
       window.removeEventListener("mousemove", onMouseMove);
       window.removeEventListener("mouseup", onMouseUp);
+      window.removeEventListener("resize", handleResize);
       if (container.contains(domElement)) container.removeChild(domElement);
     };
   }, [radius, speed, dvdt, at, an]);
 
   return (
-    <div className="p-4 sm:p-6 rounded-2xl sm:rounded-3xl bg-slate-950 border border-slate-800 text-white shadow-xl">
+    <div className="p-3 sm:p-6 rounded-2xl sm:rounded-3xl bg-slate-950 border border-slate-800 text-white shadow-xl">
       
       {/* Title */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
         <div>
-          <h3 className="text-sm sm:text-base font-bold text-cyan-400 flex items-center gap-2">
-            <Compass className="w-4 h-4 text-cyan-400" />
-            <span>Simulateur 3D Interactif : Repère de Frenet <LatexMath math="(\vec{\tau}, \vec{n}, \vec{b})" /> & Rayon de Courbure <LatexMath math="R_c" /></span>
+          <h3 className="text-xs sm:text-base font-bold text-cyan-400 flex items-center gap-2">
+            <Compass className="w-4 h-4 text-cyan-400 flex-shrink-0" />
+            <span>Simulateur 3D Interactif : Repère de Frenet <LatexMath math="(\vec{\tau}, \vec{n}, \vec{b})" /> & Arc Curviligne <LatexMath math="s(t)" /></span>
           </h3>
-          <p className="text-xs text-slate-400">
-            Visualisez le trièdre de Frenet, le cercle osculateur et l'accélération <LatexMath math="\vec{a} = a_t\vec{\tau} + a_n\vec{n}" />.
+          <p className="text-[11px] sm:text-xs text-slate-400">
+            Observez la trajectoire curviligne $s(t)$, le cercle osculateur de centre $C$, le rayon $R_c$, et l'accélération <LatexMath math="\vec{\gamma} = a_T\vec{\tau} + a_N\vec{n}" />.
           </p>
         </div>
       </div>
 
       {/* 3D WebGL Canvas */}
       <div className="relative rounded-2xl overflow-hidden border border-slate-800 bg-slate-950">
-        <div ref={mountRef} className="w-full h-[360px] sm:h-[400px] cursor-grab active:cursor-grabbing" />
+        <div ref={mountRef} className="w-full h-[320px] sm:h-[380px] cursor-grab active:cursor-grabbing" />
 
         {/* Live Vector Legend Overlay */}
-        <div className="absolute top-3 left-3 bg-slate-900/90 backdrop-blur-md p-3 rounded-xl border border-slate-800 text-[11px] font-mono space-y-1.5 shadow-lg pointer-events-none">
-          <div className="text-xs font-sans font-bold text-slate-300 border-b border-slate-800 pb-1 mb-1">
-            Trièdre & Composées Intrinseque :
+        <div className="absolute top-2.5 left-2.5 sm:top-3 sm:left-3 bg-slate-900/90 backdrop-blur-md p-2.5 sm:p-3 rounded-xl border border-slate-800 text-[10px] sm:text-[11px] font-mono space-y-1 shadow-lg pointer-events-none">
+          <div className="text-[11px] font-sans font-bold text-slate-300 border-b border-slate-800 pb-1 mb-1">
+            Repère & Composantes Intrinsèques :
           </div>
           <div className="flex items-center gap-2 text-cyan-400 font-bold">
-            <span className="w-3 h-1 rounded-full bg-cyan-400 inline-block" />
+            <span className="w-2.5 h-1 rounded-full bg-cyan-400 inline-block" />
             <span>Vecteur Tangent τ (Cyan)</span>
           </div>
           <div className="flex items-center gap-2 text-emerald-400 font-bold">
-            <span className="w-3 h-1 rounded-full bg-emerald-400 inline-block" />
+            <span className="w-2.5 h-1 rounded-full bg-emerald-400 inline-block" />
             <span>Vecteur Normal n (Émeraude → Centre C)</span>
           </div>
-          <div className="flex items-center gap-2 text-rose-400 font-bold">
-            <span className="w-3 h-1 rounded-full bg-rose-400 inline-block" />
-            <span>Vecteur Binormal b = τ ∧ n (Rose)</span>
-          </div>
-          <div className="flex items-center gap-2 text-purple-400 font-bold pt-1 border-t border-slate-800/80">
-            <span className="w-3 h-1 rounded-full bg-purple-400 inline-block" />
-            <span>a_n = v²/R_c = {an.toFixed(2)} m/s² (Normale)</span>
+          <div className="flex items-center gap-2 text-purple-400 font-bold border-t border-slate-800/80 pt-1">
+            <span className="w-2.5 h-1 rounded-full bg-purple-400 inline-block" />
+            <span>a_N = v²/R_c = {an.toFixed(2)} m/s²</span>
           </div>
           <div className="flex items-center gap-2 text-amber-400 font-bold">
-            <span className="w-3 h-1 rounded-full bg-amber-400 inline-block" />
-            <span>a_t = dv/dt = {at.toFixed(2)} m/s² (Tangentielle)</span>
+            <span className="w-2.5 h-1 rounded-full bg-amber-400 inline-block" />
+            <span>a_T = dv/dt = {at.toFixed(2)} m/s²</span>
           </div>
-          <div className="flex items-center gap-2 text-pink-400 font-bold font-mono">
-            <span>||a|| = √(a_t² + a_n²) = {aTotal.toFixed(2)} m/s²</span>
+          <div className="flex items-center gap-2 text-pink-400 font-bold">
+            <span>||γ|| = √(a_T² + a_N²) = {aTotal.toFixed(2)} m/s²</span>
           </div>
         </div>
       </div>
 
       {/* Sliders Controls Panel */}
-      <div className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-3 p-3 rounded-xl bg-slate-900 border border-slate-800 text-xs font-mono">
+      <div className="mt-3 sm:mt-4 grid grid-cols-1 sm:grid-cols-3 gap-3 p-3 rounded-xl bg-slate-900 border border-slate-800 text-xs font-mono">
         
-        {/* Radius Slider */}
         <div className="flex flex-col gap-1">
           <div className="flex justify-between text-slate-300">
             <span>Rayon de courbure <LatexMath math="R_c" />:</span>
@@ -281,7 +291,6 @@ export default function FrenetFrame3DCanvas() {
           />
         </div>
 
-        {/* Speed Slider */}
         <div className="flex flex-col gap-1">
           <div className="flex justify-between text-slate-300">
             <span>Vitesse linéaire <LatexMath math="v" />:</span>
@@ -298,10 +307,9 @@ export default function FrenetFrame3DCanvas() {
           />
         </div>
 
-        {/* Tangential Acceleration Slider */}
         <div className="flex flex-col gap-1">
           <div className="flex justify-between text-slate-300">
-            <span>Accélération <LatexMath math="a_t = \dot{v}" />:</span>
+            <span>Accélération <LatexMath math="a_T = \dot{v}" />:</span>
             <span className="text-amber-400 font-bold">{dvdt.toFixed(1)} m/s²</span>
           </div>
           <input

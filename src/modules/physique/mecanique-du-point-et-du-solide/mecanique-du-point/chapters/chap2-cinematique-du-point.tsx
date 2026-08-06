@@ -5,39 +5,41 @@ import LatexMath from "@/components/ui/LatexMath";
 import KinematicsTrajectory3DCanvas from "../components/KinematicsTrajectory3DCanvas";
 import FrenetFrame3DCanvas from "../components/FrenetFrame3DCanvas";
 import RelativeMotion3DCanvas from "../components/RelativeMotion3DCanvas";
-import { ChevronDown, ChevronUp, Sparkles, BookOpen, Compass, Activity, Target, CheckCircle2, RefreshCw, Zap } from "lucide-react";
+import { ChevronDown, ChevronUp, Sparkles, BookOpen, Compass, Activity, Target, CheckCircle2, RefreshCw, Zap, ArrowRight } from "lucide-react";
 
 export default function Chap2CinematiqueDuPoint() {
-  // Accordions for step-by-step mathematical proofs
-  const [showVectPosProof, setShowVectPosProof] = useState(false);
+  // Accordions for step-by-step mathematical proofs matching Sersif Académie notes
+  const [showBaseChangeProof, setShowBaseChangeProof] = useState(false);
   const [showVitProof, setShowVitProof] = useState(false);
   const [showAccProof, setShowAccProof] = useState(false);
   const [showFrenetProof, setShowFrenetProof] = useState(false);
   const [showBourProof, setShowBourProof] = useState(false);
-  const [showCompProof, setShowCompProof] = useState(false);
+  const [showCompVitProof, setShowCompVitProof] = useState(false);
+  const [showCompAccProof, setShowCompAccProof] = useState(false);
 
-  // Accordions for Exercise Solutions
+  // Accordions for 3 Application Exercises Solutions
   const [showEx1Solution, setShowEx1Solution] = useState(false);
   const [showEx2Solution, setShowEx2Solution] = useState(false);
+  const [showEx3Solution, setShowEx3Solution] = useState(false);
 
   return (
     <div className="space-y-6 sm:space-y-8 w-full max-w-full overflow-x-hidden">
       
-      {/* PARTIE 1: VECTEUR POSITION OM(t) DANS TOUS LES SYSTÈMES DE COORDONNÉES */}
+      {/* PARTIE 1: SYSTÈMES DE COORDONNÉES ET VECTEUR POSITION OM(t) */}
       <section className="bg-card/90 border border-border/80 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 shadow-sm w-full max-w-full overflow-x-hidden">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400 text-xs font-extrabold mb-3">
-          <span>Partie 1 • Repérage du Mouvement & Vecteur Position OM(t)</span>
+          <span>Partie 1 • Systèmes de Coordonnées & Vecteur Position OM(t)</span>
         </div>
         
         <h2 className="text-xl sm:text-2xl font-black mb-3 sm:mb-4 text-foreground leading-tight">
-          1. Vecteur Position <LatexMath math="\vec{OM}(t)" /> dans tous les Systèmes de Coordonnées
+          1. Systèmes de Coordonnées et Expression du Vecteur Position <LatexMath math="\vec{OM}(t)" />
         </h2>
 
         <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed mb-4 font-medium">
-          La cinématique étudie le mouvement d'un point matériel <LatexMath math="M" /> au cours du temps <LatexMath math="t" /> par rapport à un <strong>référentiel d'étude <LatexMath math="\mathcal{R}(O, \vec{i}, \vec{j}, \vec{k})" /></strong>. La position est repérée par le vecteur <LatexMath math="\vec{OM}(t)" />.
+          Dans un référentiel d'étude <LatexMath math="\mathcal{R}(O, \vec{i}, \vec{j}, \vec{k})" />, la position du point matériel <LatexMath math="M" /> est repérée par le vecteur position <LatexMath math="\vec{OM}(t)" /> exprimé dans le système de coordonnées adapté à la géométrie du problème.
         </p>
 
-        {/* 3 Coordinate Systems Cards */}
+        {/* 3 Coordinate Systems Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
           
           {/* Cartésien */}
@@ -45,14 +47,14 @@ export default function Chap2CinematiqueDuPoint() {
             <div>
               <span className="text-xs font-bold text-purple-400 block mb-1 font-sans">1. Coordonnées Cartésiennes</span>
               <div className="p-2.5 rounded-xl bg-slate-950 border border-slate-800 text-center font-mono text-xs text-purple-300 mb-3 overflow-x-auto custom-scrollbar">
-                <LatexMath math="\vec{OM}(t) = x(t)\vec{i} + y(t)\vec{j} + z(t)\vec{k}" block />
+                <LatexMath math="\vec{OM} = x_m\vec{i} + y_m\vec{j} + z_m\vec{k}" block />
               </div>
               <p className="text-[11px] text-muted-foreground leading-relaxed font-sans">
-                <strong>Description :</strong> Projections orthogonales indépendantes sur 3 axes fixes. Les vecteurs unitaires <LatexMath math="(\vec{i},\vec{j},\vec{k})" /> sont immobiles.
+                <strong>Vecteurs de base :</strong> <LatexMath math="(\vec{i}, \vec{j}, \vec{k})" /> sont <strong>fixes et immuables dans le temps</strong>.
               </p>
             </div>
             <div className="mt-3 text-[10px] text-muted-foreground font-mono border-t border-border/40 pt-2">
-              Norme : <LatexMath math="\|\vec{OM}\| = \sqrt{x^2 + y^2 + z^2}" />
+              Domaine : <LatexMath math="-\infty < x, y, z < +\infty" />
             </div>
           </div>
 
@@ -61,14 +63,14 @@ export default function Chap2CinematiqueDuPoint() {
             <div>
               <span className="text-xs font-bold text-emerald-400 block mb-1 font-sans">2. Coordonnées Cylindriques</span>
               <div className="p-2.5 rounded-xl bg-slate-950 border border-slate-800 text-center font-mono text-xs text-emerald-300 mb-3 overflow-x-auto custom-scrollbar">
-                <LatexMath math="\vec{OM}(t) = \rho(t)\vec{e}_\rho + z(t)\vec{e}_z" block />
+                <LatexMath math="\vec{OM} = \rho\vec{e}_\rho + z\vec{e}_z" block />
               </div>
               <p className="text-[11px] text-muted-foreground leading-relaxed font-sans">
-                <strong>Description :</strong> Somme de la projection horizontale <LatexMath math="\vec{OH} = \rho\vec{e}_\rho" /> et de la hauteur <LatexMath math="z\vec{e}_z" />. L'angle <LatexMath math="\phi" /> est intégré dans <LatexMath math="\vec{e}_\rho" />.
+                <strong>Vecteurs mobiles :</strong> <LatexMath math="\vec{e}_\rho = \cos\theta \vec{e}_x + \sin\theta \vec{e}_y" /> et <LatexMath math="\vec{e}_\theta = -\sin\theta \vec{e}_x + \cos\theta \vec{e}_y" />.
               </p>
             </div>
             <div className="mt-3 text-[10px] text-muted-foreground font-mono border-t border-border/40 pt-2">
-              Norme : <LatexMath math="\|\vec{OM}\| = \sqrt{\rho^2 + z^2}" />
+              Domaine : <LatexMath math="0 \le \rho < \infty \,;\, 0 \le \theta \le 2\pi \,;\, -\infty < z < +\infty" />
             </div>
           </div>
 
@@ -77,48 +79,87 @@ export default function Chap2CinematiqueDuPoint() {
             <div>
               <span className="text-xs font-bold text-amber-400 block mb-1 font-sans">3. Coordonnées Sphériques</span>
               <div className="p-2.5 rounded-xl bg-slate-950 border border-slate-800 text-center font-mono text-xs text-amber-300 mb-3 overflow-x-auto custom-scrollbar">
-                <LatexMath math="\vec{OM}(t) = r(t)\vec{e}_r" block />
+                <LatexMath math="\vec{OM} = r\vec{e}_r" block />
               </div>
               <p className="text-[11px] text-muted-foreground leading-relaxed font-sans">
-                <strong>Description :</strong> Le vecteur radial <LatexMath math="\vec{e}_r" /> pointe directement de <LatexMath math="O" /> vers <LatexMath math="M" />. Les angles <LatexMath math="(\theta, \phi)" /> orientent <LatexMath math="\vec{e}_r" /> f 3D.
+                <strong>Vecteurs mobiles :</strong> <LatexMath math="\vec{e}_r = \sin\theta\cos\phi\vec{e}_x + \sin\theta\sin\phi\vec{e}_y + \cos\theta\vec{e}_z" />.
               </p>
             </div>
             <div className="mt-3 text-[10px] text-muted-foreground font-mono border-t border-border/40 pt-2">
-              Norme : <LatexMath math="\|\vec{OM}\| = r(t)" />
+              Domaine : <LatexMath math="0 < r < \infty \,;\, 0 \le \theta \le \pi \,;\, 0 \le \phi \le 2\pi" />
             </div>
           </div>
 
+        </div>
+
+        {/* ACCORDION BASE TRANSFORMATIONS PROOF */}
+        <div>
+          <button
+            onClick={() => setShowBaseChangeProof(!showBaseChangeProof)}
+            className="w-full flex items-center justify-between text-xs font-bold text-blue-400 hover:text-blue-300 transition-all p-2.5 rounded-xl bg-blue-500/10 border border-blue-500/20"
+          >
+            <span className="flex items-center gap-1.5">
+              <BookOpen className="w-4 h-4" />
+              <span>Démonstration Détaillée : Relations de Passage entre toutes les Bases (Cartésien, Cylindrique & Sphérique)</span>
+            </span>
+            {showBaseChangeProof ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+          </button>
+
+          {showBaseChangeProof && (
+            <div className="mt-3 p-4 rounded-xl bg-slate-950 border border-slate-800 text-[11px] font-mono text-slate-300 space-y-3 leading-relaxed animate-in fade-in duration-200">
+              <div className="p-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 font-bold">
+                1. Passage de la Base Cartésienne à la Base Cylindrique :
+              </div>
+              <p>Par projection orthogonale dans le plan horizontal <LatexMath math="(O, \vec{e}_x, \vec{e}_y)" /> :</p>
+              <p><LatexMath math="\vec{e}_\rho = \cos\theta \vec{e}_x + \sin\theta \vec{e}_y" /></p>
+              <p><LatexMath math="\vec{e}_\theta = \cos\left(\theta + \frac{\pi}{2}\right)\vec{e}_x + \sin\left(\theta + \frac{\pi}{2}\right)\vec{e}_y = -\sin\theta \vec{e}_x + \cos\theta \vec{e}_y" /></p>
+
+              <div className="p-2 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-300 font-bold mt-3">
+                2. Passage de la Base Cylindrique à la Base Sphérique :
+              </div>
+              <p>Par projection radiale dans le plan méridien <LatexMath math="(O, \vec{e}_\rho, \vec{e}_z)" /> :</p>
+              <p><LatexMath math="\vec{e}_r = \sin\theta \vec{e}_\rho + \cos\theta \vec{e}_z" /></p>
+              <p><LatexMath math="\vec{e}_\theta = \cos\theta \vec{e}_\rho - \sin\theta \vec{e}_z" /></p>
+              <p>En substituant <LatexMath math="\vec{e}_\rho = \cos\phi \vec{e}_x + \sin\phi \vec{e}_y" />, on obtient les expressions cartésiennes complètes :</p>
+              <p className="text-amber-400 font-bold">
+                <LatexMath math="\vec{e}_r = \sin\theta\cos\phi\vec{e}_x + \sin\theta\sin\phi\vec{e}_y + \cos\theta\vec{e}_z" />
+              </p>
+              <p className="text-cyan-400 font-bold">
+                <LatexMath math="\vec{e}_\theta = \cos\theta\cos\phi\vec{e}_x + \cos\theta\sin\phi\vec{e}_y - \sin\theta\vec{e}_z" />
+              </p>
+            </div>
+          )}
         </div>
       </section>
 
       {/* PARTIE 2: VECTEUR VITESSE AVEC DÉMONSTRATIONS DANS TOUS LES SYSTEMES & SIMULATEUR 3D */}
       <section className="bg-card/90 border border-border/80 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 shadow-sm w-full max-w-full overflow-x-hidden">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-extrabold mb-3">
-          <span>Partie 2 • Vecteur Vitesse Instantanée & Démonstrations</span>
+          <span>Partie 2 • Vecteur Vitesse Instantanée V(M/R) & Démonstrations</span>
         </div>
 
         <h2 className="text-xl sm:text-2xl font-black mb-3 sm:mb-4 text-foreground leading-tight">
-          2. Vecteur Vitesse Instantanée <LatexMath math="\vec{v}(t)" /> et Démonstrations Complètes
+          2. Vecteur Vitesse Instantanée <LatexMath math="\vec{V}(M/\mathcal{R})" /> et Démonstrations Complètes
         </h2>
 
         <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed mb-4">
-          Le vecteur vitesse instantanée du point <LatexMath math="M" /> par rapport à <LatexMath math="\mathcal{R}" /> est défini par :
-          <LatexMath math="\vec{v}(M/\mathcal{R}) = \left[ \frac{d\vec{OM}}{dt} \right]_\mathcal{R}" className="ml-2 font-bold text-emerald-400 font-mono" />.
+          Le vecteur vitesse instantanée du point <LatexMath math="M" /> par rapport à <LatexMath math="\mathcal{R}" /> est :
+          <LatexMath math="\vec{V}(M/\mathcal{R}) = \left[ \frac{d\vec{OM}}{dt} \right]_\mathcal{R}" className="ml-2 font-bold text-emerald-400 font-mono" />.
         </p>
 
         {/* Formulas Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4 font-mono text-xs">
           <div className="p-3 rounded-xl bg-card border border-border/40 text-center">
             <div className="text-[10px] text-muted-foreground font-sans font-bold mb-1">Cartésien</div>
-            <LatexMath math="\vec{v} = \dot{x}\vec{i} + \dot{y}\vec{j} + \dot{z}\vec{k}" />
+            <LatexMath math="\vec{V}(M/\mathcal{R}) = \dot{x}\vec{i} + \dot{y}\vec{j} + \dot{z}\vec{k}" />
           </div>
           <div className="p-3 rounded-xl bg-card border border-border/40 text-center">
             <div className="text-[10px] text-muted-foreground font-sans font-bold mb-1">Cylindrique</div>
-            <LatexMath math="\vec{v} = \dot{\rho}\vec{e}_\rho + \rho\dot{\phi}\vec{e}_\phi + \dot{z}\vec{e}_z" />
+            <LatexMath math="\vec{V}(M/\mathcal{R}) = \dot{\rho}\vec{e}_\rho + \rho\dot{\phi}\vec{e}_\phi + \dot{z}\vec{e}_z" />
           </div>
           <div className="p-3 rounded-xl bg-card border border-border/40 text-center">
             <div className="text-[10px] text-muted-foreground font-sans font-bold mb-1">Sphérique</div>
-            <LatexMath math="\vec{v} = \dot{r}\vec{e}_r + r\dot{\theta}\vec{e}_\theta + r\dot{\phi}\sin\theta\vec{e}_\phi" />
+            <LatexMath math="\vec{V}(M/\mathcal{R}) = \dot{r}\vec{e}_r + r\dot{\theta}\vec{e}_\theta + r\dot{\phi}\sin\theta\vec{e}_\phi" />
           </div>
         </div>
 
@@ -130,7 +171,7 @@ export default function Chap2CinematiqueDuPoint() {
           >
             <span className="flex items-center gap-1.5">
               <BookOpen className="w-4 h-4" />
-              <span>Démonstrations Détaillées : Calcul du Vecteur Vitesse dans les 3 Repères</span>
+              <span>Démonstrations Détaillées : Calcul de V(M/R) dans TOUS les Repères (Cylindrique & Sphérique)</span>
             </span>
             {showVitProof ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
           </button>
@@ -144,10 +185,10 @@ export default function Chap2CinematiqueDuPoint() {
                   A. Démonstration en Coordonnées Cylindriques :
                 </div>
                 <p>On dérive <LatexMath math="\vec{OM} = \rho \vec{e}_\rho + z \vec{e}_z" /> par rapport au temps :</p>
-                <p><LatexMath math="\frac{d\vec{OM}}{dt} = \frac{d\rho}{dt}\vec{e}_\rho + \rho \frac{d\vec{e}_\rho}{dt} + \frac{dz}{dt}\vec{e}_z + z \frac{d\vec{e}_z}{dt}" /></p>
-                <p>Or <LatexMath math="\frac{d\vec{e}_z}{dt} = \vec{0}" /> et <LatexMath math="\frac{d\vec{e}_\rho}{dt} = \dot{\phi}\vec{e}_\phi" />.</p>
+                <p><LatexMath math="\vec{V}(M/\mathcal{R}) = \frac{d\rho}{dt}\vec{e}_\rho + \rho \frac{d\vec{e}_\rho}{dt} + \frac{dz}{dt}\vec{e}_z + z \frac{d\vec{e}_z}{dt}" /></p>
+                <p>Or <LatexMath math="\frac{d\vec{e}_z}{dt} = \vec{0}" /> et <LatexMath math="\frac{d\vec{e}_\rho}{dt} = -\dot{\phi}\sin\phi\vec{i} + \dot{\phi}\cos\phi\vec{j} = \dot{\phi}\vec{e}_\phi" />.</p>
                 <p className="text-emerald-400 font-bold pt-1">
-                  <LatexMath math="\implies \vec{v} = \dot{\rho}\vec{e}_\rho + \rho\dot{\phi}\vec{e}_\phi + \dot{z}\vec{e}_z" />
+                  <LatexMath math="\implies \vec{V}(M/\mathcal{R}) = \dot{\rho}\vec{e}_\rho + \rho\dot{\phi}\vec{e}_\phi + \dot{z}\vec{e}_z" />
                 </p>
               </div>
 
@@ -157,10 +198,10 @@ export default function Chap2CinematiqueDuPoint() {
                   B. Démonstration en Coordonnées Sphériques :
                 </div>
                 <p>On dérive <LatexMath math="\vec{OM} = r \vec{e}_r" /> par rapport au temps :</p>
-                <p><LatexMath math="\frac{d\vec{OM}}{dt} = \frac{dr}{dt}\vec{e}_r + r \frac{d\vec{e}_r}{dt}" /></p>
+                <p><LatexMath math="\vec{V}(M/\mathcal{R}) = \frac{dr}{dt}\vec{e}_r + r \frac{d\vec{e}_r}{dt}" /></p>
                 <p>D'après les dérivées de la base sphérique : <LatexMath math="\frac{d\vec{e}_r}{dt} = \dot{\theta}\vec{e}_\theta + \dot{\phi}\sin\theta\vec{e}_\phi" />.</p>
                 <p className="text-amber-400 font-bold pt-1">
-                  <LatexMath math="\implies \vec{v} = \dot{r}\vec{e}_r + r\dot{\theta}\vec{e}_\theta + r\dot{\phi}\sin\theta\vec{e}_\phi" />
+                  <LatexMath math="\implies \vec{V}(M/\mathcal{R}) = \dot{r}\vec{e}_r + r\dot{\theta}\vec{e}_\theta + r\dot{\phi}\sin\theta\vec{e}_\phi" />
                 </p>
               </div>
 
@@ -175,32 +216,32 @@ export default function Chap2CinematiqueDuPoint() {
       {/* PARTIE 3: VECTEUR ACCÉLÉRATION AVEC DÉMONSTRATIONS DANS TOUS LES SYSTÈMES */}
       <section className="bg-card/90 border border-border/80 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 shadow-sm w-full max-w-full overflow-x-hidden">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-500/10 text-rose-600 dark:text-rose-400 text-xs font-extrabold mb-3">
-          <span>Partie 3 • Vecteur Accélération Instantanée & Démonstrations</span>
+          <span>Partie 3 • Vecteur Accélération γ(M/R) & Démonstrations</span>
         </div>
 
         <h2 className="text-xl sm:text-2xl font-black mb-3 sm:mb-4 text-foreground leading-tight">
-          3. Vecteur Accélération Instantanée <LatexMath math="\vec{a}(t)" /> et Démonstrations Complètes
+          3. Vecteur Accélération Instantanée <LatexMath math="\vec{\gamma}(M/\mathcal{R})" /> et Démonstrations Complètes
         </h2>
 
         <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed mb-4">
-          L'accélération est la dérivée du vecteur vitesse : <LatexMath math="\vec{a}(M/\mathcal{R}) = \left[\frac{d\vec{v}}{dt}\right]_\mathcal{R} = \left[\frac{d^2\vec{OM}}{dt^2}\right]_\mathcal{R}" className="font-bold text-rose-400 font-mono ml-1" />.
+          L'accélération est la dérivée du vecteur vitesse : <LatexMath math="\vec{\gamma}(M/\mathcal{R}) = \left[\frac{d\vec{V}}{dt}\right]_\mathcal{R} = \left[\frac{d^2\vec{OM}}{dt^2}\right]_\mathcal{R}" className="font-bold text-rose-400 font-mono ml-1" />.
         </p>
 
         {/* Acceleration Formulas Grid */}
         <div className="space-y-3 font-mono text-xs mb-4">
           <div className="p-3.5 rounded-xl bg-muted/30 border border-border/50">
             <span className="font-sans font-bold text-purple-400 text-xs block mb-1.5">A. Cartésien :</span>
-            <LatexMath math="\vec{a} = \ddot{x}\vec{i} + \ddot{y}\vec{j} + \ddot{z}\vec{k}" />
+            <LatexMath math="\vec{\gamma}(M/\mathcal{R}) = \ddot{x}\vec{i} + \ddot{y}\vec{j} + \ddot{z}\vec{k}" />
           </div>
 
           <div className="p-3.5 rounded-xl bg-muted/30 border border-border/50">
-            <span className="font-sans font-bold text-emerald-400 text-xs block mb-1.5">B. Cylindrique (avec termes de Coriolis et centripètes) :</span>
-            <LatexMath math="\vec{a} = (\ddot{\rho} - \rho\dot{\phi}^2)\vec{e}_\rho + (\rho\ddot{\phi} + 2\dot{\rho}\dot{\phi})\vec{e}_\phi + \ddot{z}\vec{e}_z" />
+            <span className="font-sans font-bold text-emerald-400 text-xs block mb-1.5">B. Cylindrique (termes de Coriolis et centripètes) :</span>
+            <LatexMath math="\vec{\gamma}(M/\mathcal{R}) = (\ddot{\rho} - \rho\dot{\phi}^2)\vec{e}_\rho + (\rho\ddot{\phi} + 2\dot{\rho}\dot{\phi})\vec{e}_\phi + \ddot{z}\vec{e}_z" />
           </div>
 
           <div className="p-3.5 rounded-xl bg-muted/30 border border-border/50">
             <span className="font-sans font-bold text-amber-400 text-xs block mb-1.5">C. Sphérique :</span>
-            <LatexMath math="\vec{a} = (\ddot{r} - r\dot{\theta}^2 - r\dot{\phi}^2\sin^2\theta)\vec{e}_r + (r\ddot{\theta} + 2\dot{r}\dot{\theta} - r\dot{\phi}^2\sin\theta\cos\theta)\vec{e}_\theta + (r\ddot{\phi}\sin\theta + 2\dot{r}\dot{\phi}\sin\theta + 2r\dot{\theta}\dot{\phi}\cos\theta)\vec{e}_\phi" />
+            <LatexMath math="\vec{\gamma}(M/\mathcal{R}) = (\ddot{r} - r\dot{\theta}^2 - r\dot{\phi}^2\sin^2\theta)\vec{e}_r + (r\ddot{\theta} + 2\dot{r}\dot{\theta} - r\dot{\phi}^2\sin\theta\cos\theta)\vec{e}_\theta + (r\ddot{\phi}\sin\theta + 2\dot{r}\dot{\phi}\sin\theta + 2r\dot{\theta}\dot{\phi}\cos\theta)\vec{e}_\phi" />
           </div>
         </div>
 
@@ -212,22 +253,22 @@ export default function Chap2CinematiqueDuPoint() {
           >
             <span className="flex items-center gap-1.5">
               <BookOpen className="w-4 h-4" />
-              <span>Démonstration Détaillée : Calcul de l'Accélération en Coordonnées Cylindriques</span>
+              <span>Démonstration Détaillée : Calcul de l'Accélération γ(M/R) en Coordonnées Cylindriques</span>
             </span>
             {showAccProof ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
           </button>
 
           {showAccProof && (
             <div className="mt-3 p-4 rounded-xl bg-slate-950 border border-slate-800 text-[11px] font-mono text-slate-300 space-y-3 leading-relaxed animate-in fade-in duration-200">
-              <p className="text-rose-400 font-bold">1. Dérivation du vecteur vitesse <LatexMath math="\vec{v} = \dot{\rho}\vec{e}_\rho + \rho\dot{\phi}\vec{e}_\phi + \dot{z}\vec{e}_z" /> :</p>
-              <p><LatexMath math="\frac{d\vec{v}}{dt} = \frac{d}{dt}(\dot{\rho}\vec{e}_\rho) + \frac{d}{dt}(\rho\dot{\phi}\vec{e}_\phi) + \frac{d}{dt}(\dot{z}\vec{e}_z)" /></p>
+              <p className="text-rose-400 font-bold">1. Dérivation du vecteur vitesse <LatexMath math="\vec{V} = \dot{\rho}\vec{e}_\rho + \rho\dot{\phi}\vec{e}_\phi + \dot{z}\vec{e}_z" /> :</p>
+              <p><LatexMath math="\vec{\gamma} = \frac{d}{dt}(\dot{\rho}\vec{e}_\rho) + \frac{d}{dt}(\rho\dot{\phi}\vec{e}_\phi) + \frac{d}{dt}(\dot{z}\vec{e}_z)" /></p>
               <p>• <LatexMath math="\frac{d}{dt}(\dot{\rho}\vec{e}_\rho) = \ddot{\rho}\vec{e}_\rho + \dot{\rho}\frac{d\vec{e}_\rho}{dt} = \ddot{\rho}\vec{e}_\rho + \dot{\rho}\dot{\phi}\vec{e}_\phi" /></p>
               <p>• <LatexMath math="\frac{d}{dt}(\rho\dot{\phi}\vec{e}_\phi) = \dot{\rho}\dot{\phi}\vec{e}_\phi + \rho\ddot{\phi}\vec{e}_\phi + \rho\dot{\phi}\frac{d\vec{e}_\phi}{dt} = \dot{\rho}\dot{\phi}\vec{e}_\phi + \rho\ddot{\phi}\vec{e}_\phi - \rho\dot{\phi}^2\vec{e}_\rho" /></p>
               <p>• <LatexMath math="\frac{d}{dt}(\dot{z}\vec{e}_z) = \ddot{z}\vec{e}_z" /></p>
               
               <p className="text-amber-300 font-bold mt-2">2. Regroupement des termes selon les 3 vecteurs unitaires :</p>
               <p className="text-cyan-400 font-bold">
-                <LatexMath math="\implies \vec{a} = (\ddot{\rho} - \rho\dot{\phi}^2)\vec{e}_\rho + (\rho\ddot{\phi} + 2\dot{\rho}\dot{\phi})\vec{e}_\phi + \ddot{z}\vec{e}_z" />
+                <LatexMath math="\implies \vec{\gamma}(M/\mathcal{R}) = (\ddot{\rho} - \rho\dot{\phi}^2)\vec{e}_\rho + (\rho\ddot{\phi} + 2\dot{\rho}\dot{\phi})\vec{e}_\phi + \ddot{z}\vec{e}_z" />
               </p>
             </div>
           )}
@@ -253,14 +294,14 @@ export default function Chap2CinematiqueDuPoint() {
           <div className="p-4 rounded-xl bg-muted/30 border border-border/50">
             <h3 className="font-sans font-bold text-cyan-400 mb-2 text-xs">A. Vitesse Intrinsèque</h3>
             <div className="p-2.5 rounded-lg bg-slate-950 border border-slate-800 text-center font-bold text-cyan-300">
-              <LatexMath math="\vec{v} = v\vec{\tau} = \frac{ds}{dt}\vec{\tau}" block />
+              <LatexMath math="\vec{V}(M/\mathcal{R}) = \frac{ds}{dt}\vec{\tau} = \dot{s}\vec{\tau}" block />
             </div>
           </div>
 
           <div className="p-4 rounded-xl bg-muted/30 border border-border/50">
             <h3 className="font-sans font-bold text-rose-400 mb-2 text-xs">B. Accélération Intrinsèque</h3>
             <div className="p-2.5 rounded-lg bg-slate-950 border border-slate-800 text-center font-bold text-rose-300">
-              <LatexMath math="\vec{a} = a_t\vec{\tau} + a_n\vec{n} = \frac{dv}{dt}\vec{\tau} + \frac{v^2}{R_c}\vec{n}" block />
+              <LatexMath math="\vec{\gamma}(M/\mathcal{R}) = a_T\vec{\tau} + a_N\vec{n} = \ddot{s}\vec{\tau} + \frac{\dot{s}^2}{R_c}\vec{n}" block />
             </div>
           </div>
         </div>
@@ -273,22 +314,22 @@ export default function Chap2CinematiqueDuPoint() {
           >
             <span className="flex items-center gap-1.5">
               <BookOpen className="w-4 h-4" />
-              <span>Démonstration Détaillée : Formule de Frenet-Serret et d(tau)/dt = (v/Rc) n</span>
+              <span>Démonstration Détaillée : Formule de Frenet-Serret et obtention de a_N = v²/Rc</span>
             </span>
             {showFrenetProof ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
           </button>
 
           {showFrenetProof && (
             <div className="mt-3 p-4 rounded-xl bg-slate-950 border border-slate-800 text-[11px] font-mono text-slate-300 space-y-3 leading-relaxed animate-in fade-in duration-200">
-              <p className="text-purple-400 font-bold">1. Dérivation de <LatexMath math="\vec{v} = v \vec{\tau}" /> par rapport à $t$ :</p>
-              <p><LatexMath math="\vec{a} = \frac{d(v\vec{\tau})}{dt} = \frac{dv}{dt}\vec{\tau} + v \frac{d\vec{\tau}}{dt}" /></p>
+              <p className="text-purple-400 font-bold">1. Dérivation du vecteur vitesse <LatexMath math="\vec{V} = \dot{s} \vec{\tau}" /> par rapport à $t$ :</p>
+              <p><LatexMath math="\vec{\gamma} = \frac{d(\dot{s}\vec{\tau})}{dt} = \ddot{s}\vec{\tau} + \dot{s} \frac{d\vec{\tau}}{dt}" /></p>
               
-              <p className="text-purple-400 font-bold mt-2">2. Règle de dérivation composée par l'abscisse curviligne $s$ :</p>
-              <p><LatexMath math="\frac{d\vec{\tau}}{dt} = \frac{d\vec{\tau}}{ds} \cdot \frac{ds}{dt} = v \cdot \frac{d\vec{\tau}}{ds}" /></p>
-              <p>Par géométrie de la courbure, <LatexMath math="\frac{d\vec{\tau}}{ds} = \frac{\vec{n}}{R_c}" /> (où $R_c$ est le rayon du cercle osculateur).</p>
+              <p className="text-purple-400 font-bold mt-2">2. Règle de dérivation composée par l'angle $\theta$ et l'abscisse curviligne $s$ :</p>
+              <p><LatexMath math="\frac{d\vec{\tau}}{dt} = \frac{d\vec{\tau}}{d\theta} \cdot \frac{d\theta}{dt} = \dot{\theta} \vec{n}" /></p>
+              <p>Or <LatexMath math="ds = R_c d\theta \implies \frac{d\theta}{dt} = \frac{1}{R_c}\frac{ds}{dt} = \frac{\dot{s}}{R_c}" />.</p>
               
               <p className="text-cyan-400 font-bold mt-2">
-                <LatexMath math="\implies v \frac{d\vec{\tau}}{dt} = \frac{v^2}{R_c}\vec{n} \implies \vec{a} = \frac{dv}{dt}\vec{\tau} + \frac{v^2}{R_c}\vec{n}" />
+                <LatexMath math="\implies \dot{s} \frac{d\vec{\tau}}{dt} = \frac{\dot{s}^2}{R_c}\vec{n} \implies \vec{\gamma}(M/\mathcal{R}) = \ddot{s}\vec{\tau} + \frac{\dot{s}^2}{R_c}\vec{n}" />
               </p>
             </div>
           )}
@@ -300,13 +341,17 @@ export default function Chap2CinematiqueDuPoint() {
 
       {/* PARTIE 5: TYPES DE MOUVEMENTS REMARQUABLES */}
       <section className="bg-card/90 border border-border/80 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 shadow-sm w-full max-w-full overflow-x-hidden">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 text-xs font-extrabold mb-3">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 text-xs font-extrabold mb-3">
           <span>Partie 5 • Types de Mouvements Remarquables</span>
         </div>
 
         <h2 className="text-xl sm:text-2xl font-black mb-3 sm:mb-4 text-foreground leading-tight">
           5. Classification des Mouvements Remarquables
         </h2>
+
+        <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed mb-4">
+          Synthèse des équations horaires, de vitesse et d'accélération pour les mouvements fondamentaux.
+        </p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           
@@ -317,7 +362,7 @@ export default function Chap2CinematiqueDuPoint() {
               <span>A. Mouvement Rectiligne Uniformément Varié (MRUV)</span>
             </h3>
             <div className="space-y-1 font-mono text-xs text-muted-foreground">
-              <p>• Accélération : <LatexMath math="a(t) = a_0 = \text{Cte}" /></p>
+              <p>• Accélération constante : <LatexMath math="a(t) = a_0 = \text{Cte}" /></p>
               <p>• Vitesse : <LatexMath math="v(t) = a_0 t + v_0" /></p>
               <p>• Position : <LatexMath math="x(t) = \frac{1}{2}a_0 t^2 + v_0 t + x_0" /></p>
               <p>• Torricelli : <LatexMath math="v^2 - v_0^2 = 2 a_0 (x - x_0)" /></p>
@@ -333,7 +378,7 @@ export default function Chap2CinematiqueDuPoint() {
             <div className="space-y-1 font-mono text-xs text-muted-foreground">
               <p>• Rayon <LatexMath math="R = \text{Cte}" />, Vitesse angulaire <LatexMath math="\omega = \dot{\theta} = \text{Cte}" /></p>
               <p>• Vitesse linéaire : <LatexMath math="v = R \omega" /></p>
-              <p>• Accélération purement centripète : <LatexMath math="\vec{a} = -R\omega^2 \vec{e}_r" /></p>
+              <p>• Accélération centripète : <LatexMath math="\vec{\gamma} = -R\omega^2 \vec{e}_r" /></p>
               <p>• Période : <LatexMath math="T = \frac{2\pi}{\omega}" /></p>
             </div>
           </div>
@@ -345,8 +390,8 @@ export default function Chap2CinematiqueDuPoint() {
               <span>C. Mouvement Hélicoïdal (Vis sans fin)</span>
             </h3>
             <div className="space-y-1 font-mono text-xs text-muted-foreground">
-              <p>• Rotation circulaire uniforme <LatexMath math="\phi(t) = \omega t" /> + Translation uniforme <LatexMath math="z(t) = v_z t" /></p>
-              <p>• Trajectoire en hélice de pas <LatexMath math="h = \frac{2\pi v_z}{\omega}" /></p>
+              <p>• Rotation uniforme <LatexMath math="\phi(t) = \omega t" /> + Translation uniforme <LatexMath math="z(t) = v_z t" /></p>
+              <p>• Hélice 3D de pas <LatexMath math="h = \frac{2\pi v_z}{\omega}" /></p>
             </div>
           </div>
 
@@ -357,7 +402,7 @@ export default function Chap2CinematiqueDuPoint() {
               <span>D. Mouvement Parabolique (Champ de pesanteur)</span>
             </h3>
             <div className="space-y-1 font-mono text-xs text-muted-foreground">
-              <p>• Accélération constante : <LatexMath math="\vec{a} = -g\vec{j}" /></p>
+              <p>• Accélération constante : <LatexMath math="\vec{\gamma} = -g\vec{j}" /></p>
               <p>• Équation de trajectoire : <LatexMath math="y(x) = -\frac{g}{2 v_0^2 \cos^2\alpha} x^2 + x\tan\alpha" /></p>
             </div>
           </div>
@@ -365,29 +410,133 @@ export default function Chap2CinematiqueDuPoint() {
         </div>
       </section>
 
-      {/* PARTIE 6: CHANGEMENT DE RÉFÉRENTIEL, FORMULE DE BOUR & COMPOSITION DES VITESSES/ACCÉLÉRATIONS */}
+      {/* PARTIE 6: CHANGEMENT DE RÉFÉRENTIELS, FORMULE DE BOUR & COMPOSITION DES VITESSES ET ACCÉLÉRATIONS */}
       <section className="bg-card/90 border border-border/80 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 shadow-sm w-full max-w-full overflow-x-hidden">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-500/10 text-rose-600 dark:text-rose-400 text-xs font-extrabold mb-3">
-          <span>Partie 6 • Changement de Référentiel, Formule de Bour & Composition</span>
+          <span>Partie 6 • Changement de Référentiels, Formule de Bour & Composition</span>
         </div>
 
         <h2 className="text-xl sm:text-2xl font-black mb-3 sm:mb-4 text-foreground leading-tight">
           6. Formule de Bour, Composition des Vitesses et des Accélérations (Coriolis)
         </h2>
 
+        {/* 2D REFERENCE FRAMES SVG DIAGRAM */}
+        <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 mb-6">
+          <h3 className="text-xs sm:text-sm font-bold text-amber-400 mb-3 flex items-center gap-2">
+            <Sparkles className="w-4 h-4" />
+            <span>Schéma Géométrique 2D : Référentiel Fixe <LatexMath math="\mathcal{R}_0(O)" />, Référentiel Mobile <LatexMath math="\mathcal{R}_1(O_1)" /> et Relation de Chasles</span>
+          </h3>
+
+          <div className="flex justify-center items-center py-2 overflow-x-auto">
+            <svg viewBox="0 0 540 320" className="w-full max-w-lg h-auto">
+              <defs>
+                <marker id="arrowRed" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                  <path d="M 0 0 L 10 5 L 0 10 z" fill="#ef4444" />
+                </marker>
+                <marker id="arrowBlue" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                  <path d="M 0 0 L 10 5 L 0 10 z" fill="#3b82f6" />
+                </marker>
+                <marker id="arrowCyan" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                  <path d="M 0 0 L 10 5 L 0 10 z" fill="#06b6d4" />
+                </marker>
+                <marker id="arrowAmber" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                  <path d="M 0 0 L 10 5 L 0 10 z" fill="#f59e0b" />
+                </marker>
+                <marker id="arrowEmerald" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                  <path d="M 0 0 L 10 5 L 0 10 z" fill="#10b981" />
+                </marker>
+              </defs>
+
+              {/* Fixed Frame R0(O, i0, j0) */}
+              <g stroke="#64748b" strokeWidth="2">
+                <line x1="60" y1="260" x2="220" y2="260" markerEnd="url(#arrowBlue)" />
+                <line x1="60" y1="260" x2="60" y2="100" markerEnd="url(#arrowBlue)" />
+              </g>
+              <circle cx="60" cy="260" r="4" fill="#3b82f6" />
+              <text x="45" y="275" fill="#3b82f6" fontSize="13" fontWeight="bold" fontFamily="monospace">O (R0 Fixe)</text>
+              <text x="200" y="280" fill="#94a3b8" fontSize="11" fontFamily="monospace">x0</text>
+              <text x="45" y="95" fill="#94a3b8" fontSize="11" fontFamily="monospace">y0</text>
+
+              {/* Mobile Frame R1(O1, i1, j1) Rotated */}
+              <g stroke="#a855f7" strokeWidth="2" strokeDasharray="4,3">
+                <line x1="220" y1="180" x2="370" y2="120" markerEnd="url(#arrowRed)" />
+                <line x1="220" y1="180" x2="160" y2="40" markerEnd="url(#arrowRed)" />
+              </g>
+              <circle cx="220" cy="180" r="4" fill="#ef4444" />
+              <text x="225" y="200" fill="#ef4444" fontSize="13" fontWeight="bold" fontFamily="monospace">O1 (R1 Mobile)</text>
+              <text x="375" y="120" fill="#a855f7" fontSize="11" fontFamily="monospace">x1</text>
+              <text x="150" y="35" fill="#a855f7" fontSize="11" fontFamily="monospace">y1</text>
+
+              {/* Rotation arc Omega */}
+              <path d="M 270,180 A 50 50 0 0 0 255,150" fill="none" stroke="#f59e0b" strokeWidth="2" markerEnd="url(#arrowAmber)" />
+              <text x="275" y="165" fill="#f59e0b" fontSize="12" fontWeight="bold" fontFamily="monospace">Ω(R1/R0)</text>
+
+              {/* Point M */}
+              <circle cx="430" cy="70" r="6" fill="#f59e0b" />
+              <text x="442" y="65" fill="#f59e0b" fontSize="14" fontWeight="bold" fontFamily="monospace">M (Point Matériel)</text>
+
+              {/* Vectors Chasles */}
+              {/* OO1 vector (Amber) */}
+              <line x1="60" y1="260" x2="214" y2="184" stroke="#f59e0b" strokeWidth="2.5" markerEnd="url(#arrowAmber)" />
+              <text x="120" y="235" fill="#f59e0b" fontSize="12" fontWeight="bold" fontFamily="monospace">OO1</text>
+
+              {/* O1M vector (Emerald) */}
+              <line x1="220" y1="180" x2="424" y2="74" stroke="#10b981" strokeWidth="2.5" markerEnd="url(#arrowEmerald)" />
+              <text x="325" y="120" fill="#10b981" fontSize="12" fontWeight="bold" fontFamily="monospace">O1M</text>
+
+              {/* OM vector (Cyan) */}
+              <line x1="60" y1="260" x2="424" y2="74" stroke="#06b6d4" strokeWidth="3" markerEnd="url(#arrowCyan)" />
+              <text x="220" y="130" fill="#06b6d4" fontSize="13" fontWeight="bold" fontFamily="monospace">OM = OO1 + O1M</text>
+            </svg>
+          </div>
+
+          <div className="p-3 rounded-xl bg-slate-900 border border-slate-800 text-center font-mono text-xs text-amber-300 mt-2">
+            Relation de Chasles Vectorielle : <LatexMath math="\vec{OM} = \vec{OO}_1 + \vec{O_1 M}" />
+          </div>
+        </div>
+
         {/* Formule de Bour Card */}
-        <div className="p-4 sm:p-5 rounded-2xl bg-rose-500/10 border border-rose-500/30 mb-6">
+        <div className="p-4 sm:p-5 rounded-2xl bg-rose-500/10 border border-rose-500/30 mb-4">
           <h3 className="text-sm sm:text-base font-bold text-rose-400 mb-2 flex items-center gap-2">
             <Sparkles className="w-4 h-4" />
             <span>A. La Formule Fondamentale de Bour (Dérivation Vectorielle Relative)</span>
           </h3>
           <p className="text-xs text-muted-foreground leading-relaxed mb-3">
-            Soit un référentiel mobile <LatexMath math="\mathcal{R}'(O', \vec{i}', \vec{j}', \vec{k}')" /> tournant à la vitesse angulaire instantanée <LatexMath math="\vec{\Omega}(\mathcal{R}'/\mathcal{R})" /> par rapport au référentiel fixe <LatexMath math="\mathcal{R}(O, \vec{i}, \vec{j}, \vec{k})" />. Pour tout vecteur <LatexMath math="\vec{A}" /> :
+            Soit un référentiel mobile <LatexMath math="\mathcal{R}_1(O_1, \vec{i}_1, \vec{j}_1, \vec{k}_1)" /> tournant à la vitesse angulaire instantanée <LatexMath math="\vec{\Omega}(\mathcal{R}_1/\mathcal{R}_0)" /> par rapport au référentiel fixe <LatexMath math="\mathcal{R}_0(O, \vec{i}_0, \vec{j}_0, \vec{k}_0)" />. Pour tout vecteur <LatexMath math="\vec{V}_1" /> :
           </p>
 
           <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 text-center font-mono text-xs sm:text-sm font-bold text-rose-300 overflow-x-auto custom-scrollbar">
-            <LatexMath math="\left[ \frac{d\vec{A}}{dt} \right]_\mathcal{R} = \left[ \frac{d\vec{A}}{dt} \right]_{\mathcal{R}'} + \vec{\Omega}(\mathcal{R}'/\mathcal{R}) \wedge \vec{A}" block />
+            <LatexMath math="\left[ \frac{d\vec{V}_1}{dt} \right]_{\mathcal{R}_0} = \left[ \frac{d\vec{V}_1}{dt} \right]_{\mathcal{R}_1} + \vec{\Omega}(\mathcal{R}_1/\mathcal{R}_0) \wedge \vec{V}_1" block />
           </div>
+        </div>
+
+        {/* ACCORDION DEMONSTRATION FORMULE DE BOUR */}
+        <div className="mb-6">
+          <button
+            onClick={() => setShowBourProof(!showBourProof)}
+            className="w-full flex items-center justify-between text-xs font-bold text-rose-400 hover:text-rose-300 transition-all p-2.5 rounded-xl bg-rose-500/10 border border-rose-500/20"
+          >
+            <span className="flex items-center gap-1.5">
+              <BookOpen className="w-4 h-4" />
+              <span>Démonstration Détaillée : Dérivation de la Formule de Bour et des Vecteurs de Base Mobiles</span>
+            </span>
+            {showBourProof ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+          </button>
+
+          {showBourProof && (
+            <div className="mt-3 p-4 rounded-xl bg-slate-950 border border-slate-800 text-[11px] font-mono text-slate-300 space-y-3 leading-relaxed animate-in fade-in duration-200">
+              <p className="text-rose-400 font-bold">1. Expression d'un vecteur <LatexMath math="\vec{V}_1 = X_1\vec{i}_1 + Y_1\vec{j}_1 + Z_1\vec{k}_1" /> dans la base mobile de <LatexMath math="\mathcal{R}_1" /> :</p>
+              <p>En dérivant dans le repère fixe <LatexMath math="\mathcal{R}_0" /> :</p>
+              <p><LatexMath math="\left[\frac{d\vec{V}_1}{dt}\right]_{\mathcal{R}_0} = \left(\dot{X}_1\vec{i}_1 + \dot{Y}_1\vec{j}_1 + \dot{Z}_1\vec{k}_1\right) + \left(X_1\left[\frac{d\vec{i}_1}{dt}\right]_{\mathcal{R}_0} + Y_1\left[\frac{d\vec{j}_1}{dt}\right]_{\mathcal{R}_0} + Z_1\left[\frac{d\vec{k}_1}{dt}\right]_{\mathcal{R}_0}\right)" /></p>
+              
+              <p className="text-amber-300 font-bold mt-2">2. Dérivées des vecteurs unitaires de la base mobile :</p>
+              <p>Or par rotation angulaire <LatexMath math="\vec{\Omega}" />, la variation temporelle des vecteurs de base s'écrit :</p>
+              <p><LatexMath math="\left[\frac{d\vec{i}_1}{dt}\right]_{\mathcal{R}_0} = \vec{\Omega} \wedge \vec{i}_1 \,;\, \left[\frac{d\vec{j}_1}{dt}\right]_{\mathcal{R}_0} = \vec{\Omega} \wedge \vec{j}_1 \,;\, \left[\frac{d\vec{k}_1}{dt}\right]_{\mathcal{R}_0} = \vec{\Omega} \wedge \vec{k}_1" /></p>
+
+              <p className="text-cyan-400 font-bold mt-2">3. Substitution et factorisation par le produit vectoriel :</p>
+              <p><LatexMath math="\left[\frac{d\vec{V}_1}{dt}\right]_{\mathcal{R}_0} = \left[\frac{d\vec{V}_1}{dt}\right]_{\mathcal{R}_1} + \vec{\Omega} \wedge (X_1\vec{i}_1 + Y_1\vec{j}_1 + Z_1\vec{k}_1) = \left[\frac{d\vec{V}_1}{dt}\right]_{\mathcal{R}_1} + \vec{\Omega}(\mathcal{R}_1/\mathcal{R}_0) \wedge \vec{V}_1" /></p>
+            </div>
+          )}
         </div>
 
         {/* Composition des Vitesses et Accélérations */}
@@ -397,12 +546,11 @@ export default function Chap2CinematiqueDuPoint() {
           <div className="p-4 rounded-xl bg-muted/30 border border-border/50">
             <h3 className="font-bold text-cyan-400 text-xs sm:text-sm mb-2">B. Loi de Composition des Vitesses</h3>
             <div className="p-2.5 rounded-lg bg-slate-950 border border-slate-800 text-center font-mono text-xs font-bold text-cyan-300 mb-2">
-              <LatexMath math="\vec{v}_a = \vec{v}_r + \vec{v}_e" block />
+              <LatexMath math="\vec{V}_a(M) = \vec{V}_r(M) + \vec{V}_e(M)" block />
             </div>
             <div className="text-[11px] text-muted-foreground space-y-1 font-sans">
-              <p>• <strong>Vitesse Absolue :</strong> <LatexMath math="\vec{v}_a = \vec{v}(M/\mathcal{R})" /></p>
-              <p>• <strong>Vitesse Relative :</strong> <LatexMath math="\vec{v}_r = \vec{v}(M/\mathcal{R}')" /></p>
-              <p>• <strong>Vitesse d'Entraînement :</strong> <LatexMath math="\vec{v}_e = \vec{v}(O'/\mathcal{R}) + \vec{\Omega}(\mathcal{R}'/\mathcal{R}) \wedge \vec{O'M}" /></p>
+              <p>• <strong>Vitesse Relative :</strong> <LatexMath math="\vec{V}_r(M) = \vec{V}(M/\mathcal{R}_1) = \left[\frac{d\vec{O_1 M}}{dt}\right]_{\mathcal{R}_1}" /></p>
+              <p>• <strong>Vitesse d'Entraînement :</strong> <LatexMath math="\vec{V}_e(M) = \vec{V}(O_1/\mathcal{R}_0) + \vec{\Omega}(\mathcal{R}_1/\mathcal{R}_0) \wedge \vec{O_1 M}" /></p>
             </div>
           </div>
 
@@ -410,44 +558,76 @@ export default function Chap2CinematiqueDuPoint() {
           <div className="p-4 rounded-xl bg-muted/30 border border-border/50">
             <h3 className="font-bold text-rose-400 text-xs sm:text-sm mb-2">C. Loi de Composition des Accélérations</h3>
             <div className="p-2.5 rounded-lg bg-slate-950 border border-slate-800 text-center font-mono text-xs font-bold text-rose-300 mb-2">
-              <LatexMath math="\vec{a}_a = \vec{a}_r + \vec{a}_e + \vec{a}_c" block />
+              <LatexMath math="\vec{\gamma}_a(M) = \vec{\gamma}_r(M) + \vec{\gamma}_e(M) + \vec{\gamma}_c(M)" block />
             </div>
             <div className="text-[11px] text-muted-foreground space-y-1 font-sans">
-              <p>• <strong>Accélération Relative :</strong> <LatexMath math="\vec{a}_r = \vec{a}(M/\mathcal{R}')" /></p>
-              <p>• <strong>Accélération d'Entraînement :</strong> <LatexMath math="\vec{a}_e = \vec{a}(O'/\mathcal{R}) + \dot{\vec{\Omega}} \wedge \vec{O'M} + \vec{\Omega} \wedge (\vec{\Omega} \wedge \vec{O'M})" /></p>
-              <p>• <strong>Accélération de Coriolis :</strong> <LatexMath math="\vec{a}_c = 2 \vec{\Omega}(\mathcal{R}'/\mathcal{R}) \wedge \vec{v}_r" className="text-rose-400 font-bold" /></p>
+              <p>• <strong>Accélération Relative :</strong> <LatexMath math="\vec{\gamma}_r(M) = \vec{\gamma}(M/\mathcal{R}_1)" /></p>
+              <p>• <strong>Accélération d'Entraînement :</strong> <LatexMath math="\vec{\gamma}_e(M) = \vec{\gamma}(O_1/\mathcal{R}_0) + \frac{d\vec{\Omega}}{dt}\Big|_{\mathcal{R}_0} \wedge \vec{O_1 M} + \vec{\Omega} \wedge (\vec{\Omega} \wedge \vec{O_1 M})" /></p>
+              <p>• <strong>Accélération de Coriolis :</strong> <LatexMath math="\vec{\gamma}_c(M) = 2 \vec{\Omega}(\mathcal{R}_1/\mathcal{R}_0) \wedge \vec{V}_r(M)" className="text-rose-400 font-bold" /></p>
             </div>
           </div>
 
         </div>
 
-        {/* ACCORDION DEMONSTRATION BOUR & COMPOSITION */}
+        {/* ACCORDION DEMONSTRATION COMPOSITION VITESSES */}
+        <div className="mb-4">
+          <button
+            onClick={() => setShowCompVitProof(!showCompVitProof)}
+            className="w-full flex items-center justify-between text-xs font-bold text-cyan-400 hover:text-cyan-300 transition-all p-2.5 rounded-xl bg-cyan-500/10 border border-cyan-500/20"
+          >
+            <span className="flex items-center gap-1.5">
+              <BookOpen className="w-4 h-4" />
+              <span>Démonstration Détaillée : Loi de Composition des Vitesses (partant de OM = OO1 + O1M)</span>
+            </span>
+            {showCompVitProof ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+          </button>
+
+          {showCompVitProof && (
+            <div className="mt-3 p-4 rounded-xl bg-slate-950 border border-slate-800 text-[11px] font-mono text-slate-300 space-y-3 leading-relaxed animate-in fade-in duration-200">
+              <p className="text-cyan-400 font-bold">1. Relation de Chasles : <LatexMath math="\vec{OM} = \vec{OO}_1 + \vec{O_1 M}" /></p>
+              <p>On dérive par rapport au temps dans le référentiel fixe <LatexMath math="\mathcal{R}_0" /> :</p>
+              <p><LatexMath math="\vec{V}_a(M) = \left[\frac{d\vec{OM}}{dt}\right]_{\mathcal{R}_0} = \left[\frac{d\vec{OO}_1}{dt}\right]_{\mathcal{R}_0} + \left[\frac{d\vec{O_1 M}}{dt}\right]_{\mathcal{R}_0}" /></p>
+              <p>2. Application de la formule de Bour au vecteur <LatexMath math="\vec{O_1 M}" /> :</p>
+              <p><LatexMath math="\left[\frac{d\vec{O_1 M}}{dt}\right]_{\mathcal{R}_0} = \left[\frac{d\vec{O_1 M}}{dt}\right]_{\mathcal{R}_1} + \vec{\Omega}(\mathcal{R}_1/\mathcal{R}_0) \wedge \vec{O_1 M} = \vec{V}_r(M) + \vec{\Omega} \wedge \vec{O_1 M}" /></p>
+              <p>3. En regroupant les termes :</p>
+              <p className="text-emerald-400 font-bold">
+                <LatexMath math="\implies \vec{V}_a(M) = \vec{V}_r(M) + \underbrace{\vec{V}(O_1/\mathcal{R}_0) + \vec{\Omega} \wedge \vec{O_1 M}}_{\vec{V}_e(M)} = \vec{V}_r(M) + \vec{V}_e(M)" />
+              </p>
+            </div>
+          )}
+        </div>
+
+        {/* ACCORDION DEMONSTRATION COMPOSITION ACCÉLÉRATIONS & CORIOLIS */}
         <div className="mb-6">
           <button
-            onClick={() => setShowCompProof(!showCompProof)}
+            onClick={() => setShowCompAccProof(!showCompAccProof)}
             className="w-full flex items-center justify-between text-xs font-bold text-rose-400 hover:text-rose-300 transition-all p-2.5 rounded-xl bg-rose-500/10 border border-rose-500/20"
           >
             <span className="flex items-center gap-1.5">
               <BookOpen className="w-4 h-4" />
-              <span>Démonstration Détaillée : Dérivation de va = vr + ve et Accélération de Coriolis</span>
+              <span>Démonstration Détaillée (Page 11 des cours Sersif Académie) : Obtention de l'Accélération de Coriolis gamma_c = 2 Omega ^ Vr</span>
             </span>
-            {showCompProof ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+            {showCompAccProof ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
           </button>
 
-          {showCompProof && (
+          {showCompAccProof && (
             <div className="mt-3 p-4 rounded-xl bg-slate-950 border border-slate-800 text-[11px] font-mono text-slate-300 space-y-3 leading-relaxed animate-in fade-in duration-200">
-              <p className="text-rose-400 font-bold">1. Décomposition du vecteur position : <LatexMath math="\vec{OM} = \vec{OO'} + \vec{O'M}" /></p>
-              <p>En dérivant dans <LatexMath math="\mathcal{R}" /> :</p>
-              <p><LatexMath math="\vec{v}_a = \left[\frac{d\vec{OM}}{dt}\right]_\mathcal{R} = \left[\frac{d\vec{OO'}}{dt}\right]_\mathcal{R} + \left[\frac{d\vec{O'M}}{dt}\right]_\mathcal{R}" /></p>
-              <p>En exprimant <LatexMath math="\vec{O'M} = x'\vec{i}' + y'\vec{j}' + z'\vec{k}'" /> et en appliquant la formule de Bour :</p>
-              <p><LatexMath math="\left[\frac{d\vec{O'M}}{dt}\right]_\mathcal{R} = \left[\frac{d\vec{O'M}}{dt}\right]_{\mathcal{R}'} + \vec{\Omega} \wedge \vec{O'M} = \vec{v}_r + \vec{\Omega} \wedge \vec{O'M}" /></p>
-              <p className="text-cyan-400 font-bold"><LatexMath math="\implies \vec{v}_a = \vec{v}_r + \left( \vec{v}(O'/\mathcal{R}) + \vec{\Omega} \wedge \vec{O'M} \right) = \vec{v}_r + \vec{v}_e" /></p>
+              <p className="text-rose-400 font-bold">1. Dérivation de <LatexMath math="\vec{V}_a = \vec{V}_r + \vec{V}_e" /> dans <LatexMath math="\mathcal{R}_0" /> :</p>
+              <p><LatexMath math="\vec{\gamma}_a(M) = \left[\frac{d\vec{V}_r}{dt}\right]_{\mathcal{R}_0} + \left[\frac{d\vec{V}_e}{dt}\right]_{\mathcal{R}_0}" /></p>
               
-              <p className="text-rose-400 font-bold mt-3">2. Dérivation pour obtenir l'accélération absolue :</p>
-              <p><LatexMath math="\vec{a}_a = \left[\frac{d\vec{v}_a}{dt}\right]_\mathcal{R} = \left[\frac{d(\vec{v}_r + \vec{v}_e)}{dt}\right]_\mathcal{R}" /></p>
-              <p>En appliquant la formule de Bour à <LatexMath math="\vec{v}_r" /> : <LatexMath math="\left[\frac{d\vec{v}_r}{dt}\right]_\mathcal{R} = \left[\frac{d\vec{v}_r}{dt}\right]_{\mathcal{R}'} + \vec{\Omega} \wedge \vec{v}_r = \vec{a}_r + \vec{\Omega} \wedge \vec{v}_r" />.</p>
-              <p>La dérivation de <LatexMath math="\vec{v}_e" /> fait apparaître un deuxième terme <LatexMath math="\vec{\Omega} \wedge \vec{v}_r" />, ce qui donne le terme de Coriolis :</p>
-              <p className="text-emerald-400 font-bold"><LatexMath math="\implies \vec{a}_c = 2 \vec{\Omega} \wedge \vec{v}_r" /></p>
+              <p className="text-amber-300 font-bold mt-2">2. Dérivation de la vitesse relative par la formule de Bour :</p>
+              <p><LatexMath math="\left[\frac{d\vec{V}_r}{dt}\right]_{\mathcal{R}_0} = \left[\frac{d\vec{V}_r}{dt}\right]_{\mathcal{R}_1} + \vec{\Omega} \wedge \vec{V}_r = \vec{\gamma}_r(M) + \vec{\Omega} \wedge \vec{V}_r" /></p>
+              
+              <p className="text-amber-300 font-bold mt-2">3. Dérivation de la vitesse d'entraînement <LatexMath math="\vec{V}_e = \vec{V}(O_1/\mathcal{R}_0) + \vec{\Omega} \wedge \vec{O_1 M}" /> :</p>
+              <p><LatexMath math="\left[\frac{d\vec{V}_e}{dt}\right]_{\mathcal{R}_0} = \vec{\gamma}(O_1/\mathcal{R}_0) + \frac{d\vec{\Omega}}{dt}\Big|_{\mathcal{R}_0} \wedge \vec{O_1 M} + \vec{\Omega} \wedge \left[\frac{d\vec{O_1 M}}{dt}\right]_{\mathcal{R}_0}" /></p>
+              <p>En remplaçant <LatexMath math="\left[\frac{d\vec{O_1 M}}{dt}\right]_{\mathcal{R}_0} = \vec{V}_r + \vec{\Omega} \wedge \vec{O_1 M}" /> :</p>
+              <p><LatexMath math="\vec{\Omega} \wedge \left[\frac{d\vec{O_1 M}}{dt}\right]_{\mathcal{R}_0} = \vec{\Omega} \wedge \vec{V}_r + \vec{\Omega} \wedge (\vec{\Omega} \wedge \vec{O_1 M})" /></p>
+
+              <p className="text-cyan-400 font-bold mt-2">4. Regroupement des deux termes <LatexMath math="\vec{\Omega} \wedge \vec{V}_r" /> :</p>
+              <p>Le terme <LatexMath math="\vec{\Omega} \wedge \vec{V}_r" /> apparaît deux fois (une fois dans la dérivée de <LatexMath math="\vec{V}_r" /> et une fois dans la dérivée de <LatexMath math="\vec{V}_e" />), d'où le facteur 2 de Coriolis :</p>
+              <p className="text-emerald-400 font-bold">
+                <LatexMath math="\implies \vec{\gamma}_c(M) = 2 \vec{\Omega}(\mathcal{R}_1/\mathcal{R}_0) \wedge \vec{V}_r(M)" />
+              </p>
             </div>
           )}
         </div>
@@ -456,10 +636,10 @@ export default function Chap2CinematiqueDuPoint() {
         <RelativeMotion3DCanvas />
       </section>
 
-      {/* PARTIE 7: EXERCICES D'APPLICATION RÉSOLUS TYPE CONCOURS */}
+      {/* PARTIE 7: 3 EXERCICES D'APPLICATION RÉSOLUS (CONCOURS / SERSIF ACADÉMIE) */}
       <section className="bg-card/90 border border-border/80 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 shadow-sm w-full max-w-full overflow-x-hidden">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 text-xs font-extrabold mb-3">
-          <span>Partie 7 • Applications Pratiques & Exercices Type Concours</span>
+          <span>Partie 7 • 3 Exercices d'Application Résolus (Type Concours)</span>
         </div>
 
         <h2 className="text-xl sm:text-2xl font-black mb-3 sm:mb-4 text-foreground leading-tight">
@@ -471,15 +651,16 @@ export default function Chap2CinematiqueDuPoint() {
           <div className="flex items-center justify-between mb-2">
             <h3 className="text-xs sm:text-sm font-bold text-indigo-400 flex items-center gap-2">
               <Target className="w-4 h-4 text-indigo-400" />
-              <span>Exercice 1 : Coulissement sur une Tige en Rotation (Coriolis)</span>
+              <span>Exercice 1 : Étude d'un Mouvement Hélicoïdal 3D en Coordonnées Cylindriques</span>
             </h3>
-            <span className="text-[10px] px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-300 font-mono">Niveau Concours</span>
+            <span className="text-[10px] px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-300 font-mono">Concours CPGE</span>
           </div>
 
           <p className="text-xs text-muted-foreground leading-relaxed mb-3">
-            Une tige <LatexMath math="OA" /> tourne dans un plan horizontal autour de <LatexMath math="O" /> avec une vitesse angulaire constante <LatexMath math="\vec{\Omega} = \omega \vec{k}" /> par rapport à un repère fixe <LatexMath math="\mathcal{R}" />. Un manchon <LatexMath math="M" /> se déplace le long de la tige avec la loi <LatexMath math="r(t) = v_0 t" />.<br />
-            1. Calculer la vitesse relative <LatexMath math="\vec{v}_r" /> et la vitesse d'entraînement <LatexMath math="\vec{v}_e" />.<br />
-            2. Calculer l'accélération de Coriolis <LatexMath math="\vec{a}_c" />.
+            Dans un repère cylindrique <LatexMath math="(O, \vec{e}_\rho, \vec{e}_\phi, \vec{e}_z)" />, une particule <LatexMath math="M" /> se déplace selon les équations horaires :<br />
+            <LatexMath math="\rho(t) = R = \text{Cte}" />, <LatexMath math="\phi(t) = \omega t" /> (avec <LatexMath math="\omega = \text{Cte}" />), et <LatexMath math="z(t) = h \omega t" />.<br />
+            1. Calculer les composantes et la norme du vecteur vitesse <LatexMath math="\vec{V}(M/\mathcal{R})" />.<br />
+            2. Calculer les composantes du vecteur accélération <LatexMath math="\vec{\gamma}(M/\mathcal{R})" />.
           </p>
 
           <button
@@ -487,7 +668,7 @@ export default function Chap2CinematiqueDuPoint() {
             className="flex items-center gap-2 text-xs font-bold text-indigo-400 hover:text-indigo-300 transition-all p-2 rounded-lg bg-indigo-500/10 border border-indigo-500/20"
           >
             <BookOpen className="w-3.5 h-3.5" />
-            <span>{showEx1Solution ? "Masquer la Solution" : "Afficher la Solution Détaillée"}</span>
+            <span>{showEx1Solution ? "Masquer la Solution" : "Afficher la Solution Détaillée (Exercice 1)"}</span>
             {showEx1Solution ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
           </button>
 
@@ -495,34 +676,36 @@ export default function Chap2CinematiqueDuPoint() {
             <div className="mt-3 p-3.5 rounded-xl bg-slate-950 border border-slate-800 text-[11px] font-mono text-slate-300 space-y-2 leading-relaxed animate-in fade-in duration-200">
               <p className="text-indigo-400 font-bold flex items-center gap-1.5">
                 <CheckCircle2 className="w-3.5 h-3.5" />
-                <span>1. Vitesses :</span>
+                <span>1. Calcul de la vitesse V :</span>
               </p>
-              <p>• Vitesse relative (dans le repère lié à la tige) : <LatexMath math="\vec{v}_r = \dot{r}\vec{e}_r = v_0 \vec{e}_r" /></p>
-              <p>• Vitesse d'entraînement : <LatexMath math="\vec{v}_e = \vec{\Omega} \wedge \vec{OM} = (\omega \vec{k}) \wedge (r\vec{e}_r) = r\omega \vec{e}_\theta = v_0 \omega t \vec{e}_\theta" /></p>
-              <p>• Vitesse absolue : <LatexMath math="\vec{v}_a = v_0 \vec{e}_r + v_0 \omega t \vec{e}_\theta" className="text-cyan-400 font-bold" /></p>
+              <p>• <LatexMath math="\dot{\rho} = 0" />, <LatexMath math="\dot{\phi} = \omega" />, <LatexMath math="\dot{z} = h\omega" /></p>
+              <p>• <LatexMath math="\vec{V}(M/\mathcal{R}) = \dot{\rho}\vec{e}_\rho + \rho\dot{\phi}\vec{e}_\phi + \dot{z}\vec{e}_z = R\omega\vec{e}_\phi + h\omega\vec{e}_z" /></p>
+              <p>• Norme constante : <LatexMath math="V = \sqrt{(R\omega)^2 + (h\omega)^2} = \omega\sqrt{R^2 + h^2}" className="text-cyan-400 font-bold" /></p>
 
               <p className="text-indigo-400 font-bold flex items-center gap-1.5 mt-3">
                 <CheckCircle2 className="w-3.5 h-3.5" />
-                <span>2. Accélération de Coriolis :</span>
+                <span>2. Calcul de l'accélération gamma :</span>
               </p>
-              <p>• <LatexMath math="\vec{a}_c = 2 \vec{\Omega} \wedge \vec{v}_r = 2 (\omega \vec{k}) \wedge (v_0 \vec{e}_r) = 2 v_0 \omega \vec{e}_\theta" className="text-rose-400 font-bold" /></p>
+              <p>• <LatexMath math="\ddot{\rho} = 0" />, <LatexMath math="\ddot{\phi} = 0" />, <LatexMath math="\ddot{z} = 0" /></p>
+              <p>• <LatexMath math="\vec{\gamma}(M/\mathcal{R}) = (\ddot{\rho} - \rho\dot{\phi}^2)\vec{e}_\rho + (\rho\ddot{\phi} + 2\dot{\rho}\dot{\phi})\vec{e}_\phi + \ddot{z}\vec{e}_z = -R\omega^2 \vec{e}_\rho" className="text-rose-400 font-bold" /></p>
             </div>
           )}
         </div>
 
         {/* Exercice 2 */}
-        <div className="p-4 sm:p-5 rounded-2xl bg-muted/30 border border-border/50">
+        <div className="p-4 sm:p-5 rounded-2xl bg-muted/30 border border-border/50 mb-4">
           <div className="flex items-center justify-between mb-2">
             <h3 className="text-xs sm:text-sm font-bold text-indigo-400 flex items-center gap-2">
               <Target className="w-4 h-4 text-indigo-400" />
-              <span>Exercice 2 : Rayon de Courbure au Sommet d'une Trajectoire Parabolique</span>
+              <span>Exercice 2 : Coulissement sur une Tige en Rotation (Composition & Coriolis)</span>
             </h3>
-            <span className="text-[10px] px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-300 font-mono">Niveau Concours</span>
+            <span className="text-[10px] px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-300 font-mono">Concours CPGE</span>
           </div>
 
           <p className="text-xs text-muted-foreground leading-relaxed mb-3">
-            Un projectile est lancé avec une vitesse initiale <LatexMath math="\vec{v}_0 = v_{0x}\vec{i} + v_{0y}\vec{j}" /> dans un champ de pesanteur uniforme <LatexMath math="\vec{g} = -g\vec{j}" />.<br />
-            Déterminer le rayon de courbure <LatexMath math="R_c" /> de la trajectoire au sommet <LatexMath math="S" />.
+            Une tige <LatexMath math="OA" /> tourne dans un plan horizontal à la vitesse angulaire constante <LatexMath math="\vec{\Omega} = \omega \vec{k}" /> par rapport à un repère fixe <LatexMath math="\mathcal{R}_0" />. Un manchon <LatexMath math="M" /> coulisse sur la tige selon la loi <LatexMath math="r(t) = v_0 t" />.<br />
+            1. Déterminer la vitesse relative <LatexMath math="\vec{V}_r" /> et la vitesse d'entraînement <LatexMath math="\vec{V}_e" />.<br />
+            2. Déterminer l'accélération de Coriolis <LatexMath math="\vec{\gamma}_c" />.
           </p>
 
           <button
@@ -530,7 +713,7 @@ export default function Chap2CinematiqueDuPoint() {
             className="flex items-center gap-2 text-xs font-bold text-indigo-400 hover:text-indigo-300 transition-all p-2 rounded-lg bg-indigo-500/10 border border-indigo-500/20"
           >
             <BookOpen className="w-3.5 h-3.5" />
-            <span>{showEx2Solution ? "Masquer la Solution" : "Afficher la Solution Détaillée"}</span>
+            <span>{showEx2Solution ? "Masquer la Solution" : "Afficher la Solution Détaillée (Exercice 2)"}</span>
             {showEx2Solution ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
           </button>
 
@@ -538,12 +721,55 @@ export default function Chap2CinematiqueDuPoint() {
             <div className="mt-3 p-3.5 rounded-xl bg-slate-950 border border-slate-800 text-[11px] font-mono text-slate-300 space-y-2 leading-relaxed animate-in fade-in duration-200">
               <p className="text-indigo-400 font-bold flex items-center gap-1.5">
                 <CheckCircle2 className="w-3.5 h-3.5" />
+                <span>1. Vitesses relative et d'entraînement :</span>
+              </p>
+              <p>• Vitesse relative : <LatexMath math="\vec{V}_r = \dot{r}\vec{e}_r = v_0 \vec{e}_r" /></p>
+              <p>• Vitesse d'entraînement : <LatexMath math="\vec{V}_e = \vec{\Omega} \wedge \vec{OM} = (\omega \vec{k}) \wedge (r\vec{e}_r) = r\omega \vec{e}_\theta = v_0 \omega t \vec{e}_\theta" /></p>
+              <p>• Vitesse absolue : <LatexMath math="\vec{V}_a = v_0 \vec{e}_r + v_0 \omega t \vec{e}_\theta" className="text-cyan-400 font-bold" /></p>
+
+              <p className="text-indigo-400 font-bold flex items-center gap-1.5 mt-3">
+                <CheckCircle2 className="w-3.5 h-3.5" />
+                <span>2. Accélération de Coriolis :</span>
+              </p>
+              <p>• <LatexMath math="\vec{\gamma}_c = 2 \vec{\Omega} \wedge \vec{V}_r = 2 (\omega \vec{k}) \wedge (v_0 \vec{e}_r) = 2 v_0 \omega \vec{e}_\theta" className="text-rose-400 font-bold" /></p>
+            </div>
+          )}
+        </div>
+
+        {/* Exercice 3 */}
+        <div className="p-4 sm:p-5 rounded-2xl bg-muted/30 border border-border/50">
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="text-xs sm:text-sm font-bold text-indigo-400 flex items-center gap-2">
+              <Target className="w-4 h-4 text-indigo-400" />
+              <span>Exercice 3 : Rayon de Courbure Rc au Sommet d'une Trajectoire Parabolique</span>
+            </h3>
+            <span className="text-[10px] px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-300 font-mono">Concours CPGE</span>
+          </div>
+
+          <p className="text-xs text-muted-foreground leading-relaxed mb-3">
+            Un projectile est lancé depuis l'origine avec une vitesse initiale <LatexMath math="\vec{V}_0 = v_{0x}\vec{i} + v_{0y}\vec{j}" /> dans un champ de pesanteur uniforme <LatexMath math="\vec{g} = -g\vec{j}" />.<br />
+            En utilisant la décomposition dans le repère de Frenet au sommet <LatexMath math="S" /> de la parabole, déterminer le rayon de courbure <LatexMath math="R_c(S)" />.
+          </p>
+
+          <button
+            onClick={() => setShowEx3Solution(!showEx3Solution)}
+            className="flex items-center gap-2 text-xs font-bold text-indigo-400 hover:text-indigo-300 transition-all p-2 rounded-lg bg-indigo-500/10 border border-indigo-500/20"
+          >
+            <BookOpen className="w-3.5 h-3.5" />
+            <span>{showEx3Solution ? "Masquer la Solution" : "Afficher la Solution Détaillée (Exercice 3)"}</span>
+            {showEx3Solution ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+          </button>
+
+          {showEx3Solution && (
+            <div className="mt-3 p-3.5 rounded-xl bg-slate-950 border border-slate-800 text-[11px] font-mono text-slate-300 space-y-2 leading-relaxed animate-in fade-in duration-200">
+              <p className="text-indigo-400 font-bold flex items-center gap-1.5">
+                <CheckCircle2 className="w-3.5 h-3.5" />
                 <span>Solution Étape par Étape :</span>
               </p>
-              <p>1. Au sommet <LatexMath math="S" />, la vitesse verticale est nulle : <LatexMath math="v_y(S) = 0 \implies \vec{v}_S = v_{0x}\vec{i}" />.</p>
-              <p>2. L'accélération est <LatexMath math="\vec{a} = -g\vec{j}" /> (orientée vers le bas).</p>
+              <p>1. Au sommet <LatexMath math="S" />, la vitesse verticale s'annule : <LatexMath math="V_y(S) = 0 \implies \vec{V}_S = v_{0x}\vec{i}" />.</p>
+              <p>2. L'accélération est <LatexMath math="\vec{\gamma} = \vec{g} = -g\vec{j}" />.</p>
               <p>3. Au sommet <LatexMath math="S" />, le vecteur unitaire normal de Frenet est <LatexMath math="\vec{n} = -\vec{j}" />.</p>
-              <p>4. Donc <LatexMath math="a_n = g = \frac{v_S^2}{R_c} = \frac{v_{0x}^2}{R_c}" />.</p>
+              <p>4. Donc l'accélération normale est <LatexMath math="a_N = g = \frac{V_S^2}{R_c} = \frac{v_{0x}^2}{R_c}" />.</p>
               <p className="text-emerald-400 font-bold pt-1 border-t border-slate-800/80">
                 <LatexMath math="\implies R_c(S) = \frac{v_{0x}^2}{g}" />
               </p>
