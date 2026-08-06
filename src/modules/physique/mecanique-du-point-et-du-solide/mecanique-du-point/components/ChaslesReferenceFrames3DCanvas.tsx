@@ -2,37 +2,60 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
-import { Sparkles, RotateCw, Play, Pause, Eye } from "lucide-react";
+import { Sparkles, Play, Pause, Eye, EyeOff } from "lucide-react";
 import LatexMath from "@/components/ui/LatexMath";
+
+interface MinimalLabel {
+  id: string;
+  text: string;
+  x: number;
+  y: number;
+  visible: boolean;
+  color: string;
+}
 
 export default function ChaslesReferenceFrames3DCanvas() {
   const mountRef = useRef<HTMLDivElement>(null);
 
-  // Interactive Parameters
-  const [thetaDeg, setThetaDeg] = useState<number>(35); // Angle of mobile frame R1 relative to R0
-  const [distO1, setDistO1] = useState<number>(3.2); // Distance O -> O1
-  const [angleO1Deg, setAngleO1Deg] = useState<number>(25); // Direction angle of O1 in R0 plane
-  const [relMx, setRelMx] = useState<number>(2.5); // Local X of M in R1
-  const [relMy, setRelMy] = useState<number>(1.8); // Local Y of M in R1
-  const [relMz, setRelMz] = useState<number>(1.0); // Local Z of M in R1
+  // Interactive Sliders Parameters
+  const [thetaDeg, setThetaDeg] = useState<number>(40); // Angle of mobile frame R1 relative to R0
+  const [distO1, setDistO1] = useState<number>(3.5); // Distance O -> O1
+  const [relMx, setRelMx] = useState<number>(2.8); // Local X of M in R1
+  const [relMy, setRelMy] = useState<number>(1.6); // Local Y of M in R1
+  const [relMz, setRelMz] = useState<number>(0.8); // Local Z of M in R1
   const [isRotating, setIsRotating] = useState<boolean>(false);
-  const [showDashedTriangle, setShowDashedTriangle] = useState<boolean>(true);
+  const [showLegend, setShowLegend] = useState<boolean>(true);
 
+  // Minimal 2D Screen projected labels (Only essential points, no bulky boxes)
+  const [labels, setLabels] = useState<MinimalLabel[]>([]);
+
+  // Animation Refs
   const animFrameRef = useRef<number | null>(null);
+  const isRotatingRef = useRef<boolean>(isRotating);
+  const thetaRef = useRef<number>(thetaDeg);
+  const angleO1Ref = useRef<number>(20);
+
+  useEffect(() => {
+    isRotatingRef.current = isRotating;
+  }, [isRotating]);
+
+  useEffect(() => {
+    thetaRef.current = thetaDeg;
+  }, [thetaDeg]);
 
   useEffect(() => {
     if (!mountRef.current) return;
     const container = mountRef.current;
     let width = container.clientWidth || 600;
-    let height = container.clientHeight || 380;
+    let height = container.clientHeight || 340;
 
     // 1. Scene, Camera, Renderer
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0x030712);
 
     const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
-    camera.position.set(7, 6, 9);
-    camera.lookAt(1.5, 1, 0.5);
+    camera.position.set(8.5, 7.0, 10.5);
+    camera.lookAt(1.8, 1.0, 0.5);
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setSize(width, height);
@@ -40,7 +63,7 @@ export default function ChaslesReferenceFrames3DCanvas() {
     container.appendChild(renderer.domElement);
 
     // Lights
-    scene.add(new THREE.AmbientLight(0xffffff, 0.9));
+    scene.add(new THREE.AmbientLight(0xffffff, 0.95));
     const dirLight = new THREE.DirectionalLight(0xffffff, 1.2);
     dirLight.position.set(8, 12, 10);
     scene.add(dirLight);
@@ -50,12 +73,12 @@ export default function ChaslesReferenceFrames3DCanvas() {
     scene.add(backLight);
 
     // Dark Floor Grid
-    const grid = new THREE.GridHelper(14, 28, 0x334155, 0x1e293b);
+    const grid = new THREE.GridHelper(16, 32, 0x334155, 0x1e293b);
     grid.position.y = -0.01;
     scene.add(grid);
 
-    // Helper to create sleek, thin 3D vectors (thin shaft + sharp cone)
-    const createThinVector3D = (colorHex: number, shaftRadius: number = 0.025, headRadius: number = 0.07) => {
+    // Helper to create sleek, ultra-thin 3D vectors
+    const createThinVector3D = (colorHex: number, shaftRadius: number = 0.018, headRadius: number = 0.055) => {
       const group = new THREE.Group();
 
       const shaftGeo = new THREE.CylinderGeometry(shaftRadius, shaftRadius, 1, 16);
@@ -68,8 +91,8 @@ export default function ChaslesReferenceFrames3DCanvas() {
       const shaft = new THREE.Mesh(shaftGeo, shaftMat);
       group.add(shaft);
 
-      const headGeo = new THREE.ConeGeometry(headRadius, 0.22, 16);
-      headGeo.translate(0, 0.11, 0);
+      const headGeo = new THREE.ConeGeometry(headRadius, 0.2, 16);
+      headGeo.translate(0, 0.1, 0);
       const headMat = new THREE.MeshStandardMaterial({
         color: colorHex,
         metalness: 0.4,
@@ -90,15 +113,14 @@ export default function ChaslesReferenceFrames3DCanvas() {
           group.visible = true;
           group.position.copy(origin);
 
-          // Default vector direction is Y-up (0,1,0)
           const normDir = dir.clone().normalize();
           group.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), normDir);
 
-          const headLen = Math.min(0.22, len * 0.25);
+          const headLen = Math.min(0.2, len * 0.22);
           const shaftLen = len - headLen;
           shaft.scale.set(1, Math.max(0.001, shaftLen), 1);
           head.position.set(0, shaftLen, 0);
-          const headScale = headLen / 0.22;
+          const headScale = headLen / 0.2;
           head.scale.set(headScale, headScale, headScale);
         },
       };
@@ -114,28 +136,28 @@ export default function ChaslesReferenceFrames3DCanvas() {
     const r0OriginMesh = new THREE.Mesh(r0OriginGeo, r0OriginMat);
     scene.add(r0OriginMesh);
 
-    const vecX0 = createThinVector3D(0x3b82f6, 0.02, 0.06);
-    const vecY0 = createThinVector3D(0x3b82f6, 0.02, 0.06);
-    const vecZ0 = createThinVector3D(0x3b82f6, 0.02, 0.06);
+    const vecX0 = createThinVector3D(0x3b82f6, 0.016, 0.05);
+    const vecY0 = createThinVector3D(0x3b82f6, 0.016, 0.05);
+    const vecZ0 = createThinVector3D(0x3b82f6, 0.016, 0.05);
     scene.add(vecX0.group, vecY0.group, vecZ0.group);
 
     // --- Mobile Reference Frame R1(O1, x1, y1, z1) ---
     const r1OriginGeo = new THREE.SphereGeometry(0.12, 32, 32);
     const r1OriginMat = new THREE.MeshStandardMaterial({
-      color: 0xef4444,
-      emissive: 0xb91c1c,
+      color: 0xa855f7,
+      emissive: 0x7e22ce,
       emissiveIntensity: 0.8,
     });
     const r1OriginMesh = new THREE.Mesh(r1OriginGeo, r1OriginMat);
     scene.add(r1OriginMesh);
 
-    const vecX1 = createThinVector3D(0xa855f7, 0.02, 0.06);
-    const vecY1 = createThinVector3D(0xa855f7, 0.02, 0.06);
-    const vecZ1 = createThinVector3D(0xa855f7, 0.02, 0.06);
+    const vecX1 = createThinVector3D(0xa855f7, 0.016, 0.05);
+    const vecY1 = createThinVector3D(0xa855f7, 0.016, 0.05);
+    const vecZ1 = createThinVector3D(0xa855f7, 0.016, 0.05);
     scene.add(vecX1.group, vecY1.group, vecZ1.group);
 
     // --- Point M ---
-    const pointMGeo = new THREE.SphereGeometry(0.16, 32, 32);
+    const pointMGeo = new THREE.SphereGeometry(0.15, 32, 32);
     const pointMMat = new THREE.MeshStandardMaterial({
       color: 0x38bdf8,
       emissive: 0x0284c7,
@@ -145,22 +167,18 @@ export default function ChaslesReferenceFrames3DCanvas() {
     scene.add(pointMMesh);
 
     // --- Chasles Relation Main Vectors (Thin & Sleek) ---
-    // 1. OO1 Vector (Amber / Orange)
-    const vecOO1 = createThinVector3D(0xf59e0b, 0.03, 0.08);
-    // 2. O1M Vector (Emerald Green)
-    const vecO1M = createThinVector3D(0x10b981, 0.03, 0.08);
-    // 3. OM Vector (Cyan / Sky Blue)
-    const vecOM = createThinVector3D(0x06b6d4, 0.035, 0.09);
-
+    const vecOO1 = createThinVector3D(0xf59e0b, 0.024, 0.07); // OO1 Vector (Amber)
+    const vecO1M = createThinVector3D(0x10b981, 0.024, 0.07); // O1M Vector (Emerald)
+    const vecOM = createThinVector3D(0x06b6d4, 0.028, 0.08); // OM Vector (Cyan)
     scene.add(vecOO1.group, vecO1M.group, vecOM.group);
 
-    // Dashed lines for Chasles vector triangle
+    // Dashed helper lines
     const lineMatDashed = new THREE.LineDashedMaterial({
-      color: 0x64748b,
+      color: 0x475569,
       dashSize: 0.15,
       gapSize: 0.1,
       transparent: true,
-      opacity: 0.6,
+      opacity: 0.5,
     });
 
     const dashedGeoOO1 = new THREE.BufferGeometry();
@@ -169,22 +187,18 @@ export default function ChaslesReferenceFrames3DCanvas() {
     const dashedLineO1M = new THREE.Line(dashedGeoO1M, lineMatDashed);
     scene.add(dashedLineOO1, dashedLineO1M);
 
-    // Rotation Arc around O1 for R1
-    const rotArcGroup = new THREE.Group();
-    scene.add(rotArcGroup);
-
     // Orbit Controls
     let isDragging = false;
     let prevMouse = { x: 0, y: 0 };
     let cameraAngleX = 0.5;
     let cameraAngleY = 0.4;
-    const cameraRadius = 13;
+    const cameraRadius = 14;
 
     const updateCameraPosition = () => {
-      camera.position.x = 1.5 + cameraRadius * Math.sin(cameraAngleX) * Math.cos(cameraAngleY);
+      camera.position.x = 1.8 + cameraRadius * Math.sin(cameraAngleX) * Math.cos(cameraAngleY);
       camera.position.y = 1.0 + cameraRadius * Math.sin(cameraAngleY);
       camera.position.z = cameraRadius * Math.cos(cameraAngleX) * Math.cos(cameraAngleY);
-      camera.lookAt(1.5, 1.0, 0);
+      camera.lookAt(1.8, 1.0, 0);
     };
     updateCameraPosition();
 
@@ -211,7 +225,7 @@ export default function ChaslesReferenceFrames3DCanvas() {
     const handleResize = () => {
       if (!container) return;
       width = container.clientWidth || 600;
-      height = container.clientHeight || 380;
+      height = container.clientHeight || 340;
       camera.aspect = width / height;
       camera.updateProjectionMatrix();
       renderer.setSize(width, height);
@@ -223,51 +237,64 @@ export default function ChaslesReferenceFrames3DCanvas() {
     window.addEventListener("mouseup", onMouseUp);
     window.addEventListener("resize", handleResize);
 
+    // Convert 3D vector to 2D screen coords for minimal labels
+    const toScreenPosition = (v3: THREE.Vector3) => {
+      const clone = v3.clone();
+      clone.project(camera);
+      const x = (clone.x * 0.5 + 0.5) * width;
+      const y = (-clone.y * 0.5 + 0.5) * height;
+      const visible = clone.z < 1.0;
+      return { x, y, visible };
+    };
+
     // Render & Animation Loop
-    let currentThetaDeg = thetaDeg;
     let lastTime = performance.now();
 
     const animate = (time: number) => {
       const delta = (time - lastTime) / 1000;
       lastTime = time;
 
-      if (isRotating) {
-        currentThetaDeg = (currentThetaDeg + delta * 30) % 360;
-        setThetaDeg(Math.round(currentThetaDeg));
-      } else {
-        currentThetaDeg = thetaDeg;
+      if (isRotatingRef.current) {
+        thetaRef.current = (thetaRef.current + delta * 40) % 360;
+        angleO1Ref.current = (angleO1Ref.current + delta * 12) % 360;
       }
 
-      const thetaRad = (currentThetaDeg * Math.PI) / 180;
-      const angleO1Rad = (angleO1Deg * Math.PI) / 180;
+      const thetaRad = (thetaRef.current * Math.PI) / 180;
+      const angleO1Rad = (angleO1Ref.current * Math.PI) / 180;
 
       // 1. Origin Positions
       const O = new THREE.Vector3(0, 0, 0);
       const O1 = new THREE.Vector3(
         distO1 * Math.cos(angleO1Rad),
-        0.5,
+        0.4,
         -distO1 * Math.sin(angleO1Rad)
       );
 
-      // Update R0 axes (Fixed frame)
-      const r0AxisLen = 2.2;
-      vecX0.update(O, new THREE.Vector3(r0AxisLen, 0, 0));
-      vecY0.update(O, new THREE.Vector3(0, r0AxisLen, 0));
-      vecZ0.update(O, new THREE.Vector3(0, 0, r0AxisLen));
+      // Fixed R0 Axes
+      const r0AxisLen = 2.4;
+      const pX0 = new THREE.Vector3(r0AxisLen, 0, 0);
+      const pY0 = new THREE.Vector3(0, r0AxisLen, 0);
+      const pZ0 = new THREE.Vector3(0, 0, r0AxisLen);
+      vecX0.update(O, pX0);
+      vecY0.update(O, pY0);
+      vecZ0.update(O, pZ0);
 
-      // 2. Mobile Frame R1 unit vectors (rotated by theta around Y axis)
+      // 2. Mobile R1 Axes
       const uX1 = new THREE.Vector3(Math.cos(thetaRad), 0, -Math.sin(thetaRad));
       const uY1 = new THREE.Vector3(0, 1, 0);
       const uZ1 = new THREE.Vector3(Math.sin(thetaRad), 0, Math.cos(thetaRad));
 
-      const r1AxisLen = 2.0;
+      const r1AxisLen = 2.2;
+      const pX1 = O1.clone().add(uX1.clone().multiplyScalar(r1AxisLen));
+      const pY1 = O1.clone().add(uY1.clone().multiplyScalar(r1AxisLen));
+      const pZ1 = O1.clone().add(uZ1.clone().multiplyScalar(r1AxisLen));
+
       r1OriginMesh.position.copy(O1);
-      vecX1.update(O1, O1.clone().add(uX1.clone().multiplyScalar(r1AxisLen)));
-      vecY1.update(O1, O1.clone().add(uY1.clone().multiplyScalar(r1AxisLen)));
-      vecZ1.update(O1, O1.clone().add(uZ1.clone().multiplyScalar(r1AxisLen)));
+      vecX1.update(O1, pX1);
+      vecY1.update(O1, pY1);
+      vecZ1.update(O1, pZ1);
 
       // 3. Point M Position
-      // Local O1M vector in R1 basis
       const vecO1M_local = new THREE.Vector3()
         .addScaledVector(uX1, relMx)
         .addScaledVector(uY1, relMy)
@@ -276,36 +303,39 @@ export default function ChaslesReferenceFrames3DCanvas() {
       const M = O1.clone().add(vecO1M_local);
       pointMMesh.position.copy(M);
 
-      // 4. Update Chasles Relation 3D Vectors
+      // 4. Chasles Relation 3D Vectors
       vecOO1.update(O, O1);
       vecO1M.update(O1, M);
       vecOM.update(O, M);
 
-      // Update dashed support lines
-      if (showDashedTriangle) {
-        dashedLineOO1.visible = true;
-        dashedLineO1M.visible = true;
+      // Dashed lines
+      dashedGeoOO1.setFromPoints([O, O1]);
+      dashedLineOO1.computeLineDistances();
+      dashedGeoO1M.setFromPoints([O1, M]);
+      dashedLineO1M.computeLineDistances();
 
-        dashedGeoOO1.setFromPoints([O, O1]);
-        dashedLineOO1.computeLineDistances();
+      // --- Minimal Screen Projections (Clean, no dark boxes, only key labels) ---
+      const spO = toScreenPosition(O.clone().add(new THREE.Vector3(-0.25, -0.2, 0)));
+      const spX0 = toScreenPosition(pX0.clone().add(new THREE.Vector3(0.2, 0, 0)));
+      const spY0 = toScreenPosition(pY0.clone().add(new THREE.Vector3(0, 0.2, 0)));
 
-        dashedGeoO1M.setFromPoints([O1, M]);
-        dashedLineO1M.computeLineDistances();
-      } else {
-        dashedLineOO1.visible = false;
-        dashedLineO1M.visible = false;
-      }
+      const spO1 = toScreenPosition(O1.clone().add(new THREE.Vector3(-0.25, -0.2, 0)));
+      const spX1 = toScreenPosition(pX1.clone().add(new THREE.Vector3(0.2, 0, 0)));
+      const spY1 = toScreenPosition(pY1.clone().add(new THREE.Vector3(0, 0.2, 0)));
 
-      // Rebuild Rotation Arc around O1
-      rotArcGroup.clear();
-      const arcCurve = new THREE.EllipseCurve(0, 0, 1.0, 1.0, 0, thetaRad, false, 0);
-      const arcPoints2D = arcCurve.getPoints(30);
-      const arcPoints3D = arcPoints2D.map((p) => new THREE.Vector3(p.x, 0, -p.y));
-      const arcGeo = new THREE.BufferGeometry().setFromPoints(arcPoints3D);
-      const arcMat = new THREE.LineBasicMaterial({ color: 0xf59e0b });
-      const arcLine = new THREE.Line(arcGeo, arcMat);
-      arcLine.position.copy(O1);
-      rotArcGroup.add(arcLine);
+      const spM = toScreenPosition(M.clone().add(new THREE.Vector3(0.25, 0.2, 0)));
+
+      setLabels([
+        { id: "O", text: "O (R0)", x: spO.x, y: spO.y, visible: spO.visible, color: "text-blue-400 font-bold" },
+        { id: "x0", text: "x0", x: spX0.x, y: spX0.y, visible: spX0.visible, color: "text-blue-300" },
+        { id: "y0", text: "y0", x: spY0.x, y: spY0.y, visible: spY0.visible, color: "text-blue-300" },
+
+        { id: "O1", text: "O1 (R1)", x: spO1.x, y: spO1.y, visible: spO1.visible, color: "text-purple-400 font-bold" },
+        { id: "x1", text: "x1", x: spX1.x, y: spX1.y, visible: spX1.visible, color: "text-purple-300" },
+        { id: "y1", text: "y1", x: spY1.x, y: spY1.y, visible: spY1.visible, color: "text-purple-300" },
+
+        { id: "M", text: "M", x: spM.x, y: spM.y, visible: spM.visible, color: "text-sky-300 font-black text-xs" },
+      ]);
 
       renderer.render(scene, camera);
       animFrameRef.current = requestAnimationFrame(animate);
@@ -321,90 +351,108 @@ export default function ChaslesReferenceFrames3DCanvas() {
       window.removeEventListener("resize", handleResize);
       if (container.contains(domElement)) container.removeChild(domElement);
     };
-  }, [thetaDeg, distO1, angleO1Deg, relMx, relMy, relMz, isRotating, showDashedTriangle]);
+  }, [distO1, relMx, relMy, relMz]);
 
   return (
-    <div className="p-3 sm:p-6 rounded-2xl sm:rounded-3xl bg-slate-950 border border-slate-800 text-white shadow-xl">
+    <div className="p-2 sm:p-4 rounded-2xl sm:rounded-3xl bg-slate-950 border border-slate-800 text-white shadow-xl max-w-full overflow-hidden">
       {/* Title Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
-        <div>
-          <h3 className="text-xs sm:text-base font-bold text-amber-400 flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-amber-400 flex-shrink-0" />
-            <span>
-              Schéma 3D Interactif : Référentiel Fixe <LatexMath math="\mathcal{R}_0(O)" />, Mobile{" "}
-              <LatexMath math="\mathcal{R}_1(O_1)" /> & Relation de Chasles
-            </span>
+      <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
+        <div className="flex items-center gap-2">
+          <Sparkles className="w-4 h-4 text-amber-400 flex-shrink-0" />
+          <h3 className="text-xs sm:text-sm font-bold text-amber-400">
+            Simulateur 3D : Repères <LatexMath math="\mathcal{R}_0" />, <LatexMath math="\mathcal{R}_1" /> & Chasles <LatexMath math="\vec{OM} = \vec{OO}_1 + \vec{O_1 M}" />
           </h3>
-          <p className="text-[11px] sm:text-xs text-slate-400 flex flex-wrap items-center gap-1">
-            <span>Représentation en 3D avec vecteurs fins et distincts. Relation de Chasles :</span>{" "}
-            <LatexMath math="\vec{OM} = \vec{OO}_1 + \vec{O_1 M}" />
-          </p>
         </div>
 
-        <button
-          onClick={() => setIsRotating(!isRotating)}
-          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all border ${
-            isRotating
-              ? "bg-amber-500/20 text-amber-300 border-amber-500/40 animate-pulse"
-              : "bg-slate-900 text-slate-300 border-slate-700 hover:border-slate-500"
-          }`}
-        >
-          {isRotating ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
-          <span>{isRotating ? "Pause Rotation Ω" : "Animer Rotation Ω"}</span>
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setShowLegend(!showLegend)}
+            className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-mono bg-slate-900 border border-slate-700 text-slate-300 hover:border-slate-500"
+          >
+            {showLegend ? <EyeOff className="w-3 h-3 text-slate-400" /> : <Eye className="w-3 h-3 text-slate-400" />}
+            <span className="hidden sm:inline">{showLegend ? "Masquer Légende" : "Afficher Légende"}</span>
+          </button>
+
+          <button
+            onClick={() => setIsRotating(!isRotating)}
+            className={`flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-bold transition-all border ${
+              isRotating
+                ? "bg-amber-500/20 text-amber-300 border-amber-500/50 animate-pulse"
+                : "bg-slate-900 text-slate-200 border-slate-700 hover:border-slate-500"
+            }`}
+          >
+            {isRotating ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
+            <span>{isRotating ? "Pause Ω" : "Animer Ω"}</span>
+          </button>
+        </div>
       </div>
 
       {/* 3D WebGL Canvas */}
-      <div className="relative rounded-2xl overflow-hidden border border-slate-800 bg-slate-950">
-        <div ref={mountRef} className="w-full h-[340px] sm:h-[400px] cursor-grab active:cursor-grabbing" />
+      <div className="relative rounded-xl overflow-hidden border border-slate-800 bg-slate-950">
+        <div ref={mountRef} className="w-full h-[280px] sm:h-[360px] cursor-grab active:cursor-grabbing" />
 
-        {/* Floating Overlay Legend */}
-        <div className="absolute top-2.5 left-2.5 sm:top-3 sm:left-3 bg-slate-900/90 backdrop-blur-md p-2.5 sm:p-3 rounded-xl border border-slate-800 text-[10px] sm:text-[11px] font-mono space-y-1.5 shadow-lg pointer-events-none">
-          <div className="text-[11px] font-sans font-bold text-amber-400 border-b border-slate-800 pb-1 mb-1 flex items-center justify-between gap-3">
-            <span>Légende des Repères & Vecteurs (3D)</span>
-          </div>
+        {/* Minimal Clean 3D Labels (No heavy boxes, text only) */}
+        {labels.map((lbl) =>
+          lbl.visible ? (
+            <div
+              key={lbl.id}
+              style={{
+                left: `${lbl.x}px`,
+                top: `${lbl.y}px`,
+                transform: "translate(-50%, -50%)",
+              }}
+              className={`absolute pointer-events-none font-mono text-[10px] sm:text-[11px] drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)] z-10 select-none ${lbl.color}`}
+            >
+              {lbl.text}
+            </div>
+          ) : null
+        )}
 
-          <div className="flex items-center gap-2 text-blue-400 font-bold">
-            <span className="w-2.5 h-1 rounded-full bg-blue-400 inline-block" />
-            <span>Repère Fixe R0 (O, x0, y0, z0)</span>
-          </div>
-
-          <div className="flex items-center gap-2 text-purple-400 font-bold">
-            <span className="w-2.5 h-1 rounded-full bg-purple-400 inline-block" />
-            <span>Repère Mobile R1 (O1, x1, y1, z1)</span>
-          </div>
-
-          <div className="pt-1 border-t border-slate-800 space-y-1">
-            <div className="flex items-center gap-2 text-amber-400 font-bold">
-              <span className="w-2.5 h-1 rounded-full bg-amber-400 inline-block" />
-              <span>Vecteur OO1 (Position d'Origine O1)</span>
+        {/* Collapsible Clean Overlay Legend */}
+        {showLegend && (
+          <div className="absolute top-2 left-2 bg-slate-900/90 backdrop-blur-md p-2 rounded-lg border border-slate-800 text-[10px] font-mono space-y-1 shadow-lg pointer-events-none max-w-[220px] sm:max-w-none">
+            <div className="flex items-center gap-2 text-blue-400 font-bold">
+              <span className="w-2 h-2 rounded-full bg-blue-400 inline-block" />
+              <span>R0 Fixe (O, x0, y0, z0)</span>
             </div>
 
-            <div className="flex items-center gap-2 text-emerald-400 font-bold">
-              <span className="w-2.5 h-1 rounded-full bg-emerald-400 inline-block" />
-              <span>Vecteur O1M (Position Relative de M dans R1)</span>
+            <div className="flex items-center gap-2 text-purple-400 font-bold">
+              <span className="w-2 h-2 rounded-full bg-purple-400 inline-block" />
+              <span>R1 Mobile (O1, x1, y1, z1)</span>
             </div>
 
-            <div className="flex items-center gap-2 text-cyan-400 font-bold">
-              <span className="w-2.5 h-1 rounded-full bg-cyan-400 inline-block" />
-              <span>Vecteur OM = OO1 + O1M (Position Absolue)</span>
+            <div className="pt-1 border-t border-slate-800 space-y-0.5 text-[9.5px]">
+              <div className="flex items-center gap-1.5 text-amber-400">
+                <span className="w-2 h-0.5 bg-amber-400 inline-block" />
+                <span>Vecteur OO1 (Ambre)</span>
+              </div>
+
+              <div className="flex items-center gap-1.5 text-emerald-400">
+                <span className="w-2 h-0.5 bg-emerald-400 inline-block" />
+                <span>Vecteur O1M (Émeraude)</span>
+              </div>
+
+              <div className="flex items-center gap-1.5 text-cyan-400 font-bold">
+                <span className="w-2 h-0.5 bg-cyan-400 inline-block" />
+                <span>Vecteur OM = OO1 + O1M (Cyan)</span>
+              </div>
             </div>
           </div>
-        </div>
+        )}
 
-        {/* Dynamic Formula Display Card */}
-        <div className="absolute bottom-2.5 right-2.5 sm:bottom-3 sm:right-3 bg-slate-900/90 backdrop-blur-md px-3 py-2 rounded-xl border border-slate-800 text-[11px] font-mono text-slate-200 shadow-lg">
+        {/* Chasles Formula Card */}
+        <div className="absolute bottom-2 right-2 bg-slate-900/90 backdrop-blur-md px-2.5 py-1 rounded-lg border border-slate-800 text-[10px] sm:text-[11px] font-mono text-slate-200 shadow-md">
           <span className="text-amber-400 font-bold">Chasles : </span>
           <LatexMath math="\vec{OM} = \vec{OO}_1 + \vec{O_1 M}" />
         </div>
       </div>
 
-      {/* Sliders & Controls */}
-      <div className="mt-3 sm:mt-4 grid grid-cols-1 sm:grid-cols-3 gap-3 p-3 rounded-xl bg-slate-900 border border-slate-800 text-xs font-mono">
-        {/* Slider 1: Rotation Theta */}
-        <div className="flex flex-col gap-1">
+      {/* Compact Sliders Panel (Responsive on Mobile) */}
+      <div className="mt-2.5 grid grid-cols-1 sm:grid-cols-3 gap-2 p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-[11px] font-mono">
+        {/* Slider 1: Orientation Theta */}
+        <div className="flex flex-col gap-0.5">
           <div className="flex justify-between text-slate-300">
-            <span>Orientation <LatexMath math="\theta" /> de <LatexMath math="\mathcal{R}_1" />:</span>
+            <span>Orientation <LatexMath math="\theta" />:</span>
             <span className="text-purple-400 font-bold">{thetaDeg}°</span>
           </div>
           <input
@@ -412,13 +460,17 @@ export default function ChaslesReferenceFrames3DCanvas() {
             min="0"
             max="360"
             value={thetaDeg}
-            onChange={(e) => setThetaDeg(parseFloat(e.target.value))}
-            className="w-full accent-purple-500 cursor-pointer"
+            onChange={(e) => {
+              const val = parseFloat(e.target.value);
+              setThetaDeg(val);
+              thetaRef.current = val;
+            }}
+            className="w-full h-1.5 accent-purple-500 cursor-pointer rounded-lg bg-slate-800"
           />
         </div>
 
         {/* Slider 2: Position OO1 */}
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-col gap-0.5">
           <div className="flex justify-between text-slate-300">
             <span>Distance <LatexMath math="OO_1" />:</span>
             <span className="text-amber-400 font-bold">{distO1.toFixed(1)} m</span>
@@ -430,12 +482,12 @@ export default function ChaslesReferenceFrames3DCanvas() {
             step="0.1"
             value={distO1}
             onChange={(e) => setDistO1(parseFloat(e.target.value))}
-            className="w-full accent-amber-500 cursor-pointer"
+            className="w-full h-1.5 accent-amber-500 cursor-pointer rounded-lg bg-slate-800"
           />
         </div>
 
         {/* Slider 3: Position O1M */}
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-col gap-0.5">
           <div className="flex justify-between text-slate-300">
             <span>Composante X de <LatexMath math="\vec{O_1 M}" />:</span>
             <span className="text-emerald-400 font-bold">{relMx.toFixed(1)} m</span>
@@ -447,7 +499,7 @@ export default function ChaslesReferenceFrames3DCanvas() {
             step="0.1"
             value={relMx}
             onChange={(e) => setRelMx(parseFloat(e.target.value))}
-            className="w-full accent-emerald-500 cursor-pointer"
+            className="w-full h-1.5 accent-emerald-500 cursor-pointer rounded-lg bg-slate-800"
           />
         </div>
       </div>
