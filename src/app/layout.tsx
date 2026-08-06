@@ -13,6 +13,8 @@ export const metadata: Metadata = {
   description: "Plateforme premium de préparation au concours de l'enseignement en Physique et Chimie.",
 };
 
+import MobileWarningToast from "@/components/MobileWarningToast";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -29,6 +31,7 @@ export default function RootLayout({
         >
           <AudioProvider>
             {children}
+            <MobileWarningToast />
           </AudioProvider>
         </ThemeProvider>
       </body>
