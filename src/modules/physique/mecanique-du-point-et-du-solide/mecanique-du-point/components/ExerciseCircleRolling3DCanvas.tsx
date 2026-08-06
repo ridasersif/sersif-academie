@@ -54,10 +54,10 @@ export default function ExerciseCircleRolling3DCanvas() {
     trail2DRef.current = [];
   };
 
-  // --- 2D Animated Geometry Scale (Centered in 620x380 viewBox) ---
-  const R_anim = 45;
+  // --- 2D Animated Geometry Scale (Compact 460x270 ViewBox, ZERO wasted space!) ---
+  const R_anim = 42;
   const thetaAnim = animTime;
-  const O_anim = { x: 240, y: 190 };
+  const O_anim = { x: 180, y: 135 }; // Centered tightly in viewBox 0 0 460 270
 
   const O1_anim = {
     x: O_anim.x + R_anim * Math.cos(thetaAnim),
@@ -78,20 +78,38 @@ export default function ExerciseCircleRolling3DCanvas() {
     y: O1_anim.y + R_anim * (ux1_anim.y * Math.cos(relAngleAnim) + uy1_anim.y * Math.sin(relAngleAnim)),
   };
 
+  // Update 2D trail points for Cardioid dynamically behind M (with ZERO line jump artifacts!)
   useEffect(() => {
     if (mode === "ANIMATED" && isPlaying) {
       const trail = trail2DRef.current;
-      if (trail.length === 0 || Math.hypot(trail[trail.length - 1].x - M_anim.x, trail[trail.length - 1].y - M_anim.y) > 1.8) {
+      if (trail.length === 0) {
         trail.push({ x: M_anim.x, y: M_anim.y });
-        if (trail.length > 500) trail.shift();
+      } else {
+        const lastPt = trail[trail.length - 1];
+        const dist = Math.hypot(lastPt.x - M_anim.x, lastPt.y - M_anim.y);
+        
+        if (dist > 12.0) {
+          // Time wrapped or cycle reset -> Clear trail to prevent straight line artifacts!
+          trail2DRef.current = [{ x: M_anim.x, y: M_anim.y }];
+        } else if (dist > 1.8) {
+          trail.push({ x: M_anim.x, y: M_anim.y });
+          if (trail.length > 450) trail.shift();
+        }
       }
     }
   }, [M_anim.x, M_anim.y, mode, isPlaying]);
 
-  // --- Fixed 2D Diagram Constants (Matching Whiteboard Photo Exactly) ---
-  const R_fixed = 65;
-  const thetaFixed = (32 * Math.PI) / 180;
-  const O_fixed = { x: 140, y: 240 };
+  // Reset trail when mode switches to ANIMATED
+  useEffect(() => {
+    if (mode === "ANIMATED") {
+      trail2DRef.current = [];
+    }
+  }, [mode]);
+
+  // --- Fixed 2D Diagram Constants (Tight 440x260 ViewBox, Crisp & Large!) ---
+  const R_fixed = 72; // Larger radius so diagram fills canvas tightly!
+  const thetaFixed = (30 * Math.PI) / 180; // Angle 30 deg
+  const O_fixed = { x: 75, y: 175 }; // Tight origin O near bottom-left
 
   const O1_fixed = {
     x: O_fixed.x + R_fixed * Math.cos(thetaFixed),
@@ -110,82 +128,81 @@ export default function ExerciseCircleRolling3DCanvas() {
   };
 
   return (
-    <div className="p-4 sm:p-6 rounded-2xl sm:rounded-3xl bg-slate-950 border border-slate-800 text-white shadow-2xl max-w-full overflow-hidden mb-6">
+    <div className="p-3 sm:p-4 rounded-2xl bg-slate-950 border border-slate-800 text-white shadow-2xl max-w-full overflow-hidden mb-5">
       
       {/* 1. TOP HEADER TITLE */}
-      <div className="flex items-center justify-between gap-3 mb-4 pb-3 border-b border-slate-800/80">
-        <div className="flex items-center gap-3">
-          <div className="p-2 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-400">
-            <FileText className="w-5 h-5" />
+      <div className="flex items-center justify-between gap-2 mb-3 pb-2.5 border-b border-slate-800/80">
+        <div className="flex items-center gap-2.5">
+          <div className="p-1.5 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-400">
+            <FileText className="w-4 h-4" />
           </div>
           <div>
-            <h3 className="text-base sm:text-xl font-black text-amber-400">
+            <h3 className="text-sm sm:text-lg font-black text-amber-400">
               Exercice 1
             </h3>
-            <p className="text-[11px] sm:text-xs text-slate-400">
+            <p className="text-[10px] sm:text-xs text-slate-400">
               Cinématique du Point • Composition des Vitesses & Accélérations
             </p>
           </div>
         </div>
 
-        <span className="text-[11px] font-mono font-bold px-2.5 py-1 rounded-lg bg-indigo-500/10 border border-indigo-500/30 text-indigo-300">
+        <span className="text-[10px] sm:text-[11px] font-mono font-bold px-2 py-0.5 rounded-lg bg-indigo-500/10 border border-indigo-500/30 text-indigo-300">
           Concours CPGE
         </span>
       </div>
 
-      {/* 2. ÉNONCÉ DE L'EXERCICE (AT THE VERY TOP FIRST!) */}
-      <div className="mb-5 p-4 sm:p-5 rounded-2xl bg-slate-900/90 border border-slate-800/90 space-y-3.5 text-xs sm:text-sm font-sans shadow-lg">
-        <div className="flex items-center gap-2 text-amber-400 font-bold border-b border-slate-800 pb-2.5">
-          <HelpCircle className="w-4 h-4 text-amber-400 flex-shrink-0" />
+      {/* 2. ÉNONCÉ DE L'EXERCICE (COMPACT & CLEAR AT THE TOP) */}
+      <div className="mb-3 p-3 sm:p-4 rounded-xl bg-slate-900/90 border border-slate-800/90 space-y-2 text-xs sm:text-sm font-sans shadow-md">
+        <div className="flex items-center gap-2 text-amber-400 font-bold border-b border-slate-800 pb-1.5 text-xs sm:text-sm">
+          <HelpCircle className="w-3.5 h-3.5 text-amber-400 flex-shrink-0" />
           <span>Énoncé de l'Exercice (Du Tableau) :</span>
         </div>
         
-        <p className="text-slate-300 leading-relaxed font-mono">
-          Dans le plan <LatexMath math="(Oxy)" />, un cercle de diamètre <LatexMath math="OA = 2R" /> tourne à vitesse angulaire constante <LatexMath math="\omega" /> autour du point fixe <LatexMath math="O" />.<br />
-          On lie à son centre mobile <LatexMath math="O_1" />, 2 axes <LatexMath math="(O_1 x_1)" /> et <LatexMath math="(O_1 y_1)" />.<br />
-          Un point <LatexMath math="M" />, initialement en <LatexMath math="A" />, parcourt la circonférence dans le sens positif avec la même vitesse angulaire <LatexMath math="\omega" />.
+        <p className="text-slate-300 leading-normal font-mono text-[11px] sm:text-xs">
+          Dans le plan <LatexMath math="(Oxy)" />, un cercle de diamètre <LatexMath math="OA = 2R" /> tourne à vitesse angulaire constante <LatexMath math="\omega" /> autour de <LatexMath math="O" />.<br />
+          On lie à son centre mobile <LatexMath math="O_1" />, 2 axes <LatexMath math="(O_1 x_1)" /> et <LatexMath math="(O_1 y_1)" />. Un point <LatexMath math="M" />, initialement en <LatexMath math="A" />, parcourt le cercle à la même vitesse angulaire <LatexMath math="\omega" />.
         </p>
 
-        <div className="pt-2 grid grid-cols-1 sm:grid-cols-2 gap-2 text-slate-200 font-mono text-[11px] sm:text-xs">
-          <div className="p-2 rounded-xl bg-slate-950/80 border border-slate-800 flex items-start gap-2">
-            <span className="w-5 h-5 rounded-lg bg-cyan-500/20 text-cyan-400 font-bold flex items-center justify-center text-[10px] flex-shrink-0 mt-0.5">1</span>
-            <span>Exprimer <LatexMath math="\vec{OO}_1" /> et <LatexMath math="\vec{O_1 M}" /> dans la base <LatexMath math="(\vec{i}_1, \vec{j}_1)" />.</span>
+        <div className="pt-1 grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-slate-200 font-mono text-[10.5px] sm:text-xs">
+          <div className="p-1.5 rounded-lg bg-slate-950/80 border border-slate-800 flex items-center gap-1.5">
+            <span className="w-4 h-4 rounded bg-cyan-500/20 text-cyan-400 font-bold flex items-center justify-center text-[9px] flex-shrink-0">1</span>
+            <span>Exprimer <LatexMath math="\vec{OO}_1" /> et <LatexMath math="\vec{O_1 M}" /> dans <LatexMath math="(\vec{i}_1, \vec{j}_1)" />.</span>
           </div>
 
-          <div className="p-2 rounded-xl bg-slate-950/80 border border-slate-800 flex items-start gap-2">
-            <span className="w-5 h-5 rounded-lg bg-emerald-500/20 text-emerald-400 font-bold flex items-center justify-center text-[10px] flex-shrink-0 mt-0.5">2</span>
-            <span>Déterminer la vitesse relative <LatexMath math="\vec{V}_r" /> et d'entraînement <LatexMath math="\vec{V}_e" />.</span>
+          <div className="p-1.5 rounded-lg bg-slate-950/80 border border-slate-800 flex items-center gap-1.5">
+            <span className="w-4 h-4 rounded bg-emerald-500/20 text-emerald-400 font-bold flex items-center justify-center text-[9px] flex-shrink-0">2</span>
+            <span>Déterminer <LatexMath math="\vec{V}_r(M)" /> et <LatexMath math="\vec{V}_e(M)" />.</span>
           </div>
 
-          <div className="p-2 rounded-xl bg-slate-950/80 border border-slate-800 flex items-start gap-2">
-            <span className="w-5 h-5 rounded-lg bg-rose-500/20 text-rose-400 font-bold flex items-center justify-center text-[10px] flex-shrink-0 mt-0.5">3</span>
+          <div className="p-1.5 rounded-lg bg-slate-950/80 border border-slate-800 flex items-center gap-1.5">
+            <span className="w-4 h-4 rounded bg-rose-500/20 text-rose-400 font-bold flex items-center justify-center text-[9px] flex-shrink-0">3</span>
             <span>Calculer l'accélération de Coriolis <LatexMath math="\vec{\gamma}_c(M)" />.</span>
           </div>
 
-          <div className="p-2 rounded-xl bg-slate-950/80 border border-slate-800 flex items-start gap-2">
-            <span className="w-5 h-5 rounded-lg bg-purple-500/20 text-purple-400 font-bold flex items-center justify-center text-[10px] flex-shrink-0 mt-0.5">4</span>
-            <span>Déterminer la trajectoire absolue de <LatexMath math="M" /> (Cardioïde).</span>
+          <div className="p-1.5 rounded-lg bg-slate-950/80 border border-slate-800 flex items-center gap-1.5">
+            <span className="w-4 h-4 rounded bg-purple-500/20 text-purple-400 font-bold flex items-center justify-center text-[9px] flex-shrink-0">4</span>
+            <span>Déterminer la trajectoire (Cardioïde).</span>
           </div>
         </div>
       </div>
 
       {/* 3. MODE SELECTOR BAR (RIGHT ABOVE THE 2D DIAGRAM) */}
-      <div className="flex flex-wrap items-center justify-between gap-3 mb-3 p-2 rounded-xl bg-slate-900 border border-slate-800">
-        <span className="text-xs font-bold text-slate-300 flex items-center gap-1.5 px-2">
+      <div className="flex flex-wrap items-center justify-between gap-2 mb-2 p-1.5 rounded-xl bg-slate-900 border border-slate-800">
+        <span className="text-xs font-bold text-slate-300 flex items-center gap-1.5 px-1.5">
           <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-          <span>Visualisation du Schéma & du Mouvement 2D :</span>
+          <span>Schéma & Animation :</span>
         </span>
 
         {/* Mode Switcher Tabs */}
-        <div className="flex items-center gap-1 bg-slate-950 p-1 rounded-xl border border-slate-800">
+        <div className="flex items-center gap-1 bg-slate-950 p-1 rounded-lg border border-slate-800">
           <button
             onClick={() => {
               setMode("FIXED");
               setIsPlaying(false);
             }}
-            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+            className={`px-2.5 py-1 rounded-md text-[11px] font-bold transition-all ${
               mode === "FIXED"
-                ? "bg-amber-500 text-slate-950 shadow-md"
+                ? "bg-amber-500 text-slate-950 shadow-sm"
                 : "text-slate-400 hover:text-white"
             }`}
           >
@@ -196,10 +213,11 @@ export default function ExerciseCircleRolling3DCanvas() {
             onClick={() => {
               setMode("ANIMATED");
               setIsPlaying(true);
+              trail2DRef.current = [];
             }}
-            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+            className={`px-2.5 py-1 rounded-md text-[11px] font-bold transition-all ${
               mode === "ANIMATED"
-                ? "bg-purple-600 text-white shadow-md"
+                ? "bg-purple-600 text-white shadow-sm"
                 : "text-slate-400 hover:text-white"
             }`}
           >
@@ -208,13 +226,16 @@ export default function ExerciseCircleRolling3DCanvas() {
         </div>
       </div>
 
-      {/* 4. PREMIUM 2D SVG CANVAS CONTAINER */}
-      <div className="relative rounded-2xl overflow-hidden border border-slate-800 bg-slate-950 flex items-center justify-center p-2 shadow-inner">
-        <svg viewBox="0 0 620 380" className="w-full max-w-2xl h-auto drop-shadow-md">
+      {/* 4. TIGHT HIGH-DEFINITION 2D SVG CANVAS CONTAINER */}
+      <div className="relative rounded-xl overflow-hidden border border-slate-800 bg-slate-950 flex items-center justify-center p-1 shadow-inner">
+        <svg
+          viewBox={mode === "FIXED" ? "0 0 440 260" : "0 0 460 270"}
+          className="w-full max-w-xl h-auto drop-shadow-md"
+        >
           <defs>
             {/* Blueprint Grid Pattern */}
-            <pattern id="blueprintGrid" width="20" height="20" patternUnits="userSpaceOnUse">
-              <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#1e293b" strokeWidth="0.5" />
+            <pattern id="blueprintGrid" width="18" height="18" patternUnits="userSpaceOnUse">
+              <path d="M 18 0 L 0 0 0 18" fill="none" stroke="#1e293b" strokeWidth="0.5" />
             </pattern>
 
             {/* Neon Glow Filters */}
@@ -250,28 +271,28 @@ export default function ExerciseCircleRolling3DCanvas() {
           </defs>
 
           {/* Background Blueprint Grid */}
-          <rect width="620" height="380" fill="url(#blueprintGrid)" />
+          <rect width="100%" height="100%" fill="url(#blueprintGrid)" />
 
           {mode === "FIXED" ? (
             /* ========================================================= */
-            /* === MODE 1: 2D SCHEMA FIXE (EXACT WHITEBOARD DIAGRAM) === */
+            /* === MODE 1: 2D SCHEMA FIXE (TIGHT 440x260 VIEWBOX) === */
             /* ========================================================= */
             <g>
               {/* Fixed Frame R0(O, x, y) */}
-              <line x1={O_fixed.x} y1={O_fixed.y} x2={O_fixed.x + 380} y2={O_fixed.y} stroke="#3b82f6" strokeWidth="1.8" markerEnd="url(#arrowBlue)" />
-              <line x1={O_fixed.x} y1={O_fixed.y} x2={O_fixed.x} y2={O_fixed.y - 200} stroke="#3b82f6" strokeWidth="1.8" markerEnd="url(#arrowBlue)" />
-              <text x={O_fixed.x + 368} y={O_fixed.y + 16} fill="#3b82f6" fontSize="13" fontWeight="bold" fontFamily="monospace">x</text>
-              <text x={O_fixed.x - 16} y={O_fixed.y - 188} fill="#3b82f6" fontSize="13" fontWeight="bold" fontFamily="monospace">y</text>
+              <line x1={O_fixed.x} y1={O_fixed.y} x2={O_fixed.x + 340} y2={O_fixed.y} stroke="#3b82f6" strokeWidth="1.8" markerEnd="url(#arrowBlue)" />
+              <line x1={O_fixed.x} y1={O_fixed.y} x2={O_fixed.x} y2={O_fixed.y - 150} stroke="#3b82f6" strokeWidth="1.8" markerEnd="url(#arrowBlue)" />
+              <text x={O_fixed.x + 328} y={O_fixed.y + 15} fill="#3b82f6" fontSize="13" fontWeight="bold" fontFamily="monospace">x</text>
+              <text x={O_fixed.x - 16} y={O_fixed.y - 138} fill="#3b82f6" fontSize="13" fontWeight="bold" fontFamily="monospace">y</text>
               
               {/* Point O Badge */}
               <circle cx={O_fixed.x} cy={O_fixed.y} r="4" fill="#3b82f6" filter="url(#glowBlue)" />
               <text x={O_fixed.x - 16} y={O_fixed.y + 15} fill="#60a5fa" fontSize="13" fontWeight="bold" fontFamily="monospace">O</text>
 
               {/* Unit Vectors i and j */}
-              <line x1={O_fixed.x} y1={O_fixed.y} x2={O_fixed.x + 26} y2={O_fixed.y} stroke="#10b981" strokeWidth="1.8" markerEnd="url(#arrowSmallGreen)" />
+              <line x1={O_fixed.x} y1={O_fixed.y} x2={O_fixed.x + 28} y2={O_fixed.y} stroke="#10b981" strokeWidth="1.8" markerEnd="url(#arrowSmallGreen)" />
               <text x={O_fixed.x + 12} y={O_fixed.y + 15} fill="#10b981" fontSize="11" fontWeight="bold" fontFamily="monospace">i</text>
 
-              <line x1={O_fixed.x} y1={O_fixed.y} x2={O_fixed.x} y2={O_fixed.y - 26} stroke="#10b981" strokeWidth="1.8" markerEnd="url(#arrowSmallGreen)" />
+              <line x1={O_fixed.x} y1={O_fixed.y} x2={O_fixed.x} y2={O_fixed.y - 28} stroke="#10b981" strokeWidth="1.8" markerEnd="url(#arrowSmallGreen)" />
               <text x={O_fixed.x - 14} y={O_fixed.y - 10} fill="#10b981" fontSize="11" fontWeight="bold" fontFamily="monospace">j</text>
 
               {/* Circle centered at O1 passing through O */}
@@ -283,14 +304,13 @@ export default function ExerciseCircleRolling3DCanvas() {
               <line
                 x1={O_fixed.x}
                 y1={O_fixed.y}
-                x2={O1_fixed.x + 140 * ux1_fixed.x}
-                y2={O1_fixed.y + 140 * ux1_fixed.y}
+                x2={O1_fixed.x + 130 * ux1_fixed.x}
+                y2={O1_fixed.y + 130 * ux1_fixed.y}
                 stroke="#a855f7" strokeWidth="1.6" markerEnd="url(#arrowPurple)"
               />
-              {/* x1 Label positioned correctly at end of x1 axis! */}
               <text
-                x={O1_fixed.x + 148 * ux1_fixed.x}
-                y={O1_fixed.y + 148 * ux1_fixed.y + 4}
+                x={O1_fixed.x + 138 * ux1_fixed.x}
+                y={O1_fixed.y + 138 * ux1_fixed.y + 4}
                 fill="#c084fc" fontSize="13" fontWeight="bold" fontFamily="monospace"
               >
                 x1
@@ -300,14 +320,13 @@ export default function ExerciseCircleRolling3DCanvas() {
               <line
                 x1={O1_fixed.x - 35 * uy1_fixed.x}
                 y1={O1_fixed.y - 35 * uy1_fixed.y}
-                x2={O1_fixed.x + 115 * uy1_fixed.x}
-                y2={O1_fixed.y + 115 * uy1_fixed.y}
+                x2={O1_fixed.x + 110 * uy1_fixed.x}
+                y2={O1_fixed.y + 110 * uy1_fixed.y}
                 stroke="#a855f7" strokeWidth="1.6" strokeDasharray="4,2" markerEnd="url(#arrowPurple)"
               />
-              {/* y1 Label positioned correctly at end of y1 axis! */}
               <text
-                x={O1_fixed.x + 122 * uy1_fixed.x - 4}
-                y={O1_fixed.y + 122 * uy1_fixed.y}
+                x={O1_fixed.x + 116 * uy1_fixed.x - 4}
+                y={O1_fixed.y + 116 * uy1_fixed.y}
                 fill="#c084fc" fontSize="13" fontWeight="bold" fontFamily="monospace"
               >
                 y1
@@ -347,14 +366,14 @@ export default function ExerciseCircleRolling3DCanvas() {
             </g>
           ) : (
             /* ========================================================= */
-            /* === MODE 2: 2D MOUVEMENT ANIMÉ (SMOOTH 60FPS FULL CARDIOID) === */
+            /* === MODE 2: 2D MOUVEMENT ANIMÉ (CLEAN TRAIL NO ARTIFACTS) === */
             /* ========================================================= */
             <g>
-              {/* Fixed Frame R0(O, x, y) Centered */}
-              <line x1={O_anim.x - 120} y1={O_anim.y} x2={O_anim.x + 280} y2={O_anim.y} stroke="#3b82f6" strokeWidth="1.6" markerEnd="url(#arrowBlue)" />
-              <line x1={O_anim.x} y1={O_anim.y + 150} x2={O_anim.x} y2={O_anim.y - 150} stroke="#3b82f6" strokeWidth="1.6" markerEnd="url(#arrowBlue)" />
-              <text x={O_anim.x + 265} y={O_anim.y + 16} fill="#3b82f6" fontSize="13" fontWeight="bold" fontFamily="monospace">x</text>
-              <text x={O_anim.x - 16} y={O_anim.y - 138} fill="#3b82f6" fontSize="13" fontWeight="bold" fontFamily="monospace">y</text>
+              {/* Fixed Frame R0(O, x, y) Centered Tightly */}
+              <line x1={O_anim.x - 120} y1={O_anim.y} x2={O_anim.x + 260} y2={O_anim.y} stroke="#3b82f6" strokeWidth="1.6" markerEnd="url(#arrowBlue)" />
+              <line x1={O_anim.x} y1={O_anim.y + 130} x2={O_anim.x} y2={O_anim.y - 130} stroke="#3b82f6" strokeWidth="1.6" markerEnd="url(#arrowBlue)" />
+              <text x={O_anim.x + 248} y={O_anim.y + 16} fill="#3b82f6" fontSize="13" fontWeight="bold" fontFamily="monospace">x</text>
+              <text x={O_anim.x - 16} y={O_anim.y - 118} fill="#3b82f6" fontSize="13" fontWeight="bold" fontFamily="monospace">y</text>
               <circle cx={O_anim.x} cy={O_anim.y} r="4" fill="#3b82f6" filter="url(#glowBlue)" />
               <text x={O_anim.x - 16} y={O_anim.y + 15} fill="#60a5fa" fontSize="13" fontWeight="bold" fontFamily="monospace">O</text>
 
@@ -379,31 +398,31 @@ export default function ExerciseCircleRolling3DCanvas() {
               <line
                 x1={O1_anim.x - 30 * ux1_anim.x}
                 y1={O1_anim.y - 30 * ux1_anim.y}
-                x2={O1_anim.x + 110 * ux1_anim.x}
-                y2={O1_anim.y + 110 * ux1_anim.y}
+                x2={O1_anim.x + 100 * ux1_anim.x}
+                y2={O1_anim.y + 100 * ux1_anim.y}
                 stroke="#a855f7" strokeWidth="1.6" strokeDasharray="4,2" markerEnd="url(#arrowPurple)"
               />
               <line
                 x1={O1_anim.x - 30 * uy1_anim.x}
                 y1={O1_anim.y - 30 * uy1_anim.y}
-                x2={O1_anim.x + 90 * uy1_anim.x}
-                y2={O1_anim.y + 90 * uy1_anim.y}
+                x2={O1_anim.x + 85 * uy1_anim.x}
+                y2={O1_anim.y + 85 * uy1_anim.y}
                 stroke="#a855f7" strokeWidth="1.6" strokeDasharray="4,2" markerEnd="url(#arrowPurple)"
               />
               
-              {/* x1 Label positioned correctly in animation! */}
+              {/* x1 Label */}
               <text
-                x={O1_anim.x + 118 * ux1_anim.x}
-                y={O1_anim.y + 118 * ux1_anim.y + 4}
+                x={O1_anim.x + 108 * ux1_anim.x}
+                y={O1_anim.y + 108 * ux1_anim.y + 4}
                 fill="#c084fc" fontSize="12" fontWeight="bold" fontFamily="monospace"
               >
                 x1
               </text>
 
-              {/* y1 Label positioned correctly in animation! */}
+              {/* y1 Label */}
               <text
-                x={O1_anim.x + 96 * uy1_anim.x - 4}
-                y={O1_anim.y + 96 * uy1_anim.y}
+                x={O1_anim.x + 90 * uy1_anim.x - 4}
+                y={O1_anim.y + 90 * uy1_anim.y}
                 fill="#c084fc" fontSize="12" fontWeight="bold" fontFamily="monospace"
               >
                 y1
@@ -428,7 +447,7 @@ export default function ExerciseCircleRolling3DCanvas() {
 
       {/* Controls Bar for Animated Mode */}
       {mode === "ANIMATED" && (
-        <div className="mt-2.5 flex flex-wrap items-center justify-between gap-2.5 p-2.5 rounded-xl bg-slate-900 border border-slate-800">
+        <div className="mt-2 flex flex-wrap items-center justify-between gap-2 p-2 rounded-xl bg-slate-900 border border-slate-800">
           <div className="flex items-center gap-2">
             <button
               onClick={() => setIsPlaying(!isPlaying)}
@@ -447,7 +466,7 @@ export default function ExerciseCircleRolling3DCanvas() {
             </button>
           </div>
 
-          <div className="flex flex-wrap items-center gap-4 text-xs font-mono text-slate-300">
+          <div className="flex flex-wrap items-center gap-3 text-xs font-mono text-slate-300">
             <div className="flex items-center gap-1.5">
               <span>Vitesse angulaire <LatexMath math="\omega" />:</span>
               <input
@@ -466,11 +485,11 @@ export default function ExerciseCircleRolling3DCanvas() {
       )}
 
       {/* 5. HIDDEN SOLUTION DRAWER AT THE VERY BOTTOM */}
-      <div className="mt-4 border border-slate-800 rounded-2xl bg-slate-950 overflow-hidden shadow-lg">
+      <div className="mt-3 border border-slate-800 rounded-xl bg-slate-950 overflow-hidden shadow-lg">
         {/* Toggle Solution Header */}
         <button
           onClick={() => setShowSolution(!showSolution)}
-          className="w-full flex items-center justify-between p-3.5 bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-300 font-bold text-xs sm:text-sm border-b border-slate-800/80 transition-all"
+          className="w-full flex items-center justify-between p-3 bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-300 font-bold text-xs sm:text-sm border-b border-slate-800/80 transition-all"
         >
           <span className="flex items-center gap-2">
             <BookOpen className="w-4 h-4 text-indigo-400" />
@@ -480,9 +499,9 @@ export default function ExerciseCircleRolling3DCanvas() {
         </button>
 
         {showSolution && (
-          <div className="p-4 space-y-4 text-xs sm:text-sm font-mono text-slate-200 leading-relaxed animate-in fade-in duration-200">
+          <div className="p-3.5 space-y-3 text-xs sm:text-sm font-mono text-slate-200 leading-relaxed animate-in fade-in duration-200">
             {/* Step 1 */}
-            <div className="p-3.5 rounded-xl bg-slate-900/90 border border-slate-800 space-y-1.5">
+            <div className="p-3 rounded-xl bg-slate-900/90 border border-slate-800 space-y-1">
               <h4 className="font-bold text-cyan-400 flex items-center gap-1.5 text-xs sm:text-sm">
                 <CheckCircle2 className="w-4 h-4 text-cyan-400" />
                 <span>1. Expression des Vecteurs Position :</span>
@@ -492,7 +511,7 @@ export default function ExerciseCircleRolling3DCanvas() {
             </div>
 
             {/* Step 2 */}
-            <div className="p-3.5 rounded-xl bg-slate-900/90 border border-slate-800 space-y-1.5">
+            <div className="p-3 rounded-xl bg-slate-900/90 border border-slate-800 space-y-1">
               <h4 className="font-bold text-emerald-400 flex items-center gap-1.5 text-xs sm:text-sm">
                 <CheckCircle2 className="w-4 h-4 text-emerald-400" />
                 <span>2. Vitesse Relative <LatexMath math="\vec{V}_r(M)" /> et Vitesse d'Entraînement <LatexMath math="\vec{V}_e(M)" /> :</span>
@@ -508,19 +527,19 @@ export default function ExerciseCircleRolling3DCanvas() {
             </div>
 
             {/* Step 3 */}
-            <div className="p-3.5 rounded-xl bg-slate-900/90 border border-slate-800 space-y-1.5">
+            <div className="p-3 rounded-xl bg-slate-900/90 border border-slate-800 space-y-1">
               <h4 className="font-bold text-rose-400 flex items-center gap-1.5 text-xs sm:text-sm">
                 <CheckCircle2 className="w-4 h-4 text-rose-400" />
                 <span>3. Accélération de Coriolis <LatexMath math="\vec{\gamma}_c(M)" /> :</span>
               </h4>
               <p><LatexMath math="\vec{\gamma}_c(M) = 2 \vec{\Omega} \wedge \vec{V}_r(M) = 2(\omega\vec{k}) \wedge [-R\omega\sin(\omega t)\vec{i}_1 + R\omega\cos(\omega t)\vec{j}_1]" /></p>
-              <div className="p-2.5 rounded-lg bg-rose-500/20 border border-rose-500/50 text-rose-300 font-bold text-center">
+              <div className="p-2 rounded-lg bg-rose-500/20 border border-rose-500/50 text-rose-300 font-bold text-center">
                 <LatexMath math="\vec{\gamma}_c(M) = -2R\omega^2\cos(\omega t)\vec{i}_1 - 2R\omega^2\sin(\omega t)\vec{j}_1 = -2\omega^2 \vec{O_1 M}" />
               </div>
             </div>
 
             {/* Step 4 */}
-            <div className="p-3.5 rounded-xl bg-slate-900/90 border border-slate-800 space-y-1.5">
+            <div className="p-3 rounded-xl bg-slate-900/90 border border-slate-800 space-y-1">
               <h4 className="font-bold text-purple-400 flex items-center gap-1.5 text-xs sm:text-sm">
                 <CheckCircle2 className="w-4 h-4 text-purple-400" />
                 <span>4. Trajectoire Absolue (Cardioïde) :</span>
