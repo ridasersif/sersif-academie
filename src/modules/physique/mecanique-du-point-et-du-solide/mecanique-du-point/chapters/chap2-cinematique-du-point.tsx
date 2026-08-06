@@ -630,19 +630,8 @@ export default function Chap2CinematiqueDuPoint() {
         <RelativeMotion3DCanvas />
       </section>
 
-      {/* PARTIE 7: 3 EXERCICES D'APPLICATION RÉSOLUS (CONCOURS / SERSIF ACADÉMIE) */}
-      <section className="bg-card/90 border border-border/80 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 shadow-sm w-full max-w-full overflow-x-hidden">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 text-xs font-extrabold mb-3">
-          <span>Partie 7 • 3 Exercices d'Application Résolus (Type Concours)</span>
-        </div>
-
-        <h2 className="text-xl sm:text-2xl font-black mb-3 sm:mb-4 text-foreground leading-tight">
-          7. Exercices d'Application Résolus (CPGE / Concours)
-        </h2>
-
-        {/* Exercice 1 - Cercle tournant et point matériel (Du Tableau) */}
-        <ExerciseCircleRolling3DCanvas />
-      </section>
+      {/* SECTION EXERCICE 1 */}
+      <ExerciseCircleRolling3DCanvas />
 
     </div>
   );
