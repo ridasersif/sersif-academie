@@ -53,10 +53,9 @@ export default function EtudePage({ params }: { params: Promise<{ moduleId: stri
 
   const chapters = MECANIQUE_DU_POINT_CHAPTERS;
 
-  // Lazy state initializer: synchronously reads URL & localStorage BEFORE first render!
-  const [activeChapterIndex, setActiveChapterIndex] = useState<number>(() => {
-    return getInitialChapterIndex(subModuleId, chapters.length);
-  });
+  // Always initialize to 0 for SSR to avoid hydration mismatch
+  const [activeChapterIndex, setActiveChapterIndex] = useState<number>(0);
+  const [isMounted, setIsMounted] = useState(false);
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
@@ -76,14 +75,14 @@ export default function EtudePage({ params }: { params: Promise<{ moduleId: stri
     }
   };
 
-  // Double-check mount fallback in case window was not ready during SSR
+  // Read from localStorage/URL after mount to avoid hydration errors
   useEffect(() => {
-    if (typeof window === "undefined") return;
+    setIsMounted(true);
     const initial = getInitialChapterIndex(subModuleId, chapters.length);
-    if (initial !== activeChapterIndex) {
+    if (initial !== 0) {
       setActiveChapterIndex(initial);
     }
-  }, [subModuleId]);
+  }, [subModuleId, chapters.length]);
 
   // Close mobile drawer when resizing to desktop
   useEffect(() => {

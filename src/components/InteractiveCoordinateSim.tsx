@@ -212,12 +212,12 @@ export default function InteractiveCoordinateSim() {
     render();
 
     // Drag to rotate 3D view
-    const handleMouseDown = (e: MouseEvent) => {
+    const handlePointerDown = (e: PointerEvent) => {
       isDragging.current = true;
       previousMousePosition.current = { x: e.clientX, y: e.clientY };
     };
 
-    const handleMouseMove = (e: MouseEvent) => {
+    const handlePointerMove = (e: PointerEvent) => {
       if (!isDragging.current) return;
       const deltaX = e.clientX - previousMousePosition.current.x;
       const deltaY = e.clientY - previousMousePosition.current.y;
@@ -228,19 +228,21 @@ export default function InteractiveCoordinateSim() {
       previousMousePosition.current = { x: e.clientX, y: e.clientY };
     };
 
-    const handleMouseUp = () => {
+    const handlePointerUp = () => {
       isDragging.current = false;
     };
 
     const canvasElem = canvas;
-    canvasElem.addEventListener("mousedown", handleMouseDown);
-    window.addEventListener("mousemove", handleMouseMove);
-    window.addEventListener("mouseup", handleMouseUp);
+    canvasElem.addEventListener("pointerdown", handlePointerDown);
+    window.addEventListener("pointermove", handlePointerMove);
+    window.addEventListener("pointerup", handlePointerUp);
+    window.addEventListener("pointercancel", handlePointerUp);
 
     return () => {
-      canvasElem.removeEventListener("mousedown", handleMouseDown);
-      window.removeEventListener("mousemove", handleMouseMove);
-      window.removeEventListener("mouseup", handleMouseUp);
+      canvasElem.removeEventListener("pointerdown", handlePointerDown);
+      window.removeEventListener("pointermove", handlePointerMove);
+      window.removeEventListener("pointerup", handlePointerUp);
+      window.removeEventListener("pointercancel", handlePointerUp);
     };
   }, [coordType, r, theta, phi, zVal, rotAngleX, rotAngleY]);
 
@@ -284,7 +286,10 @@ export default function InteractiveCoordinateSim() {
       </div>
 
       {/* 3D Canvas Area */}
-      <div className="relative w-full h-[420px] rounded-2xl bg-slate-950 border border-slate-800 overflow-hidden cursor-grab active:cursor-grabbing shadow-inner">
+      <div 
+        className="relative w-full h-[420px] rounded-2xl bg-slate-950 border border-slate-800 overflow-hidden cursor-grab active:cursor-grabbing shadow-inner"
+        style={{ touchAction: 'none' }}
+      >
         <canvas ref={canvasRef} className="w-full h-full" />
 
         {/* View Indicator overlay */}

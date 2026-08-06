@@ -5,15 +5,6 @@ import * as THREE from "three";
 import { Sparkles, Play, Pause, Eye, EyeOff } from "lucide-react";
 import LatexMath from "@/components/ui/LatexMath";
 
-interface MinimalLabel {
-  id: string;
-  text: string;
-  x: number;
-  y: number;
-  visible: boolean;
-  color: string;
-}
-
 export default function ChaslesReferenceFrames3DCanvas() {
   const mountRef = useRef<HTMLDivElement>(null);
 
@@ -25,9 +16,6 @@ export default function ChaslesReferenceFrames3DCanvas() {
   const [relMz, setRelMz] = useState<number>(0.8); // Local Z of M in R1
   const [isRotating, setIsRotating] = useState<boolean>(false);
   const [showLegend, setShowLegend] = useState<boolean>(true);
-
-  // Minimal 2D Screen projected labels (Only essential points, no bulky boxes)
-  const [labels, setLabels] = useState<MinimalLabel[]>([]);
 
   // Animation Refs
   const animFrameRef = useRef<number | null>(null);
@@ -202,12 +190,12 @@ export default function ChaslesReferenceFrames3DCanvas() {
     };
     updateCameraPosition();
 
-    const onMouseDown = (e: MouseEvent) => {
+    const onPointerDown = (e: PointerEvent) => {
       isDragging = true;
       prevMouse = { x: e.clientX, y: e.clientY };
     };
 
-    const onMouseMove = (e: MouseEvent) => {
+    const onPointerMove = (e: PointerEvent) => {
       if (!isDragging) return;
       const dx = e.clientX - prevMouse.x;
       const dy = e.clientY - prevMouse.y;
@@ -218,7 +206,7 @@ export default function ChaslesReferenceFrames3DCanvas() {
       updateCameraPosition();
     };
 
-    const onMouseUp = () => {
+    const onPointerUp = () => {
       isDragging = false;
     };
 
@@ -232,9 +220,10 @@ export default function ChaslesReferenceFrames3DCanvas() {
     };
 
     const domElement = renderer.domElement;
-    domElement.addEventListener("mousedown", onMouseDown);
-    window.addEventListener("mousemove", onMouseMove);
-    window.addEventListener("mouseup", onMouseUp);
+    domElement.addEventListener("pointerdown", onPointerDown);
+    window.addEventListener("pointermove", onPointerMove);
+    window.addEventListener("pointerup", onPointerUp);
+    window.addEventListener("pointercancel", onPointerUp);
     window.addEventListener("resize", handleResize);
 
     // Convert 3D vector to 2D screen coords for minimal labels
@@ -325,17 +314,24 @@ export default function ChaslesReferenceFrames3DCanvas() {
 
       const spM = toScreenPosition(M.clone().add(new THREE.Vector3(0.25, 0.2, 0)));
 
-      setLabels([
-        { id: "O", text: "O (R0)", x: spO.x, y: spO.y, visible: spO.visible, color: "text-blue-400 font-bold" },
-        { id: "x0", text: "x0", x: spX0.x, y: spX0.y, visible: spX0.visible, color: "text-blue-300" },
-        { id: "y0", text: "y0", x: spY0.x, y: spY0.y, visible: spY0.visible, color: "text-blue-300" },
+      const updateLabel = (id: string, sp: {x: number, y: number, visible: boolean}) => {
+        const el = document.getElementById(`chasles-lbl-${id}`);
+        if (!el) return;
+        if (sp.visible) {
+          el.style.display = 'block';
+          el.style.transform = `translate(-50%, -50%) translate(${sp.x}px, ${sp.y}px)`;
+        } else {
+          el.style.display = 'none';
+        }
+      };
 
-        { id: "O1", text: "O1 (R1)", x: spO1.x, y: spO1.y, visible: spO1.visible, color: "text-purple-400 font-bold" },
-        { id: "x1", text: "x1", x: spX1.x, y: spX1.y, visible: spX1.visible, color: "text-purple-300" },
-        { id: "y1", text: "y1", x: spY1.x, y: spY1.y, visible: spY1.visible, color: "text-purple-300" },
-
-        { id: "M", text: "M", x: spM.x, y: spM.y, visible: spM.visible, color: "text-sky-300 font-black text-xs" },
-      ]);
+      updateLabel("O", spO);
+      updateLabel("x0", spX0);
+      updateLabel("y0", spY0);
+      updateLabel("O1", spO1);
+      updateLabel("x1", spX1);
+      updateLabel("y1", spY1);
+      updateLabel("M", spM);
 
       renderer.render(scene, camera);
       animFrameRef.current = requestAnimationFrame(animate);
@@ -345,9 +341,10 @@ export default function ChaslesReferenceFrames3DCanvas() {
 
     return () => {
       if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
-      domElement.removeEventListener("mousedown", onMouseDown);
-      window.removeEventListener("mousemove", onMouseMove);
-      window.removeEventListener("mouseup", onMouseUp);
+      domElement.removeEventListener("pointerdown", onPointerDown);
+      window.removeEventListener("pointermove", onPointerMove);
+      window.removeEventListener("pointerup", onPointerUp);
+      window.removeEventListener("pointercancel", onPointerUp);
       window.removeEventListener("resize", handleResize);
       if (container.contains(domElement)) container.removeChild(domElement);
     };
@@ -388,25 +385,24 @@ export default function ChaslesReferenceFrames3DCanvas() {
       </div>
 
       {/* 3D WebGL Canvas */}
-      <div className="relative rounded-xl overflow-hidden border border-slate-800 bg-slate-950">
+      <div 
+        className="relative rounded-xl overflow-hidden border border-slate-800 bg-slate-950"
+        style={{ touchAction: 'none' }}
+      >
         <div ref={mountRef} className="w-full h-[280px] sm:h-[360px] cursor-grab active:cursor-grabbing" />
 
-        {/* Minimal Clean 3D Labels (No heavy boxes, text only) */}
-        {labels.map((lbl) =>
-          lbl.visible ? (
-            <div
-              key={lbl.id}
-              style={{
-                left: `${lbl.x}px`,
-                top: `${lbl.y}px`,
-                transform: "translate(-50%, -50%)",
-              }}
-              className={`absolute pointer-events-none font-mono text-[10px] sm:text-[11px] drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)] z-10 select-none ${lbl.color}`}
-            >
-              {lbl.text}
-            </div>
-          ) : null
-        )}
+        {/* Minimal Clean 3D Labels updated directly via DOM for smooth performance */}
+        <div className="absolute inset-0 pointer-events-none z-10 overflow-hidden">
+          <div id="chasles-lbl-O" className="absolute font-mono text-[10px] sm:text-[11px] drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)] select-none text-blue-400 font-bold top-0 left-0" style={{ display: 'none' }}>O (R0)</div>
+          <div id="chasles-lbl-x0" className="absolute font-mono text-[10px] sm:text-[11px] drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)] select-none text-blue-300 top-0 left-0" style={{ display: 'none' }}>x0</div>
+          <div id="chasles-lbl-y0" className="absolute font-mono text-[10px] sm:text-[11px] drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)] select-none text-blue-300 top-0 left-0" style={{ display: 'none' }}>y0</div>
+          
+          <div id="chasles-lbl-O1" className="absolute font-mono text-[10px] sm:text-[11px] drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)] select-none text-purple-400 font-bold top-0 left-0" style={{ display: 'none' }}>O1 (R1)</div>
+          <div id="chasles-lbl-x1" className="absolute font-mono text-[10px] sm:text-[11px] drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)] select-none text-purple-300 top-0 left-0" style={{ display: 'none' }}>x1</div>
+          <div id="chasles-lbl-y1" className="absolute font-mono text-[10px] sm:text-[11px] drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)] select-none text-purple-300 top-0 left-0" style={{ display: 'none' }}>y1</div>
+          
+          <div id="chasles-lbl-M" className="absolute font-mono text-[10px] sm:text-[11px] drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)] select-none text-sky-300 font-black text-xs top-0 left-0" style={{ display: 'none' }}>M</div>
+        </div>
 
         {/* Collapsible Clean Overlay Legend */}
         {showLegend && (

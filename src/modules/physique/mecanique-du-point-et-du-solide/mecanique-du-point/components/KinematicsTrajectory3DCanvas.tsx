@@ -189,12 +189,12 @@ export default function KinematicsTrajectory3DCanvas() {
     };
     updateCameraPosition();
 
-    const onMouseDown = (e: MouseEvent) => {
+    const onPointerDown = (e: PointerEvent) => {
       isDragging = true;
       previousMousePosition = { x: e.clientX, y: e.clientY };
     };
 
-    const onMouseMove = (e: MouseEvent) => {
+    const onPointerMove = (e: PointerEvent) => {
       if (!isDragging) return;
       const deltaX = e.clientX - previousMousePosition.x;
       const deltaY = e.clientY - previousMousePosition.y;
@@ -207,14 +207,15 @@ export default function KinematicsTrajectory3DCanvas() {
       updateCameraPosition();
     };
 
-    const onMouseUp = () => {
+    const onPointerUp = () => {
       isDragging = false;
     };
 
     const domElement = renderer.domElement;
-    domElement.addEventListener("mousedown", onMouseDown);
-    window.addEventListener("mousemove", onMouseMove);
-    window.addEventListener("mouseup", onMouseUp);
+    domElement.addEventListener("pointerdown", onPointerDown);
+    window.addEventListener("pointermove", onPointerMove);
+    window.addEventListener("pointerup", onPointerUp);
+    window.addEventListener("pointercancel", onPointerUp);
 
     const handleResize = () => {
       if (!container) return;
@@ -314,9 +315,10 @@ export default function KinematicsTrajectory3DCanvas() {
 
     return () => {
       if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
-      domElement.removeEventListener("mousedown", onMouseDown);
-      window.removeEventListener("mousemove", onMouseMove);
-      window.removeEventListener("mouseup", onMouseUp);
+      domElement.removeEventListener("pointerdown", onPointerDown);
+      window.removeEventListener("pointermove", onPointerMove);
+      window.removeEventListener("pointerup", onPointerUp);
+      window.removeEventListener("pointercancel", onPointerUp);
       window.removeEventListener("resize", handleResize);
       if (container.contains(domElement)) container.removeChild(domElement);
     };
@@ -383,7 +385,10 @@ export default function KinematicsTrajectory3DCanvas() {
       </div>
 
       {/* 3D WebGL Canvas Container */}
-      <div className="relative rounded-xl overflow-hidden border border-slate-800 bg-slate-950">
+      <div 
+        className="relative rounded-xl overflow-hidden border border-slate-800 bg-slate-950"
+        style={{ touchAction: 'none' }}
+      >
         <div ref={mountRef} className="w-full h-[280px] sm:h-[360px] cursor-grab active:cursor-grabbing" />
 
         {/* Collapsible Floating Legend Overlay */}

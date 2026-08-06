@@ -623,7 +623,10 @@ export default function ThreeDCoordinateCanvas() {
       </div>
 
       {/* 3D WebGL Canvas Container */}
-      <div className="relative w-full h-[260px] sm:h-[330px] rounded-xl sm:rounded-2xl overflow-hidden shadow-inner cursor-grab active:cursor-grabbing border border-slate-800">
+      <div 
+        className="relative w-full h-[260px] sm:h-[330px] rounded-xl sm:rounded-2xl overflow-hidden shadow-inner cursor-grab active:cursor-grabbing border border-slate-800"
+        style={{ touchAction: 'none' }}
+      >
         <div ref={mountRef} className="w-full h-full" />
 
         {/* Visual Angle Badges */}
