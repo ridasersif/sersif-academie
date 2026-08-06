@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import { Sparkles, Play, Pause, RotateCcw, BookOpen, ChevronDown, ChevronUp, CheckCircle2, HelpCircle } from "lucide-react";
+import { Sparkles, Play, Pause, RotateCcw, BookOpen, ChevronDown, ChevronUp, CheckCircle2, HelpCircle, FileText } from "lucide-react";
 import LatexMath from "@/components/ui/LatexMath";
 
 export default function ExerciseCircleRolling3DCanvas() {
@@ -10,7 +10,7 @@ export default function ExerciseCircleRolling3DCanvas() {
   const [omega, setOmega] = useState<number>(1.2); // Vitesse angulaire w (rad/s)
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
   
-  // Solution hidden by default so students try to solve it first!
+  // Solution hidden by default so students solve it first!
   const [showSolution, setShowSolution] = useState<boolean>(false);
 
   // Animation time state for 2D animated mode (60fps smooth loop)
@@ -90,7 +90,7 @@ export default function ExerciseCircleRolling3DCanvas() {
 
   // --- Fixed 2D Diagram Constants (Matching Whiteboard Photo Exactly) ---
   const R_fixed = 65;
-  const thetaFixed = (32 * Math.PI) / 180; // Angle ~ 32 deg
+  const thetaFixed = (32 * Math.PI) / 180;
   const O_fixed = { x: 140, y: 240 };
 
   const O1_fixed = {
@@ -110,22 +110,74 @@ export default function ExerciseCircleRolling3DCanvas() {
   };
 
   return (
-    <div className="p-3 sm:p-5 rounded-2xl sm:rounded-3xl bg-slate-950 border border-slate-800 text-white shadow-2xl max-w-full overflow-hidden mb-6">
+    <div className="p-4 sm:p-6 rounded-2xl sm:rounded-3xl bg-slate-950 border border-slate-800 text-white shadow-2xl max-w-full overflow-hidden mb-6">
       
-      {/* Header: Title "Exercice 1" + Mode Switcher */}
-      <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
-        <div>
-          <h3 className="text-base sm:text-xl font-black text-amber-400 flex items-center gap-2">
-            <Sparkles className="w-5 h-5 text-amber-400 flex-shrink-0" />
-            <span>Exercice 1</span>
-          </h3>
-          <p className="text-[11px] sm:text-xs text-slate-400">
-            Composition de Mouvement : Cercle Tournant & Point Matériel <LatexMath math="M" />
-          </p>
+      {/* 1. TOP HEADER TITLE */}
+      <div className="flex items-center justify-between gap-3 mb-4 pb-3 border-b border-slate-800/80">
+        <div className="flex items-center gap-3">
+          <div className="p-2 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-400">
+            <FileText className="w-5 h-5" />
+          </div>
+          <div>
+            <h3 className="text-base sm:text-xl font-black text-amber-400">
+              Exercice 1
+            </h3>
+            <p className="text-[11px] sm:text-xs text-slate-400">
+              Cinématique du Point • Composition des Vitesses & Accélérations
+            </p>
+          </div>
         </div>
 
+        <span className="text-[11px] font-mono font-bold px-2.5 py-1 rounded-lg bg-indigo-500/10 border border-indigo-500/30 text-indigo-300">
+          Concours CPGE
+        </span>
+      </div>
+
+      {/* 2. ÉNONCÉ DE L'EXERCICE (AT THE VERY TOP FIRST!) */}
+      <div className="mb-5 p-4 sm:p-5 rounded-2xl bg-slate-900/90 border border-slate-800/90 space-y-3.5 text-xs sm:text-sm font-sans shadow-lg">
+        <div className="flex items-center gap-2 text-amber-400 font-bold border-b border-slate-800 pb-2.5">
+          <HelpCircle className="w-4 h-4 text-amber-400 flex-shrink-0" />
+          <span>Énoncé de l'Exercice (Du Tableau) :</span>
+        </div>
+        
+        <p className="text-slate-300 leading-relaxed font-mono">
+          Dans le plan <LatexMath math="(Oxy)" />, un cercle de diamètre <LatexMath math="OA = 2R" /> tourne à vitesse angulaire constante <LatexMath math="\omega" /> autour du point fixe <LatexMath math="O" />.<br />
+          On lie à son centre mobile <LatexMath math="O_1" />, 2 axes <LatexMath math="(O_1 x_1)" /> et <LatexMath math="(O_1 y_1)" />.<br />
+          Un point <LatexMath math="M" />, initialement en <LatexMath math="A" />, parcourt la circonférence dans le sens positif avec la même vitesse angulaire <LatexMath math="\omega" />.
+        </p>
+
+        <div className="pt-2 grid grid-cols-1 sm:grid-cols-2 gap-2 text-slate-200 font-mono text-[11px] sm:text-xs">
+          <div className="p-2 rounded-xl bg-slate-950/80 border border-slate-800 flex items-start gap-2">
+            <span className="w-5 h-5 rounded-lg bg-cyan-500/20 text-cyan-400 font-bold flex items-center justify-center text-[10px] flex-shrink-0 mt-0.5">1</span>
+            <span>Exprimer <LatexMath math="\vec{OO}_1" /> et <LatexMath math="\vec{O_1 M}" /> dans la base <LatexMath math="(\vec{i}_1, \vec{j}_1)" />.</span>
+          </div>
+
+          <div className="p-2 rounded-xl bg-slate-950/80 border border-slate-800 flex items-start gap-2">
+            <span className="w-5 h-5 rounded-lg bg-emerald-500/20 text-emerald-400 font-bold flex items-center justify-center text-[10px] flex-shrink-0 mt-0.5">2</span>
+            <span>Déterminer la vitesse relative <LatexMath math="\vec{V}_r" /> et d'entraînement <LatexMath math="\vec{V}_e" />.</span>
+          </div>
+
+          <div className="p-2 rounded-xl bg-slate-950/80 border border-slate-800 flex items-start gap-2">
+            <span className="w-5 h-5 rounded-lg bg-rose-500/20 text-rose-400 font-bold flex items-center justify-center text-[10px] flex-shrink-0 mt-0.5">3</span>
+            <span>Calculer l'accélération de Coriolis <LatexMath math="\vec{\gamma}_c(M)" />.</span>
+          </div>
+
+          <div className="p-2 rounded-xl bg-slate-950/80 border border-slate-800 flex items-start gap-2">
+            <span className="w-5 h-5 rounded-lg bg-purple-500/20 text-purple-400 font-bold flex items-center justify-center text-[10px] flex-shrink-0 mt-0.5">4</span>
+            <span>Déterminer la trajectoire absolue de <LatexMath math="M" /> (Cardioïde).</span>
+          </div>
+        </div>
+      </div>
+
+      {/* 3. MODE SELECTOR BAR (RIGHT ABOVE THE 2D DIAGRAM) */}
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-3 p-2 rounded-xl bg-slate-900 border border-slate-800">
+        <span className="text-xs font-bold text-slate-300 flex items-center gap-1.5 px-2">
+          <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+          <span>Visualisation du Schéma & du Mouvement 2D :</span>
+        </span>
+
         {/* Mode Switcher Tabs */}
-        <div className="flex items-center gap-1 bg-slate-900 p-1 rounded-xl border border-slate-800">
+        <div className="flex items-center gap-1 bg-slate-950 p-1 rounded-xl border border-slate-800">
           <button
             onClick={() => {
               setMode("FIXED");
@@ -156,29 +208,8 @@ export default function ExerciseCircleRolling3DCanvas() {
         </div>
       </div>
 
-      {/* --- ÉNONCÉ DU TABLEAU (PROMINENT AT THE TOP FIRST!) --- */}
-      <div className="mb-4 p-3.5 sm:p-4 rounded-xl bg-slate-900/90 border border-slate-800 space-y-2.5 text-xs sm:text-sm font-sans">
-        <div className="flex items-center gap-2 text-amber-400 font-bold border-b border-slate-800 pb-2">
-          <HelpCircle className="w-4 h-4 text-amber-400" />
-          <span>Énoncé de l'Exercice (Du Tableau) :</span>
-        </div>
-        
-        <p className="text-slate-300 leading-relaxed font-mono">
-          Dans le plan <LatexMath math="(Oxy)" />, un cercle de diamètre <LatexMath math="OA = 2R" /> tourne à vitesse angulaire constante <LatexMath math="\omega" /> autour du point <LatexMath math="O" />.<br />
-          On lie à son centre mobile <LatexMath math="O_1" />, 2 axes <LatexMath math="(O_1 x_1)" /> et <LatexMath math="(O_1 y_1)" />.<br />
-          Un point <LatexMath math="M" />, initialement en <LatexMath math="A" />, parcourt la circonférence dans le sens positif avec la même vitesse angulaire <LatexMath math="\omega" />.
-        </p>
-
-        <div className="pt-1.5 space-y-1 text-slate-200 font-mono text-[11px] sm:text-xs">
-          <p><strong className="text-cyan-400">1.</strong> Exprimer les vecteurs position <LatexMath math="\vec{OO}_1" /> et <LatexMath math="\vec{O_1 M}" /> dans la base mobile <LatexMath math="(\vec{i}_1, \vec{j}_1)" />.</p>
-          <p><strong className="text-emerald-400">2.</strong> Déterminer la vitesse relative <LatexMath math="\vec{V}_r(M)" /> et la vitesse d'entraînement <LatexMath math="\vec{V}_e(M)" />.</p>
-          <p><strong className="text-rose-400">3.</strong> Calculer l'accélération de Coriolis <LatexMath math="\vec{\gamma}_c(M)" />.</p>
-          <p><strong className="text-purple-400">4.</strong> Déterminer la nature et l'équation de la trajectoire absolue de <LatexMath math="M" />.</p>
-        </div>
-      </div>
-
-      {/* --- PREMIUM 2D SVG CANVAS CONTAINER --- */}
-      <div className="relative rounded-xl overflow-hidden border border-slate-800 bg-slate-950 flex items-center justify-center p-2">
+      {/* 4. PREMIUM 2D SVG CANVAS CONTAINER */}
+      <div className="relative rounded-2xl overflow-hidden border border-slate-800 bg-slate-950 flex items-center justify-center p-2 shadow-inner">
         <svg viewBox="0 0 620 380" className="w-full max-w-2xl h-auto drop-shadow-md">
           <defs>
             {/* Blueprint Grid Pattern */}
@@ -316,7 +347,7 @@ export default function ExerciseCircleRolling3DCanvas() {
             </g>
           ) : (
             /* ========================================================= */
-            /* === MODE 2: 2D MOUVEMENT ANIMÉ (CORRECT X1 Y1 LABELS) === */
+            /* === MODE 2: 2D MOUVEMENT ANIMÉ (SMOOTH 60FPS FULL CARDIOID) === */
             /* ========================================================= */
             <g>
               {/* Fixed Frame R0(O, x, y) Centered */}
@@ -401,7 +432,7 @@ export default function ExerciseCircleRolling3DCanvas() {
           <div className="flex items-center gap-2">
             <button
               onClick={() => setIsPlaying(!isPlaying)}
-              className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs transition-all"
+              className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs transition-all shadow-md"
             >
               {isPlaying ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
               <span>{isPlaying ? "Pause" : "Animer"}</span>
@@ -434,7 +465,7 @@ export default function ExerciseCircleRolling3DCanvas() {
         </div>
       )}
 
-      {/* --- HIDDEN SOLUTION DRAWER (EXPANDABLE UPON CLICK FOR STUDENTS) --- */}
+      {/* 5. HIDDEN SOLUTION DRAWER AT THE VERY BOTTOM */}
       <div className="mt-4 border border-slate-800 rounded-2xl bg-slate-950 overflow-hidden shadow-lg">
         {/* Toggle Solution Header */}
         <button
