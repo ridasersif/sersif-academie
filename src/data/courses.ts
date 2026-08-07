@@ -92,5 +92,79 @@ export const COURSES_DATA: Record<string, CourseModule> = {
         ]
       }
     ]
+  },
+  "electricite": {
+    id: "electricite",
+    code: "Module 04",
+    title: "Électricité",
+    subject: "physique",
+    image: "/modules/electromagnetisme_v2.png",
+    description: "Électrostatique, électromagnétisme dans le vide, électromagnétisme dans la matière et électronique.",
+    subModules: [
+      {
+        id: "electrostatique",
+        code: "SMP S2",
+        title: "Électrostatique",
+        subtitle: "Charges, champ et potentiel",
+        image: "/modules/electrostatique.png",
+        badge: "Partie 1",
+        description: "Loi de Coulomb, théorème de Gauss, et étude de l'énergie électrostatique.",
+        elements: [
+          {
+            id: "electrostatique-intro",
+            title: "Électrostatique",
+            details: "Loi de Coulomb. Champ et potentiel électrostatiques. Théorème de Gauss. Dipôle. Énergie électrostatique."
+          }
+        ]
+      },
+      {
+        id: "electromagnetisme-dans-le-vide",
+        code: "SMP S3",
+        title: "Électromagnétisme dans le vide",
+        subtitle: "Lois générales et induction",
+        image: "/modules/electromagnetisme_vide.png",
+        badge: "Partie 2",
+        description: "Équations de Maxwell dans le vide, énergie électromagnétique, et induction électromagnétique.",
+        elements: [
+          {
+            id: "magnetostatique",
+            title: "Magnétostatique & Lois générales",
+            details: "Loi de Biot et Savart, équations de Maxwell, ARQS."
+          }
+        ]
+      },
+      {
+        id: "electromagnetisme-dans-la-matiere",
+        code: "SMP S4",
+        title: "Électromagnétisme dans la matière",
+        subtitle: "Milieux conducteurs et diélectriques",
+        image: "/modules/electromagnetisme_matiere.png",
+        badge: "Partie 3",
+        description: "Étude des milieux conducteurs en équilibre et des milieux diélectriques (polarisation).",
+        elements: [
+          {
+            id: "matiere",
+            title: "Milieux conducteurs et diélectriques",
+            details: "Polarisation, équations de Maxwell dans la matière."
+          }
+        ]
+      },
+      {
+        id: "electronique",
+        code: "Partie 4",
+        title: "Électronique",
+        subtitle: "Circuits et composants analogiques",
+        image: "/modules/electronique.png",
+        badge: "Partie 4",
+        description: "Analyse de réseaux, régimes variables, et composants de l'électronique analogique.",
+        elements: [
+          {
+            id: "circuits",
+            title: "Réseaux électriques et Analogique",
+            details: "Lois de Kirchhoff, quadripôles, diodes et amplificateurs opérationnels."
+          }
+        ]
+      }
+    ]
   }
 };

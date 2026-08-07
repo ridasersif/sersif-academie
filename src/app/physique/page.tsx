@@ -29,8 +29,8 @@ export default function PhysiquePage() {
       description: "Optique géométrique, réfraction, interférences lumineuses, diffraction et propagation d'ondes."
     },
     { 
-      id: "electricite-et-electromagnetisme", 
-      title: "Électricité et électromagnétisme", 
+      id: "electricite", 
+      title: "Électricité", 
       code: "Module 04",
       image: "/modules/electromagnetisme_v2.png",
       description: "Électrostatique, lois de Kirchhoff, champ magnétique, équations de Maxwell et induction."

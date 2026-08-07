@@ -5,6 +5,10 @@ import Link from "next/link";
 import { ThemeToggle } from "@/components/theme-toggle";
 import MusicPlayer from "@/components/MusicPlayer";
 import { MECANIQUE_DU_POINT_CHAPTERS } from "@/modules/physique/mecanique-du-point-et-du-solide/mecanique-du-point/chapters";
+import { ELECTROSTATIQUE_CHAPTERS } from "@/modules/physique/electricite/electrostatique/chapters";
+import { ELECTROMAGNETISME_VIDE_CHAPTERS } from "@/modules/physique/electricite/electromagnetisme-dans-le-vide/chapters";
+import { ELECTROMAGNETISME_MATIERE_CHAPTERS } from "@/modules/physique/electricite/electromagnetisme-dans-la-matiere/chapters";
+import { ELECTRONIQUE_CHAPTERS } from "@/modules/physique/electricite/electronique/chapters";
 import { 
   ArrowLeft, 
   BookOpen, 
@@ -51,7 +55,18 @@ export default function EtudePage({ params }: { params: Promise<{ moduleId: stri
   const parentModule = COURSES_DATA[moduleId];
   const subModule = parentModule?.subModules?.find((s) => s.id === subModuleId);
 
-  const chapters = MECANIQUE_DU_POINT_CHAPTERS;
+  let chapters: any[] = [];
+  if (subModuleId === "mecanique-du-point") {
+    chapters = MECANIQUE_DU_POINT_CHAPTERS;
+  } else if (subModuleId === "electrostatique") {
+    chapters = ELECTROSTATIQUE_CHAPTERS;
+  } else if (subModuleId === "electromagnetisme-dans-le-vide") {
+    chapters = ELECTROMAGNETISME_VIDE_CHAPTERS;
+  } else if (subModuleId === "electromagnetisme-dans-la-matiere") {
+    chapters = ELECTROMAGNETISME_MATIERE_CHAPTERS;
+  } else if (subModuleId === "electronique") {
+    chapters = ELECTRONIQUE_CHAPTERS;
+  }
 
   // Always initialize to 0 for SSR to avoid hydration mismatch
   const [activeChapterIndex, setActiveChapterIndex] = useState<number>(0);
