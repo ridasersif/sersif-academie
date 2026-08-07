@@ -99,6 +99,14 @@ export default function MagneticSymmetry3DCanvas() {
 
   const info = getInfo();
 
+  const toreCarrePoints = useMemo(() => [
+    new THREE.Vector2(2, -1),
+    new THREE.Vector2(4, -1),
+    new THREE.Vector2(4, 1),
+    new THREE.Vector2(2, 1),
+    new THREE.Vector2(2, -1)
+  ], []);
+
   // Position M dynamically based on shape
   const mPos = useMemo(() => {
     if (shape === "fil" || shape === "cylindre") return [3, 0, 0];
@@ -168,18 +176,18 @@ export default function MagneticSymmetry3DCanvas() {
                 )}
                 {shape === "tore_circulaire" && (
                   <group>
-                    <Torus args={[3, 1, 16, 64]} rotation={[Math.PI/2, 0, 0]}>
+                    <Torus args={[3, 1, 32, 64]} rotation={[Math.PI/2, 0, 0]}>
                       <meshPhysicalMaterial color="#94a3b8" metalness={0.9} roughness={0.2} transparent opacity={0.3} />
                     </Torus>
-                    {Array.from({length: 16}).map((_, i) => (
-                      <group key={i} rotation={[0, (i * Math.PI * 2) / 16, 0]}>
-                         <Torus args={[1.05, 0.05, 8, 32]} position={[3, 0, 0]} rotation={[0, 0, 0]}>
+                    {Array.from({length: 24}).map((_, i) => (
+                      <group key={i} rotation={[0, (i * Math.PI * 2) / 24, 0]}>
+                         <Torus args={[1.05, 0.03, 8, 32]} position={[3, 0, 0]} rotation={[0, 0, 0]}>
                            <meshBasicMaterial color="#3b82f6" />
                          </Torus>
                          {i === 0 && (
                             <group position={[4.05, 0, 0]}>
-                              <mesh rotation={[0, 0, 0]}><coneGeometry args={[0.08, 0.3, 8]} /><meshBasicMaterial color="#3b82f6" /></mesh>
-                              <Html position={[0.2, 0, 0]} center><div className="text-blue-400 font-bold drop-shadow-md">j</div></Html>
+                              <mesh rotation={[Math.PI, 0, 0]}><coneGeometry args={[0.08, 0.3, 8]} /><meshBasicMaterial color="#3b82f6" /></mesh>
+                              <Html position={[0.2, -0.2, 0]} center><div className="text-blue-400 font-bold drop-shadow-md">j</div></Html>
                             </group>
                          )}
                       </group>
@@ -188,16 +196,17 @@ export default function MagneticSymmetry3DCanvas() {
                 )}
                 {shape === "tore_carre" && (
                   <group>
-                    <Torus args={[3, 1, 4, 64]} rotation={[Math.PI/2, Math.PI/4, 0]}>
-                      <meshPhysicalMaterial color="#94a3b8" metalness={0.9} roughness={0.2} transparent opacity={0.3} />
-                    </Torus>
-                    {Array.from({length: 16}).map((_, i) => (
-                      <group key={i} rotation={[0, (i * Math.PI * 2) / 16, 0]}>
-                         <Line points={[[4.1, 1.1, 0], [1.9, 1.1, 0], [1.9, -1.1, 0], [4.1, -1.1, 0], [4.1, 1.1, 0]]} color="#3b82f6" lineWidth={3} />
+                    <mesh>
+                      <latheGeometry args={[toreCarrePoints, 64]} />
+                      <meshPhysicalMaterial color="#94a3b8" metalness={0.9} roughness={0.2} transparent opacity={0.3} side={THREE.DoubleSide} />
+                    </mesh>
+                    {Array.from({length: 24}).map((_, i) => (
+                      <group key={i} rotation={[0, (i * Math.PI * 2) / 24, 0]}>
+                         <Line points={[[4.05, 1.05, 0], [1.95, 1.05, 0], [1.95, -1.05, 0], [4.05, -1.05, 0], [4.05, 1.05, 0]]} color="#3b82f6" lineWidth={3} />
                          {i === 0 && (
-                            <group position={[4.1, 0, 0]}>
-                              <mesh rotation={[0, 0, 0]}><coneGeometry args={[0.08, 0.3, 8]} /><meshBasicMaterial color="#3b82f6" /></mesh>
-                              <Html position={[0.2, 0, 0]} center><div className="text-blue-400 font-bold drop-shadow-md">j</div></Html>
+                            <group position={[4.05, 0, 0]}>
+                              <mesh rotation={[Math.PI, 0, 0]}><coneGeometry args={[0.08, 0.3, 8]} /><meshBasicMaterial color="#3b82f6" /></mesh>
+                              <Html position={[0.2, -0.2, 0]} center><div className="text-blue-400 font-bold drop-shadow-md">j</div></Html>
                             </group>
                          )}
                       </group>
