@@ -5,6 +5,7 @@ import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, Line, Html, Sphere, Cylinder } from "@react-three/drei";
 import * as THREE from "three";
 import { RotateCcw, Ruler, ArrowRightToLine, ArrowUpDown } from "lucide-react";
+import LatexMath from "@/components/ui/LatexMath";
 
 /* ── Animated dB contribution dot traveling along segment ── */
 const TravelingDot = ({ segStart, segEnd, mPos, speed = 0.6 }: { segStart: number; segEnd: number; mPos: [number, number, number]; speed?: number }) => {
@@ -330,34 +331,20 @@ export default function BiotSavartSegment3DCanvas() {
         </div>
 
         {/* Result display */}
-        <div className="p-3 sm:p-4 rounded-xl bg-card border border-border shrink-0 w-full md:w-auto text-center shadow-sm flex-1 max-w-xl mx-auto">
+        <div className="p-3 sm:p-4 rounded-xl bg-card border border-border w-full flex flex-col items-center shadow-sm max-w-4xl mx-auto mt-2 sm:mt-0">
           <div className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold mb-2 tracking-widest uppercase">Résultat du Champ B</div>
           
-          <div className="flex flex-col gap-2 items-center justify-center font-mono text-xs sm:text-sm">
-            {/* Ligne 1: Formule formelle avec les angles */}
-            <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2">
-              <span className="text-emerald-600 dark:text-emerald-400 font-bold text-sm sm:text-base">B</span>
-              <span className="text-slate-500 dark:text-slate-400">=</span>
-              <span className="text-cyan-700 dark:text-cyan-300 bg-cyan-500/10 px-2 py-0.5 rounded border border-cyan-500/10 whitespace-nowrap">(μ₀I / 4πd)</span>
-              <span className="text-slate-400">×</span>
-              <span className="text-teal-700 dark:text-teal-300 bg-teal-500/10 px-2 py-0.5 rounded border border-teal-500/10">
-                [sin({(alpha2 * 180 / Math.PI).toFixed(1)}°) - sin({(alpha1 * 180 / Math.PI).toFixed(1)}°)]
-              </span>
-            </div>
-
-            {/* Ligne 2: Valeur numérique calculée */}
-            <div className="flex flex-wrap items-center justify-center gap-2 text-sm sm:text-base mt-1">
-              <span className="text-emerald-600 dark:text-emerald-400 font-bold">B</span>
-              <span className="text-slate-500 dark:text-slate-400">≈</span>
-              <span className="font-bold text-emerald-700 dark:text-emerald-300 bg-emerald-500/10 px-3 py-1 rounded-lg border border-emerald-500/20 shadow-inner whitespace-nowrap">
-                {((Math.sin(alpha2) - Math.sin(alpha1)) / distance).toFixed(3)} × (μ₀I / 4π)
-              </span>
-            </div>
+          <div className="w-full flex items-center justify-center text-emerald-800 dark:text-emerald-300 overflow-x-auto py-2 px-1">
+            <LatexMath 
+               math={`\\vec{B}(M) = \\frac{\\mu_0 I}{4\\pi d} \\left[ \\sin(${ (alpha2 * 180 / Math.PI).toFixed(1) }^\\circ) - \\sin(${ (alpha1 * 180 / Math.PI).toFixed(1) }^\\circ) \\right] \\vec{k} \\approx ${ ((Math.sin(alpha2) - Math.sin(alpha1)) / distance).toFixed(3) } \\frac{\\mu_0 I}{4\\pi} \\vec{k}`} 
+               block={false} 
+               className="text-[11px] sm:text-base whitespace-nowrap"
+            />
           </div>
 
           {halfLength >= 5.5 && (
-            <div className="mt-3 text-center text-[10px] text-amber-600 dark:text-amber-400 font-bold animate-pulse bg-amber-500/10 border border-amber-500/20 py-1.5 rounded-md">
-              ⚠️ L → ∞ : α₁ → -90° , α₂ → 90° ⟹ B ≈ {(2 / distance).toFixed(3)} × (μ₀I / 4π) (Fil Infini !)
+            <div className="mt-3 text-center text-[10px] text-amber-600 dark:text-amber-400 font-bold animate-pulse bg-amber-500/10 border border-amber-500/20 py-1.5 px-4 rounded-md">
+              ⚠️ L → ∞ : α₁ → -90° , α₂ → 90° ⟹ <LatexMath math={`\\vec{B}(M) \\approx ${ (2 / distance).toFixed(3) } \\frac{\\mu_0 I}{4\\pi} \\vec{k}`} block={false} /> (Fil Infini !)
             </div>
           )}
         </div>
