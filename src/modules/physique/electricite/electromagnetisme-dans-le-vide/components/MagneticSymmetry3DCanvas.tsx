@@ -6,16 +6,17 @@ import { OrbitControls, Line, Html, Cylinder, Sphere, Cone, Torus, Environment, 
 import * as THREE from "three";
 import { Shapes, EyeOff, Scan, Info, AlertTriangle } from "lucide-react";
 
-type ShapeType = "fil" | "cylindre" | "solenoide" | "cercle" | "sphere" | "cone" | "double_cone";
+type ShapeType = "fil" | "cylindre" | "solenoide" | "cercle" | "sphere" | "demi_sphere" | "cone" | "double_cone";
 type PlaneType = "none" | "symmetry" | "antisymmetry";
 
 const shapesList: { id: ShapeType; label: string; activeColor: string; inactiveColor: string }[] = [
   { id: "fil", label: "Fil Infini", activeColor: "bg-blue-500 text-white border-blue-400 shadow-[0_0_15px_rgba(59,130,246,0.5)]", inactiveColor: "bg-blue-500/10 text-blue-300 border-blue-500/30 hover:bg-blue-500/20" },
   { id: "cylindre", label: "Cylindre", activeColor: "bg-cyan-500 text-white border-cyan-400 shadow-[0_0_15px_rgba(6,182,212,0.5)]", inactiveColor: "bg-cyan-500/10 text-cyan-300 border-cyan-500/30 hover:bg-cyan-500/20" },
-  { id: "solenoide", label: "Solénoïde (Bobine)", activeColor: "bg-teal-500 text-white border-teal-400 shadow-[0_0_15px_rgba(20,184,166,0.5)]", inactiveColor: "bg-teal-500/10 text-teal-300 border-teal-500/30 hover:bg-teal-500/20" },
+  { id: "cone", label: "Cône (Axial)", activeColor: "bg-pink-500 text-white border-pink-400 shadow-[0_0_15px_rgba(236,72,153,0.5)]", inactiveColor: "bg-pink-500/10 text-pink-300 border-pink-500/30 hover:bg-pink-500/20" },
+  { id: "solenoide", label: "Bobine", activeColor: "bg-teal-500 text-white border-teal-400 shadow-[0_0_15px_rgba(20,184,166,0.5)]", inactiveColor: "bg-teal-500/10 text-teal-300 border-teal-500/30 hover:bg-teal-500/20" },
   { id: "cercle", label: "Spire", activeColor: "bg-fuchsia-500 text-white border-fuchsia-400 shadow-[0_0_15px_rgba(217,70,239,0.5)]", inactiveColor: "bg-fuchsia-500/10 text-fuchsia-300 border-fuchsia-500/30 hover:bg-fuchsia-500/20" },
   { id: "sphere", label: "Sphère", activeColor: "bg-purple-500 text-white border-purple-400 shadow-[0_0_15px_rgba(168,85,247,0.5)]", inactiveColor: "bg-purple-500/10 text-purple-300 border-purple-500/30 hover:bg-purple-500/20" },
-  { id: "cone", label: "Cône", activeColor: "bg-pink-500 text-white border-pink-400 shadow-[0_0_15px_rgba(236,72,153,0.5)]", inactiveColor: "bg-pink-500/10 text-pink-300 border-pink-500/30 hover:bg-pink-500/20" },
+  { id: "demi_sphere", label: "Demi-Sphère", activeColor: "bg-indigo-500 text-white border-indigo-400 shadow-[0_0_15px_rgba(99,102,241,0.5)]", inactiveColor: "bg-indigo-500/10 text-indigo-300 border-indigo-500/30 hover:bg-indigo-500/20" },
   { id: "double_cone", label: "Double Cône", activeColor: "bg-rose-500 text-white border-rose-400 shadow-[0_0_15px_rgba(244,63,94,0.5)]", inactiveColor: "bg-rose-500/10 text-rose-300 border-rose-500/30 hover:bg-rose-500/20" },
 ];
 
@@ -32,7 +33,6 @@ const FieldLineCircle = ({ radius, color }: { radius: number, color: string }) =
   return (
     <group>
        <Line points={pts} color={color} lineWidth={1.5} transparent opacity={0.4} />
-       {/* Flèches pour indiquer le sens de rotation du champ B */}
        <mesh position={[radius, 0, 0]} rotation={[-Math.PI/2, 0, 0]}>
           <coneGeometry args={[0.1, 0.3, 8]} />
           <meshBasicMaterial color={color} />
@@ -61,12 +61,14 @@ export default function MagneticSymmetry3DCanvas() {
     if (planeType === "none") return { text: "Sélectionnez un plan pour analyser ses propriétés de symétrie.", type: "info" };
     
     if (planeType === "symmetry") {
-      if (shape === "cone") return { text: "Le cône n'a pas de plan de symétrie (asymétrie haut/bas).", type: "warning" };
+      if (shape === "cone") return { text: "Le plan Π contient l'axe du cône. Les courants radiaux qui montent vers le sommet sont INCLUS dans ce plan. Le champ B lui est perpendiculaire.", type: "info" };
+      if (shape === "demi_sphere") return { text: "La demi-sphère n'a pas de plan de symétrie horizontal (le haut et le bas sont différents).", type: "warning" };
       if (shape === "fil" || shape === "cylindre") return { text: "Le plan Π contient l'axe de révolution. Le champ B est toujours perpendiculaire à ce plan (Principe de Curie).", type: "info" };
       return { text: "Le plan Π contient la boucle de courant (Plan de l'équateur). Le champ B est perpendiculaire à ce plan.", type: "info" };
     }
     
     if (planeType === "antisymmetry") {
+      if (shape === "cone") return { text: "Le cône n'a pas de plan d'antisymétrie transverse car il est asymétrique (la base et le sommet sont différents).", type: "warning" };
       if (shape === "fil" || shape === "cylindre") return { text: "Le plan Π* est perpendiculaire à l'axe (plan transverse). Les courants le traversent. Le champ B appartient à ce plan.", type: "info" };
       return { text: "Le plan Π* contient l'axe de révolution (Plan méridien). Les courants le traversent perpendiculairement. Le champ B appartient à ce plan.", type: "info" };
     }
@@ -78,8 +80,9 @@ export default function MagneticSymmetry3DCanvas() {
   // Position M dynamically based on shape
   const mPos = useMemo(() => {
     if (shape === "fil" || shape === "cylindre") return [3, 0, 0];
+    if (shape === "cone") return [3.5, 0, 0];
     if (shape === "solenoide") return [0, 1.5, 0];
-    if (shape === "cone" || shape === "double_cone") return [0, 4, 0];
+    if (shape === "double_cone") return [0, 4, 0];
     return [0, 3.5, 0];
   }, [shape]);
 
@@ -87,11 +90,11 @@ export default function MagneticSymmetry3DCanvas() {
     <div className="w-full max-w-[900px] mx-auto flex flex-col">
       <style>{`.hide-scrollbar::-webkit-scrollbar { display: none; }`}</style>
 
-      {/* Canvas Area - Reduced height to prevent scrolling */}
+      {/* Canvas Area */}
       <div className="w-full h-[320px] sm:h-[400px] bg-slate-950 rounded-t-2xl overflow-hidden relative border border-slate-800 border-b-0 shadow-inner">
         
-        {/* Shape Selector Float (On top of 3D) - Single row horizontally scrollable */}
-        <div className="absolute top-2 left-2 right-2 sm:top-4 sm:left-4 sm:right-4 z-10 flex flex-col gap-2 bg-slate-900/60 backdrop-blur-md p-2.5 sm:p-3 rounded-xl border border-slate-700/50 shadow-xl pointer-events-auto">
+        {/* Shape Selector Float */}
+        <div className="absolute top-2 left-2 right-2 sm:top-4 sm:left-4 sm:right-4 z-10 flex flex-col gap-2 bg-slate-900/60 backdrop-blur-md p-2 sm:p-3 rounded-xl border border-slate-700/50 shadow-xl pointer-events-auto">
           <span className="text-[10px] font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5 ml-1">
             <Shapes className="w-3.5 h-3.5 text-slate-400"/> Forme du Conducteur
           </span>
@@ -100,7 +103,7 @@ export default function MagneticSymmetry3DCanvas() {
               <button 
                 key={s.id}
                 onClick={() => { setShape(s.id); setPlaneType("none"); }}
-                className={`shrink-0 px-4 py-2 text-[10px] sm:text-[11px] font-bold rounded-lg transition-all border outline-none ${shape === s.id ? s.activeColor : s.inactiveColor}`}
+                className={`shrink-0 px-3 sm:px-4 py-1.5 sm:py-2 text-[10px] sm:text-[11px] font-bold rounded-lg transition-all border outline-none ${shape === s.id ? s.activeColor : s.inactiveColor}`}
               >
                 {s.label}
               </button>
@@ -121,30 +124,55 @@ export default function MagneticSymmetry3DCanvas() {
           <group position={[0, 0, 0]}>
             
             {/* ======================= */}
-            {/* 1. FIL / CYLINDRE       */}
+            {/* 1. COURANTS AXIAUX (Fil, Cylindre, Cône) */}
             {/* ======================= */}
-            {(shape === "fil" || shape === "cylindre") && (
+            {(shape === "fil" || shape === "cylindre" || shape === "cone") && (
               <group>
-                <Cylinder args={shape === "fil" ? [0.05, 0.05, 12, 16] : [0.6, 0.6, 12, 32]} rotation={[0, 0, 0]} position={[0, 0, 0]}>
-                  <meshPhysicalMaterial color="#94a3b8" metalness={0.9} roughness={0.2} clearcoat={1} />
-                </Cylinder>
+                {/* Formes */}
+                {shape === "fil" && (
+                  <Cylinder args={[0.05, 0.05, 12, 16]} rotation={[0, 0, 0]} position={[0, 0, 0]}>
+                    <meshPhysicalMaterial color="#94a3b8" metalness={0.9} roughness={0.2} clearcoat={1} />
+                  </Cylinder>
+                )}
+                {shape === "cylindre" && (
+                  <Cylinder args={[0.6, 0.6, 12, 32]} rotation={[0, 0, 0]} position={[0, 0, 0]}>
+                    <meshPhysicalMaterial color="#94a3b8" metalness={0.9} roughness={0.2} clearcoat={1} />
+                  </Cylinder>
+                )}
+                {shape === "cone" && (
+                  <Cone args={[2.5, 6, 32]} position={[0, 0, 0]} rotation={[0, 0, 0]}>
+                    <meshPhysicalMaterial color="#94a3b8" metalness={0.5} roughness={0.5} transparent opacity={0.7} />
+                  </Cone>
+                )}
                 
                 {/* Lignes de champ (Cercles) */}
-                <FieldLineCircle radius={1.5} color="#10b981" />
-                <FieldLineCircle radius={2.5} color="#10b981" />
-                <FieldLineCircle radius={4} color="#10b981" />
+                <FieldLineCircle radius={shape === "cone" ? 3.5 : 1.5} color="#10b981" />
+                <FieldLineCircle radius={shape === "cone" ? 4.5 : 2.5} color="#10b981" />
+                <FieldLineCircle radius={shape === "cone" ? 5.5 : 4} color="#10b981" />
 
                 {/* Courant j */}
-                <group position={[shape === "fil" ? 0.3 : 1.2, 0, 0]}>
-                  <Line points={[[0, -1.5, 0], [0, 1.5, 0]]} color="#3b82f6" lineWidth={5} />
-                  <mesh position={[0, 1.5, 0]}>
-                    <coneGeometry args={[0.15, 0.5, 8]} />
-                    <meshBasicMaterial color="#3b82f6" />
-                  </mesh>
-                  <Html position={[0, 2, 0]} center><div className="text-blue-400 font-bold drop-shadow-md">j</div></Html>
-                </group>
+                {shape === "cone" ? (
+                   // J vector sloping up the cone surface
+                   <group position={[1.25, 0, 0]} rotation={[0, 0, Math.atan(2.5/6)]}>
+                     <Line points={[[0, -1, 0], [0, 1, 0]]} color="#3b82f6" lineWidth={5} />
+                     <mesh position={[0, 1, 0]}>
+                       <coneGeometry args={[0.15, 0.5, 8]} />
+                       <meshBasicMaterial color="#3b82f6" />
+                     </mesh>
+                     <Html position={[0, 1.5, 0]} center><div className="text-blue-400 font-bold drop-shadow-md">j</div></Html>
+                   </group>
+                ) : (
+                   <group position={[shape === "fil" ? 0.3 : 1.2, 0, 0]}>
+                     <Line points={[[0, -1.5, 0], [0, 1.5, 0]]} color="#3b82f6" lineWidth={5} />
+                     <mesh position={[0, 1.5, 0]}>
+                       <coneGeometry args={[0.15, 0.5, 8]} />
+                       <meshBasicMaterial color="#3b82f6" />
+                     </mesh>
+                     <Html position={[0, 2, 0]} center><div className="text-blue-400 font-bold drop-shadow-md">j</div></Html>
+                   </group>
+                )}
 
-                {/* Point M et Vecteur B */}
+                {/* Point M et Vecteur B (Circulaire vers -Z) */}
                 <Sphere args={[0.15, 32, 32]} position={[mPos[0], mPos[1], mPos[2]]}>
                   <meshStandardMaterial color="#f59e0b" emissive="#d97706" emissiveIntensity={0.5} />
                   <Html position={[3.3, 0.2, 0]} center><div className="text-amber-400 font-bold text-sm drop-shadow-md">M</div></Html>
@@ -170,7 +198,7 @@ export default function MagneticSymmetry3DCanvas() {
                     <Html position={[5, 5, 0]} center><div className="text-blue-300 font-bold bg-slate-900/90 px-2 py-1 rounded text-xs border border-blue-500/50">Plan Π (Symétrie)</div></Html>
                   </mesh>
                 )}
-                {planeType === "antisymmetry" && (
+                {planeType === "antisymmetry" && shape !== "cone" && (
                   <mesh position={[0, 0, 0]} rotation={[Math.PI/2, 0, 0]}>
                     <planeGeometry args={[12, 12]} />
                     <meshPhysicalMaterial color="#10b981" transparent opacity={0.15} side={THREE.DoubleSide} />
@@ -186,9 +214,9 @@ export default function MagneticSymmetry3DCanvas() {
 
 
             {/* ======================= */}
-            {/* 2. CERCLE / SPHERE / CONE / DOUBLE CONE / SOLENOIDE */}
+            {/* 2. COURANTS AZIMUTAUX (Cercle, Sphère, Demi-Sphère, Double Cône, Solénoïde) */}
             {/* ======================= */}
-            {(shape === "cercle" || shape === "sphere" || shape === "cone" || shape === "double_cone" || shape === "solenoide") && (
+            {(shape === "cercle" || shape === "sphere" || shape === "demi_sphere" || shape === "double_cone" || shape === "solenoide") && (
               <group position={[0, 0, 0]}>
                 
                 {/* Formes */}
@@ -198,14 +226,14 @@ export default function MagneticSymmetry3DCanvas() {
                   </Torus>
                 )}
                 {shape === "sphere" && (
-                  <Sphere args={[2.5, 32, 32]} rotation={[Math.PI/2, 0, 0]}>
+                  <Sphere args={[2.5, 32, 32]}>
                     <meshPhysicalMaterial color="#94a3b8" metalness={0.5} roughness={0.5} transparent opacity={0.7} />
                   </Sphere>
                 )}
-                {shape === "cone" && (
-                  <Cone args={[2.5, 5, 32]} position={[0, 0, 0]} rotation={[0, 0, 0]}>
-                    <meshPhysicalMaterial color="#94a3b8" metalness={0.5} roughness={0.5} transparent opacity={0.7} />
-                  </Cone>
+                {shape === "demi_sphere" && (
+                  <Sphere args={[2.5, 32, 32, 0, Math.PI * 2, 0, Math.PI / 2]}>
+                    <meshPhysicalMaterial color="#94a3b8" metalness={0.5} roughness={0.5} transparent opacity={0.7} side={THREE.DoubleSide} />
+                  </Sphere>
                 )}
                 {shape === "double_cone" && (
                   <group>
@@ -222,11 +250,24 @@ export default function MagneticSymmetry3DCanvas() {
                     <Cylinder args={[2, 2, 6, 32]} position={[0, 0, 0]}>
                       <meshPhysicalMaterial color="#94a3b8" metalness={0.5} roughness={0.5} transparent opacity={0.15} />
                     </Cylinder>
-                    {/* Spires du solenoide */}
-                    {[-2.5, -1.5, -0.5, 0.5, 1.5, 2.5].map(y => (
-                      <Torus key={y} args={[2.02, 0.05, 8, 64]} position={[0, y, 0]} rotation={[Math.PI/2, 0, 0]}>
-                        <meshBasicMaterial color="#3b82f6" />
-                      </Torus>
+                    {/* Spires du solenoide avec j visible sur une spire */}
+                    {[-2.5, -1.5, -0.5, 0.5, 1.5, 2.5].map((y, i) => (
+                      <group key={y}>
+                        <Torus args={[2.02, 0.05, 8, 64]} position={[0, y, 0]} rotation={[Math.PI/2, 0, 0]}>
+                          <meshBasicMaterial color="#3b82f6" />
+                        </Torus>
+                        {/* J arrow sur la 4eme spire */}
+                        {i === 3 && (
+                          <group position={[2.02, y, 0]}>
+                            <Line points={[[0, 0, 0.5], [0, 0, -0.5]]} color="#3b82f6" lineWidth={4} />
+                            <mesh position={[0, 0, -0.5]} rotation={[-Math.PI/2, 0, 0]}>
+                              <coneGeometry args={[0.15, 0.4, 8]} />
+                              <meshBasicMaterial color="#3b82f6" />
+                            </mesh>
+                            <Html position={[0.3, 0, -0.8]} center><div className="text-blue-400 font-bold drop-shadow-md text-sm">j</div></Html>
+                          </group>
+                        )}
+                      </group>
                     ))}
                     {/* Lignes de champ droites à l'intérieur */}
                     <Line points={[[0, -4, 0], [0, 4, 0]]} color="#10b981" lineWidth={3} transparent opacity={0.5}/>
@@ -235,7 +276,7 @@ export default function MagneticSymmetry3DCanvas() {
                   </group>
                 )}
 
-                {/* Courant j (Boucle) - Affiché sauf pour solenoide (où on voit déjà les spires) */}
+                {/* Courant j (Boucle) - Affiché sauf pour solenoide */}
                 {shape !== "solenoide" && (
                   <group position={[2.5, 0, 0]}>
                     <Line points={[[0, 0, 1.5], [0, 0, -1.5]]} color="#3b82f6" lineWidth={5} />
@@ -247,7 +288,7 @@ export default function MagneticSymmetry3DCanvas() {
                   </group>
                 )}
 
-                {/* Point M et Vecteur B */}
+                {/* Point M et Vecteur B (Axial vers +Y) */}
                 <Sphere args={[0.15, 32, 32]} position={[mPos[0], mPos[1], mPos[2]]}>
                   <meshStandardMaterial color="#f59e0b" emissive="#d97706" emissiveIntensity={0.5} />
                   <Html position={[0.4, 0.2, 0]} center><div className="text-amber-400 font-bold text-sm">M</div></Html>
@@ -262,7 +303,7 @@ export default function MagneticSymmetry3DCanvas() {
                 </group>
 
                 {/* Plans (Curie) */}
-                {planeType === "symmetry" && shape !== "cone" && (
+                {planeType === "symmetry" && shape !== "demi_sphere" && (
                   <mesh position={[0, 0, 0]} rotation={[Math.PI/2, 0, 0]}>
                     <planeGeometry args={[12, 12]} />
                     <meshPhysicalMaterial color="#3b82f6" transparent opacity={0.2} side={THREE.DoubleSide} />
@@ -294,31 +335,31 @@ export default function MagneticSymmetry3DCanvas() {
       </div>
 
       {/* Dashboard - Control Panel */}
-      <div className="w-full bg-slate-900/90 border border-slate-800 p-4 sm:p-5 rounded-b-2xl flex flex-col gap-6">
+      <div className="w-full bg-slate-900/90 border border-slate-800 p-3 sm:p-5 rounded-b-2xl flex flex-col gap-4">
         
         {/* Plane Selector & Info */}
-        <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
+        <div className="flex flex-col gap-3">
           
-          <div className="flex flex-col gap-2.5 w-full lg:w-auto">
+          <div className="flex flex-col gap-2 w-full">
             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
               <Scan className="w-3.5 h-3.5 text-slate-500"/> Visualiser les Plans (Principe de Curie)
             </span>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-row overflow-x-auto gap-2 pb-1 hide-scrollbar" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
               <button 
                 onClick={() => setPlaneType("none")}
-                className={`px-3 py-2 text-[10px] sm:text-[11px] font-bold rounded-lg transition-all border flex items-center gap-1.5 ${planeType === "none" ? "bg-slate-700 border-slate-500 text-white shadow-lg" : "bg-transparent border-slate-700 text-slate-400 hover:bg-slate-800"}`}
+                className={`shrink-0 px-2.5 sm:px-3 py-1.5 sm:py-2 text-[10px] sm:text-[11px] font-bold rounded-lg transition-all border outline-none flex items-center gap-1.5 ${planeType === "none" ? "bg-slate-700 border-slate-500 text-white shadow-lg" : "bg-transparent border-slate-700 text-slate-400 hover:bg-slate-800"}`}
               >
                 <EyeOff className="w-3.5 h-3.5" /> Cacher
               </button>
               <button 
                 onClick={() => setPlaneType("symmetry")}
-                className={`px-3 py-2 text-[10px] sm:text-[11px] font-bold rounded-lg transition-all border flex items-center gap-1.5 ${planeType === "symmetry" ? "bg-blue-600 border-blue-400 text-white shadow-[0_0_15px_rgba(37,99,235,0.4)]" : "bg-slate-800/30 border-blue-900/50 text-blue-400 hover:bg-blue-900/30"}`}
+                className={`shrink-0 px-2.5 sm:px-3 py-1.5 sm:py-2 text-[10px] sm:text-[11px] font-bold rounded-lg transition-all border outline-none flex items-center gap-1.5 ${planeType === "symmetry" ? "bg-blue-600 border-blue-400 text-white shadow-[0_0_15px_rgba(37,99,235,0.4)]" : "bg-slate-800/30 border-blue-900/50 text-blue-400 hover:bg-blue-900/30"}`}
               >
                 Plan de Symétrie (Π)
               </button>
               <button 
                 onClick={() => setPlaneType("antisymmetry")}
-                className={`px-3 py-2 text-[10px] sm:text-[11px] font-bold rounded-lg transition-all border flex items-center gap-1.5 ${planeType === "antisymmetry" ? "bg-emerald-600 border-emerald-400 text-white shadow-[0_0_15px_rgba(16,185,129,0.4)]" : "bg-slate-800/30 border-emerald-900/50 text-emerald-400 hover:bg-emerald-900/30"}`}
+                className={`shrink-0 px-2.5 sm:px-3 py-1.5 sm:py-2 text-[10px] sm:text-[11px] font-bold rounded-lg transition-all border outline-none flex items-center gap-1.5 ${planeType === "antisymmetry" ? "bg-emerald-600 border-emerald-400 text-white shadow-[0_0_15px_rgba(16,185,129,0.4)]" : "bg-slate-800/30 border-emerald-900/50 text-emerald-400 hover:bg-emerald-900/30"}`}
               >
                 Plan d&apos;Antisymétrie (Π*)
               </button>
@@ -326,9 +367,9 @@ export default function MagneticSymmetry3DCanvas() {
           </div>
 
           {/* Dynamic Info Panel */}
-          <div className={`w-full lg:max-w-[460px] p-3 sm:p-4 rounded-xl border flex gap-3 items-start transition-colors ${info.type === "warning" ? "bg-amber-950/30 border-amber-800/50 shadow-[0_0_15px_rgba(245,158,11,0.1)]" : "bg-slate-800/40 border-slate-700/50"}`}>
-            {info.type === "warning" ? <AlertTriangle className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" /> : <Info className="w-5 h-5 text-blue-400 shrink-0 mt-0.5" />}
-            <p className={`text-[11px] sm:text-xs leading-relaxed font-medium ${info.type === "warning" ? "text-amber-200" : "text-slate-300"}`}>
+          <div className={`w-full p-3 rounded-xl border flex gap-3 items-start transition-colors ${info.type === "warning" ? "bg-amber-950/30 border-amber-800/50 shadow-[0_0_15px_rgba(245,158,11,0.1)]" : "bg-slate-800/40 border-slate-700/50"}`}>
+            {info.type === "warning" ? <AlertTriangle className="w-4 h-4 sm:w-5 sm:h-5 text-amber-500 shrink-0 mt-0.5" /> : <Info className="w-4 h-4 sm:w-5 sm:h-5 text-blue-400 shrink-0 mt-0.5" />}
+            <p className={`text-[10px] sm:text-xs leading-relaxed font-medium ${info.type === "warning" ? "text-amber-200" : "text-slate-300"}`}>
               {info.text}
             </p>
           </div>
