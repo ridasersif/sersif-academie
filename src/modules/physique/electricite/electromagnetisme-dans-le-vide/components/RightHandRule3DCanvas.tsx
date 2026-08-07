@@ -122,7 +122,7 @@ export default function RightHandRule3DCanvas() {
 
   return (
     <div className="w-full max-w-[800px] mx-auto flex flex-col">
-      <div className="w-full h-[280px] sm:h-[400px] bg-slate-950 rounded-t-2xl overflow-hidden relative border border-slate-800 border-b-0 shadow-inner">
+      <div className="w-full h-[200px] sm:h-[260px] bg-slate-950 rounded-t-2xl overflow-hidden relative border border-slate-800 border-b-0 shadow-inner">
         
         {/* HUD Top Right */}
         <div className="absolute top-3 right-3 z-10 flex flex-col items-end gap-1 pointer-events-auto">
