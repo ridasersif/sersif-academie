@@ -123,7 +123,7 @@ export default function MagneticSymmetry3DCanvas() {
       <style>{`.hide-scrollbar::-webkit-scrollbar { display: none; }`}</style>
 
       {/* Canvas Area */}
-      <div className="w-full h-[320px] sm:h-[400px] bg-slate-950 rounded-t-2xl overflow-hidden relative border border-slate-800 border-b-0 shadow-inner">
+      <div className="w-full h-[260px] sm:h-[300px] bg-slate-950 rounded-t-2xl overflow-hidden relative border border-slate-800 border-b-0 shadow-inner">
         
         {/* Shape Selector Float */}
         <div 
