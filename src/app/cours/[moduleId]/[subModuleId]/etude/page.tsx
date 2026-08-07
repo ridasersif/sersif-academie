@@ -178,7 +178,7 @@ export default function EtudePage({ params }: { params: Promise<{ moduleId: stri
         <aside 
           className={`
             fixed lg:sticky top-14 left-0 z-40
-            w-72 sm:w-80 h-[calc(100vh-56px)] 
+            w-64 h-[calc(100vh-56px)] 
             bg-card border-r border-border/80 
             flex flex-col shrink-0 shadow-xl lg:shadow-none
             transition-transform duration-300 ease-in-out

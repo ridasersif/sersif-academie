@@ -103,7 +103,7 @@ export const COURSES_DATA: Record<string, CourseModule> = {
     subModules: [
       {
         id: "electrostatique",
-        code: "SMP S2",
+        code: "Partie 1",
         title: "Électrostatique",
         subtitle: "Charges, champ et potentiel",
         image: "/modules/electrostatique.png",
@@ -119,7 +119,7 @@ export const COURSES_DATA: Record<string, CourseModule> = {
       },
       {
         id: "electromagnetisme-dans-le-vide",
-        code: "SMP S3",
+        code: "Partie 2",
         title: "Électromagnétisme dans le vide",
         subtitle: "Lois générales et induction",
         image: "/modules/electromagnetisme_vide.png",
@@ -127,15 +127,40 @@ export const COURSES_DATA: Record<string, CourseModule> = {
         description: "Équations de Maxwell dans le vide, énergie électromagnétique, et induction électromagnétique.",
         elements: [
           {
-            id: "magnetostatique",
-            title: "Magnétostatique & Lois générales",
-            details: "Loi de Biot et Savart, équations de Maxwell, ARQS."
+            id: "courants-et-champ",
+            title: "Courants et Champ Magnétique",
+            details: "Notion de courant électrique, charges et courants macroscopiques. Loi de conservation de la charge. Notion de champ magnétostatique et propriétés de symétrie."
+          },
+          {
+            id: "lois-fondamentales",
+            title: "Lois Fondamentales",
+            details: "Loi de Laplace, Loi de Biot et Savart, et Théorème d'Ampère avec ses applications de calcul de champ."
+          },
+          {
+            id: "dipole-et-hall",
+            title: "Potentiel Vecteur et Dipôle",
+            details: "Potentiel vecteur, dipôle magnétostatique, champ créé et actions mécaniques subies. Effet Hall classique."
+          },
+          {
+            id: "maxwell",
+            title: "Équations de Maxwell",
+            details: "Les équations de Maxwell dans le vide, formulations locales et intégrales, et implications physiques."
+          },
+          {
+            id: "energie-em",
+            title: "Énergie Électromagnétique",
+            details: "Densité d'énergie électromagnétique, vecteur de Poynting et identité de Poynting (bilan énergétique)."
+          },
+          {
+            id: "potentiels-arqs",
+            title: "Potentiels et ARQS",
+            details: "Potentiel scalaire et vecteur, condition de Jauge de Lorentz, potentiels retardés et Approximation des Régimes Quasi-Statiques (ARQS)."
           }
         ]
       },
       {
         id: "electromagnetisme-dans-la-matiere",
-        code: "SMP S4",
+        code: "Partie 3",
         title: "Électromagnétisme dans la matière",
         subtitle: "Milieux conducteurs et diélectriques",
         image: "/modules/electromagnetisme_matiere.png",

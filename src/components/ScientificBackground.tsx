@@ -4,7 +4,7 @@ import { useTheme } from "next-themes";
 import { useEffect, useRef, useState } from "react";
 
 interface ScientificBackgroundProps {
-  type?: "physique" | "chimie" | "mecanique";
+  type?: "physique" | "chimie" | "mecanique" | "electricite";
 }
 
 interface Particle {
@@ -52,6 +52,18 @@ export default function ScientificBackground({ type = "physique" }: ScientificBa
 
     window.addEventListener("resize", handleResize);
 
+    const mouse = { x: width / 2, y: height / 2, active: false };
+    const handleMouseMove = (e: MouseEvent) => {
+      mouse.x = e.clientX;
+      mouse.y = e.clientY;
+      mouse.active = true;
+    };
+    const handleMouseLeave = () => {
+      mouse.active = false;
+    };
+    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mouseleave", handleMouseLeave);
+
     // Particle color palettes based on subject type
     let mainColor = "59, 130, 246";
     let secondaryColor = "99, 102, 241";
@@ -59,6 +71,9 @@ export default function ScientificBackground({ type = "physique" }: ScientificBa
     if (type === "mecanique") {
       mainColor = isDark ? "14, 165, 233" : "2, 132, 199";     // Sky / Cyan
       secondaryColor = isDark ? "99, 102, 241" : "79, 70, 229"; // Indigo
+    } else if (type === "electricite") {
+      mainColor = isDark ? "234, 179, 8" : "202, 138, 4";       // Yellow / Amber
+      secondaryColor = isDark ? "6, 182, 212" : "8, 145, 178";  // Cyan / Blue
     } else if (type === "chimie") {
       mainColor = isDark ? "16, 185, 129" : "5, 150, 105";     // Emerald
       secondaryColor = isDark ? "20, 184, 166" : "13, 148, 136";  // Teal
@@ -76,6 +91,8 @@ export default function ScientificBackground({ type = "physique" }: ScientificBa
       for (let i = 0; i < count; i++) {
         const shapeChoice = type === "mecanique"
           ? (Math.random() > 0.4 ? "gear" : "circle")
+          : type === "electricite"
+          ? (Math.random() > 0.7 ? "hex" : "circle")
           : (Math.random() > 0.4 ? "circle" : "hex");
 
         particles.push({
@@ -133,6 +150,29 @@ export default function ScientificBackground({ type = "physique" }: ScientificBa
         ctx.lineTo(x4, y4);
       }
       ctx.closePath();
+    };
+
+    const drawLightning = (x1: number, y1: number, x2: number, y2: number, color: string, segments: number) => {
+      ctx.save();
+      ctx.beginPath();
+      ctx.moveTo(x1, y1);
+      const dx = x2 - x1;
+      const dy = y2 - y1;
+      for (let i = 1; i <= segments; i++) {
+        const progress = i / segments;
+        const targetX = x1 + dx * progress;
+        const targetY = y1 + dy * progress;
+        const jitter = (1 - progress) * 20; 
+        const newX = i === segments ? x2 : targetX + (Math.random() - 0.5) * jitter;
+        const newY = i === segments ? y2 : targetY + (Math.random() - 0.5) * jitter;
+        ctx.lineTo(newX, newY);
+      }
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 1.5 + Math.random();
+      ctx.shadowColor = color;
+      ctx.shadowBlur = 12;
+      ctx.stroke();
+      ctx.restore();
     };
 
     let step = 0;
@@ -233,6 +273,22 @@ export default function ScientificBackground({ type = "physique" }: ScientificBa
 
         ctx.restore();
 
+        // Mouse interaction for electricity: Lightning strikes!
+        if (type === "electricite" && mouse.active) {
+          const mdx = p.x - mouse.x;
+          const mdy = p.y - mouse.y;
+          const mDist = Math.sqrt(mdx * mdx + mdy * mdy);
+          if (mDist < 250) {
+            const intensity = 1 - (mDist / 250);
+            if (Math.random() < 0.15 * intensity) {
+              drawLightning(p.x, p.y, mouse.x, mouse.y, `rgba(${mainColor}, ${intensity})`, 5);
+            }
+            // Magnetic pull
+            p.x -= mdx * 0.02 * intensity;
+            p.y -= mdy * 0.02 * intensity;
+          }
+        }
+
         // Connect nearby nodes with laser lines
         for (let j = i + 1; j < particles.length; j++) {
           const p2 = particles[j];
@@ -242,10 +298,18 @@ export default function ScientificBackground({ type = "physique" }: ScientificBa
 
           if (dist < 110) {
             const lineAlpha = (1 - dist / 110) * (isDark ? 0.12 : 0.06);
-            ctx.strokeStyle = `rgba(${mainColor}, ${lineAlpha})`;
-            ctx.lineWidth = 0.8;
+            ctx.strokeStyle = `rgba(${mainColor}, ${lineAlpha * (type === "electricite" ? 1.8 : 1)})`;
+            ctx.lineWidth = type === "electricite" ? 1.5 : 0.8;
             ctx.beginPath();
             ctx.moveTo(p.x, p.y);
+            
+            // Draw electric jagged arc for electricity
+            if (type === "electricite" && Math.random() > 0.4) {
+              const midX = (p.x + p2.x) / 2 + (Math.random() - 0.5) * 20;
+              const midY = (p.y + p2.y) / 2 + (Math.random() - 0.5) * 20;
+              ctx.lineTo(midX, midY);
+            }
+
             ctx.lineTo(p2.x, p2.y);
             ctx.stroke();
           }
@@ -259,6 +323,8 @@ export default function ScientificBackground({ type = "physique" }: ScientificBa
 
     return () => {
       window.removeEventListener("resize", handleResize);
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseleave", handleMouseLeave);
       cancelAnimationFrame(animationFrameId);
     };
   }, [mounted, theme, type]);
@@ -284,6 +350,20 @@ export default function ScientificBackground({ type = "physique" }: ScientificBa
           <div
             className={`absolute top-1/3 -right-32 w-[50rem] h-[50rem] rounded-full filter blur-[160px] opacity-35 ${
               isDark ? "bg-indigo-600/30" : "bg-indigo-400/40"
+            }`}
+          ></div>
+        </>
+      ) : type === "electricite" ? (
+        <>
+          <div
+            className={`absolute -top-32 -left-32 w-[45rem] h-[45rem] rounded-full filter blur-[150px] opacity-45 ${
+              isDark ? "bg-amber-600/35" : "bg-yellow-400/40"
+            } animate-pulse`}
+            style={{ animationDuration: "7s" }}
+          ></div>
+          <div
+            className={`absolute top-1/3 -right-32 w-[50rem] h-[50rem] rounded-full filter blur-[160px] opacity-35 ${
+              isDark ? "bg-cyan-600/30" : "bg-cyan-400/40"
             }`}
           ></div>
         </>

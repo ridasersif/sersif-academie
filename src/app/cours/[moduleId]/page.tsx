@@ -4,6 +4,7 @@ import { use } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import ScientificBackground from "@/components/ScientificBackground";
+import ElectricBackground from "@/components/ElectricBackground";
 import { ThemeToggle } from "@/components/theme-toggle";
 import MusicPlayer from "@/components/MusicPlayer";
 import { ArrowLeft, BookOpen, GraduationCap, ArrowRight } from "lucide-react";
@@ -20,7 +21,11 @@ export default function CoursePage({ params }: { params: Promise<{ moduleId: str
       <div className="min-h-screen flex flex-col font-sans selection:bg-primary/20 relative">
         {/* Background Holographique */}
         <div className="fixed inset-0 z-0">
-          <ScientificBackground type={moduleId === "mecanique-du-point-et-du-solide" ? "mecanique" : courseModule.subject} />
+          {moduleId === "electricite" ? (
+            <ElectricBackground />
+          ) : (
+            <ScientificBackground type={moduleId === "mecanique-du-point-et-du-solide" ? "mecanique" : courseModule.subject} />
+          )}
         </div>
 
         {/* Header Navigation Minimalist */}
