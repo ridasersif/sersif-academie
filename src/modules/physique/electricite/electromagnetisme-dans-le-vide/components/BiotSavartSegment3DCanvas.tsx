@@ -99,6 +99,11 @@ export default function BiotSavartSegment3DCanvas() {
   const bMag = (Math.sin(alpha2) - Math.sin(alpha1)) / distance;
   const bVisLength = bMag * 2.5; // Scale for visual purposes
 
+  // Slider Fill Percentages
+  const percL = ((halfLength - 0.5) / (6 - 0.5)) * 100;
+  const percD = ((distance - 0.5) / (5 - 0.5)) * 100;
+  const percZ = ((heightM - (-5)) / (5 - (-5))) * 100;
+
   return (
     <div className="w-full max-w-[800px] mx-auto flex flex-col">
       <div className="w-full h-[300px] sm:h-[400px] bg-slate-950 rounded-t-2xl overflow-hidden relative border border-slate-800 border-b-0 shadow-inner">
@@ -273,20 +278,20 @@ export default function BiotSavartSegment3DCanvas() {
 
         {/* Slider: L */}
         <div className={`flex items-center gap-2 w-[22%] sm:w-24 md:w-28 shrink-0 transition-opacity ${isInfinite ? "opacity-30 pointer-events-none" : "opacity-100"}`}>
-          <label className="text-[10px] font-bold text-cyan-400 uppercase w-2 drop-shadow-[0_0_5px_rgba(34,211,238,0.8)]">L</label>
-          <input type="range" min={0.5} max={6} step={0.1} value={halfLength} onChange={(e) => setHalfLength(parseFloat(e.target.value))} className="w-full h-1.5 sm:h-2 bg-slate-800/50 rounded-lg appearance-none cursor-pointer accent-cyan-400 drop-shadow-[0_0_6px_rgba(34,211,238,0.6)]" />
+          <label className="text-[10px] font-bold text-cyan-400 uppercase w-2">L</label>
+          <input type="range" min={0.5} max={6} step={0.1} value={halfLength} onChange={(e) => setHalfLength(parseFloat(e.target.value))} className="w-full h-1.5 sm:h-2 rounded-lg appearance-none cursor-pointer accent-cyan-400 shadow-inner" style={{ background: `linear-gradient(to right, #22d3ee ${percL}%, rgba(30,41,59,0.5) ${percL}%)` }} />
         </div>
 
         {/* Slider: d */}
         <div className="flex items-center gap-2 w-[22%] sm:w-24 md:w-28 shrink-0">
-          <label className="text-[10px] font-bold text-pink-400 uppercase w-2 drop-shadow-[0_0_5px_rgba(244,114,182,0.8)]">d</label>
-          <input type="range" min={0.5} max={5} step={0.1} value={distance} onChange={(e) => setDistance(parseFloat(e.target.value))} className="w-full h-1.5 sm:h-2 bg-slate-800/50 rounded-lg appearance-none cursor-pointer accent-pink-400 drop-shadow-[0_0_6px_rgba(244,114,182,0.6)]" />
+          <label className="text-[10px] font-bold text-pink-400 uppercase w-2">d</label>
+          <input type="range" min={0.5} max={5} step={0.1} value={distance} onChange={(e) => setDistance(parseFloat(e.target.value))} className="w-full h-1.5 sm:h-2 rounded-lg appearance-none cursor-pointer accent-pink-400 shadow-inner" style={{ background: `linear-gradient(to right, #f472b6 ${percD}%, rgba(30,41,59,0.5) ${percD}%)` }} />
         </div>
 
         {/* Slider: z */}
         <div className="flex items-center gap-2 w-[22%] sm:w-24 md:w-28 shrink-0">
-          <label className="text-[10px] font-bold text-purple-400 uppercase w-2 drop-shadow-[0_0_5px_rgba(192,132,252,0.8)]">z</label>
-          <input type="range" min={-5} max={5} step={0.1} value={heightM} onChange={(e) => setHeightM(parseFloat(e.target.value))} className="w-full h-1.5 sm:h-2 bg-slate-800/50 rounded-lg appearance-none cursor-pointer accent-purple-400 drop-shadow-[0_0_6px_rgba(192,132,252,0.6)]" />
+          <label className="text-[10px] font-bold text-purple-400 uppercase w-2">z</label>
+          <input type="range" min={-5} max={5} step={0.1} value={heightM} onChange={(e) => setHeightM(parseFloat(e.target.value))} className="w-full h-1.5 sm:h-2 rounded-lg appearance-none cursor-pointer accent-purple-400 shadow-inner" style={{ background: `linear-gradient(to right, #c084fc ${percZ}%, rgba(30,41,59,0.5) ${percZ}%)` }} />
         </div>
 
         {/* Toggle: Fil Infini */}
@@ -319,7 +324,7 @@ export default function BiotSavartSegment3DCanvas() {
       </div>
 
         {/* Result display */}
-        <div className="w-full flex items-center justify-center text-emerald-500 dark:text-emerald-400 drop-shadow-[0_0_8px_rgba(52,211,153,0.6)] overflow-x-auto py-2 px-1">
+        <div className="w-full flex items-center justify-center text-emerald-500 dark:text-emerald-400 overflow-x-auto py-2 px-1">
           {isInfinite ? (
             <LatexMath 
                math={`\\vec{B}(M) = \\frac{\\mu_0 I}{2\\pi d} \\vec{k} \\approx ${ (currentDirection * 2 / distance).toFixed(3) } \\frac{\\mu_0 I}{4\\pi} \\vec{k}`} 
