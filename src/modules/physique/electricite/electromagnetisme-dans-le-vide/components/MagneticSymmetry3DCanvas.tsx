@@ -20,6 +20,33 @@ const shapesList: { id: ShapeType; label: string; activeColor: string; inactiveC
   { id: "double_cone", label: "Double Cône", activeColor: "bg-rose-500 text-white border-rose-400 shadow-[0_0_15px_rgba(244,63,94,0.5)]", inactiveColor: "bg-rose-500/10 text-rose-300 border-rose-500/30 hover:bg-rose-500/20" },
 ];
 
+const Basis3D = ({ position, type }: { position: [number, number, number], type: "cylindrical" | "cartesian" }) => {
+  const isCyl = type === "cylindrical";
+  return (
+    <group position={position}>
+       {/* X axis (e_r or e_x) */}
+       <Line points={[[0,0,0], [0.8, 0, 0]]} color="#ef4444" lineWidth={2} transparent opacity={0.5} />
+       <mesh position={[0.8, 0, 0]} rotation={[0, 0, -Math.PI/2]}><coneGeometry args={[0.04, 0.15, 8]}/><meshBasicMaterial color="#ef4444" transparent opacity={0.7} /></mesh>
+       <Html position={[1, 0, 0]} center><div className="text-red-400/90 text-[12px] font-bold font-serif italic">e<sub>{isCyl ? 'r' : 'x'}</sub></div></Html>
+
+       {/* Y axis (e_z or e_y) */}
+       <Line points={[[0,0,0], [0, 0.8, 0]]} color="#22c55e" lineWidth={2} transparent opacity={0.5} />
+       <mesh position={[0, 0.8, 0]} rotation={[0, 0, 0]}><coneGeometry args={[0.04, 0.15, 8]}/><meshBasicMaterial color="#22c55e" transparent opacity={0.7} /></mesh>
+       <Html position={[0, 1.1, 0]} center><div className="text-green-400/90 text-[12px] font-bold font-serif italic">e<sub>{isCyl ? 'z' : 'y'}</sub></div></Html>
+
+       {/* Z axis (e_theta or e_z) */}
+       <Line points={[[0,0,0], isCyl ? [0, 0, -0.8] : [0, 0, 0.8]]} color="#3b82f6" lineWidth={2} transparent opacity={0.5} />
+       <mesh position={isCyl ? [0, 0, -0.8] : [0, 0, 0.8]} rotation={isCyl ? [-Math.PI/2, 0, 0] : [Math.PI/2, 0, 0]}>
+         <coneGeometry args={[0.04, 0.15, 8]}/>
+         <meshBasicMaterial color="#3b82f6" transparent opacity={0.7}/>
+       </mesh>
+       <Html position={isCyl ? [0, 0, -1.1] : [0, 0, 1.1]} center>
+         <div className="text-blue-400/90 text-[12px] font-bold font-serif italic">e<sub>{isCyl ? 'θ' : 'z'}</sub></div>
+       </Html>
+    </group>
+  );
+};
+
 const FieldLineCircle = ({ radius, color }: { radius: number, color: string }) => {
   const pts = useMemo(() => {
     const points = [];
@@ -94,21 +121,19 @@ export default function MagneticSymmetry3DCanvas() {
       <div className="w-full h-[320px] sm:h-[400px] bg-slate-950 rounded-t-2xl overflow-hidden relative border border-slate-800 border-b-0 shadow-inner">
         
         {/* Shape Selector Float */}
-        <div className="absolute top-2 left-2 right-2 sm:top-4 sm:left-4 sm:right-4 z-10 flex flex-col gap-2 bg-slate-900/60 backdrop-blur-md p-2 sm:p-3 rounded-xl border border-slate-700/50 shadow-xl pointer-events-auto">
-          <span className="text-[10px] font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5 ml-1">
-            <Shapes className="w-3.5 h-3.5 text-slate-400"/> Forme du Conducteur
-          </span>
-          <div className="flex flex-row overflow-x-auto gap-2 pb-1 hide-scrollbar" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-            {shapesList.map((s) => (
-              <button 
-                key={s.id}
-                onClick={() => { setShape(s.id); setPlaneType("none"); }}
-                className={`shrink-0 px-3 sm:px-4 py-1.5 sm:py-2 text-[10px] sm:text-[11px] font-bold rounded-lg transition-all border outline-none ${shape === s.id ? s.activeColor : s.inactiveColor}`}
-              >
-                {s.label}
-              </button>
-            ))}
-          </div>
+        <div 
+          className="absolute top-2 left-2 right-2 sm:top-4 sm:left-4 sm:right-auto z-10 flex flex-row overflow-x-auto gap-2 bg-slate-900/60 backdrop-blur-md p-2 rounded-xl border border-slate-700/50 shadow-xl pointer-events-auto hide-scrollbar" 
+          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+        >
+          {shapesList.map((s) => (
+            <button 
+              key={s.id}
+              onClick={() => { setShape(s.id); setPlaneType("none"); }}
+              className={`shrink-0 px-3 sm:px-4 py-1.5 sm:py-2 text-[10px] sm:text-[11px] font-bold rounded-lg transition-all border outline-none ${shape === s.id ? s.activeColor : s.inactiveColor}`}
+            >
+              {s.label}
+            </button>
+          ))}
         </div>
 
         {/* 3D Scene */}
@@ -173,9 +198,10 @@ export default function MagneticSymmetry3DCanvas() {
                 )}
 
                 {/* Point M et Vecteur B (Circulaire vers -Z) */}
+                <Basis3D position={[mPos[0], mPos[1], mPos[2]]} type="cylindrical" />
                 <Sphere args={[0.15, 32, 32]} position={[mPos[0], mPos[1], mPos[2]]}>
                   <meshStandardMaterial color="#f59e0b" emissive="#d97706" emissiveIntensity={0.5} />
-                  <Html position={[3.3, 0.2, 0]} center><div className="text-amber-400 font-bold text-sm drop-shadow-md">M</div></Html>
+                  <Html position={[0.3, 0.3, 0]} center><div className="text-amber-400 font-bold text-sm drop-shadow-md">M</div></Html>
                 </Sphere>
                 <group position={[mPos[0], mPos[1], mPos[2]]}>
                   <Line points={[[0, 0, 0], [0, 0, -2.5]]} color="#10b981" lineWidth={6} />
@@ -289,9 +315,10 @@ export default function MagneticSymmetry3DCanvas() {
                 )}
 
                 {/* Point M et Vecteur B (Axial vers +Y) */}
+                <Basis3D position={[mPos[0], mPos[1], mPos[2]]} type="cartesian" />
                 <Sphere args={[0.15, 32, 32]} position={[mPos[0], mPos[1], mPos[2]]}>
                   <meshStandardMaterial color="#f59e0b" emissive="#d97706" emissiveIntensity={0.5} />
-                  <Html position={[0.4, 0.2, 0]} center><div className="text-amber-400 font-bold text-sm">M</div></Html>
+                  <Html position={[0.3, 0.3, 0]} center><div className="text-amber-400 font-bold text-sm">M</div></Html>
                 </Sphere>
                 <group position={[mPos[0], mPos[1], mPos[2]]}>
                   <Line points={[[0, 0, 0], [0, 2.5, 0]]} color="#10b981" lineWidth={6} />
