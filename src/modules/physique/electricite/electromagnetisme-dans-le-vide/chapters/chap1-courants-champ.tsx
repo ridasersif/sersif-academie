@@ -8,6 +8,7 @@ import DriftVelocity3DCanvas from "../components/DriftVelocity3DCanvas";
 import MagneticSymmetry3DCanvas from "../components/MagneticSymmetry3DCanvas";
 import RightHandRule3DCanvas from "../components/RightHandRule3DCanvas";
 import Invariance3DCanvas from "../components/Invariance3DCanvas";
+import MagneticSources3DCanvas from "../components/MagneticSources3DCanvas";
 import { ChevronDown, ChevronUp, BookOpen, Zap, Layers, Compass, Magnet, Wind } from "lucide-react";
 
 export default function Chap1CourantsChamp() {
@@ -16,6 +17,24 @@ export default function Chap1CourantsChamp() {
   return (
     <div className="space-y-6 sm:space-y-8 w-full max-w-full overflow-x-hidden pb-12">
       
+      {/* PARTIE 0: SOURCES DU CHAMP MAGNETIQUE */}
+      <section className="bg-card/90 border border-border/80 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 shadow-sm w-full max-w-full overflow-x-hidden">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 text-xs font-extrabold mb-3">
+          <Magnet className="w-3.5 h-3.5" />
+          <span>Introduction • Sources du Champ Magnétique</span>
+        </div>
+        
+        <h2 className="text-xl sm:text-2xl font-black mb-3 sm:mb-4 text-foreground leading-tight">
+          0. Origine du Champ Magnétique
+        </h2>
+
+        <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed mb-4 font-medium">
+          Historiquement, le magnétisme a été découvert à travers les aimants naturels. Aujourd&apos;hui, on sait que tout champ magnétique <LatexMath math="\vec{B}" /> a pour origine des <strong>charges électriques en mouvement</strong>. On distingue principalement trois sources du champ magnétique :
+        </p>
+
+        <MagneticSources3DCanvas />
+      </section>
+
       {/* PARTIE 1: COURANT ÉLECTRIQUE ET DENSITÉ */}
       <section className="bg-card/90 border border-border/80 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 shadow-sm w-full max-w-full overflow-x-hidden">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400 text-xs font-extrabold mb-3">
@@ -165,21 +184,35 @@ export default function Chap1CourantsChamp() {
             <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 text-center font-mono text-purple-300 shadow-inner mb-2">
               <LatexMath math="\vec{F} = q(\vec{E} + \vec{v} \wedge \vec{B})" block />
             </div>
-            <p className="text-[11px] text-muted-foreground leading-relaxed">
-              La composante purement magnétique est <LatexMath math="\vec{F}_m = q(\vec{v} \wedge \vec{B})" />. Elle ne travaille jamais car elle est toujours perpendiculaire à <LatexMath math="\vec{v}" />.
+            
+            <div className="bg-purple-900/10 border border-purple-500/20 rounded-lg p-3 mb-3">
+              <p className="text-[11px] text-purple-200 font-bold mb-1">Propriétés de la force magnétique <LatexMath math="\vec{F}_m = q(\vec{v} \wedge \vec{B})" /> :</p>
+              <ul className="list-disc pl-4 text-[10px] text-muted-foreground space-y-1">
+                <li>Norme : <LatexMath math="\|\vec{F}_m\| = |q| \cdot \|\vec{v}\| \cdot \|\vec{B}\| \cdot |\sin(\theta)|" /></li>
+                <li>Orthogonalité : <LatexMath math="\vec{F}_m \perp \vec{v}" /> et <LatexMath math="\vec{F}_m \perp \vec{B}" /> (Produit vectoriel).</li>
+                <li>Conséquence : Elle ne travaille jamais (<LatexMath math="P = \vec{F}_m \cdot \vec{v} = 0" />), donc ne modifie pas l'énergie cinétique.</li>
+              </ul>
+            </div>
+
+            <p className="text-[10px] text-muted-foreground leading-relaxed italic border-l-2 border-slate-700 pl-2">
+              <strong className="text-slate-300 not-italic">Loi de Biot et Savart (Charge) :</strong> Une telle charge crée elle-même un champ <LatexMath math="\vec{B}(M) = \frac{\mu_0}{4\pi} \frac{q \vec{v} \wedge \vec{u}_{r}}{r^2}" />.
             </p>
           </div>
 
           <div>
             <h3 className="text-sm font-bold text-pink-400 mb-2 border-b border-pink-500/20 pb-1">Force de Laplace (Macroscopique)</h3>
             <p className="text-[11px] text-muted-foreground leading-relaxed mb-3">
-              Pour un fil conducteur parcouru par un courant <LatexMath math="I" />, la résultante des forces de Lorentz sur les électrons donne la force de Laplace élémentaire :
+              C'est la résultante des forces de Lorentz subies par tous les électrons d'un fil. Si on a <LatexMath math="n" /> électrons/m³ de charge <LatexMath math="-e" /> dans un volume <LatexMath math="d\tau = S dl" /> :
             </p>
+            <div className="bg-slate-900 border border-slate-800 p-2 text-center text-[10px] font-mono text-slate-300 rounded mb-2 overflow-x-auto hide-scrollbar">
+               <LatexMath math="d\vec{F} = (n S dl)(-e)(\vec{v} \wedge \vec{B}) = (S dl)\underbrace{(-ne\vec{v})}_{\vec{j}} \wedge \vec{B} = (\vec{j} S) dl \wedge \vec{B}" />
+            </div>
             <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 text-center font-mono text-pink-300 shadow-inner mb-2">
               <LatexMath math="d\vec{F} = I d\vec{l} \wedge \vec{B}" block />
             </div>
-            <p className="text-[11px] text-muted-foreground leading-relaxed">
-              C&apos;est le principe de fonctionnement des moteurs électriques et des rails de Laplace.
+            <p className="text-[10px] text-muted-foreground leading-relaxed">
+              Norme scalaire : <LatexMath math="dF_{ma} = I \cdot dl \cdot B \cdot \sin(\theta)" />. <br/>
+              C&apos;est le principe de fonctionnement des moteurs électriques.
             </p>
           </div>
         </div>
