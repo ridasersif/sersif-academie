@@ -20,12 +20,12 @@ const Particles = ({ density = 200, speed = 4, chargeSign = -1, isPlaying = true
   // Génération des positions initiales (dans un cylindre de rayon 1.4, longueur 10)
   const particles = useMemo(() => {
     const temp = [];
-    for (let i = 0; i < 300; i++) { // Max particles is 300
-      const radius = Math.random() * 1.3;
+    for (let i = 0; i < 300; i++) {
+      const radius = Math.random() * 0.7;
       const theta = Math.random() * 2 * Math.PI;
       const x = radius * Math.cos(theta);
       const y = radius * Math.sin(theta);
-      const z = (Math.random() - 0.5) * 10;
+      const z = (Math.random() - 0.5) * 6;
       temp.push({ x, y, z, offset: Math.random() * 100 });
     }
     return temp;
@@ -40,8 +40,8 @@ const Particles = ({ density = 200, speed = 4, chargeSign = -1, isPlaying = true
       
       if (i < density) {
         if (isPlaying) {
-          p.z += speed * delta;
-          if (p.z > 5) p.z = -5; // Boucle
+          p.z += speed * delta * 0.8;
+          if (p.z > 3) p.z = -3; // Boucle
         }
         
         // Position de la sphère
@@ -88,7 +88,7 @@ const Particles = ({ density = 200, speed = 4, chargeSign = -1, isPlaying = true
     <group>
       {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
       <instancedMesh ref={mesh} args={[null, null, 300] as any}>
-        <sphereGeometry args={[0.06, 16, 16]} />
+        <sphereGeometry args={[0.04, 16, 16]} />
         <meshPhysicalMaterial 
           color={particleColor} 
           emissive={particleEmissive} 
@@ -100,7 +100,7 @@ const Particles = ({ density = 200, speed = 4, chargeSign = -1, isPlaying = true
       </instancedMesh>
       {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
       <instancedMesh ref={coneMesh} args={[null, null, 300] as any}>
-        <coneGeometry args={[0.03, 0.1, 8]} />
+        <coneGeometry args={[0.02, 0.08, 8]} />
         <meshBasicMaterial color="#facc15" toneMapped={false} />
       </instancedMesh>
     </group>
@@ -118,7 +118,7 @@ export default function CurrentDensity3DCanvas() {
   const controlsRef = useRef<any>(null);
 
   // Calcul visuel du vecteur j
-  const jLength = (density / 250) * (speed / 4) * 2.5; // Base length is 2.5
+  const jLength = (density / 250) * (speed / 4) * 1.5; // Base length is 1.5
   const jDir = chargeSign; // si charge positive, j est dans le même sens que v (+Z). Sinon opposé (-Z).
 
   // Formules en temps réel
@@ -176,7 +176,7 @@ export default function CurrentDensity3DCanvas() {
           </div>
         </div>
 
-        <Canvas camera={{ position: [8, 5, -8], fov: 40 }} className="w-full h-full cursor-grab active:cursor-grabbing">
+        <Canvas camera={{ position: [10, 6, -10], fov: 40 }} className="w-full h-full cursor-grab active:cursor-grabbing">
           <color attach="background" args={["#020617"]} />
           <ambientLight intensity={0.4} />
           <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} intensity={2} castShadow />
@@ -193,7 +193,7 @@ export default function CurrentDensity3DCanvas() {
             
             {/* Fil Conducteur (Verre/Cristal) orienté le long de Z */}
             <mesh rotation={[Math.PI / 2, 0, 0]}>
-              <cylinderGeometry args={[1.5, 1.5, 10, 64]} />
+              <cylinderGeometry args={[0.8, 0.8, 6, 64]} />
               <meshPhysicalMaterial 
                 color="#e2e8f0" 
                 transparent 
@@ -209,14 +209,14 @@ export default function CurrentDensity3DCanvas() {
 
             {/* Bords du cylindre pour la lisibilité */}
             <lineSegments rotation={[Math.PI / 2, 0, 0]}>
-              <edgesGeometry args={[new THREE.CylinderGeometry(1.5, 1.5, 10, 32)]} />
+              <edgesGeometry args={[new THREE.CylinderGeometry(0.8, 0.8, 6, 32)]} />
               <lineBasicMaterial color="#94a3b8" transparent opacity={0.15} />
             </lineSegments>
 
             {/* Section dS (Surface élémentaire au milieu) */}
             <group position={[0, 0, 0]}>
               <mesh>
-                <circleGeometry args={[1.52, 64]} />
+                <circleGeometry args={[0.82, 64]} />
                 <meshPhysicalMaterial color="#ef4444" transparent opacity={0.15} side={THREE.DoubleSide} emissive="#ef4444" emissiveIntensity={0.2} />
               </mesh>
               <Line 
@@ -224,7 +224,7 @@ export default function CurrentDensity3DCanvas() {
                   const pts = [];
                   for(let i=0; i<=64; i++) {
                     const a = (i/64) * Math.PI * 2;
-                    pts.push(new THREE.Vector3(1.52*Math.cos(a), 1.52*Math.sin(a), 0));
+                    pts.push(new THREE.Vector3(0.82*Math.cos(a), 0.82*Math.sin(a), 0));
                   }
                   return pts;
                 })()}
@@ -236,12 +236,12 @@ export default function CurrentDensity3DCanvas() {
             {/* Vecteur Vitesse Moyenne global (v) */}
             {showVectors && (
               <group position={[0, 0, 0]}>
-                <Line points={[[0, 0, 0], [0, 0, speed * 0.5]]} color="#facc15" lineWidth={2} />
-                <mesh position={[0, 0, speed * 0.5]} rotation={[Math.PI/2, 0, 0]}>
-                  <coneGeometry args={[0.08, 0.2, 16]} />
+                <Line points={[[0, 0, 0], [0, 0, speed * 0.3]]} color="#facc15" lineWidth={2} />
+                <mesh position={[0, 0, speed * 0.3]} rotation={[Math.PI/2, 0, 0]}>
+                  <coneGeometry args={[0.06, 0.15, 16]} />
                   <meshBasicMaterial color="#facc15" toneMapped={false} />
                 </mesh>
-                <Html position={[0.2, 0.2, (speed * 0.5) + 0.2]} center>
+                <Html position={[0.2, 0.2, (speed * 0.3) + 0.1]} center>
                   <div className="text-yellow-400 font-bold text-sm drop-shadow-[0_2px_2px_rgba(0,0,0,0.8)]">
                     <LatexMath math="\vec{v}" />
                   </div>
@@ -252,12 +252,12 @@ export default function CurrentDensity3DCanvas() {
             {/* Vecteur Normal dS (Strictement normal au centre) */}
             {showVectors && (
               <group position={[0, 0, 0]}>
-                <Line points={[[0, 0, 0], [0, 0, 2.5]]} color="#f87171" lineWidth={1.5} dashed dashSize={0.1} gapSize={0.1} />
-                <mesh position={[0, 0, 2.5]} rotation={[Math.PI/2, 0, 0]}>
-                  <coneGeometry args={[0.06, 0.2, 16]} />
+                <Line points={[[0, 0, 0], [0, 0, 1.2]]} color="#f87171" lineWidth={1.5} dashed dashSize={0.1} gapSize={0.1} />
+                <mesh position={[0, 0, 1.2]} rotation={[Math.PI/2, 0, 0]}>
+                  <coneGeometry args={[0.05, 0.15, 16]} />
                   <meshBasicMaterial color="#f87171" toneMapped={false} />
                 </mesh>
-                <Html position={[0.1, 0.1, 2.6]} center>
+                <Html position={[0.1, 0.1, 1.3]} center>
                   <div className="text-red-400 font-bold text-xs drop-shadow-[0_2px_2px_rgba(0,0,0,0.8)]">
                     <LatexMath math="d\vec{S}" />
                   </div>
@@ -270,10 +270,10 @@ export default function CurrentDensity3DCanvas() {
               <group position={[0, 0, 0]}>
                 <Line points={[[0, 0, 0], [0, 0, jLength * jDir]]} color="#10b981" lineWidth={3} />
                 <mesh position={[0, 0, jLength * jDir]} rotation={[jDir > 0 ? Math.PI/2 : -Math.PI/2, 0, 0]}>
-                  <coneGeometry args={[0.12, 0.3, 16]} />
+                  <coneGeometry args={[0.08, 0.2, 16]} />
                   <meshBasicMaterial color="#10b981" toneMapped={false} />
                 </mesh>
-                <Html position={[-0.3, -0.3, (jLength + 0.3) * jDir]} center>
+                <Html position={[-0.3, -0.3, (jLength + 0.2) * jDir]} center>
                   <div className="text-emerald-400 font-bold text-base drop-shadow-[0_2px_2px_rgba(0,0,0,0.8)]">
                     <LatexMath math="\vec{j}" />
                   </div>

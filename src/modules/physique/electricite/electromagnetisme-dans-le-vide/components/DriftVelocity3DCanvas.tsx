@@ -14,7 +14,7 @@ const Lattice = () => {
   const dummy = useMemo(() => new THREE.Object3D(), []);
   
   const gridSize = 4;
-  const spacing = 2;
+  const spacing = 1.0;
   const count = gridSize * gridSize * gridSize;
 
   useEffect(() => {
@@ -39,7 +39,7 @@ const Lattice = () => {
   return (
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     <instancedMesh ref={mesh} args={[null, null, count] as any}>
-      <sphereGeometry args={[0.2, 16, 16]} />
+      <sphereGeometry args={[0.12, 16, 16]} />
       <meshPhysicalMaterial color="#334155" metalness={0.5} roughness={0.5} transparent opacity={0.6} />
     </instancedMesh>
   );
@@ -54,8 +54,8 @@ const Electrons = ({ hasField = false, isPlaying = true }) => {
     const data = [];
     for (let i = 0; i < count; i++) {
       data.push({
-        pos: new THREE.Vector3((Math.random()-0.5)*8, (Math.random()-0.5)*8, (Math.random()-0.5)*8),
-        vel: new THREE.Vector3((Math.random()-0.5)*10, (Math.random()-0.5)*10, (Math.random()-0.5)*10),
+        pos: new THREE.Vector3((Math.random()-0.5)*4, (Math.random()-0.5)*4, (Math.random()-0.5)*4),
+        vel: new THREE.Vector3((Math.random()-0.5)*5, (Math.random()-0.5)*5, (Math.random()-0.5)*5),
       });
     }
     return data;
@@ -67,19 +67,19 @@ const Electrons = ({ hasField = false, isPlaying = true }) => {
     electronsData.forEach((e, i) => {
       if (isPlaying) {
         if (Math.random() < 0.05) {
-          e.vel.set((Math.random()-0.5)*15, (Math.random()-0.5)*15, (Math.random()-0.5)*15);
+          e.vel.set((Math.random()-0.5)*7, (Math.random()-0.5)*7, (Math.random()-0.5)*7);
         }
         e.pos.addScaledVector(e.vel, delta);
         if (hasField) {
-          e.pos.z += 2 * delta;
+          e.pos.z += 1.5 * delta;
         }
 
-        if (e.pos.x > 4) e.pos.x = -4;
-        if (e.pos.x < -4) e.pos.x = 4;
-        if (e.pos.y > 4) e.pos.y = -4;
-        if (e.pos.y < -4) e.pos.y = 4;
-        if (e.pos.z > 4) e.pos.z = -4;
-        if (e.pos.z < -4) e.pos.z = 4;
+        if (e.pos.x > 2.2) e.pos.x = -2.2;
+        if (e.pos.x < -2.2) e.pos.x = 2.2;
+        if (e.pos.y > 2.2) e.pos.y = -2.2;
+        if (e.pos.y < -2.2) e.pos.y = 2.2;
+        if (e.pos.z > 2.2) e.pos.z = -2.2;
+        if (e.pos.z < -2.2) e.pos.z = 2.2;
       }
       
       dummy.position.copy(e.pos);
@@ -92,7 +92,7 @@ const Electrons = ({ hasField = false, isPlaying = true }) => {
   return (
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     <instancedMesh ref={mesh} args={[null, null, count] as any}>
-      <sphereGeometry args={[0.08, 16, 16]} />
+      <sphereGeometry args={[0.05, 16, 16]} />
       <meshPhysicalMaterial color="#3b82f6" emissive="#2563eb" emissiveIntensity={2} toneMapped={false} />
     </instancedMesh>
   );
@@ -132,7 +132,7 @@ export default function DriftVelocity3DCanvas() {
           </div>
         </div>
 
-        <Canvas camera={{ position: [10, 6, 12], fov: 40 }} className="w-full h-full cursor-grab active:cursor-grabbing">
+        <Canvas camera={{ position: [8, 6, 8], fov: 40 }} className="w-full h-full cursor-grab active:cursor-grabbing">
           <color attach="background" args={["#020617"]} />
           <ambientLight intensity={0.4} />
           <spotLight position={[10, 10, 10]} intensity={1.5} penumbra={1} />
@@ -150,15 +150,15 @@ export default function DriftVelocity3DCanvas() {
             
             {/* Vecteurs macroscopiques si E est activé */}
             {hasField && (
-              <group position={[0, 5, 0]}>
+              <group position={[0, 2.5, 0]}>
                 {/* Vecteur E pointant vers -Z */}
-                <group position={[-2, 0, 0]}>
-                  <Line points={[[0, 0, 2], [0, 0, -2]]} color="#f59e0b" lineWidth={3} />
-                  <mesh position={[0, 0, -2]} rotation={[-Math.PI/2, 0, 0]}>
-                    <coneGeometry args={[0.15, 0.4, 16]} />
+                <group position={[-1, 0, 0]}>
+                  <Line points={[[0, 0, 1], [0, 0, -1]]} color="#f59e0b" lineWidth={3} />
+                  <mesh position={[0, 0, -1]} rotation={[-Math.PI/2, 0, 0]}>
+                    <coneGeometry args={[0.1, 0.25, 16]} />
                     <meshBasicMaterial color="#f59e0b" toneMapped={false} />
                   </mesh>
-                  <Html position={[0, 0.4, 0]} center>
+                  <Html position={[0, 0.3, 0]} center>
                     <div className="text-amber-400 font-bold text-sm drop-shadow-[0_2px_2px_rgba(0,0,0,0.8)]">
                       <LatexMath math="\vec{E}" />
                     </div>
@@ -166,13 +166,13 @@ export default function DriftVelocity3DCanvas() {
                 </group>
 
                 {/* Vecteur j pointant vers +Z (dérive des électrons) */}
-                <group position={[2, 0, 0]}>
-                  <Line points={[[0, 0, -2], [0, 0, 2]]} color="#10b981" lineWidth={3} />
-                  <mesh position={[0, 0, 2]} rotation={[Math.PI/2, 0, 0]}>
-                    <coneGeometry args={[0.15, 0.4, 16]} />
+                <group position={[1, 0, 0]}>
+                  <Line points={[[0, 0, -1], [0, 0, 1]]} color="#10b981" lineWidth={3} />
+                  <mesh position={[0, 0, 1]} rotation={[Math.PI/2, 0, 0]}>
+                    <coneGeometry args={[0.1, 0.25, 16]} />
                     <meshBasicMaterial color="#10b981" toneMapped={false} />
                   </mesh>
-                  <Html position={[0, 0.4, 0]} center>
+                  <Html position={[0, 0.3, 0]} center>
                     <div className="text-emerald-400 font-bold text-sm drop-shadow-[0_2px_2px_rgba(0,0,0,0.8)]">
                       <LatexMath math="\vec{j}" />
                     </div>

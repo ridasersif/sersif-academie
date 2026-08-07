@@ -10,8 +10,8 @@ export default function CurrentFlux3DCanvas() {
   const [angleDeg, setAngleDeg] = useState(0); // 0 à 90 degrés
   const angleRad = (angleDeg * Math.PI) / 180;
   
-  const surfaceRadius = 1.5;
-  const dSLength = 2.5;
+  const surfaceRadius = 1.0;
+  const dSLength = 1.2;
   
   const cosTheta = Math.cos(angleRad);
   // Valeurs visuelles pour l'intensité
@@ -28,7 +28,7 @@ export default function CurrentFlux3DCanvas() {
       const y = r * Math.sin(a);
       lines.push(
         <group key={i} position={[x, y, 0]}>
-          <Line points={[[0, 0, -3], [0, 0, 3]]} color="#10b981" lineWidth={1} transparent opacity={0.3} />
+          <Line points={[[0, 0, -1.5], [0, 0, 1.5]]} color="#10b981" lineWidth={1} transparent opacity={0.3} />
         </group>
       );
     }
@@ -64,7 +64,7 @@ export default function CurrentFlux3DCanvas() {
           </div>
         </div>
 
-        <Canvas camera={{ position: [8, 5, 8], fov: 40 }} className="w-full h-full cursor-grab active:cursor-grabbing">
+        <Canvas camera={{ position: [6, 4, 6], fov: 40 }} className="w-full h-full cursor-grab active:cursor-grabbing">
           <color attach="background" args={["#020617"]} />
           <ambientLight intensity={0.5} />
           <spotLight position={[5, 10, 5]} intensity={1.5} penumbra={1} />
@@ -78,12 +78,12 @@ export default function CurrentFlux3DCanvas() {
             
             {/* Vecteur principal j */}
             <group position={[0, 0, 0]}>
-              <Line points={[[0, 0, -2], [0, 0, 2]]} color="#10b981" lineWidth={3} />
-              <mesh position={[0, 0, 2]} rotation={[Math.PI/2, 0, 0]}>
-                <coneGeometry args={[0.1, 0.25, 16]} />
+              <Line points={[[0, 0, -1], [0, 0, 1]]} color="#10b981" lineWidth={3} />
+              <mesh position={[0, 0, 1]} rotation={[Math.PI/2, 0, 0]}>
+                <coneGeometry args={[0.06, 0.15, 16]} />
                 <meshBasicMaterial color="#10b981" toneMapped={false} />
               </mesh>
-              <Html position={[0.2, 0.2, 2.3]} center>
+              <Html position={[0.1, 0.1, 1.2]} center>
                 <div className="text-emerald-400 font-bold text-sm drop-shadow-[0_2px_2px_rgba(0,0,0,0.8)]">
                   <LatexMath math="\vec{j}" />
                 </div>
@@ -113,10 +113,10 @@ export default function CurrentFlux3DCanvas() {
               <group position={[0, 0, 0]}>
                 <Line points={[[0, 0, 0], [0, 0, dSLength]]} color="#3b82f6" lineWidth={2} dashed dashSize={0.1} gapSize={0.1} />
                 <mesh position={[0, 0, dSLength]} rotation={[Math.PI/2, 0, 0]}>
-                  <coneGeometry args={[0.08, 0.2, 16]} />
+                  <coneGeometry args={[0.05, 0.15, 16]} />
                   <meshBasicMaterial color="#3b82f6" toneMapped={false} />
                 </mesh>
-                <Html position={[0, -0.2, dSLength + 0.2]} center>
+                <Html position={[0, -0.15, dSLength + 0.1]} center>
                   <div className="text-blue-400 font-bold text-xs drop-shadow-[0_2px_2px_rgba(0,0,0,0.8)]">
                     <LatexMath math="d\vec{S}" />
                   </div>
@@ -132,14 +132,14 @@ export default function CurrentFlux3DCanvas() {
                     const arc = [];
                     for (let i = 0; i <= 20; i++) {
                       const a = (i/20) * angleRad;
-                      arc.push(new THREE.Vector3(0, 1.2 * Math.sin(a), 1.2 * Math.cos(a)));
+                      arc.push(new THREE.Vector3(0, 0.8 * Math.sin(a), 0.8 * Math.cos(a)));
                     }
                     return arc;
                   })()}
                   color="#facc15"
                   lineWidth={2}
                 />
-                <Html position={[0, 1.4 * Math.sin(angleRad/2), 1.4 * Math.cos(angleRad/2)]} center>
+                <Html position={[0, 1.0 * Math.sin(angleRad/2), 1.0 * Math.cos(angleRad/2)]} center>
                   <div className="text-yellow-400 font-bold text-xs drop-shadow-[0_2px_2px_rgba(0,0,0,0.8)]">
                     <LatexMath math="\theta" />
                   </div>
