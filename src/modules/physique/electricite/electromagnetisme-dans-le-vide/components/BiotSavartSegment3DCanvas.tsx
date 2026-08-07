@@ -4,7 +4,7 @@ import React, { useState, useMemo } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, Line, Html, Sphere, Cylinder } from "@react-three/drei";
 import * as THREE from "three";
-import { RotateCcw, Ruler, ArrowRightToLine, ArrowUpDown } from "lucide-react";
+import { RotateCcw, Ruler, ArrowRightToLine, ArrowUpDown, ArrowUp, ArrowDown, Infinity as InfinityIcon } from "lucide-react";
 import LatexMath from "@/components/ui/LatexMath";
 
 /* ── Animated dB contribution dot traveling along segment ── */
@@ -14,7 +14,8 @@ const TravelingDot = ({ segStart, segEnd, mPos, speed = 0.6 }: { segStart: numbe
 
   useFrame((_, d) => {
     t.current += d * speed;
-    if (t.current > 1) t.current = 0;
+    if (speed > 0 && t.current > 1) t.current -= 1;
+    if (speed < 0 && t.current < 0) t.current += 1;
     if (ref.current) {
       const y = segStart + t.current * (segEnd - segStart);
       ref.current.position.set(0, y, 0);
@@ -64,6 +65,8 @@ export default function BiotSavartSegment3DCanvas() {
   const [halfLength, setHalfLength] = useState(3.0); // Half-length of segment
   const [distance, setDistance] = useState(2.0);      // Distance d from wire to M
   const [heightM, setHeightM] = useState(0.0);        // Height (Z/Y position) of point M
+  const [currentDirection, setCurrentDirection] = useState<1 | -1>(1); // Direction of I
+  const [isInfinite, setIsInfinite] = useState(false); // Infinite wire case
 
   // Field line circle points
   const fieldLinePoints = useMemo(() => {
@@ -77,8 +80,9 @@ export default function BiotSavartSegment3DCanvas() {
   }, [distance]);
 
   // Segment from -halfLength to +halfLength along Y axis
-  const segTop = halfLength;
-  const segBot = -halfLength;
+  const visualHalfLength = isInfinite ? 15.0 : halfLength;
+  const segTop = isInfinite ? 500.0 : halfLength;
+  const segBot = isInfinite ? -500.0 : -halfLength;
 
   // Point M position (on x-axis at distance d, and y-axis at heightM)
   const mX = distance;
@@ -88,8 +92,8 @@ export default function BiotSavartSegment3DCanvas() {
   const yRelBot = segBot - mY;
   const yRelTop = segTop - mY;
   
-  const alpha1 = Math.atan2(yRelBot, distance); // angle to bottom A
-  const alpha2 = Math.atan2(yRelTop, distance); // angle to top B
+  const alpha1 = isInfinite ? -Math.PI / 2 : Math.atan2(yRelBot, distance); // angle to bottom A
+  const alpha2 = isInfinite ? Math.PI / 2 : Math.atan2(yRelTop, distance); // angle to top B
 
   // Magnitude for visualization of B
   const bMag = (Math.sin(alpha2) - Math.sin(alpha1)) / distance;
@@ -146,29 +150,33 @@ export default function BiotSavartSegment3DCanvas() {
 
           <group>
             {/* Segment [AB] — fil portant le courant I */}
-            <Cylinder args={[0.04, 0.04, halfLength * 2, 16]} position={[0, 0, 0]}>
+            <Cylinder args={[0.04, 0.04, visualHalfLength * 2, 16]} position={[0, 0, 0]}>
               <meshStandardMaterial color="#06b6d4" emissive="#06b6d4" emissiveIntensity={0.5} />
             </Cylinder>
 
             {/* Glow around wire */}
-            <Cylinder args={[0.12, 0.12, halfLength * 2, 16]} position={[0, 0, 0]}>
+            <Cylinder args={[0.12, 0.12, visualHalfLength * 2, 16]} position={[0, 0, 0]}>
               <meshBasicMaterial color="#06b6d4" transparent opacity={0.1} />
             </Cylinder>
 
-            {/* Labels A and B */}
-            <Html position={[0, -halfLength - 0.4, 0]} center>
-              <div className="text-cyan-400 font-black text-sm drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">A</div>
-            </Html>
-            <Html position={[0, halfLength + 0.4, 0]} center>
-              <div className="text-cyan-400 font-black text-sm drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">B</div>
-            </Html>
+            {/* Labels A and B (hide if infinite) */}
+            {!isInfinite && (
+              <>
+                <Html position={[0, -halfLength - 0.4, 0]} center>
+                  <div className="text-cyan-400 font-black text-sm drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">A</div>
+                </Html>
+                <Html position={[0, halfLength + 0.4, 0]} center>
+                  <div className="text-cyan-400 font-black text-sm drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">B</div>
+                </Html>
+              </>
+            )}
 
-            {/* Current arrow I (upward) */}
-            <mesh position={[0, halfLength + 0.15, 0]}>
+            {/* Current arrow I */}
+            <mesh position={[0, (isInfinite ? 4.0 : halfLength + 0.15), 0]} rotation={[currentDirection === -1 ? Math.PI : 0, 0, 0]}>
               <coneGeometry args={[0.1, 0.35, 8]} />
               <meshBasicMaterial color="#06b6d4" />
             </mesh>
-            <Html position={[-0.5, halfLength + 0.3, 0]} center>
+            <Html position={[-0.5, (isInfinite ? 4.0 : halfLength + 0.3), 0]} center>
               <div className="text-cyan-400 font-bold text-xs drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">I</div>
             </Html>
 
@@ -186,34 +194,42 @@ export default function BiotSavartSegment3DCanvas() {
               <div className="text-pink-400 font-bold text-xs italic drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">d</div>
             </Html>
 
-            {/* r lines from segment endpoints to M */}
-            <Line points={[[0, segBot, 0], [mX, mY, 0]]} color="#94a3b8" lineWidth={1} transparent opacity={0.4} />
-            <Line points={[[0, segTop, 0], [mX, mY, 0]]} color="#94a3b8" lineWidth={1} transparent opacity={0.4} />
+            {/* r lines from segment endpoints to M (hide if infinite) */}
+            {!isInfinite && (
+              <>
+                <Line points={[[0, segBot, 0], [mX, mY, 0]]} color="#94a3b8" lineWidth={1} transparent opacity={0.4} />
+                <Line points={[[0, segTop, 0], [mX, mY, 0]]} color="#94a3b8" lineWidth={1} transparent opacity={0.4} />
+              </>
+            )}
 
-            {/* Angle Filled Slices α₁ and α₂ */}
-            <AngleSlice center={[mX, mY, 0]} radius={0.7} color="#0ea5e9" isTop={false} distance={distance} yRel={yRelBot} label="α₁" />
-            <AngleSlice center={[mX, mY, 0]} radius={0.9} color="#14b8a6" isTop={true} distance={distance} yRel={yRelTop} label="α₂" />
+            {/* Angle Filled Slices α₁ and α₂ (hide if infinite) */}
+            {!isInfinite && (
+              <>
+                <AngleSlice center={[mX, mY, 0]} radius={0.7} color="#0ea5e9" isTop={false} distance={distance} yRel={yRelBot} label="α₁" />
+                <AngleSlice center={[mX, mY, 0]} radius={0.9} color="#14b8a6" isTop={true} distance={distance} yRel={yRelTop} label="α₂" />
+              </>
+            )}
 
             {/* Field Line (Circle) passing through M */}
             <group position={[0, mY, 0]}>
               <Line points={fieldLinePoints} color="#10b981" lineWidth={1.5} transparent opacity={0.3} dashed dashSize={0.2} gapSize={0.2} />
               {/* Directional arrows on the field line */}
-              <mesh position={[0, 0, distance]} rotation={[0, 0, Math.PI / 2]}> {/* Pointing -X */}
+              <mesh position={[0, 0, distance]} rotation={[0, 0, Math.PI / 2 * currentDirection]}> {/* Pointing -X or +X */}
                 <coneGeometry args={[0.08, 0.25, 8]} />
                 <meshBasicMaterial color="#10b981" transparent opacity={0.5} />
               </mesh>
-              <mesh position={[-distance, 0, 0]} rotation={[Math.PI / 2, 0, 0]}> {/* Pointing +Z */}
+              <mesh position={[-distance, 0, 0]} rotation={[Math.PI / 2 * currentDirection, 0, 0]}> {/* Pointing +Z or -Z */}
                 <coneGeometry args={[0.08, 0.25, 8]} />
                 <meshBasicMaterial color="#10b981" transparent opacity={0.5} />
               </mesh>
-              <mesh position={[0, 0, -distance]} rotation={[0, 0, -Math.PI / 2]}> {/* Pointing +X */}
+              <mesh position={[0, 0, -distance]} rotation={[0, 0, -Math.PI / 2 * currentDirection]}> {/* Pointing +X or -X */}
                 <coneGeometry args={[0.08, 0.25, 8]} />
                 <meshBasicMaterial color="#10b981" transparent opacity={0.5} />
               </mesh>
             </group>
 
             {/* Magnetic Field Vector B at M */}
-            <group position={[mX, mY, 0]} rotation={[-Math.PI / 2, 0, 0]}> {/* Pointing -Z */}
+            <group position={[mX, mY, 0]} rotation={[currentDirection === 1 ? -Math.PI / 2 : Math.PI / 2, 0, 0]}> {/* Pointing -Z or +Z */}
               <Cylinder args={[0.03, 0.03, bVisLength, 8]} position={[0, bVisLength / 2, 0]}>
                 <meshBasicMaterial color="#10b981" />
               </Cylinder>
@@ -227,7 +243,7 @@ export default function BiotSavartSegment3DCanvas() {
             </group>
 
             {/* Traveling contribution dot */}
-            <TravelingDot segStart={segBot} segEnd={segTop} mPos={[mX, mY, 0]} speed={0.4} />
+            <TravelingDot segStart={-visualHalfLength} segEnd={visualHalfLength} mPos={[mX, mY, 0]} speed={0.4 * currentDirection} />
           </group>
 
           <OrbitControls enablePan={false} minDistance={3} maxDistance={15} />
@@ -235,19 +251,60 @@ export default function BiotSavartSegment3DCanvas() {
       </div>
 
       {/* Controls Panel */}
-      <div className="w-full bg-card border border-border border-t-0 rounded-b-2xl p-4 sm:p-5 flex flex-wrap items-center justify-center gap-6 sm:gap-8">
+      <div className="w-full bg-card border border-border border-t-0 rounded-b-2xl p-3 sm:p-4 flex flex-wrap items-center justify-center gap-3 sm:gap-5">
         
-        {/* Slider: Longueur du segment */}
-        <div className="flex flex-col gap-2 shrink-0 w-32 sm:w-48">
-          <div className="flex justify-between items-center mb-1">
-            <div className="flex items-center gap-1.5">
-              <Ruler className="w-3.5 h-3.5 text-cyan-500" />
-              <label className="text-[10px] sm:text-xs font-bold text-foreground/80 dark:text-cyan-300 uppercase tracking-wider">
-                Longueur L
+        {/* Toggle: Sens du courant (Segmented Control) */}
+        <div className="flex flex-col items-center justify-center gap-1.5 shrink-0">
+          <label className="text-[9px] sm:text-[10px] font-bold text-foreground/80 dark:text-slate-300 uppercase tracking-wider">
+            Courant I
+          </label>
+          <div className="flex bg-muted p-0.5 rounded-lg border border-border">
+            <button
+              onClick={() => setCurrentDirection(1)}
+              className={`p-1 sm:p-1.5 rounded-md transition-colors ${currentDirection === 1 ? 'bg-cyan-500/20 text-cyan-700 dark:text-cyan-400 shadow-sm' : 'text-muted-foreground hover:bg-foreground/10'}`}
+              title="Vers le haut"
+            >
+              <ArrowUp className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() => setCurrentDirection(-1)}
+              className={`p-1 sm:p-1.5 rounded-md transition-colors ${currentDirection === -1 ? 'bg-cyan-500/20 text-cyan-700 dark:text-cyan-400 shadow-sm' : 'text-muted-foreground hover:bg-foreground/10'}`}
+              title="Vers le bas"
+            >
+              <ArrowDown className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+
+        {/* Toggle: Fil Infini */}
+        <div className="flex flex-col items-center justify-center gap-1.5 shrink-0">
+          <label className="text-[9px] sm:text-[10px] font-bold text-foreground/80 dark:text-slate-300 uppercase tracking-wider">
+            Cas Limite
+          </label>
+          <button
+            onClick={() => setIsInfinite(!isInfinite)}
+            className={`flex items-center gap-1.5 px-2.5 py-1.5 h-[30px] sm:h-[34px] rounded-lg border font-bold text-[9px] sm:text-[10px] uppercase tracking-wider transition-colors ${
+              isInfinite 
+                ? "border-amber-500 bg-amber-500/20 text-amber-600 dark:text-amber-400 shadow-[0_0_8px_rgba(245,158,11,0.2)]" 
+                : "border-slate-500/30 bg-slate-500/10 hover:bg-slate-500/20 text-slate-700 dark:text-slate-400"
+            }`}
+          >
+            <InfinityIcon className="w-3.5 h-3.5" />
+            Infini
+          </button>
+        </div>
+
+        {/* Slider: Longueur du segment (Disabled if Infinite) */}
+        <div className={`flex flex-col gap-1.5 shrink-0 w-24 sm:w-32 transition-opacity ${isInfinite ? "opacity-30 pointer-events-none" : "opacity-100"}`}>
+          <div className="flex justify-between items-center mb-0.5">
+            <div className="flex items-center gap-1">
+              <Ruler className="w-3 h-3 text-cyan-500" />
+              <label className="text-[9px] sm:text-[10px] font-bold text-foreground/80 dark:text-cyan-300 uppercase tracking-wider">
+                L
               </label>
             </div>
-            <span className="text-[10px] sm:text-xs font-mono text-cyan-600 dark:text-cyan-400 bg-cyan-500/10 px-2 py-0.5 rounded-md border border-cyan-500/20">
-              {halfLength.toFixed(1)} m
+            <span className="text-[9px] sm:text-[10px] font-mono text-cyan-600 dark:text-cyan-400 bg-cyan-500/10 px-1.5 py-0.5 rounded border border-cyan-500/20">
+              {halfLength.toFixed(1)}m
             </span>
           </div>
           <input
@@ -256,24 +313,19 @@ export default function BiotSavartSegment3DCanvas() {
             onChange={(e) => setHalfLength(parseFloat(e.target.value))}
             className="w-full h-1.5 bg-muted rounded-lg appearance-none cursor-pointer accent-cyan-600 dark:accent-cyan-500"
           />
-          <div className="flex justify-between text-[8px] text-muted-foreground font-medium mt-0.5 px-0.5">
-            <span>0.5</span>
-            <span className="text-cyan-600/70 dark:text-cyan-400/60 transition-colors">L → ∞</span>
-            <span>6.0</span>
-          </div>
         </div>
 
         {/* Slider: Distance d */}
-        <div className="flex flex-col gap-2 shrink-0 w-32 sm:w-48">
-          <div className="flex justify-between items-center mb-1">
-            <div className="flex items-center gap-1.5">
-              <ArrowRightToLine className="w-3.5 h-3.5 text-pink-500" />
-              <label className="text-[10px] sm:text-xs font-bold text-foreground/80 dark:text-pink-300 uppercase tracking-wider">
-                Distance d
+        <div className="flex flex-col gap-1.5 shrink-0 w-24 sm:w-32">
+          <div className="flex justify-between items-center mb-0.5">
+            <div className="flex items-center gap-1">
+              <ArrowRightToLine className="w-3 h-3 text-pink-500" />
+              <label className="text-[9px] sm:text-[10px] font-bold text-foreground/80 dark:text-pink-300 uppercase tracking-wider">
+                d
               </label>
             </div>
-            <span className="text-[10px] sm:text-xs font-mono text-pink-600 dark:text-pink-400 bg-pink-500/10 px-2 py-0.5 rounded-md border border-pink-500/20">
-              {distance.toFixed(1)} m
+            <span className="text-[9px] sm:text-[10px] font-mono text-pink-600 dark:text-pink-400 bg-pink-500/10 px-1.5 py-0.5 rounded border border-pink-500/20">
+              {distance.toFixed(1)}m
             </span>
           </div>
           <input
@@ -282,23 +334,19 @@ export default function BiotSavartSegment3DCanvas() {
             onChange={(e) => setDistance(parseFloat(e.target.value))}
             className="w-full h-1.5 bg-muted rounded-lg appearance-none cursor-pointer accent-pink-600 dark:accent-pink-500"
           />
-          <div className="flex justify-between text-[8px] text-muted-foreground font-medium mt-0.5 px-0.5">
-            <span>0.5</span>
-            <span>5.0</span>
-          </div>
         </div>
 
         {/* Slider: Hauteur z */}
-        <div className="flex flex-col gap-2 shrink-0 w-32 sm:w-48">
-          <div className="flex justify-between items-center mb-1">
-            <div className="flex items-center gap-1.5">
-              <ArrowUpDown className="w-3.5 h-3.5 text-purple-500" />
-              <label className="text-[10px] sm:text-xs font-bold text-foreground/80 dark:text-purple-300 uppercase tracking-wider">
-                Hauteur z
+        <div className="flex flex-col gap-1.5 shrink-0 w-24 sm:w-32">
+          <div className="flex justify-between items-center mb-0.5">
+            <div className="flex items-center gap-1">
+              <ArrowUpDown className="w-3 h-3 text-purple-500" />
+              <label className="text-[9px] sm:text-[10px] font-bold text-foreground/80 dark:text-purple-300 uppercase tracking-wider">
+                z
               </label>
             </div>
-            <span className="text-[10px] sm:text-xs font-mono text-purple-600 dark:text-purple-400 bg-purple-500/10 px-2 py-0.5 rounded-md border border-purple-500/20">
-              {heightM > 0 ? "+" : ""}{heightM.toFixed(1)} m
+            <span className="text-[9px] sm:text-[10px] font-mono text-purple-600 dark:text-purple-400 bg-purple-500/10 px-1.5 py-0.5 rounded border border-purple-500/20">
+              {heightM > 0 ? "+" : ""}{heightM.toFixed(1)}m
             </span>
           </div>
           <input
@@ -307,20 +355,17 @@ export default function BiotSavartSegment3DCanvas() {
             onChange={(e) => setHeightM(parseFloat(e.target.value))}
             className="w-full h-1.5 bg-muted rounded-lg appearance-none cursor-pointer accent-purple-600 dark:accent-purple-500"
           />
-          <div className="flex justify-between text-[8px] text-muted-foreground font-medium mt-0.5 px-0.5">
-            <span>-5.0</span>
-            <span>0.0</span>
-            <span>5.0</span>
-          </div>
         </div>
 
         {/* Reset Button */}
-        <div className="shrink-0 flex items-center justify-center mt-2 sm:mt-0">
+        <div className="shrink-0 flex items-center justify-center mt-3 sm:mt-0">
           <button 
              onClick={() => {
                setHalfLength(3.0);
                setDistance(2.0);
                setHeightM(0.0);
+               setCurrentDirection(1);
+               setIsInfinite(false);
              }}
              title="Réinitialiser"
              className="flex items-center justify-center gap-1.5 p-2 px-4 bg-muted hover:bg-muted/80 text-foreground/80 rounded-lg transition-colors border border-border text-[10px] font-bold uppercase tracking-wider shadow-sm hover:shadow-md"
@@ -335,18 +380,20 @@ export default function BiotSavartSegment3DCanvas() {
           <div className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold mb-2 tracking-widest uppercase">Résultat du Champ B</div>
           
           <div className="w-full flex items-center justify-center text-emerald-800 dark:text-emerald-300 overflow-x-auto py-2 px-1">
-            <LatexMath 
-               math={`\\vec{B}(M) = \\frac{\\mu_0 I}{4\\pi d} \\left[ \\sin(${ (alpha2 * 180 / Math.PI).toFixed(1) }^\\circ) - \\sin(${ (alpha1 * 180 / Math.PI).toFixed(1) }^\\circ) \\right] \\vec{k} \\approx ${ ((Math.sin(alpha2) - Math.sin(alpha1)) / distance).toFixed(3) } \\frac{\\mu_0 I}{4\\pi} \\vec{k}`} 
-               block={false} 
-               className="text-[11px] sm:text-base whitespace-nowrap"
-            />
+            {isInfinite ? (
+              <LatexMath 
+                 math={`\\vec{B}(M) = \\frac{\\mu_0 I}{2\\pi d} \\vec{k} \\approx ${ (currentDirection * 2 / distance).toFixed(3) } \\frac{\\mu_0 I}{4\\pi} \\vec{k}`} 
+                 block={false} 
+                 className="text-[11px] sm:text-base whitespace-nowrap"
+              />
+            ) : (
+              <LatexMath 
+                 math={`\\vec{B}(M) = \\frac{\\mu_0 I}{4\\pi d} \\left[ \\sin(${ (alpha2 * 180 / Math.PI).toFixed(1) }^\\circ) - \\sin(${ (alpha1 * 180 / Math.PI).toFixed(1) }^\\circ) \\right] \\vec{k} \\approx ${ (currentDirection * (Math.sin(alpha2) - Math.sin(alpha1)) / distance).toFixed(3) } \\frac{\\mu_0 I}{4\\pi} \\vec{k}`} 
+                 block={false} 
+                 className="text-[11px] sm:text-base whitespace-nowrap"
+              />
+            )}
           </div>
-
-          {halfLength >= 5.5 && (
-            <div className="mt-3 text-center text-[10px] text-amber-600 dark:text-amber-400 font-bold animate-pulse bg-amber-500/10 border border-amber-500/20 py-1.5 px-4 rounded-md">
-              ⚠️ L → ∞ : α₁ → -90° , α₂ → 90° ⟹ <LatexMath math={`\\vec{B}(M) \\approx ${ (2 / distance).toFixed(3) } \\frac{\\mu_0 I}{4\\pi} \\vec{k}`} block={false} /> (Fil Infini !)
-            </div>
-          )}
         </div>
       </div>
     </div>
