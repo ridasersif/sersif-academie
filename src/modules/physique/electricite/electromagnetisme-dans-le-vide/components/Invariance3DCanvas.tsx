@@ -4,7 +4,7 @@ import React, { useState, useMemo, useRef, useEffect } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, Line, Html, Cylinder, Sphere, Cone, Torus, Environment, ContactShadows } from "@react-three/drei";
 import * as THREE from "three";
-import { ArrowUpDown, RotateCw, AlertTriangle, CheckCircle2 } from "lucide-react";
+import { ArrowUpDown, RotateCw, AlertTriangle, CheckCircle2, Maximize, Info } from "lucide-react";
 
 type ShapeType = "fil" | "cylindre" | "solenoide" | "cercle" | "sphere" | "demi_sphere" | "cone" | "double_cone" | "tore_circulaire" | "tore_carre" | "plan";
 
@@ -46,8 +46,9 @@ const Basis3D = ({ position, type }: { position: [number, number, number], type:
   );
 };
 
-const AnimatedPointM = ({ mode, shape, isValid }: { mode: "translation" | "rotation", shape: ShapeType, isValid: boolean }) => {
+const AnimatedPointM = ({ mode, shape, isValid }: { mode: "translation" | "rotation" | "variation", shape: ShapeType, isValid: boolean }) => {
   const groupRef = useRef<THREE.Group>(null);
+  const bGroupRef = useRef<THREE.Group>(null);
   
   const mPos = useMemo(() => {
     if (shape === "fil" || shape === "cylindre") return [3, 0, 0];
@@ -60,9 +61,10 @@ const AnimatedPointM = ({ mode, shape, isValid }: { mode: "translation" | "rotat
 
   useFrame((state) => {
     if (!groupRef.current) return;
-    if (!isValid) {
+    if (!isValid && mode !== "variation") {
       groupRef.current.position.set(0, 0, 0);
       groupRef.current.rotation.set(0, 0, 0);
+      if (bGroupRef.current) bGroupRef.current.scale.set(1, 1, 1);
       return;
     }
     const t = state.clock.getElapsedTime();
@@ -71,9 +73,27 @@ const AnimatedPointM = ({ mode, shape, isValid }: { mode: "translation" | "rotat
       const y = Math.sin(t * 2) * 1.5;
       groupRef.current.position.set(0, y, 0);
       groupRef.current.rotation.set(0, 0, 0);
-    } else {
+      if (bGroupRef.current) bGroupRef.current.scale.set(1, 1, 1);
+    } else if (mode === "rotation") {
       groupRef.current.position.set(0, 0, 0);
       groupRef.current.rotation.set(0, t * 1.5, 0);
+      if (bGroupRef.current) bGroupRef.current.scale.set(1, 1, 1);
+    } else if (mode === "variation") {
+      // Déplacement radial sur l'axe X (distance de 0 à 3)
+      const extraR = (Math.sin(t * 1.5) + 1) * 1.5;
+      groupRef.current.position.set(extraR, 0, 0);
+      groupRef.current.rotation.set(0, 0, 0);
+      
+      if (bGroupRef.current) {
+        if (shape === "plan") {
+           bGroupRef.current.scale.set(1, 1, 1); // Plan infini = champ uniforme, pas de rétrécissement
+        } else {
+           const r0 = mPos[0] || 1;
+           const r = r0 + extraR;
+           const scale = r0 / r; // Inversement proportionnel à la distance r
+           bGroupRef.current.scale.set(scale, scale, scale);
+        }
+      }
     }
   });
 
@@ -119,7 +139,9 @@ const AnimatedPointM = ({ mode, shape, isValid }: { mode: "translation" | "rotat
           <meshStandardMaterial color={isValid ? "#f59e0b" : "#ef4444"} emissive={isValid ? "#d97706" : "#b91c1c"} emissiveIntensity={0.5} />
           <Html position={[0.3, 0.3, 0]} center><div className={`${isValid ? 'text-amber-400' : 'text-red-400'} font-bold text-sm drop-shadow-md`}>M</div></Html>
        </Sphere>
-       {bVector}
+       <group ref={bGroupRef}>
+         {bVector}
+       </group>
        {shape !== "plan" && isValid && mode === "rotation" && (
          <group>
            <Line points={[[0, mPos[1], 0], [mPos[0], mPos[1], 0]]} color="#94a3b8" lineWidth={2} transparent opacity={0.3} dashed dashSize={0.2} gapSize={0.1} />
@@ -134,12 +156,12 @@ const AnimatedPointM = ({ mode, shape, isValid }: { mode: "translation" | "rotat
 
 export default function Invariance3DCanvas() {
   const [shape, setShape] = useState<ShapeType>("fil");
-  const [mode, setMode] = useState<"translation" | "rotation">("rotation");
+  const [mode, setMode] = useState<"translation" | "rotation" | "variation">("rotation");
 
   const supportsTranslation = ["fil", "cylindre", "solenoide", "plan"].includes(shape);
   const supportsRotation = shape !== "plan";
 
-  const isValid = mode === "translation" ? supportsTranslation : supportsRotation;
+  const isValid = mode === "translation" ? supportsTranslation : mode === "rotation" ? supportsRotation : true;
 
   useEffect(() => {
     if (shape === "plan" && mode === "rotation") setMode("translation");
@@ -158,11 +180,14 @@ export default function Invariance3DCanvas() {
     if (mode === "translation") {
       if (!supportsTranslation) return { text: "Cette géométrie est de dimension finie le long de l'axe. L'invariance par translation n'est pas applicable (le champ change si on se déplace en z).", type: "warning", formula: "B(r, \\theta, z)" };
       return { text: "La distribution est considérée infinie. Le déplacement le long de l'axe ne modifie pas la vue. Le champ B ne dépend pas de z.", type: "success", formula: "B(r, \\theta, z) = B(r, \\theta)" };
-    } else {
+    } else if (mode === "rotation") {
       if (!supportsRotation) return { text: "Cette géométrie n'a pas de symétrie de révolution axiale. L'invariance par rotation n'est pas applicable.", type: "warning", formula: "B(r, \\theta, z)" };
       return { text: "La distribution possède une symétrie de révolution. La rotation autour de l'axe ne modifie pas la vue. Le champ B ne dépend pas de θ.", type: "success", formula: "B(r, \\theta, z) = B(r, z)" };
+    } else {
+      if (shape === "plan") return { text: "Cas particulier : le champ d'un plan infini est uniforme ! Il ne diminue pas avec la distance. Pour toutes les autres géométries finies, il diminuerait.", type: "info", formula: "B = Cte" };
+      return { text: "Il n'y a pas d'invariance selon l'éloignement radial (r). Plus on s'éloigne de la source de courant, plus l'intensité du champ magnétique B diminue proportionnellement.", type: "success", formula: "B(r) \\propto 1/r" };
     }
-  }, [mode, supportsTranslation, supportsRotation]);
+  }, [mode, supportsTranslation, supportsRotation, shape]);
 
   return (
     <div className="w-full max-w-[900px] mx-auto flex flex-col mb-8">
@@ -366,21 +391,28 @@ export default function Invariance3DCanvas() {
             >
               <RotateCw className="w-4 h-4" /> Rotation
             </button>
+            <button 
+              onClick={() => setMode("variation")}
+              className={`shrink-0 px-3 py-2 text-xs font-bold rounded-lg transition-all flex items-center gap-2 border ${mode === "variation" ? "bg-amber-600 border-amber-400 text-white shadow-[0_0_15px_rgba(217,119,6,0.5)]" : "bg-slate-800/50 border-slate-700 text-slate-400 hover:bg-slate-800"}`}
+            >
+              <Maximize className="w-4 h-4" /> Dépendance (r)
+            </button>
           </div>
         </div>
 
         {/* Info Box */}
-        <div className={`w-full p-4 rounded-xl border flex flex-col sm:flex-row gap-4 items-center sm:items-start transition-colors ${!isValid ? "bg-red-950/20 border-red-900/50" : "bg-emerald-950/20 border-emerald-900/50"}`}>
-          {!isValid ? <AlertTriangle className="w-6 h-6 text-red-500 shrink-0 mt-1" /> : <CheckCircle2 className="w-6 h-6 text-emerald-500 shrink-0 mt-1" />}
+        <div className={`w-full p-4 rounded-xl border flex flex-col sm:flex-row gap-4 items-center sm:items-start transition-colors ${!isValid ? "bg-red-950/20 border-red-900/50" : info.type === "info" ? "bg-blue-950/20 border-blue-900/50" : "bg-emerald-950/20 border-emerald-900/50"}`}>
+          {!isValid ? <AlertTriangle className="w-6 h-6 text-red-500 shrink-0 mt-1" /> : info.type === "info" ? <Info className="w-6 h-6 text-blue-400 shrink-0 mt-1" /> : <CheckCircle2 className="w-6 h-6 text-emerald-500 shrink-0 mt-1" />}
           <div className="flex-1 flex flex-col gap-2">
-            <p className={`text-xs leading-relaxed font-medium ${!isValid ? "text-red-200" : "text-emerald-200"}`}>
+            <p className={`text-xs leading-relaxed font-medium ${!isValid ? "text-red-200" : info.type === "info" ? "text-blue-200" : "text-emerald-200"}`}>
               {info.text}
             </p>
             <div className="mt-2 self-start bg-slate-950/80 px-4 py-2 rounded-lg border border-slate-800 shadow-inner">
                <span className="text-slate-400 font-mono text-sm tracking-widest font-bold">
-                  B(r, <span className={`transition-all duration-300 ${isValid && mode === "rotation" ? "line-through text-red-500 decoration-red-500 decoration-2" : "text-slate-300"}`}>θ</span>, <span className={`transition-all duration-300 ${isValid && mode === "translation" ? "line-through text-red-500 decoration-red-500 decoration-2" : "text-slate-300"}`}>z</span>)
+                  B(<span className={`transition-all duration-300 ${mode === "variation" ? "text-amber-400" : "text-slate-300"}`}>r</span>, <span className={`transition-all duration-300 ${isValid && mode === "rotation" ? "line-through text-red-500 decoration-red-500 decoration-2" : "text-slate-300"}`}>θ</span>, <span className={`transition-all duration-300 ${isValid && mode === "translation" ? "line-through text-red-500 decoration-red-500 decoration-2" : "text-slate-300"}`}>z</span>)
                   {isValid && mode === "translation" && " = B(r, θ)"}
                   {isValid && mode === "rotation" && " = B(r, z)"}
+                  {isValid && mode === "variation" && " dépend de r"}
                </span>
             </div>
           </div>
