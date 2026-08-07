@@ -130,35 +130,7 @@ export default function CurrentDensity3DCanvas() {
     <div className="w-full flex flex-col gap-4 font-sans">
       
       {/* Zone 3D */}
-      <div className="w-full h-[350px] sm:h-[400px] md:h-[450px] bg-slate-950 rounded-2xl overflow-hidden relative shadow-inner border border-slate-800">
-        
-        {/* HUD: Titre et Switch Porteurs */}
-        <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 flex flex-col gap-3 pointer-events-auto">
-          <div className="bg-slate-900/60 backdrop-blur-sm border border-slate-700/30 p-2 rounded-xl shadow-md">
-            <div className="flex bg-slate-950 p-1 rounded-lg border border-slate-800">
-              <button 
-                onClick={() => setChargeSign(-1)}
-                className={`flex-1 px-3 py-1.5 text-[10px] sm:text-[11px] font-bold rounded-md transition-all ${chargeSign === -1 ? "bg-blue-600 text-white shadow-[0_0_10px_rgba(37,99,235,0.4)]" : "text-slate-400 hover:text-slate-200"}`}
-              >
-                Électrons (-e)
-              </button>
-              <button 
-                onClick={() => setChargeSign(1)}
-                className={`flex-1 px-3 py-1.5 text-[10px] sm:text-[11px] font-bold rounded-md transition-all ${chargeSign === 1 ? "bg-red-600 text-white shadow-[0_0_10px_rgba(220,38,38,0.4)]" : "text-slate-400 hover:text-slate-200"}`}
-              >
-                Cations (+q)
-              </button>
-            </div>
-            
-            <button 
-              onClick={() => setShowVectors(!showVectors)}
-              className="mt-2 w-full flex items-center justify-center gap-1.5 px-3 py-1.5 text-[10px] font-bold rounded-md transition-all bg-slate-800/80 text-slate-300 hover:bg-slate-700 hover:text-white border border-slate-700/50"
-            >
-              {showVectors ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
-              {showVectors ? "Masquer vecteurs" : "Afficher vecteurs"}
-            </button>
-          </div>
-        </div>
+      <div className="w-full max-w-[800px] mx-auto h-[280px] sm:h-[320px] md:h-[350px] bg-slate-950 rounded-2xl overflow-hidden relative shadow-inner border border-slate-800">
 
         {/* HUD: Formules en Temps Réel */}
         <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 pointer-events-none">
@@ -290,7 +262,7 @@ export default function CurrentDensity3DCanvas() {
       </div>
 
       {/* Contrôles externes (en dessous du canvas) */}
-      <div className="w-full bg-slate-900/40 border border-slate-800/50 p-4 rounded-xl flex flex-col gap-4">
+      <div className="w-full max-w-[800px] mx-auto bg-slate-900/40 border border-slate-800/50 p-4 rounded-xl flex flex-col gap-4">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           <div className="flex flex-col gap-2">
             <div className="flex justify-between text-[11px] font-bold text-slate-300">
@@ -314,21 +286,45 @@ export default function CurrentDensity3DCanvas() {
           </div>
         </div>
         
-        <div className="flex justify-center gap-3 mt-2">
-          <button 
-            onClick={() => setIsPlaying(!isPlaying)}
-            className="flex items-center gap-1.5 px-4 py-1.5 bg-slate-800 hover:bg-slate-700 text-white text-[11px] font-bold rounded-lg transition-colors border border-slate-600"
-          >
-            {isPlaying ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
-            {isPlaying ? "Pause" : "Play"}
-          </button>
-          <button 
-            onClick={() => controlsRef.current?.reset()}
-            className="flex items-center gap-1.5 px-4 py-1.5 bg-slate-800 hover:bg-slate-700 text-white text-[11px] font-bold rounded-lg transition-colors border border-slate-600"
-          >
-            <RotateCcw className="w-3.5 h-3.5" />
-            Centrer
-          </button>
+        <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mt-2">
+          {/* Switch Porteurs */}
+          <div className="flex bg-slate-950 p-1 rounded-lg border border-slate-800 w-full sm:w-auto">
+            <button 
+              onClick={() => setChargeSign(-1)}
+              className={`flex-1 sm:flex-none px-4 py-1.5 text-[11px] font-bold rounded-md transition-all ${chargeSign === -1 ? "bg-blue-600 text-white shadow-[0_0_10px_rgba(37,99,235,0.4)]" : "text-slate-400 hover:text-slate-200"}`}
+            >
+              Électrons (-e)
+            </button>
+            <button 
+              onClick={() => setChargeSign(1)}
+              className={`flex-1 sm:flex-none px-4 py-1.5 text-[11px] font-bold rounded-md transition-all ${chargeSign === 1 ? "bg-red-600 text-white shadow-[0_0_10px_rgba(220,38,38,0.4)]" : "text-slate-400 hover:text-slate-200"}`}
+            >
+              Cations (+q)
+            </button>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex gap-2 w-full sm:w-auto">
+            <button 
+              onClick={() => setShowVectors(!showVectors)}
+              className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3 py-1.5 text-[11px] font-bold rounded-md transition-all bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white border border-slate-700"
+            >
+              {showVectors ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+              Vecteurs
+            </button>
+            <button 
+              onClick={() => setIsPlaying(!isPlaying)}
+              className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-white text-[11px] font-bold rounded-md transition-colors border border-slate-700"
+            >
+              {isPlaying ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
+            </button>
+            <button 
+              onClick={() => controlsRef.current?.reset()}
+              className="flex-1 sm:flex-none flex items-center justify-center px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-white rounded-md transition-colors border border-slate-700"
+            >
+              <RotateCcw className="w-3.5 h-3.5" />
+            </button>
+          </div>
         </div>
       </div>
     </div>

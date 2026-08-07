@@ -39,7 +39,7 @@ export default function CurrentFlux3DCanvas() {
     <div className="w-full flex flex-col gap-4 font-sans">
       
       {/* Zone 3D */}
-      <div className="w-full h-[350px] sm:h-[400px] md:h-[450px] bg-slate-950 rounded-2xl overflow-hidden relative shadow-inner border border-slate-800">
+      <div className="w-full max-w-[800px] mx-auto h-[280px] sm:h-[320px] md:h-[350px] bg-slate-950 rounded-2xl overflow-hidden relative shadow-inner border border-slate-800">
         
         {/* HUD: Titre et Valeurs */}
         <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 pointer-events-none">
@@ -154,7 +154,7 @@ export default function CurrentFlux3DCanvas() {
       </div>
 
       {/* Contrôle externe du Slider */}
-      <div className="w-full bg-slate-900/40 border border-slate-800/50 p-4 rounded-xl flex flex-col gap-2">
+      <div className="w-full max-w-[800px] mx-auto bg-slate-900/40 border border-slate-800/50 p-4 rounded-xl flex flex-col gap-2">
         <div className="flex justify-between text-[11px] font-bold text-slate-300">
           <span>Inclinaison de la surface (θ)</span>
           <span className="text-blue-400">{angleDeg}°</span>
