@@ -7,6 +7,7 @@ import CurrentFlux3DCanvas from "../components/CurrentFlux3DCanvas";
 import DriftVelocity3DCanvas from "../components/DriftVelocity3DCanvas";
 import MagneticSymmetry3DCanvas from "../components/MagneticSymmetry3DCanvas";
 import RightHandRule3DCanvas from "../components/RightHandRule3DCanvas";
+import Invariance3DCanvas from "../components/Invariance3DCanvas";
 import { ChevronDown, ChevronUp, BookOpen, Zap, Layers, Compass, Magnet, Wind } from "lucide-react";
 
 export default function Chap1CourantsChamp() {
@@ -261,8 +262,12 @@ export default function Chap1CourantsChamp() {
           </div>
         </div>
 
-        <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed mb-4">
-          Le principe de Curie stipule que &quot;les effets conservent les symétries des causes&quot;. Comprendre les plans de symétrie <LatexMath math="\Pi" /> et d&apos;antisymétrie <LatexMath math="\Pi^*" /> est crucial pour simplifier les calculs de <LatexMath math="\vec{B}" />.
+        {/* SYMETRIES */}
+        <h3 className="text-sm font-bold text-slate-300 mb-3 border-b border-slate-800 pb-1 mt-6">
+          Symétries et Principe de Curie (Direction du champ)
+        </h3>
+        <p className="text-[11px] text-muted-foreground leading-relaxed mb-4">
+          Le principe de Curie stipule que &quot;les effets conservent les symétries des causes&quot;. Analyser les plans de symétrie <LatexMath math="\Pi" /> et d&apos;antisymétrie <LatexMath math="\Pi^*" /> est l&apos;étape clé pour déterminer la direction du vecteur <LatexMath math="\vec{B}" />.
         </p>
 
         {/* 3D Simulation for Symmetries */}
@@ -270,7 +275,7 @@ export default function Chap1CourantsChamp() {
           <MagneticSymmetry3DCanvas />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
           <div className="p-5 rounded-2xl bg-blue-500/10 border border-blue-500/20 relative overflow-hidden group">
             <div className="absolute top-0 right-0 w-24 h-24 bg-blue-500/20 rounded-full blur-2xl -mr-10 -mt-10 group-hover:bg-blue-500/30 transition-all"></div>
             <span className="text-[13px] font-bold text-blue-500 block mb-2 font-sans flex items-center gap-2 relative z-10">
@@ -298,6 +303,40 @@ export default function Chap1CourantsChamp() {
             </div>
             <p className="text-[10px] text-emerald-400 mt-2 text-center italic relative z-10">Le champ B appartient au plan.</p>
           </div>
+        </div>
+
+        {/* INVARIANCES */}
+        <h3 className="text-sm font-bold text-slate-300 mb-3 border-b border-slate-800 pb-1 mt-6">
+          Invariances (Réduction des variables spatiales)
+        </h3>
+        <p className="text-[11px] text-muted-foreground leading-relaxed mb-4">
+          L&apos;invariance d&apos;une distribution de courant par rapport à une transformation géométrique implique que le champ magnétique <LatexMath math="\vec{B}" /> créé possède la même invariance. Cela permet de réduire le nombre de coordonnées dont dépend <LatexMath math="\vec{B}" />.
+        </p>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+          <div className="p-4 rounded-xl sm:rounded-2xl bg-slate-900/50 border border-slate-800">
+            <span className="text-xs font-bold text-slate-200 block mb-2">Invariance par Translation</span>
+            <p className="text-[11px] text-muted-foreground leading-relaxed mb-2">
+              Si la distribution est infinie et inchangée par translation le long d&apos;un axe (ex: axe <LatexMath math="z" />), le champ ne dépend pas de cette coordonnée.
+            </p>
+            <div className="p-2 rounded-xl bg-slate-950/80 border border-slate-800 text-center font-mono text-slate-300 shadow-inner">
+              <LatexMath math="\frac{\partial \vec{B}}{\partial z} = \vec{0} \implies \vec{B}(r, \theta)" />
+            </div>
+          </div>
+          
+          <div className="p-4 rounded-xl sm:rounded-2xl bg-slate-900/50 border border-slate-800">
+            <span className="text-xs font-bold text-slate-200 block mb-2">Invariance par Rotation</span>
+            <p className="text-[11px] text-muted-foreground leading-relaxed mb-2">
+              Si la distribution possède une symétrie de révolution autour d&apos;un axe (ex: angle <LatexMath math="\theta" />), le champ ne dépend pas de cet angle azimutal.
+            </p>
+            <div className="p-2 rounded-xl bg-slate-950/80 border border-slate-800 text-center font-mono text-slate-300 shadow-inner">
+              <LatexMath math="\frac{\partial \vec{B}}{\partial \theta} = \vec{0} \implies \vec{B}(r, z)" />
+            </div>
+          </div>
+        </div>
+
+        {/* 3D Simulation for Invariances */}
+        <div className="mb-8 rounded-2xl overflow-hidden border border-slate-800 relative ring-1 ring-slate-800 shadow-xl">
+          <Invariance3DCanvas />
         </div>
 
       </section>
