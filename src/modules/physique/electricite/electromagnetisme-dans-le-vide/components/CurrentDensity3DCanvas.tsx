@@ -113,6 +113,7 @@ export default function CurrentDensity3DCanvas() {
   const [speed, setSpeed] = useState(4);
   const [isPlaying, setIsPlaying] = useState(true);
   const [showVectors, setShowVectors] = useState(true);
+  const [showHUD, setShowHUD] = useState(false);
   
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const controlsRef = useRef<any>(null);
@@ -133,18 +134,27 @@ export default function CurrentDensity3DCanvas() {
       <div className="w-full max-w-[800px] mx-auto h-[280px] sm:h-[320px] md:h-[350px] bg-slate-950 rounded-2xl overflow-hidden relative shadow-inner border border-slate-800">
 
         {/* HUD: Formules en Temps Réel */}
-        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 pointer-events-none">
-          <div className="bg-slate-900/60 backdrop-blur-sm border border-slate-700/30 p-3 rounded-xl shadow-md flex flex-col gap-2 min-w-[140px]">
-            <div className="text-[10px] sm:text-[11px] font-mono text-slate-300">
-              <div className="flex justify-between mb-1">
-                <span>j = n|{qStr}|v</span>
-                <span className="text-emerald-400 ml-2">{density}·{absQStr}·{speed}</span>
+        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 pointer-events-auto">
+          <div className="bg-slate-900/60 backdrop-blur-sm border border-slate-700/30 p-2 sm:p-3 rounded-xl shadow-md flex flex-col gap-2 min-w-[40px] items-end">
+            <button 
+              onClick={() => setShowHUD(!showHUD)}
+              title="Afficher/Masquer les formules"
+              className="text-slate-400 hover:text-white transition-colors"
+            >
+              {showHUD ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+            </button>
+            {showHUD && (
+              <div className="text-[10px] sm:text-[11px] font-mono text-slate-300 w-full min-w-[140px]">
+                <div className="flex justify-between mb-1">
+                  <span>j = n|{qStr}|v</span>
+                  <span className="text-emerald-400 ml-2">{density}·{absQStr}·{speed}</span>
+                </div>
+                <div className="flex justify-between font-bold text-amber-400 mt-2 border-t border-slate-700/50 pt-2">
+                  <span>I :</span>
+                  <span className="ml-2">{iValue} A</span>
+                </div>
               </div>
-              <div className="flex justify-between font-bold text-amber-400 mt-2 border-t border-slate-700/50 pt-2">
-                <span>I :</span>
-                <span className="ml-2">{iValue} A</span>
-              </div>
-            </div>
+            )}
           </div>
         </div>
 
@@ -262,11 +272,29 @@ export default function CurrentDensity3DCanvas() {
       </div>
 
       {/* Contrôles externes (en dessous du canvas) */}
-      <div className="w-full max-w-[800px] mx-auto bg-slate-900/40 border border-slate-800/50 p-4 rounded-xl flex flex-col gap-4">
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-          <div className="flex flex-col gap-2">
-            <div className="flex justify-between text-[11px] font-bold text-slate-300">
-              <span>Densité (n)</span>
+      <div className="w-full max-w-[800px] mx-auto bg-slate-900/40 border border-slate-800/50 p-3 sm:p-4 rounded-xl flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
+        
+        {/* 1. Switch Porteurs */}
+        <div className="flex bg-slate-950/80 p-1 rounded-lg border border-slate-800 shrink-0 w-full sm:w-auto">
+          <button 
+            onClick={() => setChargeSign(-1)}
+            className={`flex-1 sm:flex-none px-3 py-1.5 text-[10px] font-bold rounded-md transition-all ${chargeSign === -1 ? "bg-blue-600 text-white shadow-[0_0_10px_rgba(37,99,235,0.4)]" : "text-slate-400 hover:text-slate-200"}`}
+          >
+            Électrons (-e)
+          </button>
+          <button 
+            onClick={() => setChargeSign(1)}
+            className={`flex-1 sm:flex-none px-3 py-1.5 text-[10px] font-bold rounded-md transition-all ${chargeSign === 1 ? "bg-red-600 text-white shadow-[0_0_10px_rgba(220,38,38,0.4)]" : "text-slate-400 hover:text-slate-200"}`}
+          >
+            Cations (+q)
+          </button>
+        </div>
+
+        {/* 2. Sliders */}
+        <div className="flex-1 flex flex-col sm:flex-row gap-4 w-full">
+          <div className="flex-1 flex flex-col gap-1.5">
+            <div className="flex justify-between text-[9px] font-bold text-slate-300 uppercase tracking-wider">
+              <span>Densité</span>
               <span className="text-blue-400">{density}</span>
             </div>
             <input 
@@ -274,9 +302,9 @@ export default function CurrentDensity3DCanvas() {
               className="w-full accent-blue-500 h-1.5"
             />
           </div>
-          <div className="flex flex-col gap-2">
-            <div className="flex justify-between text-[11px] font-bold text-slate-300">
-              <span>Vitesse (v)</span>
+          <div className="flex-1 flex flex-col gap-1.5">
+            <div className="flex justify-between text-[9px] font-bold text-slate-300 uppercase tracking-wider">
+              <span>Vitesse</span>
               <span className="text-purple-400">{speed}</span>
             </div>
             <input 
@@ -286,45 +314,29 @@ export default function CurrentDensity3DCanvas() {
           </div>
         </div>
         
-        <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mt-2">
-          {/* Switch Porteurs */}
-          <div className="flex bg-slate-950 p-1 rounded-lg border border-slate-800 w-full sm:w-auto">
-            <button 
-              onClick={() => setChargeSign(-1)}
-              className={`flex-1 sm:flex-none px-4 py-1.5 text-[11px] font-bold rounded-md transition-all ${chargeSign === -1 ? "bg-blue-600 text-white shadow-[0_0_10px_rgba(37,99,235,0.4)]" : "text-slate-400 hover:text-slate-200"}`}
-            >
-              Électrons (-e)
-            </button>
-            <button 
-              onClick={() => setChargeSign(1)}
-              className={`flex-1 sm:flex-none px-4 py-1.5 text-[11px] font-bold rounded-md transition-all ${chargeSign === 1 ? "bg-red-600 text-white shadow-[0_0_10px_rgba(220,38,38,0.4)]" : "text-slate-400 hover:text-slate-200"}`}
-            >
-              Cations (+q)
-            </button>
-          </div>
-
-          {/* Action Buttons */}
-          <div className="flex gap-2 w-full sm:w-auto">
-            <button 
-              onClick={() => setShowVectors(!showVectors)}
-              className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3 py-1.5 text-[11px] font-bold rounded-md transition-all bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white border border-slate-700"
-            >
-              {showVectors ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
-              Vecteurs
-            </button>
-            <button 
-              onClick={() => setIsPlaying(!isPlaying)}
-              className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-white text-[11px] font-bold rounded-md transition-colors border border-slate-700"
-            >
-              {isPlaying ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
-            </button>
-            <button 
-              onClick={() => controlsRef.current?.reset()}
-              className="flex-1 sm:flex-none flex items-center justify-center px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-white rounded-md transition-colors border border-slate-700"
-            >
-              <RotateCcw className="w-3.5 h-3.5" />
-            </button>
-          </div>
+        {/* 3. Action Buttons */}
+        <div className="flex gap-2 shrink-0 w-full sm:w-auto justify-end">
+          <button 
+            onClick={() => setShowVectors(!showVectors)}
+            title="Masquer/Afficher les vecteurs"
+            className="flex items-center justify-center p-2 rounded-lg transition-all bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white border border-slate-700"
+          >
+            {showVectors ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+          </button>
+          <button 
+            onClick={() => setIsPlaying(!isPlaying)}
+            title={isPlaying ? "Pause" : "Play"}
+            className="flex items-center justify-center p-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg transition-colors border border-slate-700"
+          >
+            {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+          </button>
+          <button 
+            onClick={() => controlsRef.current?.reset()}
+            title="Centrer la caméra"
+            className="flex items-center justify-center p-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg transition-colors border border-slate-700"
+          >
+            <RotateCcw className="w-4 h-4" />
+          </button>
         </div>
       </div>
     </div>

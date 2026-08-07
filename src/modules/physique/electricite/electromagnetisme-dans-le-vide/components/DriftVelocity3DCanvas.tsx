@@ -6,7 +6,7 @@ import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, Line, Html, ContactShadows, Environment } from "@react-three/drei";
 import { EffectComposer, Bloom } from "@react-three/postprocessing";
 import * as THREE from "three";
-import { Play, Pause, ZapOff, Zap } from "lucide-react";
+import { Play, Pause, ZapOff, Zap, Eye, EyeOff } from "lucide-react";
 import LatexMath from "@/components/ui/LatexMath";
 
 const Lattice = () => {
@@ -101,6 +101,7 @@ const Electrons = ({ hasField = false, isPlaying = true }) => {
 export default function DriftVelocity3DCanvas() {
   const [hasField, setHasField] = useState(false);
   const [isPlaying, setIsPlaying] = useState(true);
+  const [showHUD, setShowHUD] = useState(false);
 
   return (
     <div className="w-full flex flex-col gap-4 font-sans">
@@ -109,26 +110,38 @@ export default function DriftVelocity3DCanvas() {
       <div className="w-full max-w-[800px] mx-auto h-[280px] sm:h-[320px] md:h-[350px] bg-slate-950 rounded-2xl overflow-hidden relative shadow-inner border border-slate-800">
         
         {/* HUD: Titre et Status */}
-        <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 pointer-events-none">
-          <div className="bg-slate-900/60 backdrop-blur-sm border border-slate-700/30 p-2 sm:p-3 rounded-xl shadow-md flex flex-col gap-1">
-            <h4 className="text-slate-200 text-[10px] sm:text-xs font-bold uppercase tracking-wider border-b border-slate-700/50 pb-1">
-              Modèle de Drude
-            </h4>
-            <div className="text-[9px] sm:text-[10px] font-mono">
-              {hasField ? (
-                <div className="text-emerald-400">
-                  <span className="font-bold">E ≠ 0</span> : Mouvement ordonné
-                  <br />
-                  <span className="text-[8px] sm:text-[9px]">Vitesse de dérive vd &gt; 0</span>
-                </div>
-              ) : (
-                <div className="text-red-400">
-                  <span className="font-bold">E = 0</span> : Mouvement chaotique
-                  <br />
-                  <span className="text-[8px] sm:text-[9px]">Vitesse moyenne = 0</span>
-                </div>
-              )}
+        <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 pointer-events-auto">
+          <div className="bg-slate-900/60 backdrop-blur-sm border border-slate-700/30 p-2 sm:p-3 rounded-xl shadow-md flex flex-col gap-1 items-start">
+            <div className="flex justify-between items-center w-full gap-4">
+              <h4 className="text-slate-200 text-[10px] sm:text-xs font-bold uppercase tracking-wider">
+                Modèle de Drude
+              </h4>
+              <button 
+                onClick={() => setShowHUD(!showHUD)}
+                title="Afficher/Masquer les détails"
+                className="text-slate-400 hover:text-white transition-colors"
+              >
+                {showHUD ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
             </div>
+            
+            {showHUD && (
+              <div className="text-[9px] sm:text-[10px] font-mono mt-2 border-t border-slate-700/50 pt-2">
+                {hasField ? (
+                  <div className="text-emerald-400">
+                    <span className="font-bold">E ≠ 0</span> : Mouvement ordonné
+                    <br />
+                    <span className="text-[8px] sm:text-[9px]">Vitesse de dérive vd &gt; 0</span>
+                  </div>
+                ) : (
+                  <div className="text-red-400">
+                    <span className="font-bold">E = 0</span> : Mouvement chaotique
+                    <br />
+                    <span className="text-[8px] sm:text-[9px]">Vitesse moyenne = 0</span>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
 
@@ -187,20 +200,28 @@ export default function DriftVelocity3DCanvas() {
       </div>
 
       {/* Boutons (Contrôle externe) */}
-      <div className="w-full max-w-[800px] mx-auto bg-slate-900/40 border border-slate-800/50 p-3 rounded-xl flex gap-3 justify-center">
-        <button 
-          onClick={() => setHasField(!hasField)}
-          className={`flex items-center gap-1.5 px-4 py-2 text-[10px] sm:text-[11px] font-bold rounded-lg transition-all border ${hasField ? "bg-emerald-600 border-emerald-400 text-white shadow-[0_0_15px_rgba(16,185,129,0.4)]" : "bg-slate-800 border-slate-600 text-slate-300 hover:bg-slate-700 hover:text-white"}`}
-        >
-          {hasField ? <Zap className="w-3.5 h-3.5" /> : <ZapOff className="w-3.5 h-3.5" />}
-          {hasField ? "Désactiver le champ E" : "Appliquer un champ E"}
-        </button>
-        <button 
-          onClick={() => setIsPlaying(!isPlaying)}
-          className="flex items-center gap-1.5 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white text-[10px] sm:text-[11px] font-bold rounded-lg transition-colors border border-slate-600"
-        >
-          {isPlaying ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
-        </button>
+      <div className="w-full max-w-[800px] mx-auto bg-slate-900/40 border border-slate-800/50 p-3 rounded-xl flex flex-col sm:flex-row items-center justify-between gap-4">
+        
+        <div className="flex-1 text-[10px] text-slate-400 hidden sm:block">
+          Appliquez un champ électrique pour observer la vitesse de dérive.
+        </div>
+
+        <div className="flex gap-3 w-full sm:w-auto shrink-0 justify-end">
+          <button 
+            onClick={() => setHasField(!hasField)}
+            className={`flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-4 py-2 text-[10px] sm:text-[11px] font-bold rounded-lg transition-all border ${hasField ? "bg-emerald-600 border-emerald-400 text-white shadow-[0_0_15px_rgba(16,185,129,0.4)]" : "bg-slate-800 border-slate-600 text-slate-300 hover:bg-slate-700 hover:text-white"}`}
+          >
+            {hasField ? <Zap className="w-3.5 h-3.5" /> : <ZapOff className="w-3.5 h-3.5" />}
+            {hasField ? "Désactiver E" : "Appliquer E"}
+          </button>
+          <button 
+            onClick={() => setIsPlaying(!isPlaying)}
+            title={isPlaying ? "Pause" : "Play"}
+            className="flex items-center justify-center p-2 px-3 bg-slate-800 hover:bg-slate-700 text-white rounded-lg transition-colors border border-slate-600"
+          >
+            {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+          </button>
+        </div>
       </div>
 
     </div>

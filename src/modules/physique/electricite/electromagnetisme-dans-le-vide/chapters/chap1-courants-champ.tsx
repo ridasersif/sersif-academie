@@ -81,12 +81,13 @@ export default function Chap1CourantsChamp() {
           La charge électrique est une grandeur conservative. Toute variation de charge dans un volume est obligatoirement due à un courant (flux) traversant sa surface frontière.
         </p>
 
-        <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/20 mb-4 shadow-sm">
-          <div className="text-center font-mono text-lg text-amber-500 mb-2 overflow-x-auto custom-scrollbar p-2">
-            <LatexMath math="\text{div}(\vec{j}) + \frac{\partial \rho}{\partial t} = 0" block />
+        <div className="max-w-sm mx-auto p-4 rounded-xl bg-slate-900/50 border border-amber-500/40 shadow-[0_0_15px_rgba(245,158,11,0.1)] mb-6 flex flex-col items-center justify-center relative overflow-hidden">
+          <div className="absolute top-0 left-0 w-1 h-full bg-amber-500 rounded-l-xl"></div>
+          <div className="text-center font-mono text-lg text-amber-400 mb-2 py-2 overflow-visible flex items-center justify-center">
+            <LatexMath math="\text{div}(\vec{j}) + \frac{\partial \rho}{\partial t} = 0" />
           </div>
-          <p className="text-[11px] text-center text-amber-600/70 dark:text-amber-400/70 font-semibold">
-            Équation Locale de la Conservation de la Charge
+          <p className="text-[10px] text-center text-amber-500/80 font-bold uppercase tracking-wider">
+            Équation Locale de la Conservation
           </p>
         </div>
 
