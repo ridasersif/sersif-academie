@@ -76,7 +76,7 @@ const FieldLineCircle = ({ radius, color }: { radius: number, color: string }) =
    Color: #f472b6 (pink-400) — rose/wardi
    ═══════════════════════════════════════════════ */
 const FLOW_COLOR = "#f472b6";
-const DOT_R = 0.06;
+const DOT_R = 0.12;
 
 /* Axial flow (vertical, along Y) */
 const AxialFlowDots = ({ radius, zOffset = 0, count = 12, height = 10, speed = 2.5 }: { radius: number; zOffset?: number; count?: number; height?: number; speed?: number }) => {
@@ -107,7 +107,7 @@ const CircularFlowDots = ({ ringRadius, count = 10, speed = 1.5, yOffset = 0 }: 
     time.current += d * speed;
     if (!ref.current) return;
     ref.current.children.forEach((c, i) => {
-      const a = time.current + (i / count) * Math.PI * 2;
+      const a = -time.current + (i / count) * Math.PI * 2;
       c.position.x = Math.cos(a) * ringRadius;
       c.position.z = Math.sin(a) * ringRadius;
       c.position.y = yOffset;
@@ -161,7 +161,7 @@ const SphericalFlowDots = ({ radius = 2.55, latCount = 3, lonCount = 6, half = f
       const maxLat = half ? Math.PI / 2 : Math.PI;
       const lat = half ? 0.3 + (latIdx / latCount) * (maxLat - 0.3) : -maxLat / 2 + 0.3 + (latIdx / latCount) * (maxLat - 0.6);
       const r = Math.cos(lat) * radius;
-      const a = time.current + (i % lonCount) * (Math.PI * 2 / lonCount);
+      const a = -time.current + (i % lonCount) * (Math.PI * 2 / lonCount);
       c.position.x = Math.cos(a) * r;
       c.position.y = Math.sin(lat) * radius;
       c.position.z = Math.sin(a) * r;
@@ -170,6 +170,41 @@ const SphericalFlowDots = ({ radius = 2.55, latCount = 3, lonCount = 6, half = f
   return (
     <group ref={ref}>
       {Array.from({ length: latCount * lonCount }).map((_, i) => (
+        <Sphere key={i} args={[DOT_R, 6, 6]}>
+          <meshBasicMaterial color={FLOW_COLOR} toneMapped={false} />
+        </Sphere>
+      ))}
+    </group>
+  );
+};
+
+/* Toroidal flow (particles orbiting around winding cross-sections) */
+const ToroidalFlowDots = ({ majorR = 3, minorR = 1.05, windingCount = 8, particlesPerWinding = 3, speed = 2 }: { majorR?: number; minorR?: number; windingCount?: number; particlesPerWinding?: number; speed?: number }) => {
+  const ref = React.useRef<THREE.Group>(null);
+  const time = React.useRef(0);
+  useFrame((_, d) => {
+    time.current += d * speed;
+    if (!ref.current) return;
+    let idx = 0;
+    for (let w = 0; w < windingCount; w++) {
+      const toroidalAngle = (w / windingCount) * Math.PI * 2;
+      const cx = Math.cos(toroidalAngle) * majorR;
+      const cz = Math.sin(toroidalAngle) * majorR;
+      for (let p = 0; p < particlesPerWinding; p++) {
+        const poloidalAngle = -time.current + (p / particlesPerWinding) * Math.PI * 2;
+        const child = ref.current.children[idx];
+        if (child) {
+          child.position.x = cx + Math.cos(toroidalAngle) * Math.cos(poloidalAngle) * minorR;
+          child.position.y = Math.sin(poloidalAngle) * minorR;
+          child.position.z = cz + Math.sin(toroidalAngle) * Math.cos(poloidalAngle) * minorR;
+        }
+        idx++;
+      }
+    }
+  });
+  return (
+    <group ref={ref}>
+      {Array.from({ length: windingCount * particlesPerWinding }).map((_, i) => (
         <Sphere key={i} args={[DOT_R, 6, 6]}>
           <meshBasicMaterial color={FLOW_COLOR} toneMapped={false} />
         </Sphere>
@@ -311,6 +346,7 @@ export default function MagneticSymmetry3DCanvas() {
                       </group>
                     ))}
 
+                    <ToroidalFlowDots majorR={3} minorR={1.05} windingCount={8} particlesPerWinding={3} speed={2.5} />
                   </group>
                 )}
                 {shape === "tore_carre" && (
@@ -331,6 +367,7 @@ export default function MagneticSymmetry3DCanvas() {
                       </group>
                     ))}
 
+                    <ToroidalFlowDots majorR={3} minorR={1.05} windingCount={8} particlesPerWinding={3} speed={2.5} />
                   </group>
                 )}
                 
@@ -402,7 +439,7 @@ export default function MagneticSymmetry3DCanvas() {
                     <Torus args={[2.5, 0.08, 16, 100]} rotation={[Math.PI/2, 0, 0]}>
                       <meshPhysicalMaterial color="#94a3b8" metalness={0.9} roughness={0.2} />
                     </Torus>
-                    <CircularFlowDots ringRadius={2.5} count={10} speed={1.8} />
+                    <CircularFlowDots ringRadius={2.55} count={12} speed={1.8} />
                   </group>
                 )}
                 {shape === "sphere" && (
