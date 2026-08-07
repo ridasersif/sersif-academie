@@ -1,4 +1,5 @@
 import Chap1CourantsChamp from "./chap1-courants-champ";
+import Chap2LoisFondamentales from "./chap2-lois-fondamentales";
 
 export const ELECTROMAGNETISME_VIDE_CHAPTERS = [
   {
@@ -13,7 +14,7 @@ export const ELECTROMAGNETISME_VIDE_CHAPTERS = [
     num: "02",
     title: "Lois Fondamentales",
     subtitle: "Biot-Savart et Théorème d'Ampère",
-    component: null,
+    component: Chap2LoisFondamentales,
   },
   {
     id: "potentiel-dipole",
