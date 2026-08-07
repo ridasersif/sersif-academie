@@ -1,118 +1,426 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import LatexMath from "@/components/ui/LatexMath";
 import BiotSavart3DCanvas from "../components/BiotSavart3DCanvas";
+import BiotSavartSegment3DCanvas from "../components/BiotSavartSegment3DCanvas";
 import AmpereTheorem3DCanvas from "../components/AmpereTheorem3DCanvas";
-import { Magnet, RotateCw, Calculator, Compass, Layers } from "lucide-react";
+import { Calculator, RotateCw, Layers, ChevronDown, ChevronUp, Sparkles, BookOpen, Lightbulb, ArrowRight } from "lucide-react";
+
+/* ── Collapsible Panel Component ── */
+function CollapsibleStep({
+  step,
+  title,
+  color,
+  children,
+  defaultOpen = false,
+}: {
+  step: number;
+  title: string;
+  color: string;
+  children: React.ReactNode;
+  defaultOpen?: boolean;
+}) {
+  const [open, setOpen] = useState(defaultOpen);
+  const colorMap: Record<string, { bg: string; border: string; text: string; dot: string }> = {
+    cyan: { bg: "bg-cyan-500/5", border: "border-cyan-500/20", text: "text-cyan-300", dot: "bg-cyan-500" },
+    teal: { bg: "bg-teal-500/5", border: "border-teal-500/20", text: "text-teal-300", dot: "bg-teal-500" },
+    blue: { bg: "bg-blue-500/5", border: "border-blue-500/20", text: "text-blue-300", dot: "bg-blue-500" },
+    emerald: { bg: "bg-emerald-500/5", border: "border-emerald-500/20", text: "text-emerald-300", dot: "bg-emerald-500" },
+    amber: { bg: "bg-amber-500/5", border: "border-amber-500/20", text: "text-amber-300", dot: "bg-amber-500" },
+    pink: { bg: "bg-pink-500/5", border: "border-pink-500/20", text: "text-pink-300", dot: "bg-pink-500" },
+  };
+  const c = colorMap[color] || colorMap.cyan;
+
+  return (
+    <div className={`rounded-xl ${c.bg} border ${c.border} overflow-hidden transition-all duration-300`}>
+      <button
+        onClick={() => setOpen(!open)}
+        className="w-full px-4 py-3 flex items-center gap-3 hover:bg-white/[0.02] transition-colors"
+      >
+        <div className={`w-7 h-7 rounded-full ${c.dot} flex items-center justify-center text-white text-xs font-black shrink-0 shadow-lg`}>
+          {step}
+        </div>
+        <span className={`text-xs sm:text-sm font-bold ${c.text} flex-1 text-left`}>{title}</span>
+        {open ? (
+          <ChevronUp className={`w-4 h-4 ${c.text} shrink-0`} />
+        ) : (
+          <ChevronDown className={`w-4 h-4 ${c.text} shrink-0`} />
+        )}
+      </button>
+      <div
+        className={`overflow-hidden transition-all duration-500 ease-in-out ${
+          open ? "max-h-[2000px] opacity-100" : "max-h-0 opacity-0"
+        }`}
+      >
+        <div className="px-4 pb-4 pt-1 space-y-3">
+          {children}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ── Formula Card ── */
+function FormulaCard({ children, label, color = "cyan" }: { children: React.ReactNode; label: string; color?: string }) {
+  const borderColor = color === "cyan" ? "border-cyan-500/40" : color === "emerald" ? "border-emerald-500/40" : color === "amber" ? "border-amber-500/40" : "border-blue-500/40";
+  const shadowColor = color === "cyan" ? "rgba(6,182,212,0.1)" : color === "emerald" ? "rgba(16,185,129,0.1)" : color === "amber" ? "rgba(245,158,11,0.1)" : "rgba(59,130,246,0.1)";
+  const barColor = color === "cyan" ? "bg-cyan-500" : color === "emerald" ? "bg-emerald-500" : color === "amber" ? "bg-amber-500" : "bg-blue-500";
+  const labelColor = color === "cyan" ? "text-cyan-500/80" : color === "emerald" ? "text-emerald-500/80" : color === "amber" ? "text-amber-500/80" : "text-blue-500/80";
+
+  return (
+    <div className={`max-w-lg mx-auto p-3 sm:p-4 rounded-xl bg-muted/50 dark:bg-slate-900/50 border ${borderColor} flex flex-col items-center justify-center relative overflow-hidden`} style={{ boxShadow: `0 0 15px ${shadowColor}` }}>
+      <div className={`absolute top-0 left-0 w-1 h-full ${barColor} rounded-l-xl`} />
+      <div className="text-center font-mono text-sm sm:text-base mb-1 py-1 overflow-visible flex items-center justify-center">
+        {children}
+      </div>
+      <p className={`text-[10px] text-center ${labelColor} font-bold uppercase tracking-wider`}>
+        {label}
+      </p>
+    </div>
+  );
+}
 
 export default function Chap2LoisFondamentales() {
+  const [showSegmentDemo, setShowSegmentDemo] = useState(true);
+
   return (
     <div className="space-y-6 sm:space-y-8 w-full max-w-full overflow-x-hidden pb-12">
-      
-      {/* PARTIE 1: LOI DE BIOT-SAVART */}
+
+      {/* ═══════════════════════════════════════════ */}
+      {/* PARTIE 1: LOI DE BIOT-SAVART              */}
+      {/* ═══════════════════════════════════════════ */}
       <section className="bg-card/90 border border-border/80 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 shadow-sm w-full max-w-full overflow-x-hidden">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400 text-xs font-extrabold mb-3">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 text-xs font-extrabold mb-3">
           <Calculator className="w-3.5 h-3.5" />
           <span>Partie 1 • Loi de Biot-Savart (Méthode Locale)</span>
         </div>
-        
+
         <h2 className="text-xl sm:text-2xl font-black mb-3 sm:mb-4 text-foreground leading-tight">
           1. Calcul de proche en proche du Champ Magnétique
         </h2>
 
-        <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed mb-6 font-medium">
-          La loi de Biot et Savart permet de calculer le champ magnétique total créé par un circuit en sommant (intégrant) les contributions élémentaires <LatexMath math="d\vec{B}" /> de chaque petit bout de fil <LatexMath math="d\vec{l}" />.
+        <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed mb-4 font-medium">
+          La loi de Biot et Savart permet de calculer le champ magnétique total créé par un circuit en sommant (intégrant) les contributions élémentaires <LatexMath math="d\vec{B}" /> de chaque petit bout de fil <LatexMath math="d\vec{l}" />. C&apos;est la méthode de base pour calculer <LatexMath math="\vec{B}" /> dans n&apos;importe quelle configuration.
         </p>
 
-        <div className="max-w-md mx-auto p-4 rounded-xl bg-slate-900/50 border border-blue-500/40 shadow-[0_0_15px_rgba(59,130,246,0.1)] mb-6 flex flex-col items-center justify-center relative overflow-hidden">
-          <div className="absolute top-0 left-0 w-1 h-full bg-blue-500 rounded-l-xl"></div>
-          <div className="text-center font-mono text-lg text-blue-400 mb-2 py-2 overflow-visible flex items-center justify-center">
-            <LatexMath math="d\vec{B}(M) = \frac{\mu_0 I}{4\pi} \frac{d\vec{l} \wedge \vec{u}}{r^2}" />
-          </div>
-          <p className="text-[10px] text-center text-blue-500/80 font-bold uppercase tracking-wider">
-            Formule Élémentaire de Biot-Savart
-          </p>
+        {/* Formule principale */}
+        <div className="mb-6">
+          <FormulaCard label="Formule Élémentaire de Biot-Savart" color="cyan">
+            <span className="text-cyan-400">
+              <LatexMath math="d\vec{B}(M) = \frac{\mu_0 I}{4\pi} \frac{d\vec{l} \wedge \vec{u}}{r^2}" />
+            </span>
+          </FormulaCard>
         </div>
 
-        {/* Simulateur 3D Biot-Savart */}
-        <h3 className="text-sm font-bold text-slate-300 mb-3 flex items-center gap-2">
-          Laboratoire 3D : L'élément de courant
+        {/* Explication des termes */}
+        <div className="mb-6 grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {[
+            { symbol: "\\mu_0", desc: "Perméabilité magnétique du vide", value: "4\\pi \\times 10^{-7} \\text{ T·m/A}", color: "text-cyan-400" },
+            { symbol: "d\\vec{l}", desc: "Élément de longueur du fil", value: "\\text{Orienté dans le sens de I}", color: "text-blue-400" },
+            { symbol: "\\vec{u} = \\frac{\\vec{PM}}{r}", desc: "Vecteur unitaire vers M", value: "\\text{Du fil (P) vers le point (M)}", color: "text-emerald-400" },
+            { symbol: "K = \\frac{\\mu_0}{4\\pi}", desc: "Constante de Biot-Savart", value: "\\simeq 10^{-7} \\text{ (SI)}", color: "text-amber-400" },
+          ].map((item, i) => (
+            <div key={i} className="p-3 rounded-xl bg-muted/60 dark:bg-slate-900/40 border border-border">
+              <div className={`font-mono text-sm ${item.color} mb-1`}>
+                <LatexMath math={item.symbol} />
+              </div>
+              <p className="text-[10px] text-muted-foreground mb-1">{item.desc}</p>
+              <div className="text-[10px] font-mono text-muted-foreground/70 bg-muted dark:bg-slate-950/60 px-2 py-1 rounded-md">
+                <LatexMath math={item.value} />
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Laboratoire 3D — Élément de courant */}
+        <h3 className="text-sm font-bold text-foreground/80 dark:text-slate-300 mb-3 flex items-center gap-2">
+          <Sparkles className="w-4 h-4 text-cyan-400" />
+          Laboratoire 3D : L&apos;élément de courant
         </h3>
         <p className="text-[11px] text-muted-foreground mb-4">
-          Observez comment le champ élémentaire <LatexMath math="d\vec{B}" /> dépend de la distance <LatexMath math="r" /> et de l'angle d'observation <LatexMath math="\theta" />. Remarquez que <LatexMath math="d\vec{B}" /> est nul dans l'alignement du fil (<LatexMath math="\theta = 0" /> ou <LatexMath math="180^\circ" />) à cause du produit vectoriel.
+          Observez comment le champ élémentaire <LatexMath math="d\vec{B}" /> dépend de la distance <LatexMath math="r" /> et de l&apos;angle d&apos;observation <LatexMath math="\theta" />. Remarquez que <LatexMath math="d\vec{B}" /> est nul dans l&apos;alignement du fil (<LatexMath math="\theta = 0" /> ou <LatexMath math="180^\circ" />) à cause du produit vectoriel.
         </p>
-        
-        <div className="mb-6 rounded-2xl overflow-hidden border border-slate-800 relative ring-1 ring-slate-800 shadow-xl">
+
+        <div className="mb-6 w-full flex justify-center">
           <BiotSavart3DCanvas />
         </div>
 
-        {/* Cas classiques */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="p-4 rounded-xl sm:rounded-2xl bg-slate-800/30 border border-slate-700/50">
-            <span className="text-xs font-bold text-slate-300 block mb-2">Fil Infini (distance r)</span>
-            <div className="p-2 rounded-xl bg-slate-950 border border-slate-800 text-center font-mono text-emerald-400">
-              <LatexMath math="B = \frac{\mu_0 I}{2\pi r}" />
-            </div>
-            <p className="text-[10px] text-slate-400 text-center mt-2">Le champ s'enroule autour du fil et décroît en 1/r.</p>
+        {/* Champ Total */}
+        <div className="mt-6 mb-2">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-500/10 text-teal-400 text-xs font-extrabold mb-3">
+            <BookOpen className="w-3.5 h-3.5" />
+            <span>Champ Total — Principe de superposition</span>
           </div>
-          
-          <div className="p-4 rounded-xl sm:rounded-2xl bg-slate-800/30 border border-slate-700/50">
-            <span className="text-xs font-bold text-slate-300 block mb-2">Centre d'une Spire (rayon R)</span>
-            <div className="p-2 rounded-xl bg-slate-950 border border-slate-800 text-center font-mono text-purple-400">
-              <LatexMath math="B = \frac{\mu_0 I}{2 R}" />
-            </div>
-            <p className="text-[10px] text-slate-400 text-center mt-2">Le champ est perpendiculaire au plan de la spire.</p>
-          </div>
+          <p className="text-xs text-muted-foreground leading-relaxed mb-4">
+            Le champ total en M est obtenu en sommant (intégrant) les contributions de <strong>tous</strong> les éléments <LatexMath math="d\vec{l}" /> du circuit :
+          </p>
+          <FormulaCard label="Champ Magnétique Total" color="emerald">
+            <span className="text-emerald-400">
+              <LatexMath math="\vec{B}(M) = \frac{\mu_0 I}{4\pi} \int_{\text{circuit}} \frac{d\vec{l} \wedge \vec{u}}{r^2}" />
+            </span>
+          </FormulaCard>
         </div>
       </section>
 
-      {/* PARTIE 2: THEOREME D'AMPERE */}
+      {/* ═══════════════════════════════════════════ */}
+      {/* APPLICATION 1: SEGMENT [AB]                */}
+      {/* ═══════════════════════════════════════════ */}
+      <section className="bg-card/90 border border-cyan-500/10 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 shadow-sm w-full max-w-full overflow-x-hidden relative overflow-hidden">
+        {/* Decorative gradient */}
+        <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-cyan-500/5 to-transparent rounded-bl-full pointer-events-none" />
+
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 text-xs font-extrabold mb-3">
+          <Lightbulb className="w-3.5 h-3.5" />
+          <span>Application 1 • Champ créé par un segment rectiligne [AB]</span>
+        </div>
+
+        <h2 className="text-xl sm:text-2xl font-black mb-3 sm:mb-4 text-foreground leading-tight">
+          Calcul du champ magnétique d&apos;un segment fini
+        </h2>
+
+        <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed mb-6 font-medium">
+          On considère un segment rectiligne <LatexMath math="[AB]" /> de longueur <LatexMath math="2L" /> parcouru par un courant <LatexMath math="I" />. On cherche le champ magnétique <LatexMath math="\vec{B}(M)" /> en un point <LatexMath math="M" /> situé à une distance perpendiculaire <LatexMath math="d" /> du fil.
+        </p>
+
+        {/* 3D Visualisation */}
+        <h3 className="text-sm font-bold text-foreground/80 dark:text-slate-300 mb-3 flex items-center gap-2">
+          <Sparkles className="w-4 h-4 text-cyan-400" />
+          Visualisation 3D Interactive
+        </h3>
+        <p className="text-[11px] text-muted-foreground mb-4">
+          Déplacez les curseurs pour modifier la longueur du segment et la distance du point M. Observez comment les angles <LatexMath math="\alpha_1" /> et <LatexMath math="\alpha_2" /> changent. Quand <LatexMath math="L \to \infty" />, on retrouve le résultat du fil infini !
+        </p>
+
+        <div className="mb-8 w-full flex justify-center">
+          <BiotSavartSegment3DCanvas />
+        </div>
+
+        {/* Démonstration Step-by-Step */}
+        <h3 className="text-sm font-bold text-foreground/80 dark:text-slate-300 mb-4 flex items-center gap-2">
+          <BookOpen className="w-4 h-4 text-cyan-400" />
+          Démonstration complète
+        </h3>
+
+        <div className="space-y-3">
+          {/* Étape 1: Mise en place */}
+          <CollapsibleStep step={1} title="Mise en place et géométrie" color="cyan" defaultOpen={true}>
+            <p className="text-[11px] text-muted-foreground leading-relaxed">
+              On place le segment <LatexMath math="[AB]" /> le long de l&apos;axe vertical. Le point <LatexMath math="M" /> est à une distance perpendiculaire <LatexMath math="d" />. Un élément <LatexMath math="d\vec{l}" /> est situé en un point <LatexMath math="P" /> du fil. On note :
+            </p>
+            <div className="grid grid-cols-2 gap-2 mt-2">
+              <div className="p-2 rounded-lg bg-muted dark:bg-slate-950/60 border border-border/60 text-center">
+                <div className="text-cyan-400 text-xs"><LatexMath math="\vec{PM} = \vec{r}" /></div>
+                <div className="text-[9px] text-muted-foreground/70 mt-1">Vecteur position</div>
+              </div>
+              <div className="p-2 rounded-lg bg-muted dark:bg-slate-950/60 border border-border/60 text-center">
+                <div className="text-cyan-400 text-xs"><LatexMath math="\alpha = \text{angle}(\vec{PM}, \vec{d})" /></div>
+                <div className="text-[9px] text-muted-foreground/70 mt-1">Angle repérant P</div>
+              </div>
+            </div>
+          </CollapsibleStep>
+
+          {/* Étape 2: Symétrie */}
+          <CollapsibleStep step={2} title="Étude de symétrie → direction de dB⃗" color="teal">
+            <p className="text-[11px] text-muted-foreground leading-relaxed">
+              Le plan <LatexMath math="(\vec{e_\rho}, \vec{e_z})" /> contenant le fil et M est un <strong className="text-teal-400">plan de symétrie</strong> du courant. D&apos;après le principe de Curie :
+            </p>
+            <div className="mt-2 p-3 rounded-lg bg-teal-500/5 border border-teal-500/20 text-center">
+              <span className="text-teal-400 text-xs">
+                <LatexMath math="d\vec{B} \perp (\vec{e_\rho}, \vec{e_z}) \implies d\vec{B} = dB(M) \, \vec{e_\theta}" />
+              </span>
+            </div>
+            <p className="text-[10px] text-muted-foreground/70 mt-2 leading-relaxed">
+              Le champ élémentaire est donc purement <strong className="text-teal-300">azimuthal</strong> (perpendiculaire au plan contenant le fil et M).
+            </p>
+          </CollapsibleStep>
+
+          {/* Étape 3: Expression de dB */}
+          <CollapsibleStep step={3} title="Expression de dB en fonction de α" color="blue">
+            <p className="text-[11px] text-muted-foreground leading-relaxed">
+              En appliquant Biot-Savart et en projetant le produit vectoriel <LatexMath math="d\vec{l} \wedge \vec{u}" /> :
+            </p>
+            <div className="mt-2 p-3 rounded-lg bg-blue-500/5 border border-blue-500/20 text-center">
+              <span className="text-blue-400 text-xs">
+                <LatexMath math="dB(M) = \frac{\mu_0 I}{4\pi} \frac{dl \cos\alpha}{r^2}" />
+              </span>
+            </div>
+            <p className="text-[10px] text-muted-foreground/70 mt-2 leading-relaxed">
+              Le facteur <LatexMath math="\cos\alpha" /> vient du produit vectoriel : <LatexMath math="|d\vec{l} \wedge \vec{u}| = dl \sin(\pi/2 - \alpha) = dl\cos\alpha" />.
+            </p>
+          </CollapsibleStep>
+
+          {/* Étape 4: Changement de variable */}
+          <CollapsibleStep step={4} title="Changement de variable : l → α" color="pink">
+            <p className="text-[11px] text-muted-foreground leading-relaxed mb-2">
+              Pour intégrer, on exprime tout en fonction de l&apos;angle <LatexMath math="\alpha" /> :
+            </p>
+            <div className="space-y-2">
+              <div className="p-2 rounded-lg bg-muted dark:bg-slate-950/60 border border-border/60 flex items-center gap-2 text-xs overflow-x-auto">
+                <span className="text-pink-400 shrink-0"><LatexMath math="\tan\alpha = \frac{l}{d}" /></span>
+                <ArrowRight className="w-3 h-3 text-slate-600 shrink-0" />
+                <span className="text-pink-300"><LatexMath math="dl = \frac{d}{\cos^2\alpha}\,d\alpha" /></span>
+              </div>
+              <div className="p-2 rounded-lg bg-muted dark:bg-slate-950/60 border border-border/60 flex items-center gap-2 text-xs overflow-x-auto">
+                <span className="text-pink-400 shrink-0"><LatexMath math="\cos\alpha = \frac{d}{r}" /></span>
+                <ArrowRight className="w-3 h-3 text-slate-600 shrink-0" />
+                <span className="text-pink-300"><LatexMath math="r = \frac{d}{\cos\alpha}" /></span>
+              </div>
+            </div>
+          </CollapsibleStep>
+
+          {/* Étape 5: Simplification */}
+          <CollapsibleStep step={5} title="Simplification miraculeuse !" color="amber">
+            <p className="text-[11px] text-muted-foreground leading-relaxed mb-2">
+              En remplaçant <LatexMath math="dl" /> et <LatexMath math="r" /> dans l&apos;expression de <LatexMath math="dB" /> :
+            </p>
+            <div className="p-3 rounded-lg bg-muted dark:bg-slate-950/60 border border-border/60 text-center text-xs overflow-x-auto">
+              <span className="text-amber-400">
+                <LatexMath math="dB = \frac{\mu_0 I}{4\pi} \cdot \frac{\cos\alpha}{r^2} \cdot \frac{d}{\cos^2\alpha}\,d\alpha = \frac{\mu_0 I}{4\pi} \cdot \frac{\cos\alpha \cdot \cos^2\alpha}{d^2} \cdot \frac{d}{\cos^2\alpha}\,d\alpha" />
+              </span>
+            </div>
+            <div className="mt-3 p-3 rounded-lg bg-amber-500/5 border border-amber-500/20 text-center">
+              <span className="text-amber-300 text-sm font-bold">
+                <LatexMath math="dB(M) = \frac{\mu_0 I}{4\pi d} \cos\alpha \, d\alpha" />
+              </span>
+            </div>
+            <p className="text-[10px] text-amber-400/60 text-center mt-2 font-medium">
+              ✨ Tout se simplifie magnifiquement !
+            </p>
+          </CollapsibleStep>
+
+          {/* Étape 6: Intégration */}
+          <CollapsibleStep step={6} title="Intégration de α₁ à α₂ → Résultat final" color="emerald" defaultOpen={true}>
+            <p className="text-[11px] text-muted-foreground leading-relaxed mb-2">
+              On intègre de l&apos;angle <LatexMath math="\alpha_1" /> (correspondant au point A) à <LatexMath math="\alpha_2" /> (correspondant au point B) :
+            </p>
+            <div className="p-3 rounded-lg bg-muted dark:bg-slate-950/60 border border-border/60 text-center text-xs overflow-x-auto mb-3">
+              <span className="text-emerald-400">
+                <LatexMath math="B(M) = \frac{\mu_0 I}{4\pi d} \int_{\alpha_1}^{\alpha_2} \cos\alpha \, d\alpha = \frac{\mu_0 I}{4\pi d} \left[\sin\alpha\right]_{\alpha_1}^{\alpha_2}" />
+              </span>
+            </div>
+
+            {/* Résultat encadré premium */}
+            <div className="relative p-4 sm:p-5 rounded-xl bg-gradient-to-r from-emerald-500/10 via-cyan-500/10 to-teal-500/10 border-2 border-emerald-500/30 shadow-[0_0_20px_rgba(16,185,129,0.1)]">
+              <div className="absolute -top-3 left-4 px-3 py-0.5 bg-emerald-500 text-white text-[10px] font-black rounded-full uppercase tracking-wider">
+                Résultat
+              </div>
+              <div className="text-center py-2 overflow-visible">
+                <span className="text-emerald-300 text-lg sm:text-xl font-bold">
+                  <LatexMath math="\vec{B}(M) = \frac{\mu_0 I}{4\pi d} \left[\sin\alpha_2 - \sin\alpha_1\right] \vec{e_\theta}" />
+                </span>
+              </div>
+            </div>
+          </CollapsibleStep>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════ */}
+      {/* CAS LIMITE: FIL INFINI                     */}
+      {/* ═══════════════════════════════════════════ */}
+      <section className="bg-card/90 border border-amber-500/10 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 shadow-sm w-full max-w-full overflow-x-hidden relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-amber-500/5 to-transparent rounded-bl-full pointer-events-none" />
+
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 text-xs font-extrabold mb-3">
+          <Sparkles className="w-3.5 h-3.5" />
+          <span>Cas limite • Fil Infini</span>
+        </div>
+
+        <h2 className="text-lg sm:text-xl font-black mb-3 sm:mb-4 text-foreground leading-tight">
+          Retrouver le résultat du fil infini
+        </h2>
+
+        <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed mb-4 font-medium">
+          Quand le segment <LatexMath math="[AB]" /> devient infiniment long, les angles limites deviennent :
+        </p>
+
+        <div className="grid grid-cols-2 gap-3 mb-4">
+          <div className="p-3 rounded-xl bg-muted/60 dark:bg-slate-900/40 border border-border text-center">
+            <div className="text-amber-400 font-mono"><LatexMath math="\alpha_1 \to -\frac{\pi}{2}" /></div>
+            <div className="text-[9px] text-muted-foreground/70 mt-1">Point A → -∞</div>
+          </div>
+          <div className="p-3 rounded-xl bg-muted/60 dark:bg-slate-900/40 border border-border text-center">
+            <div className="text-amber-400 font-mono"><LatexMath math="\alpha_2 \to +\frac{\pi}{2}" /></div>
+            <div className="text-[9px] text-muted-foreground/70 mt-1">Point B → +∞</div>
+          </div>
+        </div>
+
+        <div className="p-3 rounded-lg bg-muted dark:bg-slate-950/60 border border-border/60 text-center text-xs mb-4 overflow-x-auto">
+          <span className="text-amber-400">
+            <LatexMath math="\sin\left(\frac{\pi}{2}\right) - \sin\left(-\frac{\pi}{2}\right) = 1 - (-1) = 2" />
+          </span>
+        </div>
+
+        {/* Résultat fil infini */}
+        <div className="relative p-4 sm:p-5 rounded-xl bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-yellow-500/10 border-2 border-amber-500/30 shadow-[0_0_25px_rgba(245,158,11,0.15)]">
+          <div className="absolute -top-3 left-4 px-3 py-0.5 bg-amber-500 text-white text-[10px] font-black rounded-full uppercase tracking-wider">
+            Fil Infini
+          </div>
+          <div className="text-center py-2 overflow-visible">
+            <span className="text-amber-300 text-lg sm:text-xl font-bold">
+              <LatexMath math="\vec{B}(M) = \frac{\mu_0 I}{2\pi d} \vec{e_\theta}" />
+            </span>
+          </div>
+          <p className="text-[10px] text-center text-amber-400/60 mt-1 font-medium">
+            On retrouve le résultat classique du fil infini ! 🎉
+          </p>
+        </div>
+
+        {/* Note physique */}
+        <div className="mt-4 p-3 rounded-xl bg-cyan-500/5 border border-cyan-500/15 flex items-start gap-3">
+          <Lightbulb className="w-4 h-4 text-cyan-400 mt-0.5 shrink-0" />
+          <p className="text-[10px] sm:text-[11px] text-cyan-200/70 leading-relaxed">
+            <strong className="text-cyan-300">Remarque :</strong> Le champ décroît en <LatexMath math="1/d" /> et s&apos;enroule autour du fil (direction <LatexMath math="\vec{e_\theta}" />). Les lignes de champ sont des cercles concentriques centrés sur le fil — exactement ce que nous avons vu au Chapitre 1 !
+          </p>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════ */}
+      {/* PARTIE 2: THEOREME D'AMPERE               */}
+      {/* ═══════════════════════════════════════════ */}
       <section className="bg-card/90 border border-border/80 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 shadow-sm w-full max-w-full overflow-x-hidden">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 text-xs font-extrabold mb-3">
           <RotateCw className="w-3.5 h-3.5" />
-          <span>Partie 2 • Le Théorème d'Ampère (Méthode Globale)</span>
+          <span>Partie 2 • Le Théorème d&apos;Ampère (Méthode Globale)</span>
         </div>
-        
+
         <h2 className="text-xl sm:text-2xl font-black mb-3 sm:mb-4 text-foreground leading-tight">
           2. La Circulation du Champ Magnétique
         </h2>
 
         <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed mb-4">
-          Tout comme le théorème de Gauss facilite le calcul du champ électrique, le <strong>théorème d'Ampère</strong> simplifie le calcul du champ magnétique lorsque la distribution de courants présente un haut degré de symétrie (cylindre, tore, solénoïde).
+          Tout comme le théorème de Gauss facilite le calcul du champ électrique, le <strong>théorème d&apos;Ampère</strong> simplifie le calcul du champ magnétique lorsque la distribution de courants présente un haut degré de symétrie (cylindre, tore, solénoïde).
         </p>
 
-        <div className="max-w-md mx-auto p-4 rounded-xl bg-slate-900/50 border border-amber-500/40 shadow-[0_0_15px_rgba(245,158,11,0.1)] mb-6 flex flex-col items-center justify-center relative overflow-hidden">
-          <div className="absolute top-0 left-0 w-1 h-full bg-amber-500 rounded-l-xl"></div>
-          <div className="text-center font-mono text-lg text-amber-400 mb-2 py-2 overflow-visible flex items-center justify-center">
-            <LatexMath math="\oint_{(C)} \vec{B} \cdot d\vec{l} = \mu_0 \sum I_{enlac\acute{e}s}" />
-          </div>
-          <p className="text-[10px] text-center text-amber-500/80 font-bold uppercase tracking-wider">
-            Théorème d'Ampère (Forme Intégrale)
-          </p>
+        <div className="mb-6">
+          <FormulaCard label="Théorème d'Ampère (Forme Intégrale)" color="amber">
+            <span className="text-amber-400">
+              <LatexMath math="\oint_{(C)} \vec{B} \cdot d\vec{l} = \mu_0 \sum I_{enlac\acute{e}s}" />
+            </span>
+          </FormulaCard>
         </div>
 
         {/* Règle des signes */}
         <div className="mb-6 p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-[11px] text-emerald-100/80 leading-relaxed">
-          <strong>Comment compter les courants ?</strong> Pour déterminer le signe des courants enlacés <LatexMath math="\Sigma I_{enl}" />, on oriente le contour fermé <LatexMath math="(C)" />. D'après la règle de la main droite, on définit le vecteur normal <LatexMath math="\vec{n}" /> à la surface délimitée par ce contour. Tout courant circulant dans le même sens que <LatexMath math="\vec{n}" /> est compté <strong>positivement</strong>, sinon négativement.
+          <strong>Comment compter les courants ?</strong> Pour déterminer le signe des courants enlacés <LatexMath math="\Sigma I_{enl}" />, on oriente le contour fermé <LatexMath math="(C)" />. D&apos;après la règle de la main droite, on définit le vecteur normal <LatexMath math="\vec{n}" /> à la surface délimitée par ce contour. Tout courant circulant dans le même sens que <LatexMath math="\vec{n}" /> est compté <strong>positivement</strong>, sinon négativement.
         </div>
 
         {/* Simulateur 3D Ampère */}
-        <h3 className="text-sm font-bold text-slate-300 mb-3 flex items-center gap-2">
+        <h3 className="text-sm font-bold text-foreground/80 dark:text-slate-300 mb-3 flex items-center gap-2">
           Laboratoire 3D : Courants Enlacés
         </h3>
         <p className="text-[11px] text-muted-foreground mb-4">
-          Allumez ou éteignez les différents câbles pour voir comment le bilan des courants enlacés est calculé. Notez que le câble mauve (I3), qui passe <strong>à l'extérieur</strong> du contour, ne participe jamais à la circulation de <LatexMath math="\vec{B}" /> !
+          Allumez ou éteignez les différents câbles pour voir comment le bilan des courants enlacés est calculé. Notez que le câble mauve (I3), qui passe <strong>à l&apos;extérieur</strong> du contour, ne participe jamais à la circulation de <LatexMath math="\vec{B}" /> !
         </p>
-        
-        <div className="mb-6 rounded-2xl overflow-hidden border border-slate-800 relative ring-1 ring-slate-800 shadow-xl">
+
+        <div className="mb-6 w-full flex justify-center">
           <AmpereTheorem3DCanvas />
         </div>
 
         {/* Méthodologie */}
-        <h3 className="text-sm font-bold text-slate-300 mb-3 flex items-center gap-2 mt-8">
-          <Layers className="w-4 h-4 text-slate-400" />
-          Méthodologie d'application
+        <h3 className="text-sm font-bold text-foreground/80 dark:text-slate-300 mb-3 flex items-center gap-2 mt-8">
+          <Layers className="w-4 h-4 text-muted-foreground" />
+          Méthodologie d&apos;application
         </h3>
         <div className="space-y-3">
           {[
@@ -122,17 +430,16 @@ export default function Chap2LoisFondamentales() {
             { step: "4", text: "Calculer algébriquement la somme des courants I qui traversent la surface s'appuyant sur (C)." },
             { step: "5", text: "Appliquer l'égalité et isoler l'expression de B." },
           ].map((item, i) => (
-            <div key={i} className="flex gap-3 items-center bg-slate-900/40 p-3 rounded-lg border border-slate-800/60">
-              <div className="w-6 h-6 shrink-0 rounded-full bg-slate-800 flex items-center justify-center text-[10px] font-black text-slate-400">
+            <div key={i} className="flex gap-3 items-center bg-muted/60 dark:bg-slate-900/40 p-3 rounded-lg border border-border">
+              <div className="w-6 h-6 shrink-0 rounded-full bg-slate-800 flex items-center justify-center text-[10px] font-black text-muted-foreground">
                 {item.step}
               </div>
-              <p className="text-[11px] text-slate-300">{item.text}</p>
+              <p className="text-[11px] text-foreground/80 dark:text-slate-300">{item.text}</p>
             </div>
           ))}
         </div>
-
       </section>
-      
+
     </div>
   );
 }

@@ -149,49 +149,49 @@ export default function AmpereTheorem3DCanvas() {
       </div>
 
       {/* Control Panel */}
-      <div className="w-full bg-slate-900/90 border border-slate-800 p-3 sm:p-4 rounded-b-2xl shadow-xl flex items-center justify-between gap-4 sm:gap-6 overflow-x-auto hide-scrollbar" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+      <div className="w-full bg-card border border-border border-t-0 p-4 sm:p-5 rounded-b-2xl flex flex-wrap items-center justify-center gap-6 sm:gap-8">
          
          {/* Toggles pour I1 (Inside) */}
-         <div className="flex flex-col gap-1.5 shrink-0 w-28">
-           <span className="text-[9px] font-bold text-blue-400 uppercase tracking-wider text-center">Courant I1 (Intérieur)</span>
-           <div className="flex gap-1 h-6">
-             <button onClick={() => setI1Enabled(!i1Enabled)} className={`flex-1 text-[9px] font-bold rounded border transition-colors ${i1Enabled ? "bg-blue-600 border-blue-400 text-white" : "bg-slate-800 border-slate-700 text-slate-500"}`}>
+         <div className="flex flex-col gap-2 shrink-0">
+           <span className="text-[10px] font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider text-center">I1 (Intérieur)</span>
+           <div className="flex gap-1 h-7">
+             <button onClick={() => setI1Enabled(!i1Enabled)} className={`px-4 text-[10px] font-bold rounded border transition-colors ${i1Enabled ? "bg-blue-600 border-blue-400 text-white shadow-[0_0_10px_rgba(37,99,235,0.4)]" : "bg-muted border-border text-muted-foreground hover:bg-muted/80"}`}>
                {i1Enabled ? "ON" : "OFF"}
              </button>
-             <button disabled={!i1Enabled} onClick={() => setI1Dir(i1Dir * -1)} className={`flex-1 text-[10px] font-bold rounded border transition-colors ${i1Enabled ? "bg-slate-800 border-blue-900/50 text-blue-300 hover:bg-slate-700" : "bg-slate-900 border-slate-800 text-slate-700 cursor-not-allowed"}`}>
+             <button disabled={!i1Enabled} onClick={() => setI1Dir(i1Dir * -1)} className={`px-4 text-[10px] font-bold rounded border transition-colors ${i1Enabled ? "bg-muted border-blue-900/50 text-blue-600 dark:text-blue-400 hover:bg-muted/80" : "bg-muted/50 border-border text-muted-foreground/50 cursor-not-allowed"}`}>
                {i1Dir > 0 ? "↑" : "↓"}
              </button>
            </div>
          </div>
 
          {/* Toggles pour I2 (Inside) */}
-         <div className="flex flex-col gap-1.5 shrink-0 w-28">
-           <span className="text-[9px] font-bold text-red-400 uppercase tracking-wider text-center">Courant I2 (Intérieur)</span>
-           <div className="flex gap-1 h-6">
-             <button onClick={() => setI2Enabled(!i2Enabled)} className={`flex-1 text-[9px] font-bold rounded border transition-colors ${i2Enabled ? "bg-red-600 border-red-400 text-white" : "bg-slate-800 border-slate-700 text-slate-500"}`}>
+         <div className="flex flex-col gap-2 shrink-0">
+           <span className="text-[10px] font-bold text-red-600 dark:text-red-400 uppercase tracking-wider text-center">I2 (Intérieur)</span>
+           <div className="flex gap-1 h-7">
+             <button onClick={() => setI2Enabled(!i2Enabled)} className={`px-4 text-[10px] font-bold rounded border transition-colors ${i2Enabled ? "bg-red-600 border-red-400 text-white shadow-[0_0_10px_rgba(220,38,38,0.4)]" : "bg-muted border-border text-muted-foreground hover:bg-muted/80"}`}>
                {i2Enabled ? "ON" : "OFF"}
              </button>
-             <button disabled={!i2Enabled} onClick={() => setI2Dir(i2Dir * -1)} className={`flex-1 text-[10px] font-bold rounded border transition-colors ${i2Enabled ? "bg-slate-800 border-red-900/50 text-red-300 hover:bg-slate-700" : "bg-slate-900 border-slate-800 text-slate-700 cursor-not-allowed"}`}>
+             <button disabled={!i2Enabled} onClick={() => setI2Dir(i2Dir * -1)} className={`px-4 text-[10px] font-bold rounded border transition-colors ${i2Enabled ? "bg-muted border-red-900/50 text-red-600 dark:text-red-400 hover:bg-muted/80" : "bg-muted/50 border-border text-muted-foreground/50 cursor-not-allowed"}`}>
                {i2Dir > 0 ? "↑" : "↓"}
              </button>
            </div>
          </div>
 
          {/* Toggles pour I3 (Outside) */}
-         <div className="flex flex-col gap-1.5 shrink-0 w-28">
-           <span className="text-[9px] font-bold text-purple-400 uppercase tracking-wider text-center">Courant I3 (Extérieur)</span>
-           <div className="flex gap-1 h-6">
-             <button onClick={() => setI3Enabled(!i3Enabled)} className={`flex-1 text-[9px] font-bold rounded border transition-colors ${i3Enabled ? "bg-purple-600 border-purple-400 text-white" : "bg-slate-800 border-slate-700 text-slate-500"}`}>
+         <div className="flex flex-col gap-2 shrink-0">
+           <span className="text-[10px] font-bold text-purple-600 dark:text-purple-400 uppercase tracking-wider text-center">I3 (Extérieur)</span>
+           <div className="flex gap-1 h-7">
+             <button onClick={() => setI3Enabled(!i3Enabled)} className={`px-4 text-[10px] font-bold rounded border transition-colors ${i3Enabled ? "bg-purple-600 border-purple-400 text-white shadow-[0_0_10px_rgba(147,51,234,0.4)]" : "bg-muted border-border text-muted-foreground hover:bg-muted/80"}`}>
                {i3Enabled ? "ON" : "OFF"}
              </button>
-             <button disabled={!i3Enabled} onClick={() => setI3Dir(i3Dir * -1)} className={`flex-1 text-[10px] font-bold rounded border transition-colors ${i3Enabled ? "bg-slate-800 border-purple-900/50 text-purple-300 hover:bg-slate-700" : "bg-slate-900 border-slate-800 text-slate-700 cursor-not-allowed"}`}>
+             <button disabled={!i3Enabled} onClick={() => setI3Dir(i3Dir * -1)} className={`px-4 text-[10px] font-bold rounded border transition-colors ${i3Enabled ? "bg-muted border-purple-900/50 text-purple-600 dark:text-purple-400 hover:bg-muted/80" : "bg-muted/50 border-border text-muted-foreground/50 cursor-not-allowed"}`}>
                {i3Dir > 0 ? "↑" : "↓"}
              </button>
            </div>
          </div>
 
          {/* Reset Button */}
-         <div className="shrink-0 border-l border-slate-700/50 pl-4 sm:pl-6 ml-auto">
+         <div className="shrink-0 flex items-center justify-center mt-2 sm:mt-0 w-full sm:w-auto">
            <button 
               onClick={() => {
                 setI1Enabled(true); setI1Dir(1);
@@ -199,7 +199,7 @@ export default function AmpereTheorem3DCanvas() {
                 setI3Enabled(true); setI3Dir(1);
               }}
               title="Réinitialiser"
-              className="flex items-center justify-center gap-1.5 p-2 px-3 bg-slate-800 hover:bg-slate-700 text-white rounded-lg transition-colors border border-slate-600 text-[9px] font-bold uppercase tracking-wider"
+              className="flex items-center justify-center gap-1.5 p-2 px-4 bg-muted hover:bg-muted/80 text-foreground/80 rounded-lg transition-colors border border-border text-[10px] font-bold uppercase tracking-wider"
             >
               <RotateCcw className="w-3.5 h-3.5" />
               Reset
