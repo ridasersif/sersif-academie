@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
-import { Canvas } from "@react-three/fiber";
+import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, Line, Html, Cylinder, Sphere, Cone, Torus, Environment, ContactShadows } from "@react-three/drei";
 import * as THREE from "three";
 import { EyeOff, Scan, Info, AlertTriangle } from "lucide-react";
@@ -67,6 +67,113 @@ const FieldLineCircle = ({ radius, color }: { radius: number, color: string }) =
        <mesh position={[-radius, 0, 0]} rotation={[Math.PI/2, 0, 0]}><coneGeometry args={[0.1, 0.3, 8]} /><meshBasicMaterial color={color} /></mesh>
        <mesh position={[0, 0, radius]} rotation={[0, 0, -Math.PI/2]}><coneGeometry args={[0.1, 0.3, 8]} /><meshBasicMaterial color={color} /></mesh>
        <mesh position={[0, 0, -radius]} rotation={[0, 0, Math.PI/2]}><coneGeometry args={[0.1, 0.3, 8]} /><meshBasicMaterial color={color} /></mesh>
+    </group>
+  );
+};
+
+/* ═══════════════════════════════════════════════
+   ANIMATED current flow — particles moving along paths
+   Color: #f472b6 (pink-400) — rose/wardi
+   ═══════════════════════════════════════════════ */
+const FLOW_COLOR = "#f472b6";
+const DOT_R = 0.06;
+
+/* Axial flow (vertical, along Y) */
+const AxialFlowDots = ({ radius, zOffset = 0, count = 12, height = 10, speed = 2.5 }: { radius: number; zOffset?: number; count?: number; height?: number; speed?: number }) => {
+  const ref = React.useRef<THREE.Group>(null);
+  useFrame((_, d) => {
+    if (!ref.current) return;
+    ref.current.children.forEach((c) => {
+      c.position.y += d * speed;
+      if (c.position.y > height / 2) c.position.y = -height / 2;
+    });
+  });
+  return (
+    <group ref={ref}>
+      {Array.from({ length: count }).map((_, i) => (
+        <Sphere key={i} args={[DOT_R, 6, 6]} position={[radius, -height / 2 + (i / count) * height, zOffset]}>
+          <meshBasicMaterial color={FLOW_COLOR} toneMapped={false} />
+        </Sphere>
+      ))}
+    </group>
+  );
+};
+
+/* Circular flow (around ring in XZ plane) */
+const CircularFlowDots = ({ ringRadius, count = 10, speed = 1.5, yOffset = 0 }: { ringRadius: number; count?: number; speed?: number; yOffset?: number }) => {
+  const ref = React.useRef<THREE.Group>(null);
+  const time = React.useRef(0);
+  useFrame((_, d) => {
+    time.current += d * speed;
+    if (!ref.current) return;
+    ref.current.children.forEach((c, i) => {
+      const a = time.current + (i / count) * Math.PI * 2;
+      c.position.x = Math.cos(a) * ringRadius;
+      c.position.z = Math.sin(a) * ringRadius;
+      c.position.y = yOffset;
+    });
+  });
+  return (
+    <group ref={ref}>
+      {Array.from({ length: count }).map((_, i) => (
+        <Sphere key={i} args={[DOT_R, 6, 6]}>
+          <meshBasicMaterial color={FLOW_COLOR} toneMapped={false} />
+        </Sphere>
+      ))}
+    </group>
+  );
+};
+
+/* Surface flow (on YZ plane, flowing upward along Y) */
+const SurfaceFlowDots = ({ cols = 5, rows = 6, speed = 2 }: { cols?: number; rows?: number; speed?: number }) => {
+  const ref = React.useRef<THREE.Group>(null);
+  useFrame((_, d) => {
+    if (!ref.current) return;
+    ref.current.children.forEach((c) => {
+      c.position.y += d * speed;
+      if (c.position.y > 5) c.position.y = -5;
+    });
+  });
+  return (
+    <group ref={ref}>
+      {Array.from({ length: cols * rows }).map((_, i) => {
+        const c = i % cols;
+        const r = Math.floor(i / cols);
+        return (
+          <Sphere key={i} args={[DOT_R, 6, 6]} position={[0, -5 + (r / rows) * 10, -4 + (c / (cols - 1)) * 8]}>
+            <meshBasicMaterial color={FLOW_COLOR} toneMapped={false} />
+          </Sphere>
+        );
+      })}
+    </group>
+  );
+};
+
+/* Spherical surface flow (dots orbiting on sphere surface) */
+const SphericalFlowDots = ({ radius = 2.55, latCount = 3, lonCount = 6, half = false, speed = 1.2 }: { radius?: number; latCount?: number; lonCount?: number; half?: boolean; speed?: number }) => {
+  const ref = React.useRef<THREE.Group>(null);
+  const time = React.useRef(0);
+  useFrame((_, d) => {
+    time.current += d * speed;
+    if (!ref.current) return;
+    ref.current.children.forEach((c, i) => {
+      const latIdx = Math.floor(i / lonCount);
+      const maxLat = half ? Math.PI / 2 : Math.PI;
+      const lat = half ? 0.3 + (latIdx / latCount) * (maxLat - 0.3) : -maxLat / 2 + 0.3 + (latIdx / latCount) * (maxLat - 0.6);
+      const r = Math.cos(lat) * radius;
+      const a = time.current + (i % lonCount) * (Math.PI * 2 / lonCount);
+      c.position.x = Math.cos(a) * r;
+      c.position.y = Math.sin(lat) * radius;
+      c.position.z = Math.sin(a) * r;
+    });
+  });
+  return (
+    <group ref={ref}>
+      {Array.from({ length: latCount * lonCount }).map((_, i) => (
+        <Sphere key={i} args={[DOT_R, 6, 6]}>
+          <meshBasicMaterial color={FLOW_COLOR} toneMapped={false} />
+        </Sphere>
+      ))}
     </group>
   );
 };
@@ -160,19 +267,30 @@ export default function MagneticSymmetry3DCanvas() {
               <group>
                 {/* Formes */}
                 {shape === "fil" && (
-                  <Cylinder args={[0.05, 0.05, 12, 16]} rotation={[0, 0, 0]} position={[0, 0, 0]}>
-                    <meshPhysicalMaterial color="#94a3b8" metalness={0.9} roughness={0.2} clearcoat={1} />
-                  </Cylinder>
+                  <group>
+                    <Cylinder args={[0.05, 0.05, 12, 16]} rotation={[0, 0, 0]} position={[0, 0, 0]}>
+                      <meshPhysicalMaterial color="#94a3b8" metalness={0.9} roughness={0.2} clearcoat={1} />
+                    </Cylinder>
+                    <AxialFlowDots radius={0.12} count={12} height={11} speed={3} />
+                    <AxialFlowDots radius={-0.12} count={12} height={11} speed={3.2} />
+                  </group>
                 )}
                 {shape === "cylindre" && (
-                  <Cylinder args={[0.6, 0.6, 12, 32]} rotation={[0, 0, 0]} position={[0, 0, 0]}>
-                    <meshPhysicalMaterial color="#94a3b8" metalness={0.9} roughness={0.2} clearcoat={1} />
-                  </Cylinder>
+                  <group>
+                    <Cylinder args={[0.6, 0.6, 12, 32]} rotation={[0, 0, 0]} position={[0, 0, 0]}>
+                      <meshPhysicalMaterial color="#94a3b8" metalness={0.9} roughness={0.2} clearcoat={1} />
+                    </Cylinder>
+                    <AxialFlowDots radius={0.65} count={10} height={11} speed={3} />
+                    <AxialFlowDots radius={-0.65} count={10} height={11} speed={3.1} />
+                  </group>
                 )}
                 {shape === "cone" && (
-                  <Cone args={[2.5, 6, 32]} position={[0, 0, 0]} rotation={[0, 0, 0]}>
-                    <meshPhysicalMaterial color="#94a3b8" metalness={0.5} roughness={0.5} transparent opacity={0.7} />
-                  </Cone>
+                  <group>
+                    <Cone args={[2.5, 6, 32]} position={[0, 0, 0]} rotation={[0, 0, 0]}>
+                      <meshPhysicalMaterial color="#94a3b8" metalness={0.5} roughness={0.5} transparent opacity={0.7} />
+                    </Cone>
+                    <AxialFlowDots radius={1.0} count={10} height={5} speed={2.5} />
+                  </group>
                 )}
                 {shape === "tore_circulaire" && (
                   <group>
@@ -192,6 +310,7 @@ export default function MagneticSymmetry3DCanvas() {
                          )}
                       </group>
                     ))}
+
                   </group>
                 )}
                 {shape === "tore_carre" && (
@@ -211,6 +330,7 @@ export default function MagneticSymmetry3DCanvas() {
                          )}
                       </group>
                     ))}
+
                   </group>
                 )}
                 
@@ -277,26 +397,37 @@ export default function MagneticSymmetry3DCanvas() {
             {(shape === "cercle" || shape === "sphere" || shape === "demi_sphere" || shape === "double_cone" || shape === "solenoide") && (
               <group position={[0, 0, 0]}>
                 
-                {/* Formes */}
                 {shape === "cercle" && (
-                  <Torus args={[2.5, 0.08, 16, 100]} rotation={[Math.PI/2, 0, 0]}>
-                    <meshPhysicalMaterial color="#94a3b8" metalness={0.9} roughness={0.2} />
-                  </Torus>
+                  <group>
+                    <Torus args={[2.5, 0.08, 16, 100]} rotation={[Math.PI/2, 0, 0]}>
+                      <meshPhysicalMaterial color="#94a3b8" metalness={0.9} roughness={0.2} />
+                    </Torus>
+                    <CircularFlowDots ringRadius={2.5} count={10} speed={1.8} />
+                  </group>
                 )}
                 {shape === "sphere" && (
-                  <Sphere args={[2.5, 32, 32]}>
-                    <meshPhysicalMaterial color="#94a3b8" metalness={0.5} roughness={0.5} transparent opacity={0.7} />
-                  </Sphere>
+                  <group>
+                    <Sphere args={[2.5, 32, 32]}>
+                      <meshPhysicalMaterial color="#94a3b8" metalness={0.5} roughness={0.5} transparent opacity={0.7} />
+                    </Sphere>
+                    <SphericalFlowDots radius={2.55} latCount={4} lonCount={8} />
+                  </group>
                 )}
                 {shape === "demi_sphere" && (
-                  <Sphere args={[2.5, 32, 32, 0, Math.PI * 2, 0, Math.PI / 2]}>
-                    <meshPhysicalMaterial color="#94a3b8" metalness={0.5} roughness={0.5} transparent opacity={0.7} side={THREE.DoubleSide} />
-                  </Sphere>
+                  <group>
+                    <Sphere args={[2.5, 32, 32, 0, Math.PI * 2, 0, Math.PI / 2]}>
+                      <meshPhysicalMaterial color="#94a3b8" metalness={0.5} roughness={0.5} transparent opacity={0.7} side={THREE.DoubleSide} />
+                    </Sphere>
+                    <SphericalFlowDots radius={2.55} latCount={3} lonCount={8} half />
+                  </group>
                 )}
                 {shape === "double_cone" && (
                   <group>
                     <Cone args={[2.5, 3, 32]} position={[0, 1.5, 0]} rotation={[0, 0, 0]}><meshPhysicalMaterial color="#94a3b8" metalness={0.5} roughness={0.5} transparent opacity={0.7} /></Cone>
                     <Cone args={[2.5, 3, 32]} position={[0, -1.5, 0]} rotation={[Math.PI, 0, 0]}><meshPhysicalMaterial color="#94a3b8" metalness={0.5} roughness={0.5} transparent opacity={0.7} /></Cone>
+                    <CircularFlowDots ringRadius={2.5} count={10} speed={1.5} yOffset={0} />
+                    <CircularFlowDots ringRadius={1.5} count={8} speed={1.8} yOffset={1.2} />
+                    <CircularFlowDots ringRadius={1.5} count={8} speed={1.8} yOffset={-1.2} />
                   </group>
                 )}
                 {shape === "solenoide" && (
@@ -307,6 +438,7 @@ export default function MagneticSymmetry3DCanvas() {
                     {[-2.5, -1.5, -0.5, 0.5, 1.5, 2.5].map((y, i) => (
                       <group key={y}>
                         <Torus args={[2.02, 0.05, 8, 64]} position={[0, y, 0]} rotation={[Math.PI/2, 0, 0]}><meshBasicMaterial color="#3b82f6" /></Torus>
+                        <CircularFlowDots ringRadius={2.02} count={6} speed={2} yOffset={y} />
                         {i === 3 && (
                           <group position={[2.02, y, 0]}>
                             <Line points={[[0, 0, 0.5], [0, 0, -0.5]]} color="#3b82f6" lineWidth={4} />
@@ -369,11 +501,12 @@ export default function MagneticSymmetry3DCanvas() {
             {shape === "plan" && (
               <group>
                 {/* Surface YZ plane */}
-                <mesh position={[0, 0, 0]} rotation={[0, Math.PI/2, 0]}>
+               <mesh position={[0, 0, 0]} rotation={[0, Math.PI/2, 0]}>
                   <planeGeometry args={[12, 12]} />
                   <meshPhysicalMaterial color="#94a3b8" metalness={0.5} roughness={0.5} transparent opacity={0.3} side={THREE.DoubleSide} />
                   <gridHelper args={[12, 12, 0xffffff, 0xffffff]} rotation={[Math.PI/2, 0, 0]} material-opacity={0.1} material-transparent />
                 </mesh>
+                <SurfaceFlowDots cols={5} rows={5} speed={2.5} />
 
                 {/* Courant Surfacique js */}
                 <group position={[0, 2, 2]}>
