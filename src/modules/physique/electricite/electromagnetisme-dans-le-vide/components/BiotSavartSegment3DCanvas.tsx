@@ -273,20 +273,20 @@ export default function BiotSavartSegment3DCanvas() {
 
         {/* Slider: L */}
         <div className={`flex items-center gap-2 w-[22%] sm:w-24 md:w-28 shrink-0 transition-opacity ${isInfinite ? "opacity-30 pointer-events-none" : "opacity-100"}`}>
-          <label className="text-[10px] font-bold text-cyan-700 dark:text-cyan-400 uppercase w-2">L</label>
-          <input type="range" min={0.5} max={6} step={0.1} value={halfLength} onChange={(e) => setHalfLength(parseFloat(e.target.value))} className="w-full h-1.5 sm:h-2 bg-muted rounded-lg appearance-none cursor-pointer accent-cyan-600 dark:accent-cyan-500" />
+          <label className="text-[10px] font-bold text-cyan-400 uppercase w-2 drop-shadow-[0_0_5px_rgba(34,211,238,0.8)]">L</label>
+          <input type="range" min={0.5} max={6} step={0.1} value={halfLength} onChange={(e) => setHalfLength(parseFloat(e.target.value))} className="w-full h-1.5 sm:h-2 bg-slate-800/50 rounded-lg appearance-none cursor-pointer accent-cyan-400 drop-shadow-[0_0_6px_rgba(34,211,238,0.6)]" />
         </div>
 
         {/* Slider: d */}
         <div className="flex items-center gap-2 w-[22%] sm:w-24 md:w-28 shrink-0">
-          <label className="text-[10px] font-bold text-pink-700 dark:text-pink-400 uppercase w-2">d</label>
-          <input type="range" min={0.5} max={5} step={0.1} value={distance} onChange={(e) => setDistance(parseFloat(e.target.value))} className="w-full h-1.5 sm:h-2 bg-muted rounded-lg appearance-none cursor-pointer accent-pink-600 dark:accent-pink-500" />
+          <label className="text-[10px] font-bold text-pink-400 uppercase w-2 drop-shadow-[0_0_5px_rgba(244,114,182,0.8)]">d</label>
+          <input type="range" min={0.5} max={5} step={0.1} value={distance} onChange={(e) => setDistance(parseFloat(e.target.value))} className="w-full h-1.5 sm:h-2 bg-slate-800/50 rounded-lg appearance-none cursor-pointer accent-pink-400 drop-shadow-[0_0_6px_rgba(244,114,182,0.6)]" />
         </div>
 
         {/* Slider: z */}
         <div className="flex items-center gap-2 w-[22%] sm:w-24 md:w-28 shrink-0">
-          <label className="text-[10px] font-bold text-purple-700 dark:text-purple-400 uppercase w-2">z</label>
-          <input type="range" min={-5} max={5} step={0.1} value={heightM} onChange={(e) => setHeightM(parseFloat(e.target.value))} className="w-full h-1.5 sm:h-2 bg-muted rounded-lg appearance-none cursor-pointer accent-purple-600 dark:accent-purple-500" />
+          <label className="text-[10px] font-bold text-purple-400 uppercase w-2 drop-shadow-[0_0_5px_rgba(192,132,252,0.8)]">z</label>
+          <input type="range" min={-5} max={5} step={0.1} value={heightM} onChange={(e) => setHeightM(parseFloat(e.target.value))} className="w-full h-1.5 sm:h-2 bg-slate-800/50 rounded-lg appearance-none cursor-pointer accent-purple-400 drop-shadow-[0_0_6px_rgba(192,132,252,0.6)]" />
         </div>
 
         {/* Toggle: Fil Infini */}
@@ -319,23 +319,20 @@ export default function BiotSavartSegment3DCanvas() {
       </div>
 
         {/* Result display */}
-        <div className="p-3 sm:p-4 rounded-xl bg-card border border-border w-full flex flex-col items-center shadow-sm max-w-4xl mx-auto mt-2 sm:mt-0">
-          <div className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold mb-2 tracking-widest uppercase">Résultat du Champ B</div>
-          <div className="w-full flex items-center justify-center text-emerald-800 dark:text-emerald-300 overflow-x-auto py-2 px-1">
-            {isInfinite ? (
-              <LatexMath 
-                 math={`\\vec{B}(M) = \\frac{\\mu_0 I}{2\\pi d} \\vec{k} \\approx ${ (currentDirection * 2 / distance).toFixed(3) } \\frac{\\mu_0 I}{4\\pi} \\vec{k}`} 
-                 block={false} 
-                 className="text-[11px] sm:text-base whitespace-nowrap"
-              />
-            ) : (
-              <LatexMath 
-                 math={`\\vec{B}(M) = \\frac{\\mu_0 I}{4\\pi d} \\left[ \\sin(${ (alpha2 * 180 / Math.PI).toFixed(1) }^\\circ) - \\sin(${ (alpha1 * 180 / Math.PI).toFixed(1) }^\\circ) \\right] \\vec{k} \\approx ${ (currentDirection * (Math.sin(alpha2) - Math.sin(alpha1)) / distance).toFixed(3) } \\frac{\\mu_0 I}{4\\pi} \\vec{k}`} 
-                 block={false} 
-                 className="text-[11px] sm:text-base whitespace-nowrap"
-              />
-            )}
-          </div>
+        <div className="w-full flex items-center justify-center text-emerald-500 dark:text-emerald-400 drop-shadow-[0_0_8px_rgba(52,211,153,0.6)] overflow-x-auto py-2 px-1">
+          {isInfinite ? (
+            <LatexMath 
+               math={`\\vec{B}(M) = \\frac{\\mu_0 I}{2\\pi d} \\vec{k} \\approx ${ (currentDirection * 2 / distance).toFixed(3) } \\frac{\\mu_0 I}{4\\pi} \\vec{k}`} 
+               block={false} 
+               className="text-[10px] sm:text-sm whitespace-nowrap"
+            />
+          ) : (
+            <LatexMath 
+               math={`\\vec{B}(M) = \\frac{\\mu_0 I}{4\\pi d} \\left[ \\sin(${ (alpha2 * 180 / Math.PI).toFixed(1) }^\\circ) - \\sin(${ (alpha1 * 180 / Math.PI).toFixed(1) }^\\circ) \\right] \\vec{k} \\approx ${ (currentDirection * (Math.sin(alpha2) - Math.sin(alpha1)) / distance).toFixed(3) } \\frac{\\mu_0 I}{4\\pi} \\vec{k}`} 
+               block={false} 
+               className="text-[10px] sm:text-sm whitespace-nowrap"
+            />
+          )}
         </div>
       </div>
   );
