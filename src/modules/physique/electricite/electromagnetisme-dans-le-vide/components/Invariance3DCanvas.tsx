@@ -163,10 +163,7 @@ export default function Invariance3DCanvas() {
 
   const isValid = mode === "translation" ? supportsTranslation : mode === "rotation" ? supportsRotation : true;
 
-  useEffect(() => {
-    if (shape === "plan" && mode === "rotation") setMode("translation");
-    else if (!supportsTranslation && mode === "translation") setMode("rotation");
-  }, [shape, supportsTranslation, mode]);
+
 
   const toreCarrePoints = useMemo(() => [
     new THREE.Vector2(2, -1),
