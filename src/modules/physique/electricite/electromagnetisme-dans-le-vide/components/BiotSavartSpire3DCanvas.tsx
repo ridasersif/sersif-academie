@@ -60,7 +60,14 @@ const Arrow3D: React.FC<ArrowProps> = ({
 
 const SpireScene = ({ radius, distance, currentDirection, planeMode }: { radius: number, distance: number, currentDirection: number, planeMode: "none" | "sym" | "antisym" }) => {
   const [time, setTime] = useState(0);
-  useFrame((_, delta) => setTime(t => t + delta * 2));
+  const groupRef = useRef<THREE.Group>(null);
+  
+  useFrame((_, delta) => {
+    setTime(t => t + delta * 2);
+    if (groupRef.current && groupRef.current.scale.x < 0.84) {
+       groupRef.current.scale.lerp(new THREE.Vector3(0.85, 0.85, 0.85), delta * 8);
+    }
+  });
 
   // Geometry
   const pM = new THREE.Vector3(distance, -radius, 0); 
@@ -68,7 +75,7 @@ const SpireScene = ({ radius, distance, currentDirection, planeMode }: { radius:
   
   // Field calculation
   const sinAlpha = radius / rDist;
-  const bMag = (Math.pow(sinAlpha, 3) / radius) * 5; 
+  const bMag = (Math.pow(sinAlpha, 3) / radius) * 8; 
   
   const pVec = new THREE.Vector3(0, radius, 0);
   const mVec = new THREE.Vector3(distance, 0, 0);
@@ -83,16 +90,23 @@ const SpireScene = ({ radius, distance, currentDirection, planeMode }: { radius:
   const endB = mVec.clone().add(new THREE.Vector3(currentDirection, 0, 0).multiplyScalar(bMag));
 
   return (
-          <group>
+          <group ref={groupRef} scale={[0.01, 0.01, 0.01]}>
             {/* Grid and Axes */}
             <gridHelper args={[20, 20, "#1e293b", "#0f172a"]} position={[0, -4, 0]} />
             <Arrow3D start={new THREE.Vector3(-8, 0, 0)} dir={new THREE.Vector3(1, 0, 0)} length={16} color="#334155" thickness={1} headSize={0.15} opacity={0.5} />
             
             {/* The Spire (Torus) */}
-            <mesh rotation={[0, Math.PI / 2, 0]}>
-              <torusGeometry args={[radius, 0.08, 64, 100]} />
-              <meshStandardMaterial color="#fb923c" metalness={0.6} roughness={0.2} emissive="#c2410c" emissiveIntensity={0.5} />
-            </mesh>
+            <group>
+              <mesh rotation={[0, Math.PI / 2, 0]}>
+                <torusGeometry args={[radius, 0.08, 64, 100]} />
+                <meshStandardMaterial color="#fb923c" metalness={0.6} roughness={0.2} emissive="#c2410c" emissiveIntensity={0.5} />
+              </mesh>
+              {/* Highlight dl segment */}
+              <mesh rotation={[0, Math.PI / 2, Math.PI/2 - 0.15]}>
+                <torusGeometry args={[radius, 0.082, 16, 32, 0.3]} />
+                <meshStandardMaterial color="#f472b6" emissive="#be185d" emissiveIntensity={0.8} />
+              </mesh>
+            </group>
 
             {/* Current Direction arrows on Spire */}
             {[0, Math.PI/2, Math.PI, 3*Math.PI/2].map((angleOffset, i) => {
@@ -135,8 +149,8 @@ const SpireScene = ({ radius, distance, currentDirection, planeMode }: { radius:
               dir={dbDir}
               length={dbMag}
               color="#fb7185"
-              headSize={0.25}
-              thickness={2.5}
+              headSize={0.15}
+              thickness={1.2}
             />
             <Html position={endDb} center className="pointer-events-none -mt-4">
               <span className="text-rose-400 font-black italic text-xs drop-shadow-md">dB</span>
@@ -148,8 +162,8 @@ const SpireScene = ({ radius, distance, currentDirection, planeMode }: { radius:
               dir={new THREE.Vector3(currentDirection, 0, 0)}
               length={bMag}
               color="#10b981"
-              thickness={4}
-              headSize={0.3}
+              thickness={1.5}
+              headSize={0.2}
             />
             <Html position={endB} center className="pointer-events-none -mt-5">
               <span className="text-emerald-400 font-black italic text-sm drop-shadow-md">B</span>
@@ -159,13 +173,13 @@ const SpireScene = ({ radius, distance, currentDirection, planeMode }: { radius:
             <Arrow3D 
               start={pVec}
               dir={new THREE.Vector3(0, 0, currentDirection)}
-              length={0.8}
-              color="#fcd34d"
-              thickness={3}
-              headSize={0.25}
+              length={1.5}
+              color="#f472b6"
+              thickness={1.5}
+              headSize={0.2}
             />
-            <Html position={pVec.clone().add(new THREE.Vector3(0, 0, currentDirection * 0.8))} center className="pointer-events-none -mt-4">
-              <span className="text-yellow-400 font-black italic text-xs drop-shadow-md">dl</span>
+            <Html position={pVec.clone().add(new THREE.Vector3(0, 0, currentDirection * 1.5))} center className="pointer-events-none -mt-4">
+              <span className="text-pink-400 font-black italic text-xs drop-shadow-md">dl</span>
             </Html>
             
             {/* Field line simple visualizer */}
@@ -345,7 +359,7 @@ export default function BiotSavartSpire3DCanvas() {
           {/* Group 2: Sliders & Reset */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full lg:w-auto">
             {/* Slider: R */}
-            <div className="flex items-center gap-2 w-full sm:w-32 md:w-40 shrink-0">
+            <div className="flex items-center gap-2 w-full sm:w-48 md:w-64 shrink-0">
               <label className="text-[10px] font-bold text-orange-400 uppercase w-2">R</label>
               <input 
                 type="range" min={1} max={4} step={0.1} value={radius} 
@@ -356,7 +370,7 @@ export default function BiotSavartSpire3DCanvas() {
             </div>
 
             {/* Slider: x */}
-            <div className="flex items-center gap-2 w-full sm:w-32 md:w-40 shrink-0">
+            <div className="flex items-center gap-2 w-full sm:w-48 md:w-64 shrink-0">
               <label className="text-[10px] font-bold text-emerald-400 uppercase w-2">x</label>
               <input 
                 type="range" min={-5} max={5} step={0.1} value={distance} 
