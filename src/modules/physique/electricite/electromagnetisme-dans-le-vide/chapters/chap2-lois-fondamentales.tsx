@@ -205,174 +205,173 @@ export default function Chap2LoisFondamentales() {
 
         <div className="space-y-3">
           {/* Étape 1: Mise en place */}
-          <CollapsibleStep step={1} title="Mise en place et géométrie" color="cyan" defaultOpen={true}>
+          <CollapsibleStep step={1} title="Mise en place et géométrie (Comprendre le repère)" color="cyan" defaultOpen={true}>
             <p className="text-[11px] text-muted-foreground leading-relaxed">
-              On place le segment <LatexMath math="[AB]" /> le long de l&apos;axe vertical. Le point <LatexMath math="M" /> est à une distance perpendiculaire <LatexMath math="d" />. Un élément <LatexMath math="d\vec{l}" /> est situé en un point <LatexMath math="P" /> du fil. On note :
+              Pour calculer le champ créé par tout le fil, on ne peut pas appliquer une formule directement. On doit d'abord prendre un <strong>tout petit morceau du fil</strong> (de longueur <LatexMath math="dl" />) situé au point <LatexMath math="P" />. On va calculer le petit champ magnétique <LatexMath math="d\vec{B}" /> qu'il crée au point <LatexMath math="M" />, puis on additionnera (grâce à l'intégrale) les champs créés par tous les petits morceaux du fil !
             </p>
-            <div className="grid grid-cols-2 gap-2 mt-2">
-              <div className="p-2 rounded-lg bg-muted dark:bg-slate-950/60 border border-border/60 text-center">
-                <div className="text-cyan-400 text-xs"><LatexMath math="\vec{PM} = \vec{r}" /></div>
-                <div className="text-[9px] text-muted-foreground/70 mt-1">Vecteur position</div>
+            <div className="grid grid-cols-2 gap-2 mt-3">
+              <div className="p-2 rounded-lg bg-cyan-500/5 border border-cyan-500/20 text-center flex flex-col justify-center">
+                <div className="text-cyan-400 text-xs font-bold mb-1"><LatexMath math="\vec{PM} = \vec{r}" /> (ou distance <LatexMath math="r" />)</div>
+                <div className="text-[10px] text-cyan-200/70">C'est la distance directe entre notre petit morceau de fil et le point où on mesure le champ.</div>
               </div>
-              <div className="p-2 rounded-lg bg-muted dark:bg-slate-950/60 border border-border/60 text-center">
-                <div className="text-cyan-400 text-xs"><LatexMath math="\alpha = \text{angle}(\vec{PM}, \vec{d})" /></div>
-                <div className="text-[9px] text-muted-foreground/70 mt-1">Angle repérant P</div>
+              <div className="p-2 rounded-lg bg-cyan-500/5 border border-cyan-500/20 text-center flex flex-col justify-center">
+                <div className="text-cyan-400 text-xs font-bold mb-1"><LatexMath math="\alpha" /> (Angle de visée)</div>
+                <div className="text-[10px] text-cyan-200/70">C'est l'angle avec lequel on "regarde" le point P depuis M, par rapport à l'horizontale.</div>
               </div>
             </div>
           </CollapsibleStep>
 
           {/* Étape 2: Symétrie */}
-          <CollapsibleStep step={2} title="Étude de symétrie → direction de dB⃗" color="teal">
-            <p className="text-[11px] text-muted-foreground leading-relaxed">
-              Le plan <LatexMath math="(\vec{e_\rho}, \vec{e_z})" /> contenant le fil et M est un <strong className="text-teal-400">plan de symétrie</strong> du courant. D&apos;après le principe de Curie :
+          <CollapsibleStep step={2} title="Étude de symétrie (Où pointe le champ ?)" color="teal">
+            <p className="text-[11px] text-muted-foreground leading-relaxed mb-2">
+              Avant de calculer des valeurs, utilisons notre bon sens physique (le Principe de Curie). Imaginez un plan parfait qui coupe votre écran en deux, contenant le fil et le point M. 
             </p>
-            <div className="mt-2 p-3 rounded-lg bg-teal-500/5 border border-teal-500/20 text-center">
-              <span className="text-teal-400 text-xs">
-                <LatexMath math="d\vec{B} \perp (\vec{e_\rho}, \vec{e_z}) \implies d\vec{B} = dB(M) \, \vec{e_\theta}" />
+            <div className="mt-2 p-3 rounded-lg bg-teal-500/5 border border-teal-500/20 text-xs text-teal-300 leading-relaxed">
+              <ul className="list-disc pl-4 space-y-1">
+                <li><strong>On a :</strong> Le courant électrique appartient totalement à ce plan de symétrie.</li>
+                <li><strong>Or :</strong> La physique nous dit que le champ magnétique généré doit être perpendiculaire à tout plan de symétrie contenant le courant.</li>
+              </ul>
+            </div>
+            <div className="mt-2 p-3 rounded-lg bg-teal-500/10 border border-teal-500/30 text-center">
+              <span className="text-teal-400 text-sm font-bold">
+                <LatexMath math="\text{Donc } \implies d\vec{B} \perp (\text{Plan du fil}) \iff d\vec{B} = dB(M) \, \vec{e_\theta}" />
               </span>
             </div>
-            <p className="text-[10px] text-muted-foreground/70 mt-2 leading-relaxed">
-              Le champ élémentaire est donc purement <strong className="text-teal-300">azimuthal</strong> (perpendiculaire au plan contenant le fil et M).
+            <p className="text-[10px] text-muted-foreground/70 mt-2 text-center">
+              Le champ va donc "tourner" autour du fil, sortant ou entrant dans votre écran !
             </p>
           </CollapsibleStep>
 
           {/* Étape 3: Expression de dB */}
-          <CollapsibleStep step={3} title="Expression de dB en fonction de α" color="blue">
-            <p className="text-[11px] text-muted-foreground leading-relaxed">
-              En appliquant Biot-Savart et en projetant le produit vectoriel <LatexMath math="d\vec{l} \wedge \vec{u}" /> :
+          <CollapsibleStep step={3} title="La Loi de Biot-Savart (Le petit champ élémentaire)" color="blue">
+            <p className="text-[11px] text-muted-foreground leading-relaxed mb-2">
+              <strong>On applique</strong> maintenant la célèbre formule de Biot-Savart pour notre petit morceau <LatexMath math="dl" /> :
             </p>
             <div className="mt-2 p-3 rounded-lg bg-blue-500/5 border border-blue-500/20 text-center">
-              <span className="text-blue-400 text-xs">
-                <LatexMath math="dB(M) = \frac{\mu_0 I}{4\pi} \frac{dl \cos\alpha}{r^2}" />
+              <span className="text-blue-400 text-sm font-bold">
+                <LatexMath math="d\vec{B}(M) = \frac{\mu_0 I}{4\pi} \frac{d\vec{l} \wedge \vec{u}}{r^2}" />
               </span>
             </div>
-            <p className="text-[10px] text-muted-foreground/70 mt-2 leading-relaxed">
-              Le facteur <LatexMath math="\cos\alpha" /> vient du produit vectoriel : <LatexMath math="|d\vec{l} \wedge \vec{u}| = dl \sin(\pi/2 - \alpha) = dl\cos\alpha" />.
+            <p className="text-[11px] text-muted-foreground leading-relaxed mt-3">
+              Le symbole <LatexMath math="\wedge" /> (produit vectoriel) nous demande de calculer le sinus de l'angle entre le fil (<LatexMath math="d\vec{l}" />) et la ligne de visée (<LatexMath math="\vec{u}" />). <strong>Or</strong>, avec la géométrie du triangle, on trouve que ce sinus vaut exactement <LatexMath math="\cos(\alpha)" /> !
             </p>
+            <div className="mt-2 p-2 rounded-lg bg-blue-500/10 text-center border-l-2 border-blue-500/50">
+              <span className="text-blue-300 text-xs font-bold">
+                <LatexMath math="\text{D'où } \implies dB(M) = \frac{\mu_0 I}{4\pi} \frac{dl \cos\alpha}{r^2}" />
+              </span>
+            </div>
           </CollapsibleStep>
 
           {/* Étape 4: Changement de variable */}
-          <CollapsibleStep step={4} title="Changement de variable : l → α" color="pink">
-            <p className="text-[11px] text-muted-foreground leading-relaxed mb-2">
-              Pour intégrer, on exprime tout en fonction de l&apos;angle <LatexMath math="\alpha" /> :
+          <CollapsibleStep step={4} title="L'astuce mathématique (Le changement de variable)" color="pink">
+            <p className="text-[11px] text-muted-foreground leading-relaxed mb-3">
+              <strong>Le problème :</strong> Dans notre formule, quand on se déplace sur le fil pour faire la somme, la position <LatexMath math="l" />, la distance <LatexMath math="r" /> et l'angle <LatexMath math="\alpha" /> changent <strong>tous en même temps</strong> ! C'est un cauchemar à intégrer.
+              <br/><br/>
+              <strong>La solution :</strong> On va tout exprimer en fonction d'une seule variable : l'angle <LatexMath math="\alpha" />.
             </p>
-            <div className="space-y-2">
-              <div className="p-2 rounded-lg bg-muted dark:bg-slate-950/60 border border-border/60 flex items-center gap-2 text-xs overflow-x-auto">
-                <span className="text-pink-400 shrink-0"><LatexMath math="\tan\alpha = \frac{l}{d}" /></span>
-                <ArrowRight className="w-3 h-3 text-slate-600 shrink-0" />
-                <span className="text-pink-300"><LatexMath math="dl = \frac{d}{\cos^2\alpha}\,d\alpha" /></span>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+              <div className="p-3 rounded-lg bg-pink-500/5 border border-pink-500/20 flex flex-col gap-2">
+                <span className="text-pink-400 font-bold border-b border-pink-500/20 pb-1">1. Exprimer <LatexMath math="dl" /></span>
+                <span className="text-pink-300"><strong>On a :</strong> <LatexMath math="\tan\alpha = \frac{l}{d}" /></span>
+                <span className="text-pink-300"><strong>Donc en dérivant :</strong> <br/> <LatexMath math="\implies dl = \frac{d}{\cos^2\alpha}\,d\alpha" /></span>
               </div>
-              <div className="p-2 rounded-lg bg-muted dark:bg-slate-950/60 border border-border/60 flex items-center gap-2 text-xs overflow-x-auto">
-                <span className="text-pink-400 shrink-0"><LatexMath math="\cos\alpha = \frac{d}{r}" /></span>
-                <ArrowRight className="w-3 h-3 text-slate-600 shrink-0" />
-                <span className="text-pink-300"><LatexMath math="r = \frac{d}{\cos\alpha}" /></span>
+              <div className="p-3 rounded-lg bg-pink-500/5 border border-pink-500/20 flex flex-col gap-2">
+                <span className="text-pink-400 font-bold border-b border-pink-500/20 pb-1">2. Exprimer <LatexMath math="r^2" /></span>
+                <span className="text-pink-300"><strong>On sait que :</strong> <LatexMath math="\cos\alpha = \frac{d}{r}" /></span>
+                <span className="text-pink-300"><strong>Ce qui équivaut à :</strong> <br/> <LatexMath math="\iff r^2 = \frac{d^2}{\cos^2\alpha}" /></span>
               </div>
             </div>
           </CollapsibleStep>
 
           {/* Étape 5: Simplification */}
-          <CollapsibleStep step={5} title="Simplification miraculeuse !" color="amber">
+          <CollapsibleStep step={5} title="La simplification miraculeuse !" color="amber">
             <p className="text-[11px] text-muted-foreground leading-relaxed mb-2">
-              En remplaçant <LatexMath math="dl" /> et <LatexMath math="r" /> dans l&apos;expression de <LatexMath math="dB" /> :
+              Regardez ce qui se passe quand on remplace <LatexMath math="dl" /> et <LatexMath math="r^2" /> par leurs nouvelles expressions dans la formule de <LatexMath math="dB" />. Les termes compliqués vont s'annuler parfaitement :
             </p>
-            <div className="p-3 rounded-lg bg-muted dark:bg-slate-950/60 border border-border/60 text-center text-xs overflow-x-auto">
+            <div className="p-3 rounded-lg bg-amber-500/5 border border-amber-500/20 text-center text-xs overflow-x-auto">
               <span className="text-amber-400">
-                <LatexMath math="dB = \frac{\mu_0 I}{4\pi} \cdot \frac{\cos\alpha}{r^2} \cdot \frac{d}{\cos^2\alpha}\,d\alpha = \frac{\mu_0 I}{4\pi} \cdot \frac{\cos\alpha \cdot \cos^2\alpha}{d^2} \cdot \frac{d}{\cos^2\alpha}\,d\alpha" />
+                <LatexMath math="dB = \frac{\mu_0 I}{4\pi} \cdot \cos\alpha \cdot \underbrace{\left(\frac{\cos^2\alpha}{d^2}\right)}_{1/r^2} \cdot \underbrace{\left(\frac{d}{\cos^2\alpha}\,d\alpha\right)}_{dl}" />
               </span>
             </div>
-            <div className="mt-3 p-3 rounded-lg bg-amber-500/5 border border-amber-500/20 text-center">
-              <span className="text-amber-300 text-sm font-bold">
-                <LatexMath math="dB(M) = \frac{\mu_0 I}{4\pi d} \cos\alpha \, d\alpha" />
-              </span>
-            </div>
-            <p className="text-[10px] text-amber-400/60 text-center mt-2 font-medium">
-              ✨ Tout se simplifie magnifiquement !
+            <p className="text-[11px] text-muted-foreground text-center mt-2">
+              Les <LatexMath math="\cos^2\alpha" /> s'annulent, un <LatexMath math="d" /> s'annule...
             </p>
+            <div className="mt-3 p-3 rounded-lg bg-amber-500/10 border border-amber-500/30 text-center">
+              <span className="text-amber-300 text-sm font-bold">
+                <LatexMath math="\implies dB(M) = \frac{\mu_0 I}{4\pi d} \cos\alpha \, d\alpha" />
+              </span>
+            </div>
           </CollapsibleStep>
 
           {/* Étape 6: Intégration */}
-          <CollapsibleStep step={6} title="Intégration de α₁ à α₂ → Résultat final" color="emerald" defaultOpen={true}>
+          <CollapsibleStep step={6} title="L'intégration (La somme finale)" color="emerald" defaultOpen={true}>
             <p className="text-[11px] text-muted-foreground leading-relaxed mb-2">
-              On intègre de l&apos;angle <LatexMath math="\alpha_1" /> (correspondant au point A) à <LatexMath math="\alpha_2" /> (correspondant au point B) :
+              Maintenant que la formule est super simple, <strong>il suffit d'intégrer</strong> du début du fil jusqu'à la fin du fil. Le début est défini par l'angle <LatexMath math="\alpha_1" /> (qui regarde le point A) et la fin par l'angle <LatexMath math="\alpha_2" /> (qui regarde le point B).
             </p>
-            <div className="p-3 rounded-lg bg-muted dark:bg-slate-950/60 border border-border/60 text-center text-xs overflow-x-auto mb-3">
+            <div className="p-3 rounded-lg bg-emerald-500/5 border border-emerald-500/20 text-center text-xs overflow-x-auto mb-3">
               <span className="text-emerald-400">
-                <LatexMath math="B(M) = \frac{\mu_0 I}{4\pi d} \int_{\alpha_1}^{\alpha_2} \cos\alpha \, d\alpha = \frac{\mu_0 I}{4\pi d} \left[\sin\alpha\right]_{\alpha_1}^{\alpha_2}" />
+                <LatexMath math="B(M) = \int_{\alpha_1}^{\alpha_2} \frac{\mu_0 I}{4\pi d} \cos\alpha \, d\alpha" />
               </span>
             </div>
-
+            <p className="text-[11px] text-muted-foreground leading-relaxed mb-2">
+              <strong>Or</strong>, la primitive de <LatexMath math="\cos\alpha" /> est <LatexMath math="\sin\alpha" />. 
+            </p>
+            
             {/* Résultat encadré premium */}
-            <div className="relative p-4 sm:p-5 rounded-xl bg-gradient-to-r from-emerald-500/10 via-cyan-500/10 to-teal-500/10 border-2 border-emerald-500/30 shadow-[0_0_20px_rgba(16,185,129,0.1)]">
+            <div className="relative p-4 sm:p-5 rounded-xl bg-gradient-to-r from-emerald-500/10 via-cyan-500/10 to-teal-500/10 border-2 border-emerald-500/30 shadow-[0_0_20px_rgba(16,185,129,0.1)] mt-4">
               <div className="absolute -top-3 left-4 px-3 py-0.5 bg-emerald-500 text-white text-[10px] font-black rounded-full uppercase tracking-wider">
-                Résultat
+                Donc (Résultat Général)
               </div>
               <div className="text-center py-2 overflow-visible">
                 <span className="text-emerald-300 text-lg sm:text-xl font-bold">
-                  <LatexMath math="\vec{B}(M) = \frac{\mu_0 I}{4\pi d} \left[\sin\alpha_2 - \sin\alpha_1\right] \vec{e_\theta}" />
+                  <LatexMath math="\implies \vec{B}(M) = \frac{\mu_0 I}{4\pi d} \left[\sin\alpha_2 - \sin\alpha_1\right] \vec{e_\theta}" />
                 </span>
               </div>
             </div>
           </CollapsibleStep>
-        </div>
-      </section>
 
-      {/* ═══════════════════════════════════════════ */}
-      {/* CAS LIMITE: FIL INFINI                     */}
-      {/* ═══════════════════════════════════════════ */}
-      <section className="bg-card/90 border border-amber-500/10 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 shadow-sm w-full max-w-full overflow-x-hidden relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-amber-500/5 to-transparent rounded-bl-full pointer-events-none" />
+          {/* Étape 7: Cas Limite Fil Infini */}
+          <CollapsibleStep step={7} title="Cas Limite : Le Fil Infini (Quand le fil ne s'arrête jamais)" color="amber">
+            <p className="text-[11px] text-muted-foreground leading-relaxed mb-3">
+              Que se passe-t-il si notre segment de fil devient infiniment long ? 
+              Pour regarder les extrémités d'un fil infini, il faudrait lever la tête tout en haut (<LatexMath math="+90^\circ" /> ou <LatexMath math="+\frac{\pi}{2}" />) et baisser la tête tout en bas (<LatexMath math="-90^\circ" /> ou <LatexMath math="-\frac{\pi}{2}" />).
+            </p>
 
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 text-xs font-extrabold mb-3">
-          <Sparkles className="w-3.5 h-3.5" />
-          <span>Cas limite • Fil Infini</span>
-        </div>
+            <div className="grid grid-cols-2 gap-3 mb-4">
+              <div className="p-3 rounded-xl bg-amber-500/5 border border-amber-500/20 text-center">
+                <div className="text-amber-400 font-mono text-sm font-bold mb-1"><LatexMath math="\implies \alpha_1 \to -\frac{\pi}{2}" /></div>
+                <div className="text-[10px] text-amber-200/70">Car le point A est infiniment loin en bas.</div>
+              </div>
+              <div className="p-3 rounded-xl bg-amber-500/5 border border-amber-500/20 text-center">
+                <div className="text-amber-400 font-mono text-sm font-bold mb-1"><LatexMath math="\implies \alpha_2 \to +\frac{\pi}{2}" /></div>
+                <div className="text-[10px] text-amber-200/70">Car le point B est infiniment loin en haut.</div>
+              </div>
+            </div>
 
-        <h2 className="text-lg sm:text-xl font-black mb-3 sm:mb-4 text-foreground leading-tight">
-          Retrouver le résultat du fil infini
-        </h2>
+            <p className="text-[11px] text-muted-foreground leading-relaxed mb-2 text-center">
+              <strong>Par conséquent</strong>, on remplace ces deux angles dans notre résultat général trouvé à l'Étape 6 :
+            </p>
+            <div className="p-3 rounded-lg bg-amber-500/5 border border-amber-500/20 text-center text-xs mb-4">
+              <span className="text-amber-400 font-bold">
+                <LatexMath math="\sin\left(+\frac{\pi}{2}\right) - \sin\left(-\frac{\pi}{2}\right) = 1 - (-1) = 2" />
+              </span>
+            </div>
 
-        <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed mb-4 font-medium">
-          Quand le segment <LatexMath math="[AB]" /> devient infiniment long, les angles limites deviennent :
-        </p>
-
-        <div className="grid grid-cols-2 gap-3 mb-4">
-          <div className="p-3 rounded-xl bg-muted/60 dark:bg-slate-900/40 border border-border text-center">
-            <div className="text-amber-400 font-mono"><LatexMath math="\alpha_1 \to -\frac{\pi}{2}" /></div>
-            <div className="text-[9px] text-muted-foreground/70 mt-1">Point A → -∞</div>
-          </div>
-          <div className="p-3 rounded-xl bg-muted/60 dark:bg-slate-900/40 border border-border text-center">
-            <div className="text-amber-400 font-mono"><LatexMath math="\alpha_2 \to +\frac{\pi}{2}" /></div>
-            <div className="text-[9px] text-muted-foreground/70 mt-1">Point B → +∞</div>
-          </div>
-        </div>
-
-        <div className="p-3 rounded-lg bg-muted dark:bg-slate-950/60 border border-border/60 text-center text-xs mb-4 overflow-x-auto">
-          <span className="text-amber-400">
-            <LatexMath math="\sin\left(\frac{\pi}{2}\right) - \sin\left(-\frac{\pi}{2}\right) = 1 - (-1) = 2" />
-          </span>
-        </div>
-
-        {/* Résultat fil infini */}
-        <div className="relative p-4 sm:p-5 rounded-xl bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-yellow-500/10 border-2 border-amber-500/30 shadow-[0_0_25px_rgba(245,158,11,0.15)]">
-          <div className="absolute -top-3 left-4 px-3 py-0.5 bg-amber-500 text-white text-[10px] font-black rounded-full uppercase tracking-wider">
-            Fil Infini
-          </div>
-          <div className="text-center py-2 overflow-visible">
-            <span className="text-amber-300 text-lg sm:text-xl font-bold">
-              <LatexMath math="\vec{B}(M) = \frac{\mu_0 I}{2\pi d} \vec{e_\theta}" />
-            </span>
-          </div>
-          <p className="text-[10px] text-center text-amber-400/60 mt-1 font-medium">
-            On retrouve le résultat classique du fil infini ! 🎉
-          </p>
-        </div>
-
-        {/* Note physique */}
-        <div className="mt-4 p-3 rounded-xl bg-cyan-500/5 border border-cyan-500/15 flex items-start gap-3">
-          <Lightbulb className="w-4 h-4 text-cyan-400 mt-0.5 shrink-0" />
-          <p className="text-[10px] sm:text-[11px] text-cyan-200/70 leading-relaxed">
-            <strong className="text-cyan-300">Remarque :</strong> Le champ décroît en <LatexMath math="1/d" /> et s&apos;enroule autour du fil (direction <LatexMath math="\vec{e_\theta}" />). Les lignes de champ sont des cercles concentriques centrés sur le fil — exactement ce que nous avons vu au Chapitre 1 !
-          </p>
+            {/* Résultat fil infini */}
+            <div className="relative p-4 sm:p-5 rounded-xl bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-yellow-500/10 border-2 border-amber-500/30 shadow-[0_0_25px_rgba(245,158,11,0.15)]">
+              <div className="absolute -top-3 left-4 px-3 py-0.5 bg-amber-500 text-white text-[10px] font-black rounded-full uppercase tracking-wider">
+                D'où le résultat (Fil Infini)
+              </div>
+              <div className="text-center py-2 overflow-visible">
+                <span className="text-amber-300 text-lg sm:text-xl font-bold">
+                  <LatexMath math="\implies \vec{B}(M) = \frac{\mu_0 I}{4\pi d} \times [2] \iff \vec{B}(M) = \frac{\mu_0 I}{2\pi d} \vec{e_\theta}" />
+                </span>
+              </div>
+              <p className="text-[11px] text-center text-amber-400/80 mt-2 font-medium">
+                C'est le résultat classique ! Le champ magnétique d'un fil infini décroît inversement proportionnellement à la distance <LatexMath math="d" />.
+              </p>
+            </div>
+          </CollapsibleStep>
         </div>
       </section>
 

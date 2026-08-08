@@ -256,71 +256,77 @@ export default function BiotSavartSegment3DCanvas() {
       </div>
 
       {/* Controls Panel */}
-      <div className="w-full bg-card border border-border border-t-0 rounded-b-2xl p-2 sm:p-3 flex flex-wrap xl:flex-nowrap items-center justify-center gap-4 sm:gap-6">
+      <div className="w-full bg-card border border-border border-t-0 rounded-b-2xl p-3 sm:p-4 flex flex-col lg:flex-row items-center justify-between gap-4 sm:gap-6">
         
-        {/* Toggle: Sens du courant */}
-        <div className="flex gap-0.5 bg-muted p-0.5 rounded-lg border border-border/50 shadow-sm shrink-0">
+        {/* Group 1: Sliders */}
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full lg:w-auto flex-1 max-w-md lg:max-w-xl">
+          {/* Slider: L */}
+          <div className={`flex items-center gap-2 w-full sm:w-32 shrink-0 transition-opacity ${isInfinite ? "opacity-30 pointer-events-none" : "opacity-100"}`}>
+            <label className="text-[10px] font-bold text-cyan-400 uppercase w-2">L</label>
+            <input type="range" min={0.5} max={6} step={0.1} value={halfLength} onChange={(e) => setHalfLength(parseFloat(e.target.value))} className="w-full h-1.5 sm:h-2 rounded-lg appearance-none cursor-pointer accent-cyan-400 shadow-inner" style={{ background: `linear-gradient(to right, #22d3ee ${percL}%, rgba(30,41,59,0.5) ${percL}%)` }} />
+          </div>
+
+          {/* Slider: d */}
+          <div className="flex items-center gap-2 w-full sm:w-32 shrink-0">
+            <label className="text-[10px] font-bold text-pink-400 uppercase w-2">d</label>
+            <input type="range" min={0.5} max={5} step={0.1} value={distance} onChange={(e) => setDistance(parseFloat(e.target.value))} className="w-full h-1.5 sm:h-2 rounded-lg appearance-none cursor-pointer accent-pink-400 shadow-inner" style={{ background: `linear-gradient(to right, #f472b6 ${percD}%, rgba(30,41,59,0.5) ${percD}%)` }} />
+          </div>
+
+          {/* Slider: z */}
+          <div className="flex items-center gap-2 w-full sm:w-32 shrink-0">
+            <label className="text-[10px] font-bold text-purple-400 uppercase w-2">z</label>
+            <input type="range" min={-5} max={5} step={0.1} value={heightM} onChange={(e) => setHeightM(parseFloat(e.target.value))} className="w-full h-1.5 sm:h-2 rounded-lg appearance-none cursor-pointer accent-purple-400 shadow-inner" style={{ background: `linear-gradient(to right, #c084fc ${percZ}%, rgba(30,41,59,0.5) ${percZ}%)` }} />
+          </div>
+        </div>
+
+        {/* Group 2: Buttons */}
+        <div className="flex flex-row items-center justify-center gap-3 sm:gap-4 shrink-0">
+          {/* Toggle: Sens du courant */}
+          <div className="flex items-center bg-slate-800/50 p-1 rounded-xl shrink-0 border border-border/50">
+            <button
+              onClick={() => setCurrentDirection(1)}
+              className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all ${currentDirection === 1 ? 'bg-cyan-500/20 text-cyan-400 shadow-[0_0_10px_rgba(6,182,212,0.3)]' : 'text-slate-500 hover:text-slate-300'}`}
+              title="Courant vers le haut"
+            >
+              <ArrowUp className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() => setCurrentDirection(-1)}
+              className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all ${currentDirection === -1 ? 'bg-cyan-500/20 text-cyan-400 shadow-[0_0_10px_rgba(6,182,212,0.3)]' : 'text-slate-500 hover:text-slate-300'}`}
+              title="Courant vers le bas"
+            >
+              <ArrowDown className="w-4 h-4" />
+            </button>
+          </div>
+
+          {/* Toggle: Fil Infini */}
           <button
-            onClick={() => setCurrentDirection(1)}
-            className={`p-1.5 rounded-md flex items-center justify-center transition-all ${currentDirection === 1 ? 'bg-cyan-500/20 text-cyan-700 dark:text-cyan-400 shadow-sm scale-105' : 'text-muted-foreground hover:bg-foreground/5'}`}
-            title="Courant vers le haut"
+            onClick={() => setIsInfinite(!isInfinite)}
+            className={`flex items-center justify-center w-9 h-9 rounded-xl border transition-all shadow-sm shrink-0 ${
+              isInfinite 
+                ? "border-amber-400 bg-amber-500/20 text-amber-400 shadow-[0_0_10px_rgba(245,158,11,0.3)]" 
+                : "border-slate-700/50 bg-slate-800/50 text-slate-400 hover:bg-slate-700 hover:text-white"
+            }`}
+            title="Cas Infini"
           >
-            <ArrowUp className="w-4 h-4" />
+            <InfinityIcon className="w-5 h-5" />
           </button>
-          <button
-            onClick={() => setCurrentDirection(-1)}
-            className={`p-1.5 rounded-md flex items-center justify-center transition-all ${currentDirection === -1 ? 'bg-cyan-500/20 text-cyan-700 dark:text-cyan-400 shadow-sm scale-105' : 'text-muted-foreground hover:bg-foreground/5'}`}
-            title="Courant vers le bas"
+
+          {/* Reset Button */}
+          <button 
+             onClick={() => {
+               setHalfLength(3.0);
+               setDistance(2.0);
+               setHeightM(0.0);
+               setCurrentDirection(1);
+               setIsInfinite(false);
+             }}
+             title="Réinitialiser"
+             className="flex items-center justify-center w-9 h-9 bg-slate-800/50 text-slate-400 hover:text-white hover:bg-slate-700 rounded-xl transition-all shadow-inner border border-slate-700/50 shrink-0"
           >
-            <ArrowDown className="w-4 h-4" />
+            <RotateCcw className="w-4 h-4" />
           </button>
         </div>
-
-        {/* Slider: L */}
-        <div className={`flex items-center gap-2 w-[22%] sm:w-24 md:w-28 shrink-0 transition-opacity ${isInfinite ? "opacity-30 pointer-events-none" : "opacity-100"}`}>
-          <label className="text-[10px] font-bold text-cyan-400 uppercase w-2">L</label>
-          <input type="range" min={0.5} max={6} step={0.1} value={halfLength} onChange={(e) => setHalfLength(parseFloat(e.target.value))} className="w-full h-1.5 sm:h-2 rounded-lg appearance-none cursor-pointer accent-cyan-400 shadow-inner" style={{ background: `linear-gradient(to right, #22d3ee ${percL}%, rgba(30,41,59,0.5) ${percL}%)` }} />
-        </div>
-
-        {/* Slider: d */}
-        <div className="flex items-center gap-2 w-[22%] sm:w-24 md:w-28 shrink-0">
-          <label className="text-[10px] font-bold text-pink-400 uppercase w-2">d</label>
-          <input type="range" min={0.5} max={5} step={0.1} value={distance} onChange={(e) => setDistance(parseFloat(e.target.value))} className="w-full h-1.5 sm:h-2 rounded-lg appearance-none cursor-pointer accent-pink-400 shadow-inner" style={{ background: `linear-gradient(to right, #f472b6 ${percD}%, rgba(30,41,59,0.5) ${percD}%)` }} />
-        </div>
-
-        {/* Slider: z */}
-        <div className="flex items-center gap-2 w-[22%] sm:w-24 md:w-28 shrink-0">
-          <label className="text-[10px] font-bold text-purple-400 uppercase w-2">z</label>
-          <input type="range" min={-5} max={5} step={0.1} value={heightM} onChange={(e) => setHeightM(parseFloat(e.target.value))} className="w-full h-1.5 sm:h-2 rounded-lg appearance-none cursor-pointer accent-purple-400 shadow-inner" style={{ background: `linear-gradient(to right, #c084fc ${percZ}%, rgba(30,41,59,0.5) ${percZ}%)` }} />
-        </div>
-
-        {/* Toggle: Fil Infini */}
-        <button
-          onClick={() => setIsInfinite(!isInfinite)}
-          className={`flex items-center justify-center w-8 h-8 rounded-lg border transition-all shadow-sm shrink-0 ${
-            isInfinite 
-              ? "border-amber-500/50 bg-amber-500/20 text-amber-700 dark:text-amber-400" 
-              : "border-border/50 bg-muted hover:bg-muted/80 text-foreground/70"
-          }`}
-          title="Cas Infini"
-        >
-          <InfinityIcon className="w-4 h-4" />
-        </button>
-
-        {/* Reset Button */}
-        <button 
-           onClick={() => {
-             setHalfLength(3.0);
-             setDistance(2.0);
-             setHeightM(0.0);
-             setCurrentDirection(1);
-             setIsInfinite(false);
-           }}
-           title="Réinitialiser"
-           className="flex items-center justify-center w-8 h-8 bg-muted hover:bg-muted/80 text-foreground/70 rounded-lg transition-all border border-border/50 shadow-sm shrink-0"
-        >
-          <RotateCcw className="w-4 h-4" />
-        </button>
       </div>
 
         {/* Result display */}
