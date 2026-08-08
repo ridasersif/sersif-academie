@@ -5,6 +5,7 @@ import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, Line, Sphere, Cone, Tube, Html } from "@react-three/drei";
 import * as THREE from "three";
 import LatexMath from "@/components/ui/LatexMath";
+import { RotateCcw } from "lucide-react";
 
 // --- Vectors & Arrows Helper ---
 interface ArrowProps {
@@ -185,7 +186,7 @@ const SpireScene = ({ radius, distance, currentDirection, planeMode, circuitShap
                   const z = Math.sin(angle) * radius;
                   
                   return (
-                     <Sphere key={`curr-sol-${i}`} args={[0.08, 16, 16]} position={[x, y, z]}>
+                     <Sphere key={`curr-sol-${i}`} args={[0.12, 16, 16]} position={[x, y, z]}>
                        <meshBasicMaterial color="#fcd34d" />
                      </Sphere>
                   );
@@ -196,7 +197,7 @@ const SpireScene = ({ radius, distance, currentDirection, planeMode, circuitShap
                     const y = radius * Math.cos(angle);
                     const z = radius * Math.sin(angle);
                     return (
-                       <Sphere key={`curr-${loopIdx}-${i}`} args={[0.08, 16, 16]} position={[xOffset, y, z]}>
+                       <Sphere key={`curr-${loopIdx}-${i}`} args={[0.12, 16, 16]} position={[xOffset, y, z]}>
                          <meshBasicMaterial color="#fcd34d" />
                        </Sphere>
                     );
@@ -455,28 +456,6 @@ export default function BiotSavartSpire3DCanvas() {
 
       <div className="w-full h-[300px] sm:h-[400px] bg-slate-950 rounded-t-2xl overflow-hidden relative border border-slate-800 border-b-0 shadow-inner">
         
-        {/* HUD Légende */}
-        <div className="absolute top-3 right-3 z-10">
-          <div className="bg-slate-900/80 backdrop-blur-md border border-slate-700/50 p-2 sm:p-3 rounded-xl shadow-xl flex flex-col gap-1.5 pointer-events-none">
-            <div className="flex items-center gap-2 text-[9px] sm:text-[10px]">
-              <span className="w-2 h-2 rounded-full bg-orange-400 inline-block" />
-              <span className="text-slate-300 font-medium">Spire (Courant I)</span>
-            </div>
-            <div className="flex items-center gap-2 text-[9px] sm:text-[10px]">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 inline-block" />
-              <span className="text-slate-300 font-medium">Champ Total B(M)</span>
-            </div>
-            <div className="flex items-center gap-2 text-[9px] sm:text-[10px]">
-              <span className="w-2 h-2 rounded-full bg-rose-400 inline-block" />
-              <span className="text-slate-300 font-medium">Champ élémentaire dB</span>
-            </div>
-            <div className="flex items-center gap-2 text-[9px] sm:text-[10px]">
-              <span className="w-2 h-2 rounded-full bg-cyan-400 inline-block" />
-              <span className="text-slate-300 font-medium">Vecteur r = PM</span>
-            </div>
-          </div>
-        </div>
-
         <Canvas camera={{ position: [5, 4, 6], fov: 45 }}>
           <color attach="background" args={["#020617"]} />
           <ambientLight intensity={0.5} />
@@ -577,10 +556,11 @@ export default function BiotSavartSpire3DCanvas() {
 
             {/* Reset */}
             <button 
-              onClick={() => { setRadius(2.0); setDistance(3.0); setCurrentDirection(1); setPlaneMode("none"); }}
-              className="w-8 h-8 rounded-xl bg-slate-800/50 text-slate-400 hover:text-white hover:bg-slate-700 flex items-center justify-center transition-colors shrink-0"
+              onClick={() => { setRadius(2.0); setDistance(3.0); setCurrentDirection(1); setPlaneMode("none"); setCircuitShape("spire"); }}
+              className="w-8 h-8 rounded-xl bg-slate-800/50 text-slate-400 hover:text-white hover:bg-slate-700 flex items-center justify-center transition-colors shrink-0 shadow-inner border border-slate-700/50"
+              title="Réinitialiser"
             >
-              ⟲
+              <RotateCcw className="w-4 h-4" />
             </button>
           </div>
         </div> {/* End Row 1 */}
