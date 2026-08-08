@@ -99,7 +99,7 @@ function AmpereCircle({ radius, isZero, dirI }: { radius: number, isZero: boolea
       {/* Direction Arrows on the contour */}
       {[0, Math.PI/2, Math.PI, 3*Math.PI/2].map((ang, idx) => (
         <group key={idx} position={[radius*Math.cos(ang), radius*Math.sin(ang), 0]} rotation={[0, 0, ang + (dirI === 1 ? Math.PI/2 : -Math.PI/2)]}>
-          <mesh position={[0, 0, 0]}>
+          <mesh position={[0, 0, 0]} rotation={[0, 0, -Math.PI/2]}>
             <coneGeometry args={[0.15, 0.4, 8]} />
             <meshBasicMaterial color={color} />
           </mesh>
@@ -112,6 +112,60 @@ function AmpereCircle({ radius, isZero, dirI }: { radius: number, isZero: boolea
            C (Contour d'Ampère)
          </span>
       </Html>
+    </group>
+  );
+}
+
+function CylindricalBasis({ radius }: { radius: number }) {
+  const basisAng = Math.PI / 6;
+  const pos = new THREE.Vector3(radius * Math.cos(basisAng), radius * Math.sin(basisAng), 0);
+  
+  return (
+    <group position={[pos.x, pos.y, pos.z]}>
+      {/* Point M */}
+      <mesh>
+        <sphereGeometry args={[0.1, 16, 16]} />
+        <meshBasicMaterial color="#ffffff" />
+      </mesh>
+      <Html position={[0.2, 0.2, 0]} center>
+        <span className="text-white font-bold font-serif text-sm drop-shadow-md">M</span>
+      </Html>
+
+      {/* e_rho (Radial) */}
+      <group rotation={[0, 0, basisAng]}>
+        <Line points={[[0,0,0], [1.5, 0, 0]]} color="#ef4444" lineWidth={3} />
+        <mesh position={[1.5, 0, 0]} rotation={[0, 0, -Math.PI/2]}>
+          <coneGeometry args={[0.1, 0.3, 8]} />
+          <meshBasicMaterial color="#ef4444" />
+        </mesh>
+        <Html position={[1.8, 0, 0]} center>
+          <div className="text-red-400 font-bold italic font-serif text-sm drop-shadow-md">e<sub>ρ</sub></div>
+        </Html>
+      </group>
+
+      {/* e_phi (Tangential) */}
+      <group rotation={[0, 0, basisAng + Math.PI/2]}>
+        <Line points={[[0,0,0], [1.5, 0, 0]]} color="#10b981" lineWidth={3} />
+        <mesh position={[1.5, 0, 0]} rotation={[0, 0, -Math.PI/2]}>
+          <coneGeometry args={[0.1, 0.3, 8]} />
+          <meshBasicMaterial color="#10b981" />
+        </mesh>
+        <Html position={[1.8, 0, 0]} center>
+          <div className="text-emerald-400 font-bold italic font-serif text-sm drop-shadow-md">e<sub>φ</sub></div>
+        </Html>
+      </group>
+
+      {/* e_z (Vertical) */}
+      <group rotation={[0, -Math.PI/2, 0]}>
+        <Line points={[[0,0,0], [1.5, 0, 0]]} color="#3b82f6" lineWidth={3} />
+        <mesh position={[1.5, 0, 0]} rotation={[0, 0, -Math.PI/2]}>
+          <coneGeometry args={[0.1, 0.3, 8]} />
+          <meshBasicMaterial color="#3b82f6" />
+        </mesh>
+        <Html position={[1.8, 0.2, 0]} center>
+          <div className="text-blue-400 font-bold italic font-serif text-sm drop-shadow-md">e<sub>z</sub></div>
+        </Html>
+      </group>
     </group>
   );
 }
@@ -164,6 +218,9 @@ function ToroidalScene({ rho, R1, R2, h, planeMode, dirI }: { rho: number, R1: n
       {/* Axis Z */}
       <Line points={[[0, 0, -h-2], [0, 0, h+2]]} color="#94a3b8" lineWidth={1} dashed dashSize={0.2} gapSize={0.2} />
       <Html position={[0, 0, h+2.5]} center><span className="text-slate-400 italic">Axe z (Δ)</span></Html>
+
+      {/* Cylindrical Basis at point M on the contour */}
+      <CylindricalBasis radius={rho} />
 
       {/* Ampere Contour */}
       <AmpereCircle radius={rho} isZero={isZero} dirI={dirI} />
