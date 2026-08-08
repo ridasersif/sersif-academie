@@ -258,8 +258,8 @@ export default function Solenoid3DCanvas() {
   return (
     <div className="w-full max-w-[1000px] mx-auto flex flex-col font-sans mb-8">
       
-      <div className="w-full h-[300px] sm:h-[400px] bg-slate-950 rounded-t-2xl overflow-hidden relative border border-slate-800 border-b-0 shadow-inner">
-        <Canvas camera={{ position: [0, 0, 12], fov: 45 }}>
+      <div className="w-full h-[200px] sm:h-[280px] bg-slate-950 rounded-t-2xl overflow-hidden relative border border-slate-800 border-b-0 shadow-inner">
+        <Canvas camera={{ position: [0, 0, 16], fov: 35 }}>
           <color attach="background" args={["#020617"]} />
           <ambientLight intensity={0.5} />
           <spotLight position={[10, 20, 10]} angle={0.4} penumbra={1} intensity={2} color="#e2e8f0" />
