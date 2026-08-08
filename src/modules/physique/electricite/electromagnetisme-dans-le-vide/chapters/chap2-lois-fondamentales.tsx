@@ -9,7 +9,8 @@ import AmpereTheorem3DCanvas from "../components/AmpereTheorem3DCanvas";
 import InfiniteWire3DCanvas from "../components/InfiniteWire3DCanvas";
 import Cylinder3DCanvas from "../components/Cylinder3DCanvas";
 import CylinderSurface3DCanvas from "../components/CylinderSurface3DCanvas";
-import { Calculator, RotateCw, Layers, ChevronDown, ChevronUp, Sparkles, BookOpen, Lightbulb, ArrowRight } from "lucide-react";
+import CoaxialCable3DCanvas from "../components/CoaxialCable3DCanvas";
+import { Calculator, RotateCw, Layers, ChevronDown, ChevronUp, Sparkles, BookOpen, Lightbulb, ArrowRight, HelpCircle } from "lucide-react";
 
 /* ── Collapsible Panel Component ── */
 function CollapsibleStep({
@@ -1260,6 +1261,116 @@ export default function Chap2LoisFondamentales() {
                 </div>
               </div>
             </CollapsibleStep>
+          </div>
+        </div>
+      </section>
+
+      {/* ── APPLICATION 4 : CÂBLE COAXIAL (Concours 2025) ── */}
+      <section className="mb-12 mt-12 bg-card rounded-3xl p-6 border border-yellow-500/30 shadow-sm relative overflow-hidden">
+        {/* Décoration Concours */}
+        <div className="absolute top-0 right-0 w-32 h-32 bg-yellow-500/5 rounded-bl-full pointer-events-none" />
+        <div className="absolute -top-10 -right-10 w-40 h-40 bg-yellow-400/5 rounded-full pointer-events-none blur-xl" />
+
+        <div className="flex items-center gap-3 mb-6 relative z-10">
+          <div className="bg-yellow-500/10 p-2.5 rounded-xl border border-yellow-500/20 shadow-inner">
+            <Sparkles className="w-5 h-5 text-yellow-400" />
+          </div>
+          <div>
+            <h2 className="text-xl md:text-2xl font-black text-yellow-400 mb-1">Application 4 • Câble Coaxial</h2>
+            <p className="text-sm text-yellow-500/80 font-medium">Extrait du Concours d'Enseignement 2025</p>
+          </div>
+        </div>
+
+        <h3 className="text-2xl font-black text-foreground mb-4">Étude d'un câble coaxial infini</h3>
+        <p className="text-sm text-muted-foreground leading-relaxed mb-8">
+          Un câble coaxial est constitué de deux cylindres conducteurs infinis d'axe <LatexMath math="Oz" block={false} />.
+          Le cylindre intérieur de rayon <LatexMath math="R_1" block={false} /> est parcouru par un courant surfacique <LatexMath math="j_{s1} \vec{e_z}" block={false} /> (<LatexMath math="j_{s1} > 0" block={false} />).
+          Le cylindre extérieur de rayon <LatexMath math="R_2 > R_1" block={false} /> est parcouru par un courant de retour <LatexMath math="-j_{s2} \vec{e_z}" block={false} /> (<LatexMath math="j_{s2} > 0" block={false} />).
+        </p>
+
+        <CoaxialCable3DCanvas />
+
+        <div className="mt-8 flex flex-col gap-6 relative z-10">
+          <h3 className="text-xl font-bold text-foreground">Démonstration par le théorème d'Ampère</h3>
+          <div className="flex flex-col gap-3">
+            
+            {/* Etapes Classiques Condensées */}
+            <CollapsibleStep step={1} title="Symétries, Contour et Circulation" color="cyan">
+              <p className="text-[11px] text-muted-foreground leading-relaxed mb-3">
+                Puisque le câble possède une symétrie cylindrique parfaite, on retrouve les mêmes résultats que pour le fil et le cylindre simple :
+              </p>
+              <ul className="text-[11px] text-muted-foreground/90 space-y-2 list-disc pl-4 mb-3">
+                <li>Le champ magnétique est orthoradial : <LatexMath math="\vec{B} = B(\rho) \vec{e_\theta}" block={false} />.</li>
+                <li>Le contour d'Ampère (C) est un cercle de rayon <LatexMath math="\rho" block={false} />.</li>
+              </ul>
+              <div className="text-center overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] text-sm bg-cyan-950/40 p-3 rounded-lg border border-cyan-500/30 shadow-inner">
+                <LatexMath math="\implies \oint_{(C)} \vec{B} \cdot d\vec{l} = B(\rho) \times (2 \pi \rho)" block={false} className="text-cyan-300 font-bold" />
+              </div>
+            </CollapsibleStep>
+
+            {/* Q16 */}
+            <CollapsibleStep step={2} title="Q16. Champ magnétique à l'extérieur" color="yellow" defaultOpen={true}>
+              <div className="p-4 rounded-xl bg-yellow-500/5 border border-yellow-500/30">
+                <div className="flex items-center gap-2 mb-3">
+                  <HelpCircle className="w-4 h-4 text-yellow-400" />
+                  <span className="font-bold text-yellow-400 text-sm">Question de l'examen (Q16) :</span>
+                </div>
+                <p className="text-xs text-muted-foreground/90 mb-4">
+                  Quelle est l'expression de l'intensité du champ magnétique <strong>à l'extérieur du câble</strong> (<LatexMath math="\rho > R_2" block={false} />) ?
+                </p>
+                
+                <div className="bg-slate-900/50 p-3 rounded-lg border border-slate-700 mb-4">
+                  <div className="text-[11px] text-slate-300 mb-2">Calculons le courant enlacé pour <LatexMath math="\rho > R_2" block={false} /> :</div>
+                  <ul className="text-[10px] text-muted-foreground/80 space-y-2 list-disc pl-4 mb-3">
+                    <li>Le contour entoure le cylindre intérieur <strong>ET</strong> le cylindre extérieur.</li>
+                    <li>Courant intérieur = <LatexMath math="j_{s1} \times (2\pi R_1)" block={false} /></li>
+                    <li>Courant extérieur = <LatexMath math="- j_{s2} \times (2\pi R_2)" block={false} /></li>
+                  </ul>
+                  <div className="text-center overflow-x-auto [&::-webkit-scrollbar]:hidden text-sm bg-yellow-950/40 p-2 rounded border border-yellow-500/20">
+                    <LatexMath math="\sum I_{enl} = 2\pi R_1 j_{s1} - 2\pi R_2 j_{s2}" block={false} className="text-yellow-300" />
+                  </div>
+                </div>
+
+                <div className="text-[11px] text-slate-300 mb-2">D'après le théorème d'Ampère :</div>
+                <div className="text-center overflow-x-auto [&::-webkit-scrollbar]:hidden text-sm mb-4">
+                  <LatexMath math="B(\rho) \times (2\pi \rho) = \mu_0 (2\pi R_1 j_{s1} - 2\pi R_2 j_{s2})" block={false} />
+                </div>
+                
+                <div className="bg-emerald-500/10 border border-emerald-500/30 p-3 rounded-lg flex flex-col items-center">
+                  <span className="text-xs font-bold text-emerald-400 mb-1">Réponse B (Correcte)</span>
+                  <LatexMath math="B = \frac{\mu_0}{\rho} (j_{s1} R_1 - j_{s2} R_2)" block={false} className="text-emerald-300 font-black" />
+                </div>
+              </div>
+            </CollapsibleStep>
+
+            {/* Q17 */}
+            <CollapsibleStep step={3} title="Q17. Annulation du champ à l'extérieur" color="yellow" defaultOpen={true}>
+              <div className="p-4 rounded-xl bg-yellow-500/5 border border-yellow-500/30">
+                <div className="flex items-center gap-2 mb-3">
+                  <HelpCircle className="w-4 h-4 text-yellow-400" />
+                  <span className="font-bold text-yellow-400 text-sm">Question de l'examen (Q17) :</span>
+                </div>
+                <p className="text-xs text-muted-foreground/90 mb-4">
+                  Les câbles coaxiaux ne doivent pas avoir d'effet sur les appareils au voisinage. Quel facteur permet d'avoir un champ magnétique nul à l'extérieur ?
+                </p>
+                
+                <p className="text-[11px] text-slate-300 mb-3 leading-relaxed">
+                  Pour que le champ soit nul (<LatexMath math="B = 0" block={false} />) à l'extérieur, il faut que le <strong>courant total enlacé soit nul</strong>. 
+                  Cela signifie que le courant qui part dans le cylindre central doit être exactement compensé par le courant qui revient dans le cylindre extérieur.
+                </p>
+
+                <div className="bg-emerald-500/10 border border-emerald-500/30 p-3 rounded-lg">
+                  <span className="text-xs font-bold text-emerald-400 mb-2 block text-center">Réponse B (Correcte)</span>
+                  <p className="text-[11px] text-emerald-300/90 text-center font-medium">
+                    "La configuration en aller-retour (sens de courants opposés)"
+                  </p>
+                </div>
+                <p className="text-[10px] text-yellow-400/80 text-center mt-3 italic">
+                  C'est pour cela que les câbles d'antennes (coaxiaux) ne perturbent pas les autres appareils !
+                </p>
+              </div>
+            </CollapsibleStep>
+
           </div>
         </div>
       </section>
