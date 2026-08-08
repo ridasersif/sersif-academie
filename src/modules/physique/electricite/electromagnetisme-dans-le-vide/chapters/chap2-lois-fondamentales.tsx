@@ -12,6 +12,7 @@ import CylinderSurface3DCanvas from "../components/CylinderSurface3DCanvas";
 import CoaxialCable3DCanvas from "../components/CoaxialCable3DCanvas";
 import Solenoid3DCanvas from "../components/Solenoid3DCanvas";
 import ToroidalCoil3DCanvas from "../components/ToroidalCoil3DCanvas";
+import MagneticFieldChart from "@/components/ui/MagneticFieldChart";
 import { Calculator, RotateCw, Layers, ChevronDown, ChevronUp, Sparkles, BookOpen, Lightbulb, ArrowRight, HelpCircle } from "lucide-react";
 
 /* ── Collapsible Panel Component ── */
@@ -929,6 +930,28 @@ export default function Chap2LoisFondamentales() {
                 </p>
               </div>
             </CollapsibleStep>
+
+            {/* Etape 4: Graphique */}
+            <CollapsibleStep step={4} title="Profil du Champ Magnétique B(r)" color="blue" defaultOpen={true}>
+              <MagneticFieldChart 
+                themeColor="blue"
+                title="Décroissance du champ pour un fil infini"
+                xAxisLabel="r \text{ (Distance)}"
+                yAxisLabel="B(r)"
+                domainX={[0, 4]}
+                domainY={[0, 4]}
+                ticks={[{x: 0, label: "0"}]}
+                lines={[
+                  {
+                    color: "#60a5fa",
+                    points: Array.from({length: 100}, (_, i) => {
+                      const x = 0.1 + (3.9 * i / 99);
+                      return { x, y: 1/x }; // B ~ 1/r
+                    })
+                  }
+                ]}
+              />
+            </CollapsibleStep>
           </div>
         
       </section>
@@ -1082,6 +1105,37 @@ export default function Chap2LoisFondamentales() {
                   <div className="mt-2 text-[10px] font-medium text-teal-400/80 bg-teal-950/50 px-2 py-1 rounded">Le champ diminue en 1/ρ.</div>
                 </div>
               </div>
+            </CollapsibleStep>
+
+            {/* Etape 4: Graphique */}
+            <CollapsibleStep step={4} title="Profil du Champ Magnétique B(ρ)" color="pink" defaultOpen={true}>
+              <MagneticFieldChart 
+                themeColor="pink"
+                title="Champ d'un cylindre surfacique"
+                xAxisLabel="\rho \text{ (Distance)}"
+                yAxisLabel="B(\rho)"
+                domainX={[0, 4]}
+                domainY={[0, 3]}
+                ticks={[{x: 0, label: "0"}, {x: 1.5, label: "R"}]}
+                lines={[
+                  {
+                    color: "#f43f5e",
+                    points: [{x: 0, y: 0}, {x: 1.5, y: 0}]
+                  },
+                  {
+                    color: "#f43f5e",
+                    dashed: true,
+                    points: [{x: 1.5, y: 0}, {x: 1.5, y: 2}]
+                  },
+                  {
+                    color: "#f43f5e",
+                    points: Array.from({length: 50}, (_, i) => {
+                      const x = 1.5 + (2.5 * i / 49);
+                      return { x, y: 3/x };
+                    })
+                  }
+                ]}
+              />
             </CollapsibleStep>
           </div>
         </div>
@@ -1263,6 +1317,32 @@ export default function Chap2LoisFondamentales() {
                 </div>
               </div>
             </CollapsibleStep>
+
+            {/* Etape 4: Graphique */}
+            <CollapsibleStep step={4} title="Profil du Champ Magnétique B(ρ)" color="indigo" defaultOpen={true}>
+              <MagneticFieldChart 
+                themeColor="purple"
+                title="Champ d'un cylindre volumique"
+                xAxisLabel="\rho \text{ (Distance)}"
+                yAxisLabel="B(\rho)"
+                domainX={[0, 4]}
+                domainY={[0, 3]}
+                ticks={[{x: 0, label: "0"}, {x: 1.5, label: "R"}]}
+                lines={[
+                  {
+                    color: "#a855f7",
+                    points: [{x: 0, y: 0}, {x: 1.5, y: 2}]
+                  },
+                  {
+                    color: "#a855f7",
+                    points: Array.from({length: 50}, (_, i) => {
+                      const x = 1.5 + (2.5 * i / 49);
+                      return { x, y: 3/x };
+                    })
+                  }
+                ]}
+              />
+            </CollapsibleStep>
           </div>
         </div>
       </section>
@@ -1371,6 +1451,46 @@ export default function Chap2LoisFondamentales() {
                   C'est pour cela que les câbles d'antennes (coaxiaux) ne perturbent pas les autres appareils !
                 </p>
               </div>
+            </CollapsibleStep>
+
+            {/* Etape 4: Graphique */}
+            <CollapsibleStep step={4} title="Profil du Champ Magnétique B(ρ)" color="yellow" defaultOpen={true}>
+              <MagneticFieldChart 
+                themeColor="amber"
+                title="Champ d'un câble coaxial (modèle surfacique)"
+                xAxisLabel="\rho \text{ (Distance)}"
+                yAxisLabel="B(\rho)"
+                domainX={[0, 4]}
+                domainY={[0, 3]}
+                ticks={[{x: 0, label: "0"}, {x: 1, label: "R_1"}, {x: 2.5, label: "R_2"}]}
+                lines={[
+                  {
+                    color: "#facc15",
+                    points: [{x: 0, y: 0}, {x: 1, y: 0}]
+                  },
+                  {
+                    color: "#facc15",
+                    dashed: true,
+                    points: [{x: 1, y: 0}, {x: 1, y: 2.5}]
+                  },
+                  {
+                    color: "#facc15",
+                    points: Array.from({length: 30}, (_, i) => {
+                      const x = 1 + (1.5 * i / 29);
+                      return { x, y: 2.5/x };
+                    })
+                  },
+                  {
+                    color: "#facc15",
+                    dashed: true,
+                    points: [{x: 2.5, y: 1}, {x: 2.5, y: 0}]
+                  },
+                  {
+                    color: "#facc15",
+                    points: [{x: 2.5, y: 0}, {x: 4, y: 0}]
+                  }
+                ]}
+              />
             </CollapsibleStep>
 
           </div>
@@ -1499,6 +1619,34 @@ export default function Chap2LoisFondamentales() {
               </div>
             </CollapsibleStep>
 
+            {/* Etape 4: Graphique */}
+            <CollapsibleStep step={4} title="Profil du Champ Magnétique B(r)" color="pink" defaultOpen={true}>
+              <MagneticFieldChart 
+                themeColor="pink"
+                title="Champ d'un solénoïde infini"
+                xAxisLabel="r \text{ (Distance radiale)}"
+                yAxisLabel="B(r)"
+                domainX={[0, 4]}
+                domainY={[0, 3]}
+                ticks={[{x: 0, label: "0"}, {x: 2, label: "R"}]}
+                lines={[
+                  {
+                    color: "#f472b6",
+                    points: [{x: 0, y: 2}, {x: 2, y: 2}]
+                  },
+                  {
+                    color: "#f472b6",
+                    dashed: true,
+                    points: [{x: 2, y: 2}, {x: 2, y: 0}]
+                  },
+                  {
+                    color: "#f472b6",
+                    points: [{x: 2, y: 0}, {x: 4, y: 0}]
+                  }
+                ]}
+              />
+            </CollapsibleStep>
+
           </div>
         </div>
       </section>
@@ -1599,6 +1747,46 @@ export default function Chap2LoisFondamentales() {
                     </div>
                   </div>
               </div>
+            </CollapsibleStep>
+
+            {/* Etape 4: Graphique */}
+            <CollapsibleStep step={4} title="Profil du Champ Magnétique B(ρ)" color="amber" defaultOpen={true}>
+              <MagneticFieldChart 
+                themeColor="amber"
+                title="Champ d'une bobine torique"
+                xAxisLabel="\rho \text{ (Distance)}"
+                yAxisLabel="B(\rho)"
+                domainX={[0, 5]}
+                domainY={[0, 3]}
+                ticks={[{x: 0, label: "0"}, {x: 1.5, label: "R_1"}, {x: 3.5, label: "R_2"}]}
+                lines={[
+                  {
+                    color: "#fbbf24",
+                    points: [{x: 0, y: 0}, {x: 1.5, y: 0}]
+                  },
+                  {
+                    color: "#fbbf24",
+                    dashed: true,
+                    points: [{x: 1.5, y: 0}, {x: 1.5, y: 2.5}]
+                  },
+                  {
+                    color: "#fbbf24",
+                    points: Array.from({length: 40}, (_, i) => {
+                      const x = 1.5 + (2.0 * i / 39);
+                      return { x, y: 3.75/x };
+                    })
+                  },
+                  {
+                    color: "#fbbf24",
+                    dashed: true,
+                    points: [{x: 3.5, y: 1.07}, {x: 3.5, y: 0}]
+                  },
+                  {
+                    color: "#fbbf24",
+                    points: [{x: 3.5, y: 0}, {x: 5, y: 0}]
+                  }
+                ]}
+              />
             </CollapsibleStep>
 
           </div>
