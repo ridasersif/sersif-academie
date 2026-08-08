@@ -1406,8 +1406,8 @@ export default function Chap2LoisFondamentales() {
                 L'axe du solénoïde (Ox) est un axe de symétrie de révolution. De plus, le solénoïde étant infini, il y a invariance par translation selon Ox.
               </p>
               <ul className="text-[11px] text-muted-foreground/90 space-y-2 list-disc pl-4 mb-3">
-                <li>Le plan <LatexMath math="\Pi" block={false} /> contenant l'axe et le point M est un plan de symétrie. Donc <LatexMath math="\vec{B} \perp \Pi" block={false} />.</li>
-                <li>Le plan <LatexMath math="\Pi^*" block={false} /> perpendiculaire à l'axe passant par M est un plan d'antisymétrie. Donc <LatexMath math="\vec{B} \in \Pi^*" block={false} />.</li>
+                <li>Le plan <LatexMath math="\Pi" block={false} /> perpendiculaire à l'axe (contenant les spires) est un plan de symétrie. Donc <LatexMath math="\vec{B} \perp \Pi" block={false} />, ce qui implique que <LatexMath math="\vec{B}" block={false} /> est dirigé selon l'axe.</li>
+                <li>Tout plan <LatexMath math="\Pi^*" block={false} /> contenant l'axe est un plan d'antisymétrie. Donc <LatexMath math="\vec{B} \in \Pi^*" block={false} />.</li>
               </ul>
               <div className="text-center overflow-x-auto [&::-webkit-scrollbar]:hidden text-sm bg-cyan-950/40 p-4 rounded-xl border border-cyan-500/20 mb-4 shadow-inner">
                 <LatexMath math="\vec{B}(M) = B(\rho) \vec{e_x}" block={false} className="text-cyan-300 font-bold" />

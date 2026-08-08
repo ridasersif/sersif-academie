@@ -209,35 +209,35 @@ function SolenoidScene({ contourMode, planeMode, R, L, dirI }: { contourMode: nu
         <AmpereRectangle y1={0.8} y2={3.5} xLen={4} color="#8b5cf6" label="C'₂ (À cheval)" />
       )}
 
-      {/* Sym Plane (XY plane containing solenoid axis) => Normal is Z */}
-      {planeMode === "sym" && (
+      {/* Anti-Sym Plane (XY plane containing solenoid axis) => Normal is Z */}
+      {planeMode === "antisym" && (
         <group>
           <mesh position={[0, 0, 0]} rotation={[0, 0, 0]}>
             <planeGeometry args={[14, 10]} />
-            <meshBasicMaterial color="#3b82f6" transparent opacity={0.15} side={THREE.DoubleSide} />
+            <meshBasicMaterial color="#10b981" transparent opacity={0.15} side={THREE.DoubleSide} />
           </mesh>
-          <Line points={[[-7, 5, 0], [7, 5, 0], [7, -5, 0], [-7, -5, 0], [-7, 5, 0]]} color="#3b82f6" lineWidth={2} dashed dashSize={0.2} gapSize={0.2} />
+          <Line points={[[-7, 5, 0], [7, 5, 0], [7, -5, 0], [-7, -5, 0], [-7, 5, 0]]} color="#10b981" lineWidth={2} dashed dashSize={0.2} gapSize={0.2} />
           <Html position={[0, 4.5, 0]} center zIndexRange={[100,0]}>
-            <div className="text-blue-400 font-bold bg-slate-900/80 px-2 py-0.5 rounded text-[10px] border border-blue-500/30 backdrop-blur-md flex flex-col items-center pointer-events-none">
-              <span>Plan Π</span>
-              <span className="text-[8px] text-blue-300/80">(Symétrie)</span>
+            <div className="text-emerald-400 font-bold bg-slate-900/80 px-2 py-0.5 rounded text-[10px] border border-emerald-500/30 backdrop-blur-md flex flex-col items-center pointer-events-none">
+              <span>Plan Π*</span>
+              <span className="text-[8px] text-emerald-300/80">(Antisymétrie)</span>
             </div>
           </Html>
         </group>
       )}
 
-      {/* Anti-Sym Plane (YZ plane perpendicular to solenoid axis) => Normal is X */}
-      {planeMode === "antisym" && (
+      {/* Sym Plane (YZ plane perpendicular to solenoid axis) => Normal is X */}
+      {planeMode === "sym" && (
         <group>
           <mesh position={[0, 0, 0]} rotation={[0, Math.PI/2, 0]}>
             <planeGeometry args={[10, 10]} />
-            <meshBasicMaterial color="#10b981" transparent opacity={0.2} side={THREE.DoubleSide} />
+            <meshBasicMaterial color="#3b82f6" transparent opacity={0.2} side={THREE.DoubleSide} />
           </mesh>
-          <Line points={[[0, 5, 5], [0, 5, -5], [0, -5, -5], [0, -5, 5], [0, 5, 5]]} color="#10b981" lineWidth={2} dashed dashSize={0.2} gapSize={0.2} />
+          <Line points={[[0, 5, 5], [0, 5, -5], [0, -5, -5], [0, -5, 5], [0, 5, 5]]} color="#3b82f6" lineWidth={2} dashed dashSize={0.2} gapSize={0.2} />
           <Html position={[0, 4.5, 5]} center zIndexRange={[100,0]}>
-            <div className="text-emerald-400 font-bold bg-slate-900/80 px-2 py-0.5 rounded text-[10px] border border-emerald-500/30 backdrop-blur-md flex flex-col items-center pointer-events-none">
-              <span>Plan Π*</span>
-              <span className="text-[8px] text-emerald-300/80">(Antisymétrie)</span>
+            <div className="text-blue-400 font-bold bg-slate-900/80 px-2 py-0.5 rounded text-[10px] border border-blue-500/30 backdrop-blur-md flex flex-col items-center pointer-events-none">
+              <span>Plan Π</span>
+              <span className="text-[8px] text-blue-300/80">(Symétrie)</span>
             </div>
           </Html>
         </group>
