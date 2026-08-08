@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
-import { Canvas } from "@react-three/fiber";
+import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, Line, Html, Environment, ContactShadows, Cylinder } from "@react-three/drei";
 import * as THREE from "three";
 import LatexMath from "@/components/ui/LatexMath";
@@ -32,6 +32,42 @@ function Cross({ position }: { position: [number, number, number] }) {
       </mesh>
       <Line points={[[-0.1, -0.1, 0.01], [0.1, 0.1, 0.01]]} color="#78350f" lineWidth={3} />
       <Line points={[[-0.1, 0.1, 0.01], [0.1, -0.1, 0.01]]} color="#78350f" lineWidth={3} />
+    </group>
+  );
+}
+
+function AnimatedCurrentRing({ position, radius, color, dirI }: { position: [number, number, number], radius: number, color: string, dirI: number }) {
+  const groupRef = React.useRef<THREE.Group>(null);
+  
+  useFrame(({ clock }) => {
+    if (groupRef.current) {
+      // Rotate around local Z axis (which is global X after the PI/2 rotation on Y)
+      groupRef.current.rotation.z = clock.elapsedTime * 2.0 * dirI; 
+    }
+  });
+
+  return (
+    <group position={position} rotation={[0, Math.PI/2, 0]}>
+      <Line points={(() => {
+        const pts = [];
+        for(let j=0; j<=32; j++) pts.push(new THREE.Vector3(radius*Math.cos(j*2*Math.PI/32), radius*Math.sin(j*2*Math.PI/32), 0));
+        return pts;
+      })()} color={color} lineWidth={1} transparent opacity={0.3} />
+      
+      <group ref={groupRef}>
+        {[0, Math.PI/2, Math.PI, 3*Math.PI/2].map((angle, idx) => (
+          <group key={idx} rotation={[0, 0, angle]}>
+            <mesh position={[radius, 0, 0]}>
+              <sphereGeometry args={[0.08, 16, 16]} />
+              <meshBasicMaterial color={color} />
+            </mesh>
+            <mesh position={[radius, 0.15 * dirI, 0]} rotation={[0, 0, dirI === 1 ? Math.PI/2 : -Math.PI/2]}>
+              <coneGeometry args={[0.06, 0.2, 8]} />
+              <meshBasicMaterial color={color} />
+            </mesh>
+          </group>
+        ))}
+      </group>
     </group>
   );
 }
@@ -104,7 +140,7 @@ function AmpereRectangle({ y1, y2, xLen, color, label }: { y1: number, y2: numbe
   );
 }
 
-function SolenoidScene({ contourMode, planeMode, R, L }: { contourMode: number, planeMode: string, R: number, L: number }) {
+function SolenoidScene({ contourMode, planeMode, R, L, dirI }: { contourMode: number, planeMode: string, R: number, L: number, dirI: number }) {
   
   // Solenoid is along X axis, from -L to +L roughly
   // The dots/crosses will be at y = R and y = -R respectively.
@@ -135,16 +171,10 @@ function SolenoidScene({ contourMode, planeMode, R, L }: { contourMode: number, 
       {/* Cross section markings (Dots and Crosses) */}
       {turns.map((x, i) => (
         <React.Fragment key={i}>
-          <Dot position={[x, R, 0]} />
-          <Cross position={[x, -R, 0]} />
-          {/* Wire circles (faint) */}
-          <group position={[x, 0, 0]} rotation={[0, Math.PI/2, 0]}>
-            <Line points={(() => {
-              const pts = [];
-              for(let j=0; j<=32; j++) pts.push(new THREE.Vector3(R*Math.cos(j*2*Math.PI/32), R*Math.sin(j*2*Math.PI/32), 0));
-              return pts;
-            })()} color="#f59e0b" lineWidth={1} transparent opacity={0.3} />
-          </group>
+          {dirI === 1 ? <Dot position={[x, R, 0]} /> : <Cross position={[x, R, 0]} />}
+          {dirI === 1 ? <Cross position={[x, -R, 0]} /> : <Dot position={[x, -R, 0]} />}
+          {/* Animated Wire circles */}
+          <AnimatedCurrentRing position={[x, 0, 0]} radius={R} color="#f59e0b" dirI={dirI} />
         </React.Fragment>
       ))}
 
@@ -155,13 +185,13 @@ function SolenoidScene({ contourMode, planeMode, R, L }: { contourMode: number, 
       {/* Magnetic Field B (Inside) */}
       {B_vectors.map((pos, idx) => (
         <group key={idx} position={[pos.x, pos.y, pos.z]}>
-          <Line points={[[0,0,0], [1.5, 0, 0]]} color="#34d399" lineWidth={3} />
-          <mesh position={[1.5, 0, 0]} rotation={[0, 0, -Math.PI/2]}>
+          <Line points={[[0,0,0], [dirI * 1.5, 0, 0]]} color="#34d399" lineWidth={3} />
+          <mesh position={[dirI * 1.5, 0, 0]} rotation={[0, 0, dirI === 1 ? -Math.PI/2 : Math.PI/2]}>
             <coneGeometry args={[0.1, 0.3, 8]} />
             <meshBasicMaterial color="#34d399" />
           </mesh>
           {idx === 4 && (
-            <Html position={[0.75, 0.4, 0]} center>
+            <Html position={[0, 0.4, 0]} center>
               <div className="text-emerald-400 font-bold italic font-serif text-sm drop-shadow-md">B<sub>int</sub></div>
             </Html>
           )}
@@ -184,10 +214,11 @@ function SolenoidScene({ contourMode, planeMode, R, L }: { contourMode: number, 
         <group>
           <mesh position={[0, 0, 0]} rotation={[0, 0, 0]}>
             <planeGeometry args={[14, 10]} />
-            <meshPhysicalMaterial color="#3b82f6" transparent opacity={0.15} side={THREE.DoubleSide} metalness={0.9} roughness={0.1} />
+            <meshBasicMaterial color="#3b82f6" transparent opacity={0.15} side={THREE.DoubleSide} />
           </mesh>
+          <Line points={[[-7, 5, 0], [7, 5, 0], [7, -5, 0], [-7, -5, 0], [-7, 5, 0]]} color="#3b82f6" lineWidth={2} dashed dashSize={0.2} gapSize={0.2} />
           <Html position={[0, 4.5, 0]} center zIndexRange={[100,0]}>
-            <div className="text-blue-400 font-bold bg-slate-900/80 px-2 py-0.5 rounded text-[10px] border border-blue-500/30 backdrop-blur-md flex flex-col items-center">
+            <div className="text-blue-400 font-bold bg-slate-900/80 px-2 py-0.5 rounded text-[10px] border border-blue-500/30 backdrop-blur-md flex flex-col items-center pointer-events-none">
               <span>Plan Π</span>
               <span className="text-[8px] text-blue-300/80">(Symétrie)</span>
             </div>
@@ -200,10 +231,11 @@ function SolenoidScene({ contourMode, planeMode, R, L }: { contourMode: number, 
         <group>
           <mesh position={[0, 0, 0]} rotation={[0, Math.PI/2, 0]}>
             <planeGeometry args={[10, 10]} />
-            <meshPhysicalMaterial color="#10b981" transparent opacity={0.15} side={THREE.DoubleSide} metalness={0.9} roughness={0.1} />
+            <meshBasicMaterial color="#10b981" transparent opacity={0.2} side={THREE.DoubleSide} />
           </mesh>
-          <Html position={[0, 4.5, 0]} center zIndexRange={[100,0]}>
-            <div className="text-emerald-400 font-bold bg-slate-900/80 px-2 py-0.5 rounded text-[10px] border border-emerald-500/30 backdrop-blur-md flex flex-col items-center">
+          <Line points={[[0, 5, 5], [0, 5, -5], [0, -5, -5], [0, -5, 5], [0, 5, 5]]} color="#10b981" lineWidth={2} dashed dashSize={0.2} gapSize={0.2} />
+          <Html position={[0, 4.5, 5]} center zIndexRange={[100,0]}>
+            <div className="text-emerald-400 font-bold bg-slate-900/80 px-2 py-0.5 rounded text-[10px] border border-emerald-500/30 backdrop-blur-md flex flex-col items-center pointer-events-none">
               <span>Plan Π*</span>
               <span className="text-[8px] text-emerald-300/80">(Antisymétrie)</span>
             </div>
@@ -218,6 +250,7 @@ function SolenoidScene({ contourMode, planeMode, R, L }: { contourMode: number, 
 export default function Solenoid3DCanvas() {
   const [contourMode, setContourMode] = useState(1); // 1: In, 2: Out, 3: Straddle
   const [planeMode, setPlaneMode] = useState<"none" | "sym" | "antisym">("none");
+  const [dirI, setDirI] = useState(1);
   
   const R = 2.0;
   const L = 10.0;
@@ -235,7 +268,7 @@ export default function Solenoid3DCanvas() {
           {/* Lock rotation slightly to keep the 2D cross section view easily understandable, but allow 3D viewing */}
           <OrbitControls enableDamping dampingFactor={0.05} makeDefault minDistance={5} maxDistance={30} />
           
-          <SolenoidScene contourMode={contourMode} planeMode={planeMode} R={R} L={L} />
+          <SolenoidScene contourMode={contourMode} planeMode={planeMode} R={R} L={L} dirI={dirI} />
 
           <ContactShadows resolution={512} scale={30} blur={2} opacity={0.5} far={15} color="#000000" position={[0, -5.9, 0]} />
         </Canvas>
@@ -281,28 +314,43 @@ export default function Solenoid3DCanvas() {
             </button>
           </div>
 
-          {/* Planes */}
-          <div className="flex items-center gap-2 shrink-0">
+          {/* Planes & Direction Toggle */}
+          <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 shrink-0">
+            {/* Toggle: Current Direction */}
             <button
-              onClick={() => setPlaneMode(planeMode === "sym" ? "none" : "sym")}
+              onClick={() => setDirI(dirI === 1 ? -1 : 1)}
               className={`px-4 h-8 text-[12px] sm:text-sm rounded-lg flex items-center justify-center font-bold transition-all border ${
-                planeMode === "sym" 
-                  ? "bg-blue-500 text-white border-blue-400 shadow-[0_0_15px_rgba(59,130,246,0.5)]" 
-                  : "bg-blue-500/10 text-blue-400 border-blue-500/30 hover:bg-blue-500/20"
+                dirI === 1
+                  ? "bg-amber-500/10 text-amber-500 border-amber-500/30 hover:bg-amber-500/20"
+                  : "bg-red-500/10 text-red-500 border-red-500/30 hover:bg-red-500/20"
               }`}
             >
-              Π
+              Sens I : {dirI === 1 ? "Direct" : "Inverse"}
             </button>
-            <button
-              onClick={() => setPlaneMode(planeMode === "antisym" ? "none" : "antisym")}
-              className={`px-4 h-8 text-[12px] sm:text-sm rounded-lg flex items-center justify-center font-bold transition-all border ${
-                planeMode === "antisym" 
-                  ? "bg-emerald-500 text-white border-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.5)]" 
-                  : "bg-emerald-500/10 text-emerald-400 border-emerald-500/30 hover:bg-emerald-500/20"
-              }`}
-            >
-              Π*
-            </button>
+
+            {/* Toggle: Planes */}
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setPlaneMode(planeMode === "sym" ? "none" : "sym")}
+                className={`px-4 h-8 text-[12px] sm:text-sm rounded-lg flex items-center justify-center font-bold transition-all border ${
+                  planeMode === "sym" 
+                    ? "bg-blue-500 text-white border-blue-400 shadow-[0_0_15px_rgba(59,130,246,0.5)]" 
+                    : "bg-blue-500/10 text-blue-400 border-blue-500/30 hover:bg-blue-500/20"
+                }`}
+              >
+                Π
+              </button>
+              <button
+                onClick={() => setPlaneMode(planeMode === "antisym" ? "none" : "antisym")}
+                className={`px-4 h-8 text-[12px] sm:text-sm rounded-lg flex items-center justify-center font-bold transition-all border ${
+                  planeMode === "antisym" 
+                    ? "bg-emerald-500 text-white border-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.5)]" 
+                    : "bg-emerald-500/10 text-emerald-400 border-emerald-500/30 hover:bg-emerald-500/20"
+                }`}
+              >
+                Π*
+              </button>
+            </div>
           </div>
 
         </div>
