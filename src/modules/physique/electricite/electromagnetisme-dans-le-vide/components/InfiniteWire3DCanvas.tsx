@@ -148,28 +148,28 @@ function InfiniteWireScene({ rho, dirI, planeMode }: { rho: number, dirI: number
         {/* Local Basis */}
         <group>
           {/* ur (along +X) */}
-          <Line points={[[0,0,0], [1.2, 0, 0]]} color="#e2e8f0" lineWidth={2} />
+          <Line points={[[0,0,0], [1.2, 0, 0]]} color="#c084fc" lineWidth={2} />
           <mesh position={[1.2, 0, 0]} rotation={[0, 0, -Math.PI/2]}>
             <coneGeometry args={[0.08, 0.2, 16]} />
-            <meshBasicMaterial color="#e2e8f0" toneMapped={false} />
+            <meshBasicMaterial color="#c084fc" toneMapped={false} />
           </mesh>
-          <Html position={[1.5, 0, 0]} center zIndexRange={[100,0]}><div className="text-white text-[12px] italic font-bold pointer-events-none drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">e_ρ</div></Html>
+          <Html position={[1.5, 0, 0]} center zIndexRange={[100,0]}><div className="text-purple-300 text-[12px] italic font-bold pointer-events-none drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">e<sub>ρ</sub></div></Html>
 
           {/* uz (along +Y) */}
-          <Line points={[[0,0,0], [0, 1.2, 0]]} color="#e2e8f0" lineWidth={2} />
+          <Line points={[[0,0,0], [0, 1.2, 0]]} color="#c084fc" lineWidth={2} />
           <mesh position={[0, 1.2, 0]}>
             <coneGeometry args={[0.08, 0.2, 16]} />
-            <meshBasicMaterial color="#e2e8f0" toneMapped={false} />
+            <meshBasicMaterial color="#c084fc" toneMapped={false} />
           </mesh>
-          <Html position={[0, 1.5, 0]} center zIndexRange={[100,0]}><div className="text-white text-[12px] italic font-bold pointer-events-none drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">e_z</div></Html>
+          <Html position={[0, 1.5, 0]} center zIndexRange={[100,0]}><div className="text-purple-300 text-[12px] italic font-bold pointer-events-none drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">e<sub>z</sub></div></Html>
 
           {/* utheta (along -Z if right hand rule around Y) */}
-          <Line points={[[0,0,0], [0, 0, -1.2]]} color="#e2e8f0" lineWidth={2} dashed dashSize={0.1} gapSize={0.05} />
+          <Line points={[[0,0,0], [0, 0, -1.2]]} color="#c084fc" lineWidth={2} dashed dashSize={0.1} gapSize={0.05} />
           <mesh position={[0, 0, -1.2]} rotation={[Math.PI/2, 0, 0]}>
             <coneGeometry args={[0.08, 0.2, 16]} />
-            <meshBasicMaterial color="#e2e8f0" toneMapped={false} />
+            <meshBasicMaterial color="#c084fc" toneMapped={false} />
           </mesh>
-          <Html position={[0, 0.2, -1.5]} center zIndexRange={[100,0]}><div className="text-white text-[12px] italic font-bold pointer-events-none drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">e_θ</div></Html>
+          <Html position={[0, 0.2, -1.5]} center zIndexRange={[100,0]}><div className="text-purple-300 text-[12px] italic font-bold pointer-events-none drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">e<sub>θ</sub></div></Html>
         </group>
 
         {/* Magnetic Field Vector B */}
