@@ -48,29 +48,31 @@ export default function AmpereTheorem3DCanvas() {
         
         {/* Top Right HUD */}
         <div className="absolute top-2 right-2 z-10 flex flex-col items-end gap-1 pointer-events-none">
-           <div className="bg-slate-950/80 backdrop-blur-md border border-slate-700/50 p-2 sm:p-3 rounded-xl shadow-lg flex flex-col gap-1.5 min-w-[120px]">
-             <div className="flex items-center gap-1.5 border-b border-slate-700/50 pb-1 mb-0.5">
+           <div className="bg-slate-950/80 backdrop-blur-md border border-slate-700/50 p-2 sm:p-3 rounded-lg sm:rounded-xl shadow-lg flex flex-col gap-1.5 min-w-[100px] sm:min-w-[120px]">
+             <div className="hidden sm:flex items-center gap-1.5 border-b border-slate-700/50 pb-1 mb-0.5">
                 <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                <span className="text-[9px] sm:text-[10px] font-black text-slate-300 uppercase tracking-widest">
+                <span className="text-[10px] font-black text-slate-300 uppercase tracking-widest">
                   Bilan Enlacé
                 </span>
              </div>
              
-             {wires.map(w => (
-               <div key={w.id} className={`flex items-center justify-between text-[9px] sm:text-[10px] font-mono transition-opacity duration-300 ${w.enabled ? (w.isInside ? 'text-slate-200' : 'text-slate-500 opacity-60') : 'text-slate-700 opacity-40 line-through'}`}>
-                 <div className="flex items-center gap-1.5">
-                   <div className="w-1 h-1 rounded-full" style={{ backgroundColor: w.color }} />
-                   <span>{w.id}</span>
+             <div className="hidden sm:flex flex-col gap-1.5">
+               {wires.map(w => (
+                 <div key={w.id} className={`flex items-center justify-between text-[10px] font-mono transition-opacity duration-300 ${w.enabled ? (w.isInside ? 'text-slate-200' : 'text-slate-500 opacity-60') : 'text-slate-700 opacity-40 line-through'}`}>
+                   <div className="flex items-center gap-1.5">
+                     <div className="w-1 h-1 rounded-full" style={{ backgroundColor: w.color }} />
+                     <span>{w.id}</span>
+                   </div>
+                   <span className={w.enabled ? (w.dir > 0 ? "text-emerald-400 font-bold" : "text-red-400 font-bold") : "text-slate-700"}>
+                     {w.enabled ? (w.dir > 0 ? "+I" : "-I") : "0"}
+                   </span>
                  </div>
-                 <span className={w.enabled ? (w.dir > 0 ? "text-emerald-400 font-bold" : "text-red-400 font-bold") : "text-slate-700"}>
-                   {w.enabled ? (w.dir > 0 ? "+I" : "-I") : "0"}
-                 </span>
-               </div>
-             ))}
+               ))}
+             </div>
              
-             <div className="flex items-center justify-between text-xs font-mono font-black mt-1 pt-1.5 border-t border-slate-700/50">
-               <span className="text-amber-400 text-[10px]">Σ I_enl =</span>
-               <div className={`px-1.5 py-0.5 rounded text-black text-[10px] ${iEnl > 0 ? "bg-emerald-400" : iEnl < 0 ? "bg-red-400" : "bg-slate-400"}`}>
+             <div className="flex items-center justify-between text-xs font-mono font-black sm:mt-1 sm:pt-1.5 sm:border-t border-slate-700/50 gap-2">
+               <span className="text-amber-400 text-[10px] sm:text-[11px]">Σ I_enl =</span>
+               <div className={`px-1.5 py-0.5 rounded text-black text-[10px] sm:text-[11px] ${iEnl > 0 ? "bg-emerald-400" : iEnl < 0 ? "bg-red-400" : "bg-slate-400"}`}>
                  {iEnl > 0 ? `+${iEnl}I` : iEnl < 0 ? `${iEnl}I` : "0"}
                </div>
              </div>
@@ -112,12 +114,6 @@ export default function AmpereTheorem3DCanvas() {
              
              {/* Contour glowing edge */}
              <Line points={contourPoints} color="#a855f7" lineWidth={3} dashed dashSize={0.3} gapSize={0.2} />
-             
-             <Html position={[2.5, 0.3, 0]} center zIndexRange={[100, 0]}>
-               <div className="text-purple-200 font-serif italic text-[11px] font-bold bg-purple-900/60 backdrop-blur-md px-2 py-0.5 rounded border border-purple-400/50 whitespace-nowrap shadow-[0_0_15px_rgba(168,85,247,0.4)] pointer-events-none">
-                 Contour (C)
-               </div>
-             </Html>
 
              {/* Orientation du contour (dl) */}
              <group position={[0, 0, 2.5]}>
@@ -204,23 +200,23 @@ export default function AmpereTheorem3DCanvas() {
          </div>
 
          {/* Grid des contrôles plus compact */}
-         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">
+         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-1.5 sm:gap-2">
             {wires.map((w) => (
-              <div key={w.id} className="flex flex-col gap-1.5 p-2 rounded-lg bg-slate-900/80 border border-slate-800/80 shadow-sm">
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-black uppercase tracking-wider flex items-center gap-1" style={{ color: w.color }}>
+              <div key={w.id} className="flex flex-col gap-1 p-1.5 sm:p-2 rounded-lg bg-slate-900/80 border border-slate-800/80 shadow-sm">
+                <div className="flex items-center justify-between px-0.5">
+                  <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-wider flex items-center gap-1" style={{ color: w.color }}>
                     <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: w.enabled ? w.color : '#475569', boxShadow: w.enabled ? `0 0 5px ${w.color}` : 'none' }} />
                     {w.id}
                   </span>
-                  <span className={`text-[8px] font-bold px-1 py-0.5 rounded uppercase tracking-wider ${w.isInside ? 'bg-slate-800 text-slate-400' : 'bg-slate-800/50 border-dashed border border-slate-700 text-slate-500'}`}>
+                  <span className={`text-[7px] sm:text-[8px] font-bold px-1 py-0.5 rounded uppercase tracking-wider ${w.isInside ? 'bg-slate-800 text-slate-400' : 'bg-slate-800/50 border-dashed border border-slate-700 text-slate-500'}`}>
                     {w.isInside ? 'Int' : 'Ext'}
                   </span>
                 </div>
                 
-                <div className="flex gap-1 h-6 mt-0.5">
+                <div className="flex gap-1 h-5 sm:h-6 mt-0.5">
                   <button 
                     onClick={() => w.setE(!w.enabled)} 
-                    className={`flex-1 flex items-center justify-center text-[9px] font-black rounded transition-all ${w.enabled ? "text-white shadow-sm" : "bg-slate-800 text-slate-500 hover:bg-slate-700"}`}
+                    className={`flex-1 flex items-center justify-center text-[8px] sm:text-[9px] font-black rounded transition-all ${w.enabled ? "text-white shadow-sm" : "bg-slate-800 text-slate-500 hover:bg-slate-700"}`}
                     style={{ backgroundColor: w.enabled ? w.color : undefined }}
                   >
                     {w.enabled ? "ON" : "OFF"}
@@ -228,9 +224,9 @@ export default function AmpereTheorem3DCanvas() {
                   <button 
                     disabled={!w.enabled} 
                     onClick={() => w.setD(w.dir * -1)} 
-                    className={`flex-none w-7 sm:w-8 flex items-center justify-center text-sm font-black rounded transition-all ${w.enabled ? "bg-slate-800 text-white hover:bg-slate-700 border border-slate-700" : "bg-slate-900 text-slate-700 cursor-not-allowed border border-slate-800"}`}
+                    className={`flex-none w-6 sm:w-8 flex items-center justify-center font-black rounded transition-all ${w.enabled ? "bg-slate-800 text-white hover:bg-slate-700 border border-slate-700" : "bg-slate-900 text-slate-700 cursor-not-allowed border border-slate-800"}`}
                   >
-                    {w.dir > 0 ? <ArrowUp className="w-3.5 h-3.5" /> : <ArrowDown className="w-3.5 h-3.5" />}
+                    {w.dir > 0 ? <ArrowUp className="w-3 h-3" /> : <ArrowDown className="w-3 h-3" />}
                   </button>
                 </div>
               </div>
