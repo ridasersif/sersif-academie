@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import LatexMath from "@/components/ui/LatexMath";
 import BiotSavart3DCanvas from "../components/BiotSavart3DCanvas";
 import BiotSavartSegment3DCanvas from "../components/BiotSavartSegment3DCanvas";
+import BiotSavartSpire3DCanvas from "../components/BiotSavartSpire3DCanvas";
 import AmpereTheorem3DCanvas from "../components/AmpereTheorem3DCanvas";
 import { Calculator, RotateCw, Layers, ChevronDown, ChevronUp, Sparkles, BookOpen, Lightbulb, ArrowRight } from "lucide-react";
 
@@ -372,6 +373,98 @@ export default function Chap2LoisFondamentales() {
           <p className="text-[10px] sm:text-[11px] text-cyan-200/70 leading-relaxed">
             <strong className="text-cyan-300">Remarque :</strong> Le champ décroît en <LatexMath math="1/d" /> et s&apos;enroule autour du fil (direction <LatexMath math="\vec{e_\theta}" />). Les lignes de champ sont des cercles concentriques centrés sur le fil — exactement ce que nous avons vu au Chapitre 1 !
           </p>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════ */}
+      {/* APPLICATION 2: SPIRE CIRCULAIRE             */}
+      {/* ═══════════════════════════════════════════ */}
+      <section className="bg-card/90 border border-emerald-500/10 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 shadow-sm w-full max-w-full overflow-x-hidden relative overflow-hidden mt-8">
+        <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-emerald-500/5 to-transparent rounded-bl-full pointer-events-none" />
+
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-extrabold mb-3">
+          <Lightbulb className="w-3.5 h-3.5" />
+          <span>Application 2 • Champ créé par une Spire Circulaire</span>
+        </div>
+
+        <h2 className="text-xl sm:text-2xl font-black mb-3 sm:mb-4 text-foreground leading-tight">
+          Champ sur l'axe d'une spire
+        </h2>
+
+        <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed mb-6 font-medium">
+          On considère une spire circulaire de rayon <LatexMath math="R" /> parcourue par un courant <LatexMath math="I" />. On cherche le champ magnétique <LatexMath math="\vec{B}(M)" /> en un point <LatexMath math="M" /> situé sur l'axe de la spire à une distance <LatexMath math="x" /> du centre.
+        </p>
+
+        {/* 3D Visualisation */}
+        <h3 className="text-sm font-bold text-foreground/80 dark:text-slate-300 mb-3 flex items-center gap-2">
+          <Sparkles className="w-4 h-4 text-emerald-400" />
+          Visualisation 3D Interactive
+        </h3>
+        <p className="text-[11px] text-muted-foreground mb-4">
+          Déplacez les curseurs pour modifier le rayon R de la spire et la distance x du point M. Observez le vecteur champ élémentaire <LatexMath math="d\vec{B}" /> et la résultante <LatexMath math="\vec{B}(M)" /> sur l'axe.
+        </p>
+
+        <div className="mb-8 w-full flex justify-center">
+          <BiotSavartSpire3DCanvas />
+        </div>
+
+        {/* Démonstration Step-by-Step */}
+        <h3 className="text-sm font-bold text-foreground/80 dark:text-slate-300 mb-4 flex items-center gap-2">
+          <BookOpen className="w-4 h-4 text-emerald-400" />
+          Démonstration complète
+        </h3>
+
+        <div className="space-y-3">
+          {/* Étape 1: Symétries */}
+          <CollapsibleStep step={1} title="Étude de symétrie sur l'axe" color="cyan" defaultOpen={true}>
+            <p className="text-[11px] text-muted-foreground leading-relaxed">
+              L'axe (Ox) est l'intersection d'une infinité de plans de symétrie pour la distribution de courant (tout plan contenant l'axe coupe la spire en deux demi-cercles parcourus par des courants symétriques).
+            </p>
+            <div className="mt-2 p-3 rounded-lg bg-cyan-500/5 border border-cyan-500/20 text-center">
+              <span className="text-cyan-400 text-xs">
+                Le champ <LatexMath math="\vec{B}(M)" /> est donc obligatoirement porté par l'axe de révolution : <LatexMath math="\vec{B}(M) = B(x) \vec{i}" />
+              </span>
+            </div>
+          </CollapsibleStep>
+
+          {/* Étape 2: Biot-Savart */}
+          <CollapsibleStep step={2} title="Loi de Biot-Savart et projection" color="pink">
+            <p className="text-[11px] text-muted-foreground leading-relaxed">
+              Pour un élément <LatexMath math="dl" />, le champ <LatexMath math="d\vec{B}" /> est perpendiculaire à <LatexMath math="\vec{r}" />. Par symétrie, seules les composantes sur l'axe (Ox) s'additionnent (les composantes radiales s'annulent deux à deux).
+            </p>
+            <div className="mt-2 p-3 rounded-lg bg-pink-500/5 border border-pink-500/20 text-center">
+              <span className="text-pink-400 text-xs">
+                <LatexMath math="dB_x = ||d\vec{B}|| \sin\alpha = \frac{\mu_0 I dl}{4\pi r^2} \sin\alpha" />
+              </span>
+            </div>
+          </CollapsibleStep>
+
+          {/* Étape 3: Intégration */}
+          <CollapsibleStep step={3} title="Intégration sur la spire" color="emerald" defaultOpen={true}>
+            <p className="text-[11px] text-muted-foreground leading-relaxed mb-2">
+              Puisque <LatexMath math="r" /> et <LatexMath math="\alpha" /> sont constants pour tous les points de la spire, l'intégration de <LatexMath math="dl" /> sur le cercle donne le périmètre <LatexMath math="2\pi R" />.
+            </p>
+            <div className="p-3 rounded-lg bg-muted dark:bg-slate-950/60 border border-border/60 text-center text-xs overflow-x-auto mb-3">
+              <span className="text-emerald-400">
+                <LatexMath math="B(x) = \int \frac{\mu_0 I}{4\pi r^2} \sin\alpha \, dl = \frac{\mu_0 I}{4\pi r^2} \sin\alpha \times 2\pi R" />
+              </span>
+            </div>
+            
+            <p className="text-[11px] text-muted-foreground leading-relaxed mb-2 text-center">
+              En utilisant <LatexMath math="\sin\alpha = \frac{R}{r}" /> et <LatexMath math="r^2 = R^2 + x^2" />, on obtient :
+            </p>
+
+            <div className="relative p-4 sm:p-5 rounded-xl bg-gradient-to-r from-emerald-500/10 via-cyan-500/10 to-teal-500/10 border-2 border-emerald-500/30 shadow-[0_0_20px_rgba(16,185,129,0.1)] mt-3">
+              <div className="text-center py-2 overflow-visible space-y-3">
+                <span className="text-emerald-300 text-lg sm:text-xl font-bold block">
+                  <LatexMath math="\vec{B}(M) = \frac{\mu_0 I}{2R} \sin^3\alpha \, \vec{i}" />
+                </span>
+                <span className="text-cyan-300 text-sm font-bold block">
+                  <LatexMath math="\text{ou} \quad \vec{B}(M) = \frac{\mu_0 I R^2}{2(R^2 + x^2)^{3/2}} \, \vec{i}" />
+                </span>
+              </div>
+            </div>
+          </CollapsibleStep>
         </div>
       </section>
 
