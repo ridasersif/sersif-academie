@@ -46,38 +46,7 @@ export default function AmpereTheorem3DCanvas() {
     <div className="w-full max-w-[900px] mx-auto flex flex-col shadow-2xl rounded-2xl overflow-hidden border border-slate-800">
       <div className="w-full h-[280px] sm:h-[350px] bg-[#050b14] relative">
         
-        {/* Top Right HUD */}
-        <div className="absolute top-2 right-2 z-10 flex flex-col items-end gap-1 pointer-events-none">
-           <div className="bg-slate-950/80 backdrop-blur-md border border-slate-700/50 p-2 sm:p-3 rounded-lg sm:rounded-xl shadow-lg flex flex-col gap-1.5 min-w-[100px] sm:min-w-[120px]">
-             <div className="hidden sm:flex items-center gap-1.5 border-b border-slate-700/50 pb-1 mb-0.5">
-                <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                <span className="text-[10px] font-black text-slate-300 uppercase tracking-widest">
-                  Bilan Enlacé
-                </span>
-             </div>
-             
-             <div className="hidden sm:flex flex-col gap-1.5">
-               {wires.map(w => (
-                 <div key={w.id} className={`flex items-center justify-between text-[10px] font-mono transition-opacity duration-300 ${w.enabled ? (w.isInside ? 'text-slate-200' : 'text-slate-500 opacity-60') : 'text-slate-700 opacity-40 line-through'}`}>
-                   <div className="flex items-center gap-1.5">
-                     <div className="w-1 h-1 rounded-full" style={{ backgroundColor: w.color }} />
-                     <span>{w.id}</span>
-                   </div>
-                   <span className={w.enabled ? (w.dir > 0 ? "text-emerald-400 font-bold" : "text-red-400 font-bold") : "text-slate-700"}>
-                     {w.enabled ? (w.dir > 0 ? "+I" : "-I") : "0"}
-                   </span>
-                 </div>
-               ))}
-             </div>
-             
-             <div className="flex items-center justify-between text-xs font-mono font-black sm:mt-1 sm:pt-1.5 sm:border-t border-slate-700/50 gap-2">
-               <span className="text-amber-400 text-[10px] sm:text-[11px]">Σ I_enl =</span>
-               <div className={`px-1.5 py-0.5 rounded text-black text-[10px] sm:text-[11px] ${iEnl > 0 ? "bg-emerald-400" : iEnl < 0 ? "bg-red-400" : "bg-slate-400"}`}>
-                 {iEnl > 0 ? `+${iEnl}I` : iEnl < 0 ? `${iEnl}I` : "0"}
-               </div>
-             </div>
-           </div>
-        </div>
+
 
         {/* Formule HUD Bottom Left */}
         <div className="absolute bottom-2 left-2 z-10 pointer-events-none hidden sm:flex">
@@ -179,10 +148,19 @@ export default function AmpereTheorem3DCanvas() {
       <div className="w-full bg-[#0a1122] border-t border-slate-800 p-3 sm:p-4 flex flex-col gap-3">
          
          <div className="flex items-center justify-between border-b border-slate-800 pb-2">
-           <h3 className="text-[10px] sm:text-xs font-black text-slate-300 uppercase tracking-widest flex items-center gap-1.5">
+           <h3 className="text-[10px] sm:text-xs font-black text-slate-300 uppercase tracking-widest flex items-center gap-1.5 hidden sm:flex">
              <Power className="w-3.5 h-3.5 text-emerald-400" />
              Contrôle
            </h3>
+           
+           {/* Résultat Bilan */}
+           <div className="flex items-center gap-2 sm:gap-3 bg-slate-900/50 border border-slate-700/50 px-3 py-1 rounded-full shadow-inner mx-auto sm:mx-0">
+             <span className="text-amber-400 text-[10px] sm:text-xs font-mono font-black tracking-wider">Σ I_enl =</span>
+             <div className={`px-2 py-0.5 rounded text-black text-[10px] sm:text-xs font-mono font-black ${iEnl > 0 ? "bg-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.4)]" : iEnl < 0 ? "bg-red-400 shadow-[0_0_10px_rgba(248,113,113,0.4)]" : "bg-slate-400"}`}>
+               {iEnl > 0 ? `+${iEnl}I` : iEnl < 0 ? `${iEnl}I` : "0"}
+             </div>
+           </div>
+
            <button 
               onClick={() => {
                 setI1Enabled(true); setI1Dir(1);
@@ -192,7 +170,7 @@ export default function AmpereTheorem3DCanvas() {
                 setI5Enabled(false); setI5Dir(-1);
               }}
               title="Réinitialiser"
-              className="flex items-center gap-1 px-2 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded transition-colors border border-slate-700 text-[9px] font-black uppercase tracking-wider"
+              className="flex items-center gap-1 px-2 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded transition-colors border border-slate-700 text-[9px] font-black uppercase tracking-wider shrink-0"
             >
               <RotateCcw className="w-3 h-3" />
               Reset
