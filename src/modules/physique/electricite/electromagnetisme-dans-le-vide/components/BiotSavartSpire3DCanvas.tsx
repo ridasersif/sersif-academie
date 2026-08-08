@@ -89,6 +89,23 @@ const SpireScene = ({ radius, distance, currentDirection, planeMode }: { radius:
   const endDb = mVec.clone().add(dbDir.clone().multiplyScalar(dbMag));
   const endB = mVec.clone().add(new THREE.Vector3(currentDirection, 0, 0).multiplyScalar(bMag));
 
+  // Alpha angle
+  const thetaStartAlpha = Math.atan2(radius, -distance);
+  const thetaLengthAlpha = Math.PI - thetaStartAlpha;
+  const midAlpha = thetaStartAlpha + thetaLengthAlpha / 2;
+  const alphaLabelPos = new THREE.Vector3(distance + 1.2 * Math.cos(midAlpha), 1.2 * Math.sin(midAlpha), 0);
+
+  // Theta angle
+  const angleDb = Math.atan2(dbDir.y, dbDir.x);
+  let thetaStartTheta = 0;
+  let thetaLengthTheta = angleDb;
+  if (angleDb < 0) {
+     thetaStartTheta = angleDb;
+     thetaLengthTheta = -angleDb;
+  }
+  const midTheta = thetaStartTheta + thetaLengthTheta / 2;
+  const thetaLabelPos = new THREE.Vector3(distance + 1.2 * Math.cos(midTheta), 1.2 * Math.sin(midTheta), 0);
+
   return (
           <group ref={groupRef} scale={[0.01, 0.01, 0.01]}>
             {/* Grid and Axes */}
@@ -127,10 +144,47 @@ const SpireScene = ({ radius, distance, currentDirection, planeMode }: { radius:
               <meshBasicMaterial color="#34d399" />
             </Sphere>
 
+            {/* Point O (Center) */}
+            <Sphere args={[0.1, 16, 16]} position={[0, 0, 0]}>
+              <meshBasicMaterial color="#94a3b8" />
+            </Sphere>
+            <Html position={[0, -0.4, 0]} center className="pointer-events-none">
+              <span className="text-slate-400 font-bold italic text-sm">O</span>
+            </Html>
+
+            {/* Unit Vector i */}
+            <Arrow3D 
+              start={new THREE.Vector3(0, 0, 0)} 
+              dir={new THREE.Vector3(1, 0, 0)} 
+              length={1.5} 
+              color="#e2e8f0" 
+              thickness={1.5} 
+              headSize={0.15} 
+            />
+            <Html position={[1.5, 0.3, 0]} center className="pointer-events-none">
+              <span className="text-slate-200 font-black italic text-xs drop-shadow-md">i</span>
+            </Html>
+
             {/* Point P (Top of spire) */}
             <Sphere args={[0.1, 16, 16]} position={pVec}>
               <meshBasicMaterial color="#f87171" />
             </Sphere>
+            <Html position={[0, radius + 0.4, 0]} center className="pointer-events-none">
+              <span className="text-red-400 font-bold italic text-sm drop-shadow-md">P</span>
+            </Html>
+
+            {/* Radius R */}
+            <Line
+              points={[new THREE.Vector3(0, 0, 0), pVec]}
+              color="#fb923c"
+              lineWidth={1.5}
+              dashed
+              dashSize={0.2}
+              gapSize={0.1}
+            />
+            <Html position={[0, radius / 2, 0]} center className="pointer-events-none pr-4">
+              <span className="text-orange-400 font-bold italic text-sm drop-shadow-md">R</span>
+            </Html>
 
             {/* Vector PM (r) */}
             <Arrow3D 
@@ -142,6 +196,34 @@ const SpireScene = ({ radius, distance, currentDirection, planeMode }: { radius:
               headSize={0.2}
               dashed={true}
             />
+            
+            {/* Angle Alpha */}
+            <mesh position={mVec}>
+               <circleGeometry args={[0.8, 32, thetaStartAlpha, thetaLengthAlpha]} />
+               <meshBasicMaterial color="#a78bfa" transparent opacity={0.25} side={THREE.DoubleSide} depthWrite={false} />
+            </mesh>
+            <Line
+              points={[...Array(33)].map((_, i) => new THREE.Vector3(distance + 0.8 * Math.cos(thetaStartAlpha + (i/32)*thetaLengthAlpha), 0.8 * Math.sin(thetaStartAlpha + (i/32)*thetaLengthAlpha), 0))}
+              color="#a78bfa"
+              lineWidth={2}
+            />
+            <Html position={alphaLabelPos} center className="pointer-events-none">
+              <span className="text-purple-400 font-black italic text-sm drop-shadow-md">α</span>
+            </Html>
+
+            {/* Angle Theta */}
+            <mesh position={mVec}>
+               <circleGeometry args={[0.9, 32, thetaStartTheta, thetaLengthTheta]} />
+               <meshBasicMaterial color="#f472b6" transparent opacity={0.25} side={THREE.DoubleSide} depthWrite={false} />
+            </mesh>
+            <Line
+              points={[...Array(33)].map((_, i) => new THREE.Vector3(distance + 0.9 * Math.cos(thetaStartTheta + (i/32)*thetaLengthTheta), 0.9 * Math.sin(thetaStartTheta + (i/32)*thetaLengthTheta), 0))}
+              color="#f472b6"
+              lineWidth={2}
+            />
+            <Html position={thetaLabelPos} center className="pointer-events-none">
+              <span className="text-pink-400 font-black italic text-sm drop-shadow-md">θ</span>
+            </Html>
 
             {/* dB vector at M */}
             <Arrow3D 
