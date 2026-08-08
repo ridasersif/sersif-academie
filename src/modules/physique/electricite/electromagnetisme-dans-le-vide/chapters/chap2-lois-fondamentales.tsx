@@ -10,6 +10,7 @@ import InfiniteWire3DCanvas from "../components/InfiniteWire3DCanvas";
 import Cylinder3DCanvas from "../components/Cylinder3DCanvas";
 import CylinderSurface3DCanvas from "../components/CylinderSurface3DCanvas";
 import CoaxialCable3DCanvas from "../components/CoaxialCable3DCanvas";
+import Solenoid3DCanvas from "../components/Solenoid3DCanvas";
 import { Calculator, RotateCw, Layers, ChevronDown, ChevronUp, Sparkles, BookOpen, Lightbulb, ArrowRight, HelpCircle } from "lucide-react";
 
 /* ── Collapsible Panel Component ── */
@@ -1368,6 +1369,132 @@ export default function Chap2LoisFondamentales() {
                 <p className="text-[10px] text-yellow-400/80 text-center mt-3 italic">
                   C'est pour cela que les câbles d'antennes (coaxiaux) ne perturbent pas les autres appareils !
                 </p>
+              </div>
+            </CollapsibleStep>
+
+          </div>
+        </div>
+      </section>
+
+      {/* ── APPLICATION 5 : LE SOLÉNOÏDE INFINI ── */}
+      <section className="mb-12 mt-12 bg-card rounded-3xl p-6 border border-border shadow-sm">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="bg-pink-500/10 p-2.5 rounded-xl border border-pink-500/20 shadow-inner">
+            <Sparkles className="w-5 h-5 text-pink-400" />
+          </div>
+          <div>
+            <h2 className="text-xl md:text-2xl font-black text-pink-400 mb-1">Application 5 • Le Solénoïde Infini</h2>
+            <p className="text-sm text-muted-foreground font-medium">Bobine infiniment longue</p>
+          </div>
+        </div>
+
+        <h3 className="text-2xl font-black text-foreground mb-4">Étude d'un solénoïde infini</h3>
+        <p className="text-sm text-muted-foreground leading-relaxed mb-8">
+          Un solénoïde infini est constitué d'un enroulement jointif d'un fil conducteur parcouru par un courant <LatexMath math="I" block={false} />. 
+          Il est modélisé par une distribution de courant surfacique cylindrique. On note <LatexMath math="n" block={false} /> le nombre de spires par unité de longueur.
+        </p>
+
+        <Solenoid3DCanvas />
+
+        <div className="mt-8 flex flex-col gap-6">
+          <h3 className="text-xl font-bold text-foreground">Démonstration par le théorème d'Ampère</h3>
+          <div className="flex flex-col gap-3">
+            
+            {/* Etape 1 */}
+            <CollapsibleStep step={1} title="Symétries et Invariances" color="cyan">
+              <p className="text-[11px] text-muted-foreground leading-relaxed mb-4">
+                L'axe du solénoïde (Ox) est un axe de symétrie de révolution. De plus, le solénoïde étant infini, il y a invariance par translation selon Ox.
+              </p>
+              <ul className="text-[11px] text-muted-foreground/90 space-y-2 list-disc pl-4 mb-3">
+                <li>Le plan <LatexMath math="\Pi" block={false} /> contenant l'axe et le point M est un plan de symétrie. Donc <LatexMath math="\vec{B} \perp \Pi" block={false} />.</li>
+                <li>Le plan <LatexMath math="\Pi^*" block={false} /> perpendiculaire à l'axe passant par M est un plan d'antisymétrie. Donc <LatexMath math="\vec{B} \in \Pi^*" block={false} />.</li>
+              </ul>
+              <div className="text-center overflow-x-auto [&::-webkit-scrollbar]:hidden text-sm bg-cyan-950/40 p-4 rounded-xl border border-cyan-500/20 mb-4 shadow-inner">
+                <LatexMath math="\vec{B}(M) = B(\rho) \vec{e_x}" block={false} className="text-cyan-300 font-bold" />
+              </div>
+            </CollapsibleStep>
+
+            {/* Etape 2 */}
+            <CollapsibleStep step={2} title="Contour C'₁ : Le champ est uniforme à l'intérieur" color="pink" defaultOpen={true}>
+              <p className="text-[11px] text-muted-foreground leading-relaxed mb-3">
+                On choisit un contour rectangulaire ABCD à l'intérieur du solénoïde (rayons y₁ et y₂ {'<'} R).
+              </p>
+              <div className="text-center overflow-x-auto [&::-webkit-scrollbar]:hidden text-[10px] bg-slate-950/40 p-3 rounded-lg border border-slate-800 mb-3 text-slate-300">
+                <LatexMath math="\oint_{(C'_1)} \vec{B} \cdot d\vec{l} = \int_{AB} \vec{B} \cdot d\vec{l} + \int_{BC} \vec{B} \cdot d\vec{l} + \int_{CD} \vec{B} \cdot d\vec{l} + \int_{DA} \vec{B} \cdot d\vec{l} = 0" block={false} />
+              </div>
+              <ul className="text-[10px] text-muted-foreground/90 space-y-2 list-disc pl-4 mb-3">
+                <li><LatexMath math="\vec{B} \perp d\vec{l}" block={false} /> sur BC et DA, donc l'intégrale est nulle.</li>
+                <li>Le contour n'enlace aucun courant (<LatexMath math="\sum I_{enl} = 0" block={false} />).</li>
+              </ul>
+              <div className="text-center overflow-x-auto [&::-webkit-scrollbar]:hidden text-sm bg-pink-950/40 p-2 rounded border border-pink-500/20 mb-3">
+                <LatexMath math="B(y_1)L - B(y_2)L = 0 \implies B(y_1) = B(y_2)" block={false} className="text-pink-300 font-bold" />
+              </div>
+              <p className="text-[11px] text-pink-300/90 text-center bg-pink-950/50 p-2 rounded-lg border border-pink-500/20">
+                Le champ magnétique est <strong>uniforme</strong> (constant) à l'intérieur du solénoïde infini.
+              </p>
+            </CollapsibleStep>
+
+            {/* Etape 3 */}
+            <CollapsibleStep step={3} title="Contour C'₃ : Le champ est nul à l'extérieur" color="blue" defaultOpen={true}>
+              <p className="text-[11px] text-muted-foreground leading-relaxed mb-3">
+                On choisit un contour rectangulaire ABCD à l'extérieur du solénoïde (rayons y₁ et y₂ {'>'} R).
+              </p>
+              <div className="text-center overflow-x-auto [&::-webkit-scrollbar]:hidden text-[10px] bg-slate-950/40 p-3 rounded-lg border border-slate-800 mb-3 text-slate-300">
+                 <LatexMath math="B(y_1)L - B(y_2)L = 0 \implies B(y_1) = B(y_2) = B_{ext}" block={false} />
+              </div>
+              <p className="text-[11px] text-muted-foreground/90 mb-3 text-center">
+                Le champ est uniforme à l'extérieur. Or, le champ magnétique doit s'annuler à l'infini (très loin de la source).
+              </p>
+              <div className="text-center overflow-x-auto [&::-webkit-scrollbar]:hidden text-sm bg-blue-950/40 p-2 rounded-lg border border-blue-500/20">
+                <LatexMath math="B_{ext} = 0" block={false} className="text-blue-300 font-bold" />
+              </div>
+            </CollapsibleStep>
+
+            {/* Etape 4 */}
+            <CollapsibleStep step={4} title="Contour C'₂ (À cheval) : Calcul du champ intérieur" color="purple" defaultOpen={true}>
+              <p className="text-[11px] text-muted-foreground leading-relaxed mb-3">
+                On choisit un contour rectangulaire ABCD à cheval (y₁ {'<'} R et y₂ {'>'} R).
+              </p>
+              <div className="bg-slate-900/50 p-3 rounded-lg border border-slate-700 mb-4">
+                  <div className="text-[11px] text-slate-300 mb-2 font-bold">1. Circulation du champ :</div>
+                  <div className="text-center overflow-x-auto [&::-webkit-scrollbar]:hidden text-[10px] bg-slate-950/40 p-2 rounded border border-slate-800 mb-3 text-slate-300">
+                     <LatexMath math="\oint_{(C'_2)} \vec{B} \cdot d\vec{l} = B_{int} L - B_{ext} L = B_{int} L" block={false} />
+                  </div>
+                  <div className="text-[11px] text-slate-300 mb-2 font-bold">2. Courant enlacé :</div>
+                  <p className="text-[10px] text-muted-foreground/90 mb-2">
+                    Le contour enlace les spires sur une longueur L. Le nombre de spires est <LatexMath math="n \times L" block={false} />.
+                  </p>
+                  <div className="text-center overflow-x-auto [&::-webkit-scrollbar]:hidden text-[10px] bg-slate-950/40 p-2 rounded border border-slate-800 text-slate-300">
+                     <LatexMath math="\sum I_{enl} = (n \times L) \times I = n L I" block={false} />
+                  </div>
+              </div>
+              <div className="text-center overflow-x-auto [&::-webkit-scrollbar]:hidden text-sm bg-purple-950/40 p-3 rounded-xl border border-purple-500/30 shadow-inner">
+                <LatexMath math="B_{int} L = \mu_0 (n L I)" block={false} className="text-purple-300 font-bold" />
+              </div>
+            </CollapsibleStep>
+
+            {/* Etape 5 */}
+            <CollapsibleStep step={5} title="Expression Finale" color="emerald" defaultOpen={true}>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Intérieur Result */}
+                <div className="p-4 rounded-xl bg-gradient-to-br from-emerald-500/10 to-teal-500/5 border border-emerald-500/30 shadow-inner flex flex-col items-center justify-center relative mt-2">
+                  <div className="absolute -top-3 bg-emerald-900 text-emerald-300 text-[10px] font-bold px-3 py-1 rounded-full border border-emerald-500/50 uppercase tracking-wider">
+                    À l'intérieur (y {'<'} R)
+                  </div>
+                  <span className="text-emerald-300 text-lg sm:text-xl font-black drop-shadow-md mt-4 mb-2">
+                    <LatexMath math="\vec{B}_{int} = \mu_0 n I \vec{e_x}" block={false} />
+                  </span>
+                </div>
+
+                {/* Extérieur Result */}
+                <div className="p-4 rounded-xl bg-gradient-to-br from-teal-500/10 to-emerald-500/5 border border-teal-500/30 shadow-inner flex flex-col items-center justify-center relative mt-2">
+                  <div className="absolute -top-3 bg-teal-900 text-teal-300 text-[10px] font-bold px-3 py-1 rounded-full border border-teal-500/50 uppercase tracking-wider">
+                    À l'extérieur (y {'>'} R)
+                  </div>
+                  <span className="text-teal-300 text-lg sm:text-xl font-black drop-shadow-md mt-4 mb-2">
+                    <LatexMath math="\vec{B}_{ext} = \vec{0}" block={false} />
+                  </span>
+                </div>
               </div>
             </CollapsibleStep>
 
