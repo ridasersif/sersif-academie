@@ -11,6 +11,7 @@ import Cylinder3DCanvas from "../components/Cylinder3DCanvas";
 import CylinderSurface3DCanvas from "../components/CylinderSurface3DCanvas";
 import CoaxialCable3DCanvas from "../components/CoaxialCable3DCanvas";
 import Solenoid3DCanvas from "../components/Solenoid3DCanvas";
+import ToroidalCoil3DCanvas from "../components/ToroidalCoil3DCanvas";
 import { Calculator, RotateCw, Layers, ChevronDown, ChevronUp, Sparkles, BookOpen, Lightbulb, ArrowRight, HelpCircle } from "lucide-react";
 
 /* ── Collapsible Panel Component ── */
@@ -1495,6 +1496,108 @@ export default function Chap2LoisFondamentales() {
                     <LatexMath math="\vec{B}_{ext} = \vec{0}" block={false} />
                   </span>
                 </div>
+              </div>
+            </CollapsibleStep>
+
+          </div>
+        </div>
+      </section>
+
+      {/* ── APPLICATION 6 : LA BOBINE TORIQUE ── */}
+      <section className="mb-12 mt-12 bg-card rounded-3xl p-6 border border-border shadow-sm">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="bg-amber-500/10 p-2.5 rounded-xl border border-amber-500/20 shadow-inner">
+            <RotateCw className="w-5 h-5 text-amber-400" />
+          </div>
+          <div>
+            <h2 className="text-xl md:text-2xl font-black text-amber-400 mb-1">Application 6 • La Bobine Torique</h2>
+            <p className="text-sm text-muted-foreground font-medium">Confinement du champ magnétique</p>
+          </div>
+        </div>
+
+        <h3 className="text-2xl font-black text-foreground mb-4">Étude d'une bobine torique de section carrée</h3>
+        <p className="text-sm text-muted-foreground leading-relaxed mb-8">
+          Une bobine torique est engendrée par un câble enroulé autour d'un axe <LatexMath math="\Delta" block={false} /> (l'axe Oz). 
+          Elle comporte <LatexMath math="N" block={false} /> spires régulièrement distribuées. On étudie le champ dans le système de coordonnées cylindriques <LatexMath math="(\rho, \phi, z)" block={false} />.
+        </p>
+
+        <ToroidalCoil3DCanvas />
+
+        <div className="mt-8 flex flex-col gap-6">
+          <h3 className="text-xl font-bold text-foreground">Résolution de l'Exercice</h3>
+          <div className="flex flex-col gap-3">
+            
+            {/* Etape 1 */}
+            <CollapsibleStep step={1} title="Q1. Symétries, Antisymétries et Direction" color="blue" defaultOpen={true}>
+              <ul className="text-[11px] text-muted-foreground/90 space-y-2 list-disc pl-4 mb-3">
+                <li>
+                  <strong className="text-blue-300">Plan de Symétrie (Méridien) :</strong> Tout plan <LatexMath math="\Pi" block={false} /> contenant l'axe <LatexMath math="\Delta" block={false} /> (Oz) coupe les spires de façon symétrique (le sens du courant est conservé par réflexion). 
+                  Puisque <LatexMath math="\vec{B}" block={false} /> est un pseudo-vecteur, il est perpendiculaire aux plans de symétrie : <LatexMath math="\vec{B} \perp \Pi" block={false} />.
+                </li>
+                <li>
+                  <strong className="text-emerald-300">Plan d'Antisymétrie (Équatorial) :</strong> Le plan <LatexMath math="\Pi^*" block={false} /> défini par <LatexMath math="z=0" block={false} /> (au milieu de la bobine) est un plan d'antisymétrie car la réflexion inverse le sens vertical du courant. 
+                  Donc <LatexMath math="\vec{B} \in \Pi^*" block={false} />.
+                </li>
+              </ul>
+              <p className="text-[11px] text-muted-foreground/90 mb-3">
+                Conclusion : Le champ est entièrement confiné dans le plan équatorial et est perpendiculaire aux plans méridiens. Il n'a qu'une seule composante :
+              </p>
+              <div className="text-center overflow-x-auto [&::-webkit-scrollbar]:hidden text-sm bg-blue-950/40 p-4 rounded-xl border border-blue-500/20 mb-4 shadow-inner">
+                <LatexMath math="\vec{B} = B_\phi \vec{e_\phi}" block={false} className="text-blue-300 font-bold" />
+              </div>
+            </CollapsibleStep>
+
+            {/* Etape 2 */}
+            <CollapsibleStep step={2} title="Q2. Invariances et Variables" color="cyan" defaultOpen={true}>
+              <p className="text-[11px] text-muted-foreground leading-relaxed mb-3">
+                Étudions les invariances de la densité de courant :
+              </p>
+              <ul className="text-[11px] text-muted-foreground/90 space-y-2 list-disc pl-4 mb-3">
+                <li>
+                  <strong className="text-cyan-300">Invariance par rotation :</strong> La distribution des spires est régulière tout autour de l'axe Oz. Le problème est invariant par rotation d'angle <LatexMath math="\phi" block={false} />. La variable <LatexMath math="\phi" block={false} /> disparaît.
+                </li>
+                <li>
+                  <strong className="text-red-300">Pas d'invariance par translation :</strong> Contrairement au solénoïde infini ou au fil infini, le tore est de dimension finie selon l'axe Oz (hauteur <LatexMath math="h" block={false} />). Le champ dépend donc de <LatexMath math="z" block={false} />.
+                </li>
+              </ul>
+              <div className="text-center overflow-x-auto [&::-webkit-scrollbar]:hidden text-[11px] bg-cyan-950/40 p-3 rounded-lg border border-cyan-500/20">
+                L'expression du champ magnétique devient : <LatexMath math="\vec{B}(M) = B_\phi(\rho, z) \vec{e_\phi}" block={false} className="text-cyan-300 font-bold ml-2" />
+              </div>
+            </CollapsibleStep>
+
+            {/* Etape 3 */}
+            <CollapsibleStep step={3} title="Application du Théorème d'Ampère" color="amber" defaultOpen={true}>
+              <p className="text-[11px] text-muted-foreground leading-relaxed mb-3">
+                On choisit comme contour <LatexMath math="(C)" block={false} /> un cercle de rayon <LatexMath math="\rho" block={false} /> centré sur Oz (qui suit les lignes de champ).
+              </p>
+              <div className="bg-slate-900/50 p-3 rounded-lg border border-slate-700 mb-4">
+                  <div className="text-[11px] text-slate-300 mb-2 font-bold">1. Circulation de B :</div>
+                  <div className="text-center overflow-x-auto [&::-webkit-scrollbar]:hidden text-[10px] bg-slate-950/40 p-2 rounded border border-slate-800 mb-3 text-slate-300">
+                     <LatexMath math="\oint_{(C)} \vec{B} \cdot d\vec{l} = B_\phi(\rho, z) \times (2\pi\rho)" block={false} />
+                  </div>
+                  
+                  <div className="text-[11px] text-slate-300 mb-2 font-bold">2. Étude des 3 zones :</div>
+                  
+                  <div className="flex flex-col gap-2">
+                    {/* Zone 1 */}
+                    <div className="bg-red-950/30 p-2 rounded border border-red-500/20">
+                      <p className="text-[10px] text-red-300 font-bold mb-1">Zone 1 : Trou central (<LatexMath math="\rho < R_1" block={false} />)</p>
+                      <p className="text-[10px] text-muted-foreground">Le contour n'enlace aucun courant. <LatexMath math="I_{enl} = 0 \implies B_\phi = 0" block={false} />.</p>
+                    </div>
+                    {/* Zone 2 */}
+                    <div className="bg-emerald-950/30 p-2 rounded border border-emerald-500/20">
+                      <p className="text-[10px] text-emerald-300 font-bold mb-1">Zone 2 : À l'intérieur de la bobine (<LatexMath math="R_1 < \rho < R_2" block={false} />)</p>
+                      <p className="text-[10px] text-muted-foreground">Le contour enlace les <LatexMath math="N" block={false} /> branches intérieures des spires. <LatexMath math="I_{enl} = N \times I" block={false} />.</p>
+                      <div className="text-center mt-1">
+                        <LatexMath math="B_\phi \times 2\pi\rho = \mu_0 N I \implies B_\phi = \frac{\mu_0 N I}{2\pi\rho}" block={false} className="text-[10px] text-emerald-400" />
+                      </div>
+                    </div>
+                    {/* Zone 3 */}
+                    <div className="bg-red-950/30 p-2 rounded border border-red-500/20">
+                      <p className="text-[10px] text-red-300 font-bold mb-1">Zone 3 : À l'extérieur (<LatexMath math="\rho > R_2" block={false} />)</p>
+                      <p className="text-[10px] text-muted-foreground">Le contour enlace <LatexMath math="N" block={false} /> courants montants et <LatexMath math="N" block={false} /> courants descendants. <LatexMath math="I_{enl} = NI - NI = 0 \implies B_\phi = 0" block={false} />.</p>
+                    </div>
+                  </div>
               </div>
             </CollapsibleStep>
 
