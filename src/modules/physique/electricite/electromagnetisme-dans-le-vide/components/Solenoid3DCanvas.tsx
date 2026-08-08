@@ -130,12 +130,7 @@ function AmpereRectangle({ y1, y2, xLen, color, label }: { y1: number, y2: numbe
         <span className="text-white font-bold drop-shadow-md text-xs">D</span>
       </Html>
       
-      {/* Contour Label */}
-      <Html position={[0, Math.max(y1, y2) + 0.6, 0]} center>
-         <span className="text-white font-bold bg-slate-900/80 px-2 py-1 border border-slate-700 rounded-md text-xs whitespace-nowrap">
-           Contour {label}
-         </span>
-      </Html>
+      {/* Contour Label Removed for mobile clarity */}
     </group>
   );
 }

@@ -106,12 +106,7 @@ function AmpereCircle({ radius, isZero, dirI }: { radius: number, isZero: boolea
         </group>
       ))}
 
-      {/* Label */}
-      <Html position={[radius + 0.3, 0, 0]} center>
-         <span className="text-white font-bold bg-slate-900/80 px-2 py-1 border border-slate-700 rounded-md text-[10px] whitespace-nowrap">
-           C (Contour d'Ampère)
-         </span>
-      </Html>
+      {/* Label Removed for mobile clarity */}
     </group>
   );
 }
@@ -170,6 +165,17 @@ function CylindricalBasis({ radius }: { radius: number }) {
   );
 }
 
+function CircleLine({ radius, z, color }: { radius: number, z: number, color: string }) {
+  const pts = useMemo(() => {
+    const arr = [];
+    for(let i=0; i<=64; i++) {
+      arr.push(new THREE.Vector3(radius*Math.cos(i*2*Math.PI/64), radius*Math.sin(i*2*Math.PI/64), z));
+    }
+    return arr;
+  }, [radius, z]);
+  return <Line points={pts} color={color} lineWidth={2.0} transparent opacity={0.6} />;
+}
+
 function ToroidalScene({ rho, R1, R2, h, planeMode, dirI }: { rho: number, R1: number, R2: number, h: number, planeMode: string, dirI: number }) {
   
   const numSpires = 32;
@@ -191,24 +197,30 @@ function ToroidalScene({ rho, R1, R2, h, planeMode, dirI }: { rho: number, R1: n
         {/* Inner Wall */}
         <mesh>
           <cylinderGeometry args={[R1, R1, h, 64, 1, true]} />
-          <meshPhysicalMaterial color="#34d399" metalness={0.2} roughness={0.1} transparent opacity={0.15} side={THREE.DoubleSide} />
+          <meshPhysicalMaterial color="#64748b" metalness={0.2} roughness={0.1} transparent opacity={0.4} side={THREE.DoubleSide} />
         </mesh>
         {/* Outer Wall */}
         <mesh>
           <cylinderGeometry args={[R2, R2, h, 64, 1, true]} />
-          <meshPhysicalMaterial color="#34d399" metalness={0.2} roughness={0.1} transparent opacity={0.15} side={THREE.DoubleSide} />
+          <meshPhysicalMaterial color="#64748b" metalness={0.2} roughness={0.1} transparent opacity={0.4} side={THREE.DoubleSide} />
         </mesh>
         {/* Top Lid */}
         <mesh position={[0, h/2, 0]} rotation={[Math.PI/2, 0, 0]}>
           <ringGeometry args={[R1, R2, 64]} />
-          <meshPhysicalMaterial color="#34d399" metalness={0.2} roughness={0.1} transparent opacity={0.15} side={THREE.DoubleSide} />
+          <meshPhysicalMaterial color="#64748b" metalness={0.2} roughness={0.1} transparent opacity={0.4} side={THREE.DoubleSide} />
         </mesh>
         {/* Bottom Lid */}
         <mesh position={[0, -h/2, 0]} rotation={[-Math.PI/2, 0, 0]}>
           <ringGeometry args={[R1, R2, 64]} />
-          <meshPhysicalMaterial color="#34d399" metalness={0.2} roughness={0.1} transparent opacity={0.15} side={THREE.DoubleSide} />
+          <meshPhysicalMaterial color="#64748b" metalness={0.2} roughness={0.1} transparent opacity={0.4} side={THREE.DoubleSide} />
         </mesh>
       </group>
+
+      {/* Edges of the square torus */}
+      <CircleLine radius={R1} z={h/2} color="#64748b" />
+      <CircleLine radius={R1} z={-h/2} color="#64748b" />
+      <CircleLine radius={R2} z={h/2} color="#64748b" />
+      <CircleLine radius={R2} z={-h/2} color="#64748b" />
 
       {/* The Spires */}
       {spires.map((ang, i) => (
