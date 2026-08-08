@@ -416,52 +416,165 @@ export default function Chap2LoisFondamentales() {
 
         <div className="space-y-3">
           {/* Étape 1: Symétries */}
-          <CollapsibleStep step={1} title="Étude de symétrie sur l'axe" color="cyan" defaultOpen={true}>
-            <p className="text-[11px] text-muted-foreground leading-relaxed">
-              L'axe (Ox) est l'intersection d'une infinité de plans de symétrie pour la distribution de courant (tout plan contenant l'axe coupe la spire en deux demi-cercles parcourus par des courants symétriques).
+          <CollapsibleStep step={1} title="Étude de symétrie et Invariance" color="cyan" defaultOpen={true}>
+            <p className="text-[11px] text-muted-foreground leading-relaxed mb-3">
+              Avant de calculer le champ magnétique, on détermine sa direction à l'aide des règles de symétrie et d'invariance.
             </p>
-            <div className="mt-2 p-3 rounded-lg bg-cyan-500/5 border border-cyan-500/20 text-center">
-              <span className="text-cyan-400 text-xs">
-                Le champ <LatexMath math="\vec{B}(M)" /> est donc obligatoirement porté par l'axe de révolution : <LatexMath math="\vec{B}(M) = B(x) \vec{i}" />
-              </span>
+            <div className="flex flex-col gap-3 mt-2 p-3 rounded-lg bg-cyan-500/5 border border-cyan-500/20">
+              <div className="text-cyan-400 text-xs">
+                <span className="font-bold text-cyan-300">1. Symétries : </span>
+                Tout plan contenant l'axe <LatexMath math="(Ox)" block={false} /> coupe la spire en deux parties identiques parcourues par des courants dans des sens opposés. Ce sont donc des plans d'antisymétrie pour la distribution de courant.
+                <br /><br />
+                <span className="bg-cyan-500/10 p-1.5 rounded font-bold">
+                  On sait que : <LatexMath math="M \in \text{Plan d'antisymétrie} \implies \vec{B}(M) \in \text{Plan d'antisymétrie}" block={false} />
+                </span>
+                <br /><br />
+                Puisque <LatexMath math="\vec{B}(M)" block={false} /> doit appartenir à tous les plans contenant l'axe, il est obligatoirement porté par cet axe : 
+                <div className="text-center mt-2">
+                  <LatexMath math="\implies \vec{B}(M) = B \, \vec{i}" block={false} />
+                </div>
+              </div>
+              <div className="text-cyan-400 text-xs mt-2 border-t border-cyan-500/20 pt-3">
+                <span className="font-bold text-cyan-300">2. Invariances : </span>
+                Le système est invariant par rotation autour de l'axe <LatexMath math="(Ox)" block={false} />. Les variables <LatexMath math="r" block={false} /> et <LatexMath math="\alpha" block={false} /> dépendent uniquement de la distance <LatexMath math="x" block={false} /> du point <LatexMath math="M" block={false} /> au centre de la spire.
+                <br /><br />
+                <span className="bg-cyan-500/10 p-1.5 rounded font-bold">
+                  <LatexMath math="\implies \vec{B}(M) = B(x) \, \vec{i}" block={false} />
+                </span>
+              </div>
             </div>
           </CollapsibleStep>
 
           {/* Étape 2: Biot-Savart */}
           <CollapsibleStep step={2} title="Loi de Biot-Savart et projection" color="pink">
-            <p className="text-[11px] text-muted-foreground leading-relaxed">
-              Pour un élément <LatexMath math="dl" />, le champ <LatexMath math="d\vec{B}" /> est perpendiculaire à <LatexMath math="\vec{r}" />. Par symétrie, seules les composantes sur l'axe (Ox) s'additionnent (les composantes radiales s'annulent deux à deux).
+            <p className="text-[11px] text-muted-foreground leading-relaxed mb-3">
+              On considère un élément de longueur infinitésimal <LatexMath math="d\vec{l}" block={false} /> sur la spire. Le point <LatexMath math="M" block={false} /> est repéré par le vecteur unitaire <LatexMath math="\vec{u}" block={false} /> dirigé de la source vers <LatexMath math="M" block={false} />.
             </p>
-            <div className="mt-2 p-3 rounded-lg bg-pink-500/5 border border-pink-500/20 text-center">
-              <span className="text-pink-400 text-xs">
-                <LatexMath math="dB_x = ||d\vec{B}|| \sin\alpha = \frac{\mu_0 I dl}{4\pi r^2} \sin\alpha" />
-              </span>
+            <div className="mt-2 p-3 rounded-lg bg-pink-500/5 border border-pink-500/20 text-xs flex flex-col gap-4 text-pink-300">
+              <div>
+                <span className="font-bold text-pink-400 block mb-2">On applique la loi de Biot-Savart :</span>
+                <div className="text-center">
+                  <LatexMath math="d\vec{B}(M) = \frac{\mu_0 I}{4\pi} \frac{d\vec{l} \wedge \vec{u}}{r^2}" block={false} />
+                </div>
+              </div>
+              
+              <div className="border-l-2 border-pink-500/30 pl-3">
+                <span className="block mb-1">Puisque <LatexMath math="d\vec{l}" block={false} /> est tangent à la spire et <LatexMath math="\vec{u}" block={false} /> est dans le plan contenant l'axe, ils sont perpendiculaires. On a donc :</span>
+                <div className="text-center my-2">
+                  <LatexMath math="\|d\vec{l} \wedge \vec{u}\| = dl \sin\left(\frac{\pi}{2}\right) = dl \times 1 = dl" block={false} />
+                </div>
+                <span className="block mt-2">D'où la norme du champ élémentaire :</span>
+                <div className="text-center mt-1">
+                  <LatexMath math="dB = \frac{\mu_0 I \, dl}{4\pi r^2}" block={false} />
+                </div>
+              </div>
+
+              <div>
+                <span className="font-bold text-pink-400 block mb-2">Projection sur l'axe (Ox) :</span>
+                D'après l'étude de symétrie, seule la composante <LatexMath math="dB_x" block={false} /> portée par <LatexMath math="\vec{i}" block={false} /> ne s'annule pas lors de l'intégration globale.
+                <br /><br />
+                Le vecteur <LatexMath math="d\vec{B}" block={false} /> étant perpendiculaire à <LatexMath math="\vec{u}" block={false} /> (propriété du produit vectoriel), il fait un angle <LatexMath math="\theta = \frac{\pi}{2} - \alpha" block={false} /> avec l'axe <LatexMath math="(Ox)" block={false} />.
+                <br /><br />
+                <span className="bg-pink-500/10 p-2 rounded block text-center font-bold">
+                   <LatexMath math="dB_x = dB \cos(\theta) = dB \cos\left(\frac{\pi}{2} - \alpha\right) = dB \sin(\alpha)" block={false} />
+                   <br className="my-2" />
+                   <LatexMath math="\implies dB_x = \frac{\mu_0 I \sin(\alpha)}{4\pi r^2} dl" block={false} />
+                </span>
+              </div>
             </div>
           </CollapsibleStep>
 
           {/* Étape 3: Intégration */}
           <CollapsibleStep step={3} title="Intégration sur la spire" color="emerald" defaultOpen={true}>
-            <p className="text-[11px] text-muted-foreground leading-relaxed mb-2">
-              Puisque <LatexMath math="r" /> et <LatexMath math="\alpha" /> sont constants pour tous les points de la spire, l'intégration de <LatexMath math="dl" /> sur le cercle donne le périmètre <LatexMath math="2\pi R" />.
+            <p className="text-[11px] text-muted-foreground leading-relaxed mb-3">
+              Le champ total est la somme (intégrale) de toutes les contributions infinitésimales <LatexMath math="dB_x" block={false} /> le long de la spire fermée.
             </p>
-            <div className="p-3 rounded-lg bg-muted dark:bg-slate-950/60 border border-border/60 text-center text-xs overflow-x-auto mb-3">
-              <span className="text-emerald-400">
-                <LatexMath math="B(x) = \int \frac{\mu_0 I}{4\pi r^2} \sin\alpha \, dl = \frac{\mu_0 I}{4\pi r^2} \sin\alpha \times 2\pi R" />
-              </span>
+            <div className="p-4 rounded-lg bg-emerald-500/5 border border-emerald-500/20 text-xs flex flex-col gap-4 text-emerald-300">
+              <div>
+                <span className="block mb-2">On intègre l'expression précédente sur toute la boucle :</span>
+                <div className="text-center">
+                  <LatexMath math="B(x) = \int_{\text{spire}} dB_x = \int_{\text{spire}} \frac{\mu_0 I \sin(\alpha)}{4\pi r^2} dl" block={false} />
+                </div>
+              </div>
+
+              <div className="border-l-2 border-emerald-500/30 pl-3">
+                <span className="font-bold text-emerald-400 block mb-1">Constantes d'intégration :</span>
+                Pour un point <LatexMath math="M" block={false} /> fixé sur l'axe, la distance <LatexMath math="r" block={false} /> et l'angle <LatexMath math="\alpha" block={false} /> sont les mêmes pour tous les points de la spire. Ils peuvent donc sortir de l'intégrale :
+                <div className="text-center mt-2">
+                  <LatexMath math="\implies B(x) = \frac{\mu_0 I \sin(\alpha)}{4\pi r^2} \int_{\text{spire}} dl" block={false} />
+                </div>
+              </div>
+
+              <div>
+                <span className="font-bold text-emerald-400 block mb-1">Calcul du périmètre :</span>
+                On exprime un élément de longueur d'arc <LatexMath math="dl = R \, d\xi" block={false} /> où <LatexMath math="\xi" block={false} /> varie de <LatexMath math="0" block={false} /> à <LatexMath math="2\pi" block={false} /> :
+                <div className="text-center my-2">
+                  <LatexMath math="\int_{\text{spire}} dl = \int_0^{2\pi} R \, d\xi = R \left[\xi\right]_0^{2\pi} = 2\pi R" block={false} />
+                </div>
+              </div>
+
+              <div className="bg-emerald-500/10 p-3 rounded block text-center font-bold">
+                 <span className="block mb-2 text-emerald-400 text-[10px] uppercase">Ce qui nous donne le premier résultat :</span>
+                 <LatexMath math="\implies B(x) = \frac{\mu_0 I \sin(\alpha)}{4\pi r^2} \times 2\pi R = \frac{\mu_0 I R \sin(\alpha)}{2 r^2}" block={false} />
+              </div>
             </div>
             
-            <p className="text-[11px] text-muted-foreground leading-relaxed mb-2 text-center">
-              En utilisant <LatexMath math="\sin\alpha = \frac{R}{r}" /> et <LatexMath math="r^2 = R^2 + x^2" />, on obtient :
+            <p className="text-[11px] text-muted-foreground leading-relaxed my-3 text-center">
+              Pour des raisons pratiques, on préfère exprimer le champ uniquement en fonction de l'angle <LatexMath math="\alpha" block={false} />, ou uniquement en fonction de la distance <LatexMath math="x" block={false} />. Pour cela, on utilise les relations trigonométriques du triangle rectangle sur l'axe :
             </p>
 
-            <div className="relative p-4 sm:p-5 rounded-xl bg-gradient-to-r from-emerald-500/10 via-cyan-500/10 to-teal-500/10 border-2 border-emerald-500/30 shadow-[0_0_20px_rgba(16,185,129,0.1)] mt-3">
-              <div className="text-center py-2 overflow-visible space-y-3">
-                <span className="text-emerald-300 text-lg sm:text-xl font-bold block">
-                  <LatexMath math="\vec{B}(M) = \frac{\mu_0 I}{2R} \sin^3\alpha \, \vec{i}" />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+              <div className="p-4 rounded-xl bg-gradient-to-br from-emerald-500/10 to-teal-500/10 border-2 border-emerald-500/30 text-center flex flex-col gap-2 shadow-inner justify-between">
+                <div>
+                  <span className="text-emerald-400 font-bold mb-2 block border-b border-emerald-500/20 pb-2">En fonction de l'angle <LatexMath math="\alpha" block={false} /></span>
+                  <span className="text-emerald-300 text-[11px] block mb-2">On a <LatexMath math="\sin(\alpha) = \frac{R}{r} \iff r^2 = \frac{R^2}{\sin^2(\alpha)}" block={false} /></span>
+                  <span className="text-emerald-300 text-[11px] mb-2 block">On remplace <LatexMath math="r^2" block={false} /> dans l'expression précédente :</span>
+                </div>
+                <span className="text-emerald-300 text-[15px] font-bold block bg-emerald-950/50 py-3 rounded">
+                  <LatexMath math="\vec{B}(M) = \frac{\mu_0 I}{2R} \sin^3(\alpha) \, \vec{i}" block={false} />
                 </span>
-                <span className="text-cyan-300 text-sm font-bold block">
-                  <LatexMath math="\text{ou} \quad \vec{B}(M) = \frac{\mu_0 I R^2}{2(R^2 + x^2)^{3/2}} \, \vec{i}" />
+              </div>
+              <div className="p-4 rounded-xl bg-gradient-to-br from-cyan-500/10 to-blue-500/10 border-2 border-cyan-500/30 text-center flex flex-col gap-2 shadow-inner justify-between">
+                <div>
+                  <span className="text-cyan-400 font-bold mb-2 block border-b border-cyan-500/20 pb-2">En fonction de la distance <LatexMath math="x" block={false} /></span>
+                  <span className="text-cyan-300 text-[11px] block mb-2">On a <LatexMath math="r = \sqrt{R^2 + x^2}" block={false} /> et <LatexMath math="\sin(\alpha) = \frac{R}{\sqrt{R^2 + x^2}}" block={false} /></span>
+                  <span className="text-cyan-300 text-[11px] mb-2 block">On remplace <LatexMath math="r" block={false} /> et <LatexMath math="\sin(\alpha)" block={false} /> :</span>
+                </div>
+                <span className="text-cyan-300 text-[15px] sm:text-[17px] font-bold block bg-cyan-950/50 py-3 rounded">
+                  <LatexMath math="\vec{B}(M) = \frac{\mu_0 I R^2}{2(R^2 + x^2)^{3/2}} \, \vec{i}" block={false} />
                 </span>
+              </div>
+            </div>
+          </CollapsibleStep>
+
+          {/* Étape 4: Limites */}
+          <CollapsibleStep step={4} title="Cas Particuliers et Limites" color="amber">
+            <p className="text-[11px] text-muted-foreground leading-relaxed mb-3">
+              On peut vérifier la cohérence de notre formule en étudiant les valeurs du champ aux points particuliers (au centre et à l'infini).
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+              <div className="p-4 rounded-lg bg-amber-500/5 border border-amber-500/20 flex flex-col gap-3">
+                <h4 className="text-amber-500 font-bold text-xs uppercase border-b border-amber-500/20 pb-2">1. Champ au centre de la spire</h4>
+                <div className="text-amber-400 text-xs flex flex-col gap-2">
+                   <span>Au centre <LatexMath math="O" block={false} />, la distance <LatexMath math="x = 0" block={false} /> (ce qui correspond à un angle <LatexMath math="\alpha = \frac{\pi}{2}" block={false} />).</span>
+                   <span>On remplace <LatexMath math="x=0" block={false} /> dans la formule générale :</span>
+                   <span className="bg-amber-500/10 p-2 rounded text-center font-bold mt-1 text-sm">
+                     <LatexMath math="\vec{B}(0) = \frac{\mu_0 I R^2}{2(R^2 + 0^2)^{3/2}} \vec{i} = \frac{\mu_0 I}{2R} \vec{i}" block={false} />
+                   </span>
+                </div>
+              </div>
+              
+              <div className="p-4 rounded-lg bg-amber-500/5 border border-amber-500/20 flex flex-col gap-3">
+                <h4 className="text-amber-500 font-bold text-xs uppercase border-b border-amber-500/20 pb-2">2. À très grande distance</h4>
+                <div className="text-amber-400 text-xs flex flex-col gap-2">
+                   <span>Lorsque le point <LatexMath math="M" block={false} /> s'éloigne à l'infini sur l'axe :</span>
+                   <span className="bg-amber-500/10 p-2 rounded text-center font-bold my-1 text-sm">
+                     <LatexMath math="\lim_{x \to \pm\infty} \vec{B}(x) = \vec{0}" block={false} />
+                   </span>
+                   <span className="text-[11px] text-amber-500/80 leading-relaxed italic border-l-2 border-amber-500/30 pl-2 mt-1">
+                     L'allure de la fonction <LatexMath math="B(x)" block={false} /> forme donc une courbe en cloche symétrique (allure de Lorentz), avec un maximum au centre <LatexMath math="x=0" block={false} />.
+                   </span>
+                </div>
               </div>
             </div>
           </CollapsibleStep>

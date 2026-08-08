@@ -485,56 +485,19 @@ export default function BiotSavartSpire3DCanvas() {
           </div>
         </div> {/* End Row 1 */}
 
-        {/* Row 2: Demonstration & Result */}
-        <div className="w-full bg-slate-900/50 p-4 rounded-xl border border-slate-800/50 flex flex-col gap-4 text-slate-300">
-          <div className="flex items-center gap-2 mb-2">
-            <span className="bg-indigo-500/20 text-indigo-400 p-1.5 rounded-lg border border-indigo-500/30">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                <path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.174 1 1 0 01-.89-.89 11.115 11.115 0 01.25-3.762zM9.3 16.573A9.026 9.026 0 007 14.935v-3.957l1.818.78a3 3 0 002.364 0l5.508-2.361a11.026 11.026 0 01.25 3.762 1 1 0 01-.89.89 8.968 8.968 0 00-5.35 2.524 1 1 0 01-1.4 0zM6 18a1 1 0 001-1v-2.065a8.935 8.935 0 00-2-.712V17a1 1 0 001 1z" />
-              </svg>
-            </span>
-            <h3 className="font-bold text-lg text-slate-200">Démonstration (Loi de Biot-Savart)</h3>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="bg-slate-800/40 p-4 rounded-lg border border-slate-700/50">
-              <h4 className="text-indigo-400 font-bold text-xs uppercase mb-3">1. Invariance & Symétrie</h4>
-              <ul className="text-xs sm:text-sm space-y-3 list-none text-slate-300">
-                <li className="flex gap-2">
-                   <span className="text-indigo-500 font-black">•</span>
-                   <LatexMath math={`\\text{Tout plan contenant } (Ox) \\text{ est plan d'antisymétrie} \\implies d\\vec{B}(M) = dB_x \\vec{i}`} block={false} />
-                </li>
-                <li className="flex gap-2">
-                   <span className="text-indigo-500 font-black">•</span>
-                   <LatexMath math={`\\text{Invariance par rotation (fixant } r, \\alpha) \\implies \\vec{B} = B(x)\\vec{i}`} block={false} />
-                </li>
-              </ul>
-            </div>
-            
-            <div className="bg-slate-800/40 p-4 rounded-lg border border-slate-700/50">
-              <h4 className="text-emerald-400 font-bold text-xs uppercase mb-3">2. Loi de Biot-Savart</h4>
-              <div className="text-xs sm:text-sm flex flex-col gap-3 justify-center h-full pb-3">
-                <LatexMath math={`d\\vec{B} = \\frac{\\mu_0 I}{4\\pi} \\frac{d\\vec{l} \\wedge \\vec{u}}{r^2}`} block={false} />
-                <LatexMath math={`\\|d\\vec{l} \\wedge \\vec{u}\\| = dl \\sin\\left(\\frac{\\pi}{2}\\right) = dl`} block={false} />
-              </div>
-            </div>
-
-            <div className="bg-slate-800/40 p-4 rounded-lg border border-slate-700/50 md:col-span-2">
-              <h4 className="text-rose-400 font-bold text-xs uppercase mb-3">3. Projection & Résultat Final</h4>
-              <div className="text-xs sm:text-sm flex flex-col md:flex-row md:items-center justify-around gap-4 text-center mb-4">
-                <LatexMath math={`dB_x = dB \\cos(\\theta)`} block={false} />
-                <LatexMath math={`\\cos(\\theta) = \\cos\\left(\\frac{\\pi}{2} - \\alpha\\right) = \\sin(\\alpha)`} block={false} />
-                <LatexMath math={`dB_x = \\frac{\\mu_0 I}{4\\pi r^2} dl \\sin(\\alpha)`} block={false} />
-              </div>
-              <div className="mt-2 p-3 bg-indigo-500/10 border border-indigo-500/20 rounded-xl flex items-center justify-center shadow-inner">
-                <LatexMath 
-                   math={`\\vec{B}(M) = \\frac{\\mu_0 I}{2 R} \\sin^3(\\alpha) \\vec{i} \\approx ${ (currentDirection * Math.pow(sinAlpha, 3) / radius).toFixed(3) } \\frac{\\mu_0 I}{2} \\vec{i}`} 
-                   block={false} 
-                   className="text-[15px] sm:text-lg text-emerald-400 font-bold"
-                />
-              </div>
-            </div>
-          </div>
+        {/* Row 2: Result display */}
+        <div className="w-full flex flex-col md:flex-row items-center justify-center gap-4 text-emerald-500 dark:text-emerald-400 overflow-x-auto py-3 px-4 bg-slate-900/50 rounded-xl border border-slate-800/50 shadow-inner">
+          <LatexMath 
+             math={`\\vec{B}(M) = \\frac{\\mu_0 I R^2}{2(R^2+x^2)^{3/2}} \\vec{i}`} 
+             block={false} 
+             className="text-sm sm:text-base whitespace-nowrap font-bold"
+          />
+          <span className="hidden md:block text-slate-500">ou bien</span>
+          <LatexMath 
+             math={`\\vec{B}(M) = \\frac{\\mu_0 I}{2 R} \\sin^3(\\alpha) \\vec{i} \\approx ${ (currentDirection * Math.pow(sinAlpha, 3) / radius).toFixed(3) } \\frac{\\mu_0 I}{2} \\vec{i}`} 
+             block={false} 
+             className="text-[13px] sm:text-[15px] font-bold whitespace-nowrap"
+          />
         </div>
       </div>
     </div>
