@@ -34,7 +34,7 @@ function AmpereContour({ radius, dir, isMain = false, yOffset = 0 }: { radius: n
     <group ref={groupRef}>
       <Line points={points} color={color} lineWidth={lineWidth} transparent opacity={opacity} />
       {[0, Math.PI, Math.PI/2, 3*Math.PI/2].map((angle, idx) => (
-        <group key={idx} position={[radius * Math.cos(angle), yOffset, radius * Math.sin(angle)]} rotation={[0, -angle - Math.PI/2 + (dir > 0 ? 0 : Math.PI), 0]}>
+        <group key={idx} position={[radius * Math.cos(angle), yOffset, radius * Math.sin(angle)]} rotation={[0, angle + (dir > 0 ? 0 : Math.PI), 0]}>
           <mesh rotation={[-Math.PI/2, 0, 0]}>
             <coneGeometry args={[isMain ? 0.15 : 0.1, isMain ? 0.4 : 0.3, 16]} />
             <meshBasicMaterial color={color} transparent opacity={opacity + 0.2} />
