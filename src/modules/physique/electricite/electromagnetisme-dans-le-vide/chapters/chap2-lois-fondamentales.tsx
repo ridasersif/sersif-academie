@@ -6,6 +6,7 @@ import BiotSavart3DCanvas from "../components/BiotSavart3DCanvas";
 import BiotSavartSegment3DCanvas from "../components/BiotSavartSegment3DCanvas";
 import BiotSavartSpire3DCanvas from "../components/BiotSavartSpire3DCanvas";
 import AmpereTheorem3DCanvas from "../components/AmpereTheorem3DCanvas";
+import InfiniteWire3DCanvas from "../components/InfiniteWire3DCanvas";
 import { Calculator, RotateCw, Layers, ChevronDown, ChevronUp, Sparkles, BookOpen, Lightbulb, ArrowRight } from "lucide-react";
 
 /* ── Collapsible Panel Component ── */
@@ -761,88 +762,170 @@ export default function Chap2LoisFondamentales() {
           ))}
         </div>
 
-        {/* Application: Fil infini */}
-        <div className="mt-8 border-t border-border pt-8">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 text-indigo-400 text-xs font-extrabold mb-4">
-            <Lightbulb className="w-3.5 h-3.5" />
-            <span>Application 1 • Le Fil Infini (Méthode d'Ampère)</span>
-          </div>
+      </section>
 
-          <p className="text-[11px] text-muted-foreground leading-relaxed mb-4">
-            Nous avons déjà calculé le champ d'un fil infini avec la méthode de Biot-Savart (longue et très mathématique). Regardez comment le Théorème d'Ampère rend ce calcul <strong>extrêmement simple et rapide</strong> en appliquant les 5 étapes :
-          </p>
+      {/* ═══════════════════════════════════════════ */}
+      {/* APPLICATION 1: FIL INFINI (AMPERE)          */}
+      {/* ═══════════════════════════════════════════ */}
+      <section className="bg-card/90 border border-indigo-500/10 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 shadow-sm w-full max-w-full overflow-x-hidden relative overflow-hidden mt-8">
+        <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-indigo-500/5 to-transparent rounded-bl-full pointer-events-none" />
+
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 text-xs font-extrabold mb-3">
+          <Lightbulb className="w-3.5 h-3.5" />
+          <span>Application 1 • Le Fil Infini (Méthode d'Ampère)</span>
+        </div>
+
+        <h2 className="text-xl sm:text-2xl font-black mb-3 sm:mb-4 text-foreground leading-tight">
+          Calcul du champ magnétique d'un fil infini
+        </h2>
+
+        <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed mb-6 font-medium">
+          Nous avons déjà calculé le champ d'un fil infini avec la méthode de Biot-Savart (longue et complexe). Regardez comment le Théorème d'Ampère rend ce calcul <strong>extrêmement simple et rapide</strong> en appliquant les 5 étapes :
+        </p>
+
+        {/* 3D Visualisation */}
+        <h3 className="text-sm font-bold text-foreground/80 dark:text-slate-300 mb-3 flex items-center gap-2">
+          <Sparkles className="w-4 h-4 text-indigo-400" />
+          Laboratoire 3D : Symétries du Fil Infini
+        </h3>
+        <p className="text-[11px] text-muted-foreground mb-4">
+          Manipulez le point M et le sens du courant pour observer l'effet direct sur le champ <LatexMath math="\vec{B}" block={false} />. Vérifiez le principe de Curie en affichant les plans de Symétrie (<LatexMath math="\Pi" block={false} />) et d'Antisymétrie (<LatexMath math="\Pi^*" block={false} />).
+        </p>
+
+        <div className="mb-8 w-full flex justify-center">
+          <InfiniteWire3DCanvas />
+        </div>
+
+        {/* Démonstration Step-by-Step */}
+        <h3 className="text-sm font-bold text-foreground/80 dark:text-slate-300 mb-4 flex items-center gap-2">
+          <BookOpen className="w-4 h-4 text-indigo-400" />
+          Démonstration complète
+        </h3>
 
           <div className="space-y-3">
             {/* Etape 1 */}
-            <CollapsibleStep step={1} title="Symétries et Invariances" color="indigo" defaultOpen={true}>
-              <ul className="text-[11px] text-muted-foreground space-y-2 list-disc pl-4 mt-2">
-                <li>
-                  <strong className="text-indigo-400">Symétrie :</strong> Tout plan contenant le fil (axe Oz) est un plan de symétrie. Le champ magnétique <LatexMath math="\vec{B}" block={false} /> doit être perpendiculaire à ce plan.
-                  <br/><LatexMath math="\implies \vec{B}(M) = B(M) \vec{e_\theta}" block={false} />
-                </li>
-                <li>
-                  <strong className="text-indigo-400">Invariances :</strong> Le fil est infini (invariance par translation selon Oz) et cylindrique (invariance par rotation autour de Oz).
-                  <br/><LatexMath math="\implies B" block={false} /> ne dépend ni de <LatexMath math="z" block={false} />, ni de <LatexMath math="\theta" block={false} />. Il ne dépend que de la distance <LatexMath math="\rho" block={false} /> (ou <LatexMath math="r" block={false} />).
-                </li>
-              </ul>
-              <div className="mt-3 p-2 bg-indigo-500/10 rounded border border-indigo-500/20 text-center">
-                <LatexMath math="\text{Conclusion : } \implies \vec{B}(M) = B(\rho) \, \vec{e_\theta}" block={false} className="text-indigo-300 text-xs font-bold" />
+            <CollapsibleStep step={1} title="Symétries et Invariances (L'intuition de Curie)" color="indigo" defaultOpen={true}>
+              <p className="text-[11px] text-muted-foreground leading-relaxed mb-2">
+                Avant de se lancer dans les calculs avec le Théorème d'Ampère, il est primordial de connaître la direction du champ magnétique <LatexMath math="\vec{B}" block={false} /> et de quoi il dépend.
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
+                <div className="p-3 rounded-lg bg-indigo-500/5 border border-indigo-500/20 text-xs text-indigo-300 leading-relaxed">
+                  <h4 className="font-bold text-indigo-400 mb-1 border-b border-indigo-500/20 pb-1">1. Symétries (Direction)</h4>
+                  <p className="text-[10px] text-muted-foreground mb-2">
+                    Tout plan contenant le fil (axe <LatexMath math="Oz" block={false} />) est un plan de symétrie <LatexMath math="\Pi" block={false} /> pour la distribution de courant. Le champ magnétique <LatexMath math="\vec{B}" block={false} /> doit y être toujours perpendiculaire.
+                  </p>
+                  <div className="bg-indigo-500/10 p-1.5 rounded text-center font-bold">
+                    <LatexMath math="\implies \vec{B}(M) = B(M) \, \vec{e_\theta}" block={false} />
+                  </div>
+                </div>
+                <div className="p-3 rounded-lg bg-indigo-500/5 border border-indigo-500/20 text-xs text-indigo-300 leading-relaxed">
+                  <h4 className="font-bold text-indigo-400 mb-1 border-b border-indigo-500/20 pb-1">2. Invariances (Variables)</h4>
+                  <p className="text-[10px] text-muted-foreground mb-2">
+                    Le fil est <strong>infini</strong> : si on le décale sur <LatexMath math="Oz" block={false} />, il reste identique (pas de dépendance en <LatexMath math="z" block={false} />). Il est cylindrique : si on tourne autour de lui, c'est identique (pas de dépendance en <LatexMath math="\theta" block={false} />).
+                  </p>
+                  <div className="bg-indigo-500/10 p-1.5 rounded text-center font-bold">
+                    <LatexMath math="\implies B \text{ dépend que de } \rho" block={false} />
+                  </div>
+                </div>
+              </div>
+              <div className="mt-3 p-3 bg-indigo-500/10 rounded-xl border border-indigo-500/30 text-center">
+                <span className="text-indigo-400 text-sm font-bold">
+                  <LatexMath math="\text{Conclusion : } \implies \vec{B}(M) = B(\rho) \, \vec{e_\theta}" block={false} />
+                </span>
               </div>
             </CollapsibleStep>
 
             {/* Etape 2 */}
-            <CollapsibleStep step={2} title="Choix du contour (C)" color="teal">
-              <p className="text-[11px] text-muted-foreground">
-                Puisque le champ tourne selon <LatexMath math="\vec{e_\theta}" block={false} /> et dépend de <LatexMath math="\rho" block={false} />, le contour idéal est un <strong>cercle de rayon <LatexMath math="\rho" block={false} /> centré sur le fil</strong>.
+            <CollapsibleStep step={2} title="Choix du contour (C) (Le bon contour)" color="teal">
+              <p className="text-[11px] text-muted-foreground leading-relaxed mb-3">
+                Le secret du Théorème d'Ampère est de choisir un <strong>contour fermé (C)</strong> judicieux. On veut que :
+                <br />1. <LatexMath math="\vec{B}" block={false} /> soit colinéaire au contour pour que le produit scalaire donne <LatexMath math="B \times dl" block={false} />.
+                <br />2. <LatexMath math="\vec{B}" block={false} /> soit constant sur tout ce contour pour qu'on puisse le sortir de l'intégrale.
               </p>
-              <div className="text-center text-xs mt-2 text-teal-300 bg-teal-500/5 p-2 rounded border border-teal-500/20">
-                Sur ce cercle, <LatexMath math="\vec{B}" block={false} /> est tangent au contour : <LatexMath math="d\vec{l} = \rho d\theta \, \vec{e_\theta}" block={false} />
+              <div className="grid grid-cols-2 gap-3 mt-2">
+                <div className="p-3 rounded-lg bg-teal-500/5 border border-teal-500/20 flex flex-col justify-center items-center">
+                  <div className="text-teal-400 text-xs font-bold mb-1 text-center">Contour Idéal</div>
+                  <div className="text-[10px] text-teal-200/70 text-center">Un cercle de rayon <LatexMath math="\rho" block={false} /> d'axe <LatexMath math="Oz" block={false} /> passant par <LatexMath math="M" block={false} />.</div>
+                </div>
+                <div className="p-3 rounded-lg bg-teal-500/5 border border-teal-500/20 flex flex-col justify-center items-center">
+                  <div className="text-teal-400 text-xs font-bold mb-1 text-center">Orientation</div>
+                  <div className="text-[10px] text-teal-200/70 text-center">Sur ce cercle : <LatexMath math="d\vec{l} = dl \, \vec{e_\theta}" block={false} /> (ou <LatexMath math="\rho d\theta \, \vec{e_\theta}" block={false} />).</div>
+                </div>
               </div>
             </CollapsibleStep>
 
             {/* Etape 3 */}
-            <CollapsibleStep step={3} title="Circulation de B" color="blue">
-              <p className="text-[11px] text-muted-foreground mb-2">On calcule l'intégrale le long du cercle :</p>
-              <div className="text-center overflow-x-auto text-xs bg-blue-500/5 p-3 rounded border border-blue-500/20">
-                <LatexMath math="\oint_{(C)} \vec{B} \cdot d\vec{l} = \oint_{(C)} \left(B(\rho)\vec{e_\theta}\right) \cdot \left(dl\,\vec{e_\theta}\right) = B(\rho) \oint_{(C)} dl = B(\rho) \times 2\pi\rho" block={false} className="text-blue-300" />
+            <CollapsibleStep step={3} title="Circulation de B (Le calcul mathématique)" color="blue">
+              <p className="text-[11px] text-muted-foreground leading-relaxed mb-2">
+                Maintenant qu'on a le bon contour, calculons la partie gauche du théorème : l'intégrale.
+              </p>
+              <div className="p-4 rounded-xl bg-blue-500/5 border border-blue-500/20">
+                <div className="text-center overflow-x-auto text-sm bg-blue-950/40 p-3 rounded-lg border border-blue-500/30 mb-3 shadow-inner">
+                  <LatexMath math="\oint_{(C)} \vec{B} \cdot d\vec{l} = \oint_{(C)} \left( B(\rho) \vec{e_\theta} \right) \cdot \left( dl \, \vec{e_\theta} \right)" block={false} className="text-blue-300 font-bold" />
+                </div>
+                <ul className="text-[11px] text-muted-foreground/90 space-y-2 list-disc pl-4">
+                  <li>Comme <LatexMath math="\vec{e_\theta} \cdot \vec{e_\theta} = 1" block={false} />, il nous reste l'intégrale de <LatexMath math="B(\rho) dl" block={false} />.</li>
+                  <li>Comme <LatexMath math="B(\rho)" block={false} /> ne dépend que de <LatexMath math="\rho" block={false} /> (qui est constant sur notre cercle), on peut <strong>sortir</strong> B de l'intégrale.</li>
+                </ul>
+                <div className="text-center overflow-x-auto text-sm mt-3 pt-3 border-t border-blue-500/20">
+                  <LatexMath math="= B(\rho) \oint_{(C)} dl = B(\rho) \times (2 \pi \rho)" block={false} className="text-blue-400 font-black" />
+                </div>
               </div>
-              <p className="text-[10px] text-blue-300/70 mt-2 text-center"><strong>On a :</strong> La circulation est simplement le champ (constant sur le cercle) multiplié par le périmètre du cercle !</p>
+              <p className="text-[10px] text-blue-300/70 mt-2 text-center">
+                <em>Incroyable ! L'intégrale compliquée s'est transformée en une simple multiplication.</em>
+              </p>
             </CollapsibleStep>
 
             {/* Etape 4 */}
-            <CollapsibleStep step={4} title="Calcul du courant enlacé" color="pink">
-              <p className="text-[11px] text-muted-foreground text-center">
-                La surface délimitée par notre cercle est un disque. Un seul courant <LatexMath math="I" block={false} /> traverse ce disque perpendiculairement, dans le même sens que le vecteur normal.
+            <CollapsibleStep step={4} title="Calcul du courant enlacé (La partie droite)" color="pink">
+              <p className="text-[11px] text-muted-foreground leading-relaxed mb-2">
+                Combien de courant traverse notre contour circulaire ? 
               </p>
-              <div className="text-center text-sm font-bold text-pink-400 mt-2">
-                <LatexMath math="\implies \sum I_{enl} = + I" block={false} />
+              <div className="flex gap-3">
+                <div className="flex-1 p-3 rounded-lg bg-pink-500/5 border border-pink-500/20 text-xs text-pink-300 leading-relaxed">
+                  <p className="text-[11px] text-muted-foreground mb-2">
+                    La surface délimitée par notre cercle <LatexMath math="(C)" block={false} /> est un <strong>disque imaginaire</strong>. Ce disque est percé de part en part par notre fil infini central.
+                  </p>
+                  <p className="text-[11px] text-muted-foreground">
+                    Le courant <LatexMath math="I" block={false} /> traverse ce disque de bas en haut (si on a orienté le contour avec la règle de la main droite). Il est donc compté <strong>positivement</strong>.
+                  </p>
+                </div>
+                <div className="w-1/3 p-3 rounded-lg bg-pink-500/10 border border-pink-500/30 flex items-center justify-center shadow-inner">
+                  <span className="text-pink-400 text-lg font-black text-center">
+                    <LatexMath math="\sum I_{enl} = +I" block={false} />
+                  </span>
+                </div>
               </div>
             </CollapsibleStep>
 
             {/* Etape 5 */}
-            <CollapsibleStep step={5} title="Expression Finale" color="emerald" defaultOpen={true}>
-              <p className="text-[11px] text-muted-foreground mb-2"><strong>D'après le théorème d'Ampère :</strong> <LatexMath math="\text{Circulation} = \mu_0 \sum I_{enl}" block={false} /></p>
-              <div className="text-center text-xs bg-emerald-500/5 p-2 rounded mb-3 border border-emerald-500/20">
-                <LatexMath math="B(\rho) \times 2\pi\rho = \mu_0 I" block={false} className="text-emerald-300 font-bold" />
+            <CollapsibleStep step={5} title="Expression Finale (La conclusion épique)" color="emerald" defaultOpen={true}>
+              <p className="text-[11px] text-muted-foreground leading-relaxed mb-2">
+                On assemble enfin les deux morceaux de notre puzzle (Le théorème d'Ampère) : 
+                <span className="text-emerald-400 font-bold ml-1">
+                  <LatexMath math="\text{Circulation} = \mu_0 \sum I_{enl}" block={false} />
+                </span>
+              </p>
+              <div className="text-center text-sm bg-emerald-500/5 p-3 rounded-lg mb-4 border border-emerald-500/20 shadow-inner">
+                <LatexMath math="B(\rho) \times (2\pi\rho) = \mu_0 I" block={false} className="text-emerald-300 font-bold" />
               </div>
               
-              <div className="relative p-4 sm:p-5 rounded-xl bg-gradient-to-r from-emerald-500/10 via-cyan-500/10 to-teal-500/10 border-2 border-emerald-500/30 shadow-[0_0_20px_rgba(16,185,129,0.15)] mt-4">
-                <div className="absolute -top-3 left-4 px-3 py-0.5 bg-emerald-500 text-white text-[10px] font-black rounded-full uppercase tracking-wider">
+              <div className="relative p-5 rounded-2xl bg-gradient-to-br from-emerald-500/10 via-cyan-500/10 to-teal-500/10 border-2 border-emerald-500/40 shadow-[0_0_30px_rgba(16,185,129,0.15)] mt-6">
+                <div className="absolute -top-3 left-6 px-4 py-1 bg-gradient-to-r from-emerald-500 to-teal-500 text-white text-[11px] font-black rounded-full uppercase tracking-widest shadow-lg">
                   Résultat (Fil Infini)
                 </div>
-                <div className="text-center py-2">
-                  <span className="text-emerald-300 text-base sm:text-lg font-bold">
+                <div className="text-center py-3">
+                  <span className="text-emerald-300 text-lg sm:text-2xl font-black drop-shadow-md">
                     <LatexMath math="\implies \vec{B}(M) = \frac{\mu_0 I}{2\pi \rho} \vec{e_\theta}" block={false} />
                   </span>
                 </div>
-                <p className="text-[10px] text-center text-emerald-400/80 mt-2 font-medium">
-                  On retrouve le résultat de Biot-Savart en 3 lignes de calcul seulement ! 🎉
+                <p className="text-xs text-center text-emerald-400/90 mt-3 font-medium bg-emerald-950/50 p-2 rounded-lg inline-block w-full">
+                  Et voilà ! On retrouve <strong>exactement</strong> le même résultat que Biot-Savart, mais en utilisant uniquement 2 lignes de calcul algébrique et un peu de bon sens physique. 🚀
                 </p>
               </div>
             </CollapsibleStep>
           </div>
-        </div>
-
+        
       </section>
 
     </div>
