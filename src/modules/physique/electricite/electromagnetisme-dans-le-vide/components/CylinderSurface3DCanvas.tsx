@@ -99,23 +99,23 @@ function CylinderSurfaceScene({ rho, dirI, planeMode, R }: { rho: number, dirI: 
   return (
     <group position={[0, 0, 0]}>
       {/* Infinite Cylinder */}
-      <Cylinder args={[R, R, 14, 32]} position={[0, 0, 0]}>
+      <Cylinder args={[R, R, 10, 32]} position={[0, 0, 0]}>
         <meshPhysicalMaterial color="#3b82f6" metalness={0.2} roughness={0.5} transparent opacity={0.2} side={THREE.DoubleSide} />
       </Cylinder>
       {/* Cylinder Edges for better visibility */}
       <Line points={(() => {
         const pts = [];
-        for(let i=0; i<=32; i++) pts.push(new THREE.Vector3(R*Math.cos(i*2*Math.PI/32), 7, R*Math.sin(i*2*Math.PI/32)));
+        for(let i=0; i<=32; i++) pts.push(new THREE.Vector3(R*Math.cos(i*2*Math.PI/32), 5, R*Math.sin(i*2*Math.PI/32)));
         return pts;
       })()} color="#60a5fa" lineWidth={1} transparent opacity={0.5} />
       <Line points={(() => {
         const pts = [];
-        for(let i=0; i<=32; i++) pts.push(new THREE.Vector3(R*Math.cos(i*2*Math.PI/32), -7, R*Math.sin(i*2*Math.PI/32)));
+        for(let i=0; i<=32; i++) pts.push(new THREE.Vector3(R*Math.cos(i*2*Math.PI/32), -5, R*Math.sin(i*2*Math.PI/32)));
         return pts;
       })()} color="#60a5fa" lineWidth={1} transparent opacity={0.5} />
       
       {/* Surface Current Density Vectors */}
-      <SurfaceCurrentDensity radius={R} height={14} dirI={dirI} />
+      <SurfaceCurrentDensity radius={R} height={10} dirI={dirI} />
 
       {/* Vector js Label */}
       <Html position={[R + 0.5, dirI > 0 ? 3 : -3, 0]} center>
@@ -158,6 +158,22 @@ function CylinderSurfaceScene({ rho, dirI, planeMode, R }: { rho: number, dirI: 
 
       {/* Contour d'Ampère */}
       <AmpereContour radius={rho} dir={dirI} isMain={true} yOffset={0} isZero={isInside} />
+
+      {/* Centre O du contour */}
+      <group position={[0, 0, 0]}>
+        <Sphere args={[0.08, 16, 16]}>
+          <meshBasicMaterial color="#f43f5e" />
+        </Sphere>
+        <Html position={[0, 0.3, 0]} center zIndexRange={[100,0]}>
+          <div className="text-rose-400 font-bold font-serif text-sm drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] pointer-events-none">O</div>
+        </Html>
+      </group>
+
+      {/* Rayon ρ du contour */}
+      <Line points={[[0, 0, 0], [rho, 0, 0]]} color="#f43f5e" lineWidth={2} dashed dashSize={0.2} gapSize={0.1} />
+      <Html position={[rho / 2, 0.2, 0]} center zIndexRange={[100,0]}>
+        <div className="text-rose-400 font-bold font-serif italic text-sm drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] pointer-events-none">ρ</div>
+      </Html>
 
       {/* Point M */}
       <group position={[rho, 0, 0]}>
@@ -215,7 +231,7 @@ export default function CylinderSurface3DCanvas() {
   const [dirI, setDirI] = useState(1);
   const [planeMode, setPlaneMode] = useState<"none" | "sym" | "antisym">("none");
   
-  const R = 2.0; // Fixed radius of the cylinder
+  const R = 1.5; // Fixed radius of the cylinder
 
   const percRho = ((rho - 0.5) / (5 - 0.5)) * 100;
 
@@ -223,7 +239,7 @@ export default function CylinderSurface3DCanvas() {
     <div className="w-full max-w-[1000px] mx-auto flex flex-col font-sans mb-8">
       
       <div className="w-full h-[300px] sm:h-[400px] bg-slate-950 rounded-t-2xl overflow-hidden relative border border-slate-800 border-b-0 shadow-inner">
-        <Canvas camera={{ position: [5, 5, 5], fov: 50 }}>
+        <Canvas camera={{ position: [6, 6, 6], fov: 50 }}>
           <color attach="background" args={["#020617"]} />
           <ambientLight intensity={0.5} />
           <spotLight position={[10, 20, 10]} angle={0.4} penumbra={1} intensity={2} color="#e2e8f0" />
