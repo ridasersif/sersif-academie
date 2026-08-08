@@ -862,15 +862,15 @@ export default function Chap2LoisFondamentales() {
                 Maintenant qu'on a le bon contour, calculons la partie gauche du théorème : l'intégrale.
               </p>
               <div className="p-4 rounded-xl bg-blue-500/5 border border-blue-500/20">
-                <div className="text-center overflow-x-auto text-sm bg-blue-950/40 p-3 rounded-lg border border-blue-500/30 mb-3 shadow-inner">
+                <div className="text-center overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] text-sm bg-blue-950/40 p-3 rounded-lg border border-blue-500/30 mb-3 shadow-inner">
                   <LatexMath math="\oint_{(C)} \vec{B} \cdot d\vec{l} = \oint_{(C)} \left( B(\rho) \vec{e_\theta} \right) \cdot \left( dl \, \vec{e_\theta} \right)" block={false} className="text-blue-300 font-bold" />
                 </div>
                 <ul className="text-[11px] text-muted-foreground/90 space-y-2 list-disc pl-4">
                   <li>Comme <LatexMath math="\vec{e_\theta} \cdot \vec{e_\theta} = 1" block={false} />, il nous reste l'intégrale de <LatexMath math="B(\rho) dl" block={false} />.</li>
                   <li>Comme <LatexMath math="B(\rho)" block={false} /> ne dépend que de <LatexMath math="\rho" block={false} /> (qui est constant sur notre cercle), on peut <strong>sortir</strong> B de l'intégrale.</li>
                 </ul>
-                <div className="text-center overflow-x-auto text-sm mt-3 pt-3 border-t border-blue-500/20">
-                  <LatexMath math="= B(\rho) \oint_{(C)} dl = B(\rho) \times (2 \pi \rho)" block={false} className="text-blue-400 font-black" />
+                <div className="text-center overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] text-sm mt-3 pt-3 border-t border-blue-500/20">
+                  <LatexMath math="\implies \oint_{(C)} \vec{B} \cdot d\vec{l} = B(\rho) \oint_{(C)} dl = B(\rho) \times (2 \pi \rho)" block={false} className="text-blue-400 font-black" />
                 </div>
               </div>
               <p className="text-[10px] text-blue-300/70 mt-2 text-center">
@@ -1004,8 +1004,8 @@ export default function Chap2LoisFondamentales() {
               <p className="text-[11px] text-muted-foreground leading-relaxed mb-3">
                 Comme pour tous les problèmes à symétrie cylindrique, on choisit un cercle de rayon <LatexMath math="\rho" block={false} />. La circulation est alors immédiate :
               </p>
-              <div className="text-center overflow-x-auto text-sm bg-teal-950/40 p-3 rounded-lg border border-teal-500/30 shadow-inner">
-                <LatexMath math="\oint_{(C)} \vec{B} \cdot d\vec{l} = B(\rho) \times (2 \pi \rho)" block={false} className="text-teal-300 font-bold" />
+              <div className="text-center overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] text-sm bg-teal-950/40 p-3 rounded-lg border border-teal-500/30 shadow-inner">
+                <LatexMath math="\implies \oint_{(C)} \vec{B} \cdot d\vec{l} = B(\rho) \times (2 \pi \rho)" block={false} className="text-teal-300 font-bold" />
               </div>
             </CollapsibleStep>
 
@@ -1173,7 +1173,7 @@ export default function Chap2LoisFondamentales() {
             {/* Etape 3 */}
             <CollapsibleStep step={3} title="Circulation de B" color="blue">
               <div className="p-4 rounded-xl bg-blue-500/5 border border-blue-500/20">
-                <div className="text-center overflow-x-auto text-sm bg-blue-950/40 p-3 rounded-lg border border-blue-500/30 mb-3 shadow-inner">
+                <div className="text-center overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] text-sm bg-blue-950/40 p-3 rounded-lg border border-blue-500/30 mb-3 shadow-inner">
                   <LatexMath math="\oint_{(C)} \vec{B} \cdot d\vec{l} = \oint_{(C)} \left( B(\rho) \vec{e_\theta} \right) \cdot \left( dl \, \vec{e_\theta} \right) = \oint_{(C)} B(\rho) dl" block={false} className="text-blue-300 font-bold" />
                 </div>
                 <ul className="text-[11px] text-muted-foreground/90 space-y-2 list-disc pl-4">
@@ -1181,8 +1181,8 @@ export default function Chap2LoisFondamentales() {
                   <li>Comme <LatexMath math="B(\rho)" block={false} /> ne dépend que de <LatexMath math="\rho" block={false} />, il est <strong>constant</strong> le long de ce cercle.</li>
                   <li>On le sort de l'intégrale !</li>
                 </ul>
-                <div className="text-center overflow-x-auto text-sm mt-3 pt-3 border-t border-blue-500/20">
-                  <LatexMath math="= B(\rho) \oint_{(C)} dl = B(\rho) \times (2 \pi \rho)" block={false} className="text-blue-400 font-black" />
+                <div className="text-center overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] text-sm mt-3 pt-3 border-t border-blue-500/20">
+                  <LatexMath math="\implies \oint_{(C)} \vec{B} \cdot d\vec{l} = B(\rho) \oint_{(C)} dl = B(\rho) \times (2 \pi \rho)" block={false} className="text-blue-400 font-black" />
                 </div>
               </div>
             </CollapsibleStep>
