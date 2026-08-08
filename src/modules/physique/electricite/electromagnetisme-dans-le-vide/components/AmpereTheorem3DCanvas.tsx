@@ -2,9 +2,9 @@
 
 import React, { useState } from "react";
 import { Canvas } from "@react-three/fiber";
-import { OrbitControls, Line, Html, Environment, ContactShadows, Cylinder, Torus } from "@react-three/drei";
+import { OrbitControls, Line, Html, Environment, ContactShadows, Cylinder } from "@react-three/drei";
 import * as THREE from "three";
-import { RotateCcw } from "lucide-react";
+import { RotateCcw, Power, ArrowUp, ArrowDown } from "lucide-react";
 
 export default function AmpereTheorem3DCanvas() {
   const [i1Enabled, setI1Enabled] = useState(true);
@@ -13,14 +13,22 @@ export default function AmpereTheorem3DCanvas() {
   const [i2Enabled, setI2Enabled] = useState(true);
   const [i2Dir, setI2Dir] = useState(-1);
   
-  const [i3Enabled, setI3Enabled] = useState(true); // Extérieur
+  const [i3Enabled, setI3Enabled] = useState(true);
   const [i3Dir, setI3Dir] = useState(1);
+  
+  const [i4Enabled, setI4Enabled] = useState(true); 
+  const [i4Dir, setI4Dir] = useState(1);
+  
+  const [i5Enabled, setI5Enabled] = useState(false); 
+  const [i5Dir, setI5Dir] = useState(-1);
 
   // Courants (x, z) positions
   const wires = [
-    { id: 'I1', x: 1, z: 0.5, enabled: i1Enabled, dir: i1Dir, isInside: true, color: "#3b82f6" },
-    { id: 'I2', x: -1, z: -0.5, enabled: i2Enabled, dir: i2Dir, isInside: true, color: "#ef4444" },
-    { id: 'I3', x: 4, z: 2, enabled: i3Enabled, dir: i3Dir, isInside: false, color: "#a855f7" }
+    { id: 'I1', label: 'I1', x: 1, z: 0.5, enabled: i1Enabled, dir: i1Dir, isInside: true, color: "#3b82f6", setE: setI1Enabled, setD: setI1Dir }, // Blue
+    { id: 'I2', label: 'I2', x: -1.2, z: -1, enabled: i2Enabled, dir: i2Dir, isInside: true, color: "#ef4444", setE: setI2Enabled, setD: setI2Dir }, // Red
+    { id: 'I3', label: 'I3', x: 0.5, z: -1.5, enabled: i3Enabled, dir: i3Dir, isInside: true, color: "#10b981", setE: setI3Enabled, setD: setI3Dir }, // Emerald
+    { id: 'I4', label: 'I4', x: 3.5, z: 1.5, enabled: i4Enabled, dir: i4Dir, isInside: false, color: "#a855f7", setE: setI4Enabled, setD: setI4Dir }, // Purple
+    { id: 'I5', label: 'I5', x: -3, z: 2.5, enabled: i5Enabled, dir: i5Dir, isInside: false, color: "#f59e0b", setE: setI5Enabled, setD: setI5Dir } // Amber
   ];
 
   const iEnl = wires
@@ -35,107 +43,130 @@ export default function AmpereTheorem3DCanvas() {
   }
 
   return (
-    <div className="w-full max-w-[800px] mx-auto flex flex-col">
-      <div className="w-full h-[260px] sm:h-[350px] bg-slate-950 rounded-t-2xl overflow-hidden relative border border-slate-800 border-b-0 shadow-inner">
+    <div className="w-full max-w-[900px] mx-auto flex flex-col shadow-2xl rounded-2xl overflow-hidden border border-slate-800">
+      <div className="w-full h-[280px] sm:h-[350px] bg-[#050b14] relative">
         
         {/* Top Right HUD */}
-        <div className="absolute top-3 right-3 z-10 flex flex-col items-end gap-1 pointer-events-auto">
-           <div className="bg-slate-900/80 backdrop-blur-md border border-slate-700/50 p-3 sm:p-4 rounded-xl shadow-xl flex flex-col gap-2 animate-in fade-in slide-in-from-top-2 min-w-[140px]">
-             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider border-b border-slate-700/50 pb-1 mb-1">
-               Bilan Courants
-             </span>
+        <div className="absolute top-2 right-2 z-10 flex flex-col items-end gap-1 pointer-events-none">
+           <div className="bg-slate-950/80 backdrop-blur-md border border-slate-700/50 p-2 sm:p-3 rounded-xl shadow-lg flex flex-col gap-1.5 min-w-[120px]">
+             <div className="flex items-center gap-1.5 border-b border-slate-700/50 pb-1 mb-0.5">
+                <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                <span className="text-[9px] sm:text-[10px] font-black text-slate-300 uppercase tracking-widest">
+                  Bilan Enlacé
+                </span>
+             </div>
+             
              {wires.map(w => (
-               <div key={w.id} className={`flex items-center justify-between text-[11px] font-mono ${w.enabled ? (w.isInside ? 'text-slate-200' : 'text-slate-500 line-through opacity-70') : 'text-slate-700'}`}>
-                 <span>{w.id} :</span>
-                 <span className={w.enabled ? (w.dir > 0 ? "text-emerald-400" : "text-red-400") : "text-slate-700"}>
+               <div key={w.id} className={`flex items-center justify-between text-[9px] sm:text-[10px] font-mono transition-opacity duration-300 ${w.enabled ? (w.isInside ? 'text-slate-200' : 'text-slate-500 opacity-60') : 'text-slate-700 opacity-40 line-through'}`}>
+                 <div className="flex items-center gap-1.5">
+                   <div className="w-1 h-1 rounded-full" style={{ backgroundColor: w.color }} />
+                   <span>{w.id}</span>
+                 </div>
+                 <span className={w.enabled ? (w.dir > 0 ? "text-emerald-400 font-bold" : "text-red-400 font-bold") : "text-slate-700"}>
                    {w.enabled ? (w.dir > 0 ? "+I" : "-I") : "0"}
                  </span>
                </div>
              ))}
-             <div className="flex items-center justify-between text-xs font-mono font-bold mt-1 pt-2 border-t border-slate-700/50">
-               <span className="text-amber-400">Σ I_enl =</span>
-               <span className={iEnl > 0 ? "text-emerald-400" : iEnl < 0 ? "text-red-400" : "text-slate-400"}>
+             
+             <div className="flex items-center justify-between text-xs font-mono font-black mt-1 pt-1.5 border-t border-slate-700/50">
+               <span className="text-amber-400 text-[10px]">Σ I_enl =</span>
+               <div className={`px-1.5 py-0.5 rounded text-black text-[10px] ${iEnl > 0 ? "bg-emerald-400" : iEnl < 0 ? "bg-red-400" : "bg-slate-400"}`}>
                  {iEnl > 0 ? `+${iEnl}I` : iEnl < 0 ? `${iEnl}I` : "0"}
-               </span>
+               </div>
              </div>
            </div>
         </div>
 
         {/* Formule HUD Bottom Left */}
-        <div className="absolute bottom-3 left-3 z-10 pointer-events-none">
-           <div className="bg-slate-950/80 backdrop-blur-md px-3 py-2 rounded-xl border border-slate-700/60 shadow-[0_4px_20px_rgba(0,0,0,0.5)] flex items-center gap-2">
-              <span className="text-amber-400 font-serif italic text-lg">∮</span>
-              <span className="text-emerald-300 font-serif italic font-bold text-sm">B</span>
-              <span className="text-slate-400">·</span>
-              <span className="text-purple-300 font-serif italic text-sm">dl</span>
-              <span className="text-slate-400 ml-1">=</span>
-              <span className="text-amber-400 font-serif font-bold text-sm ml-1">μ₀ I_enl</span>
+        <div className="absolute bottom-2 left-2 z-10 pointer-events-none hidden sm:flex">
+           <div className="bg-slate-950/80 backdrop-blur-md px-3 py-2 rounded-xl border border-slate-700/50 shadow-lg flex items-center gap-2">
+              <span className="text-amber-400 font-serif italic text-lg drop-shadow-[0_0_8px_rgba(251,191,36,0.5)]">∮</span>
+              <div className="flex items-center gap-1">
+                <span className="text-emerald-300 font-serif italic font-black text-sm">B</span>
+                <span className="text-slate-400 font-bold text-xs">·</span>
+                <span className="text-purple-300 font-serif italic text-sm font-bold">dl</span>
+              </div>
+              <span className="text-slate-500 font-black text-xs mx-0.5">=</span>
+              <span className="text-amber-400 font-serif font-black text-sm drop-shadow-[0_0_8px_rgba(251,191,36,0.5)]">μ₀ I_enl</span>
            </div>
         </div>
 
-        <Canvas camera={{ position: [6, 4, 6], fov: 45 }} className="w-full flex-1 cursor-grab active:cursor-grabbing">
-          <color attach="background" args={["#020617"]} />
-          <ambientLight intensity={0.5} />
-          <spotLight position={[5, 15, 5]} angle={0.3} penumbra={1} intensity={1.5} />
+        <Canvas camera={{ position: [7, 5, 7], fov: 45 }} className="w-full flex-1 cursor-grab active:cursor-grabbing">
+          <color attach="background" args={["#050b14"]} />
+          <ambientLight intensity={0.6} />
+          <spotLight position={[5, 15, 5]} angle={0.4} penumbra={1} intensity={2} color="#e2e8f0" />
+          <pointLight position={[-5, 5, -5]} intensity={1} color="#60a5fa" />
           
-          <Environment preset="city" />
-          <OrbitControls enableZoom={true} target={[0, 0, 0]} maxPolarAngle={Math.PI / 1.5} />
+          <Environment preset="night" />
+          <OrbitControls enableZoom={true} target={[0, 0, 0]} maxPolarAngle={Math.PI / 1.4} />
           
-          <gridHelper args={[20, 20, 0x1e293b, 0x0f172a]} position={[0, -3, 0]} />
+          <gridHelper args={[24, 24, 0x1e293b, 0x090f1e]} position={[0, -3, 0]} />
 
           <group position={[0, 0, 0]}>
              
              {/* Surface and Contour C */}
              <mesh rotation={[-Math.PI/2, 0, 0]} position={[0, 0, 0]}>
                 <circleGeometry args={[2.5, 64]} />
-                <meshBasicMaterial color="#334155" transparent opacity={0.1} side={THREE.DoubleSide} />
+                <meshPhysicalMaterial color="#334155" transparent opacity={0.15} side={THREE.DoubleSide} roughness={0.1} metalness={0.8} />
              </mesh>
-             <Line points={contourPoints} color="#a855f7" lineWidth={3} dashed dashSize={0.2} gapSize={0.2} />
-             <Html position={[2.5, 0.2, 0]} center>
-               <div className="text-purple-300 font-serif italic text-sm font-bold bg-purple-900/50 px-2 py-0.5 rounded-full border border-purple-500/50 whitespace-nowrap drop-shadow-md">
+             
+             {/* Contour glowing edge */}
+             <Line points={contourPoints} color="#a855f7" lineWidth={3} dashed dashSize={0.3} gapSize={0.2} />
+             
+             <Html position={[2.5, 0.3, 0]} center zIndexRange={[100, 0]}>
+               <div className="text-purple-200 font-serif italic text-[11px] font-bold bg-purple-900/60 backdrop-blur-md px-2 py-0.5 rounded border border-purple-400/50 whitespace-nowrap shadow-[0_0_15px_rgba(168,85,247,0.4)] pointer-events-none">
                  Contour (C)
                </div>
              </Html>
 
              {/* Orientation du contour (dl) */}
              <group position={[0, 0, 2.5]}>
-                <Line points={[[0,0,0], [0.8, 0, 0]]} color="#a855f7" lineWidth={4} />
-                <mesh position={[0.8, 0, 0]} rotation={[0, 0, -Math.PI/2]}>
-                  <coneGeometry args={[0.1, 0.3, 16]} />
-                  <meshBasicMaterial color="#a855f7" toneMapped={false} />
+                <Line points={[[0,0,0], [1, 0, 0]]} color="#c084fc" lineWidth={4} />
+                <mesh position={[1, 0, 0]} rotation={[0, 0, -Math.PI/2]}>
+                  <coneGeometry args={[0.12, 0.3, 16]} />
+                  <meshBasicMaterial color="#c084fc" toneMapped={false} />
                 </mesh>
-                <Html position={[1, 0.3, 0]} center>
-                   <div className="text-purple-300 font-serif italic text-xs font-bold drop-shadow-md">dl</div>
+                <Html position={[1.2, 0.4, 0]} center zIndexRange={[100, 0]}>
+                   <div className="text-purple-300 font-serif italic text-xs font-black drop-shadow-[0_0_5px_rgba(192,132,252,0.8)] pointer-events-none">dl</div>
                 </Html>
              </group>
 
              {/* Vecteur normal n (main droite) */}
              <group position={[0, 0, 0]}>
-                <Line points={[[0,0,0], [0, 1.5, 0]]} color="#94a3b8" lineWidth={3} />
-                <mesh position={[0, 1.5, 0]}>
-                  <coneGeometry args={[0.08, 0.25, 16]} />
+                <Line points={[[0,0,0], [0, 2, 0]]} color="#94a3b8" lineWidth={3} />
+                <mesh position={[0, 2, 0]}>
+                  <coneGeometry args={[0.1, 0.3, 16]} />
                   <meshBasicMaterial color="#94a3b8" toneMapped={false} />
                 </mesh>
-                <Html position={[0, 1.8, 0]} center>
-                   <div className="text-slate-300 font-serif italic text-xs font-bold drop-shadow-md">n</div>
+                <Html position={[0, 2.3, 0]} center zIndexRange={[100, 0]}>
+                   <div className="text-slate-200 font-serif italic text-xs font-black drop-shadow-[0_0_5px_rgba(148,163,184,0.8)] pointer-events-none">n</div>
                 </Html>
              </group>
 
              {/* Fils conducteurs */}
              {wires.map((w) => w.enabled && (
                <group key={w.id} position={[w.x, 0, w.z]}>
+                  {/* Câble principal */}
                   <Cylinder args={[0.06, 0.06, 6, 16]}>
-                     <meshPhysicalMaterial color={w.color} metalness={0.5} roughness={0.2} transparent opacity={w.isInside ? 1 : 0.4} />
+                     <meshPhysicalMaterial color={w.color} metalness={0.7} roughness={0.2} transparent opacity={w.isInside ? 0.9 : 0.3} clearcoat={1} clearcoatRoughness={0.1} />
                   </Cylinder>
                   
-                  {/* Flèche Courant */}
-                  <mesh position={[0, w.dir > 0 ? 1 : -1, 0]} rotation={[w.dir > 0 ? 0 : Math.PI, 0, 0]}>
-                     <coneGeometry args={[0.15, 0.4, 16]} />
-                     <meshBasicMaterial color={w.color} transparent opacity={w.isInside ? 1 : 0.4} />
-                  </mesh>
+                  {/* Halo lumineux */}
+                  <Cylinder args={[0.1, 0.1, 6, 16]}>
+                     <meshBasicMaterial color={w.color} transparent opacity={w.isInside ? 0.2 : 0.05} />
+                  </Cylinder>
                   
-                  <Html position={[0, w.dir > 0 ? 1.5 : -1.5, 0]} center>
-                    <div className="font-bold font-mono text-[10px] px-2 py-0.5 rounded-full shadow-lg whitespace-nowrap" style={{ backgroundColor: `${w.color}90`, border: `1px solid ${w.color}`, color: '#fff', opacity: w.isInside ? 1 : 0.5 }}>
+                  {/* Flèche Courant animée */}
+                  <group position={[0, w.dir > 0 ? 1.5 : -1.5, 0]} rotation={[w.dir > 0 ? 0 : Math.PI, 0, 0]}>
+                    <mesh>
+                       <coneGeometry args={[0.2, 0.5, 16]} />
+                       <meshStandardMaterial color={w.color} emissive={w.color} emissiveIntensity={w.isInside ? 0.8 : 0.2} transparent opacity={w.isInside ? 1 : 0.4} />
+                    </mesh>
+                  </group>
+                  
+                  {/* Label */}
+                  <Html position={[0, w.dir > 0 ? 2.3 : -2.3, 0]} center zIndexRange={[100, 0]}>
+                    <div className="font-black font-mono text-[9px] px-1.5 py-0.5 rounded shadow-lg whitespace-nowrap backdrop-blur-md pointer-events-none" style={{ backgroundColor: `${w.color}20`, border: `1px solid ${w.color}`, color: w.color, opacity: w.isInside ? 1 : 0.6, textShadow: `0 0 5px ${w.color}` }}>
                       {w.id}
                     </div>
                   </Html>
@@ -144,66 +175,66 @@ export default function AmpereTheorem3DCanvas() {
              
           </group>
 
-          <ContactShadows resolution={1024} scale={25} blur={2.5} opacity={0.4} far={10} color="#0f172a" position={[0, -2.9, 0]} />
+          <ContactShadows resolution={512} scale={20} blur={2} opacity={0.5} far={10} color="#000000" position={[0, -2.9, 0]} />
         </Canvas>
       </div>
 
-      {/* Control Panel */}
-      <div className="w-full bg-card border border-border border-t-0 p-4 sm:p-5 rounded-b-2xl flex flex-wrap items-center justify-center gap-6 sm:gap-8">
+      {/* Compact Control Panel */}
+      <div className="w-full bg-[#0a1122] border-t border-slate-800 p-3 sm:p-4 flex flex-col gap-3">
          
-         {/* Toggles pour I1 (Inside) */}
-         <div className="flex flex-col gap-2 shrink-0">
-           <span className="text-[10px] font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider text-center">I1 (Intérieur)</span>
-           <div className="flex gap-1 h-7">
-             <button onClick={() => setI1Enabled(!i1Enabled)} className={`px-4 text-[10px] font-bold rounded border transition-colors ${i1Enabled ? "bg-blue-600 border-blue-400 text-white shadow-[0_0_10px_rgba(37,99,235,0.4)]" : "bg-muted border-border text-muted-foreground hover:bg-muted/80"}`}>
-               {i1Enabled ? "ON" : "OFF"}
-             </button>
-             <button disabled={!i1Enabled} onClick={() => setI1Dir(i1Dir * -1)} className={`px-4 text-[10px] font-bold rounded border transition-colors ${i1Enabled ? "bg-muted border-blue-900/50 text-blue-600 dark:text-blue-400 hover:bg-muted/80" : "bg-muted/50 border-border text-muted-foreground/50 cursor-not-allowed"}`}>
-               {i1Dir > 0 ? "↑" : "↓"}
-             </button>
-           </div>
-         </div>
-
-         {/* Toggles pour I2 (Inside) */}
-         <div className="flex flex-col gap-2 shrink-0">
-           <span className="text-[10px] font-bold text-red-600 dark:text-red-400 uppercase tracking-wider text-center">I2 (Intérieur)</span>
-           <div className="flex gap-1 h-7">
-             <button onClick={() => setI2Enabled(!i2Enabled)} className={`px-4 text-[10px] font-bold rounded border transition-colors ${i2Enabled ? "bg-red-600 border-red-400 text-white shadow-[0_0_10px_rgba(220,38,38,0.4)]" : "bg-muted border-border text-muted-foreground hover:bg-muted/80"}`}>
-               {i2Enabled ? "ON" : "OFF"}
-             </button>
-             <button disabled={!i2Enabled} onClick={() => setI2Dir(i2Dir * -1)} className={`px-4 text-[10px] font-bold rounded border transition-colors ${i2Enabled ? "bg-muted border-red-900/50 text-red-600 dark:text-red-400 hover:bg-muted/80" : "bg-muted/50 border-border text-muted-foreground/50 cursor-not-allowed"}`}>
-               {i2Dir > 0 ? "↑" : "↓"}
-             </button>
-           </div>
-         </div>
-
-         {/* Toggles pour I3 (Outside) */}
-         <div className="flex flex-col gap-2 shrink-0">
-           <span className="text-[10px] font-bold text-purple-600 dark:text-purple-400 uppercase tracking-wider text-center">I3 (Extérieur)</span>
-           <div className="flex gap-1 h-7">
-             <button onClick={() => setI3Enabled(!i3Enabled)} className={`px-4 text-[10px] font-bold rounded border transition-colors ${i3Enabled ? "bg-purple-600 border-purple-400 text-white shadow-[0_0_10px_rgba(147,51,234,0.4)]" : "bg-muted border-border text-muted-foreground hover:bg-muted/80"}`}>
-               {i3Enabled ? "ON" : "OFF"}
-             </button>
-             <button disabled={!i3Enabled} onClick={() => setI3Dir(i3Dir * -1)} className={`px-4 text-[10px] font-bold rounded border transition-colors ${i3Enabled ? "bg-muted border-purple-900/50 text-purple-600 dark:text-purple-400 hover:bg-muted/80" : "bg-muted/50 border-border text-muted-foreground/50 cursor-not-allowed"}`}>
-               {i3Dir > 0 ? "↑" : "↓"}
-             </button>
-           </div>
-         </div>
-
-         {/* Reset Button */}
-         <div className="shrink-0 flex items-center justify-center mt-2 sm:mt-0 w-full sm:w-auto">
+         <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+           <h3 className="text-[10px] sm:text-xs font-black text-slate-300 uppercase tracking-widest flex items-center gap-1.5">
+             <Power className="w-3.5 h-3.5 text-emerald-400" />
+             Contrôle
+           </h3>
            <button 
               onClick={() => {
                 setI1Enabled(true); setI1Dir(1);
                 setI2Enabled(true); setI2Dir(-1);
                 setI3Enabled(true); setI3Dir(1);
+                setI4Enabled(true); setI4Dir(1);
+                setI5Enabled(false); setI5Dir(-1);
               }}
               title="Réinitialiser"
-              className="flex items-center justify-center gap-1.5 p-2 px-4 bg-muted hover:bg-muted/80 text-foreground/80 rounded-lg transition-colors border border-border text-[10px] font-bold uppercase tracking-wider"
+              className="flex items-center gap-1 px-2 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded transition-colors border border-slate-700 text-[9px] font-black uppercase tracking-wider"
             >
-              <RotateCcw className="w-3.5 h-3.5" />
+              <RotateCcw className="w-3 h-3" />
               Reset
            </button>
+         </div>
+
+         {/* Grid des contrôles plus compact */}
+         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">
+            {wires.map((w) => (
+              <div key={w.id} className="flex flex-col gap-1.5 p-2 rounded-lg bg-slate-900/80 border border-slate-800/80 shadow-sm">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-black uppercase tracking-wider flex items-center gap-1" style={{ color: w.color }}>
+                    <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: w.enabled ? w.color : '#475569', boxShadow: w.enabled ? `0 0 5px ${w.color}` : 'none' }} />
+                    {w.id}
+                  </span>
+                  <span className={`text-[8px] font-bold px-1 py-0.5 rounded uppercase tracking-wider ${w.isInside ? 'bg-slate-800 text-slate-400' : 'bg-slate-800/50 border-dashed border border-slate-700 text-slate-500'}`}>
+                    {w.isInside ? 'Int' : 'Ext'}
+                  </span>
+                </div>
+                
+                <div className="flex gap-1 h-6 mt-0.5">
+                  <button 
+                    onClick={() => w.setE(!w.enabled)} 
+                    className={`flex-1 flex items-center justify-center text-[9px] font-black rounded transition-all ${w.enabled ? "text-white shadow-sm" : "bg-slate-800 text-slate-500 hover:bg-slate-700"}`}
+                    style={{ backgroundColor: w.enabled ? w.color : undefined }}
+                  >
+                    {w.enabled ? "ON" : "OFF"}
+                  </button>
+                  <button 
+                    disabled={!w.enabled} 
+                    onClick={() => w.setD(w.dir * -1)} 
+                    className={`flex-none w-7 sm:w-8 flex items-center justify-center text-sm font-black rounded transition-all ${w.enabled ? "bg-slate-800 text-white hover:bg-slate-700 border border-slate-700" : "bg-slate-900 text-slate-700 cursor-not-allowed border border-slate-800"}`}
+                  >
+                    {w.dir > 0 ? <ArrowUp className="w-3.5 h-3.5" /> : <ArrowDown className="w-3.5 h-3.5" />}
+                  </button>
+                </div>
+              </div>
+            ))}
          </div>
 
       </div>

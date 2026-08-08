@@ -665,31 +665,63 @@ export default function Chap2LoisFondamentales() {
       {/* ═══════════════════════════════════════════ */}
       {/* PARTIE 2: THEOREME D'AMPERE               */}
       {/* ═══════════════════════════════════════════ */}
-      <section className="bg-card/90 border border-border/80 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 shadow-sm w-full max-w-full overflow-x-hidden">
+      <section className="bg-card/90 border border-border/80 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 shadow-sm w-full max-w-full overflow-x-hidden mt-8">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 text-xs font-extrabold mb-3">
           <RotateCw className="w-3.5 h-3.5" />
           <span>Partie 2 • Le Théorème d&apos;Ampère (Méthode Globale)</span>
         </div>
 
         <h2 className="text-xl sm:text-2xl font-black mb-3 sm:mb-4 text-foreground leading-tight">
-          2. La Circulation du Champ Magnétique
+          Énoncé et Formulations du Théorème d&apos;Ampère
         </h2>
 
-        <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed mb-4">
-          Tout comme le théorème de Gauss facilite le calcul du champ électrique, le <strong>théorème d&apos;Ampère</strong> simplifie le calcul du champ magnétique lorsque la distribution de courants présente un haut degré de symétrie (cylindre, tore, solénoïde).
-        </p>
-
-        <div className="mb-6">
-          <FormulaCard label="Théorème d'Ampère (Forme Intégrale)" color="amber">
-            <span className="text-amber-400">
-              <LatexMath math="\oint_{(C)} \vec{B} \cdot d\vec{l} = \mu_0 \sum I_{enlac\acute{e}s}" />
-            </span>
-          </FormulaCard>
+        {/* Énoncé clair */}
+        <div className="mb-6 p-4 sm:p-5 rounded-xl bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-yellow-500/10 border-l-4 border-amber-500">
+          <h3 className="font-bold text-amber-500 mb-2 flex items-center gap-2">
+            <BookOpen className="w-4 h-4" />
+            Énoncé du Théorème :
+          </h3>
+          <p className="text-[12px] sm:text-sm text-foreground/80 leading-relaxed italic">
+            "Dans le vide, la <strong>circulation</strong> du champ magnétique <LatexMath math="\vec{B}" block={false} /> le long d'une courbe fermée orientée quelconque <LatexMath math="(C)" block={false} />, est égale au produit par <LatexMath math="\mu_0" block={false} /> de la <strong>somme algébrique des intensités</strong> des courants qui traversent une surface <LatexMath math="(S)" block={false} /> s'appuyant sur <LatexMath math="(C)" block={false} />."
+          </p>
         </div>
 
-        {/* Règle des signes */}
-        <div className="mb-6 p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-[11px] text-emerald-100/80 leading-relaxed">
-          <strong>Comment compter les courants ?</strong> Pour déterminer le signe des courants enlacés <LatexMath math="\Sigma I_{enl}" />, on oriente le contour fermé <LatexMath math="(C)" />. D&apos;après la règle de la main droite, on définit le vecteur normal <LatexMath math="\vec{n}" /> à la surface délimitée par ce contour. Tout courant circulant dans le même sens que <LatexMath math="\vec{n}" /> est compté <strong>positivement</strong>, sinon négativement.
+        {/* Différents Cas */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+          {/* Cas 1: Courants filiformes */}
+          <div className="p-4 rounded-xl bg-muted/50 border border-border">
+            <h4 className="text-sm font-bold text-amber-400 mb-3 text-center">1. Cas de courants filiformes</h4>
+            <div className="text-center mb-3">
+              <LatexMath math="\oint_{(C)} \vec{B} \cdot d\vec{l} = \mu_0 \sum_{i} I_{i}" block={false} className="text-base font-bold bg-amber-950/30 py-2 px-4 rounded-lg inline-block" />
+            </div>
+            <div className="text-[11px] text-muted-foreground leading-relaxed mt-2 p-3 bg-black/20 rounded">
+              <ul className="list-disc pl-4 space-y-1">
+                <li><strong className="text-emerald-400">+ I_i</strong> : si <LatexMath math="I_i" block={false} /> est de même sens que le vecteur normal <LatexMath math="\vec{n}" block={false} />.</li>
+                <li><strong className="text-red-400">- I_i</strong> : si <LatexMath math="I_i" block={false} /> est de sens contraire à <LatexMath math="\vec{n}" block={false} />.</li>
+              </ul>
+              <div className="mt-2 text-center text-amber-200/70">
+                <LatexMath math="\vec{n}" block={false} /> : vecteur normal à la surface (donné par la règle de la main droite).
+              </div>
+            </div>
+          </div>
+
+          {/* Cas 2: Densité de courant */}
+          <div className="p-4 rounded-xl bg-muted/50 border border-border">
+            <h4 className="text-sm font-bold text-teal-400 mb-3 text-center">2. Cas d'une densité de courant</h4>
+            <div className="text-center mb-3 space-y-2">
+              <LatexMath math="I_{enl} = \iint_{(S)} \vec{j} \cdot d\vec{S}" block={false} className="text-xs text-teal-300 block" />
+              <LatexMath math="\oint_{(C)} \vec{B} \cdot d\vec{l} = \mu_0 \iint_{(S)} \vec{j} \cdot d\vec{S}" block={false} className="text-base font-bold bg-teal-950/30 py-2 px-4 rounded-lg inline-block" />
+            </div>
+            <div className="text-[11px] text-muted-foreground leading-relaxed mt-2 p-3 bg-black/20 rounded border border-teal-500/20">
+              D'après le <strong>théorème de Stokes</strong> : <LatexMath math="\oint_{(C)} \vec{B} \cdot d\vec{l} = \iint_{(S)} \overrightarrow{rot}(\vec{B}) \cdot d\vec{S}" block={false} />
+              <div className="mt-2 flex justify-center">
+                <div className="px-3 py-1.5 rounded-full border-2 border-teal-400 text-teal-300 font-bold bg-teal-400/10">
+                  <LatexMath math="\overrightarrow{rot}(\vec{B}) = \mu_0 \vec{j}" block={false} />
+                </div>
+              </div>
+              <div className="text-center mt-1 text-teal-200/60 text-[9px]">Forme locale (Équation de Maxwell-Ampère)</div>
+            </div>
+          </div>
         </div>
 
         {/* Simulateur 3D Ampère */}
@@ -697,34 +729,120 @@ export default function Chap2LoisFondamentales() {
           Laboratoire 3D : Courants Enlacés
         </h3>
         <p className="text-[11px] text-muted-foreground mb-4">
-          Allumez ou éteignez les différents câbles pour voir comment le bilan des courants enlacés est calculé. Notez que le câble mauve (I3), qui passe <strong>à l&apos;extérieur</strong> du contour, ne participe jamais à la circulation de <LatexMath math="\vec{B}" /> !
+          Observez comment le bilan des courants enlacés est calculé selon l'orientation du contour <LatexMath math="(C)" block={false} /> et du vecteur normal <LatexMath math="\vec{n}" block={false} />. Le courant à l'extérieur ne participe pas !
         </p>
 
-        <div className="mb-6 w-full flex justify-center">
+        <div className="mb-8 w-full flex justify-center">
           <AmpereTheorem3DCanvas />
         </div>
 
         {/* Méthodologie */}
         <h3 className="text-sm font-bold text-foreground/80 dark:text-slate-300 mb-3 flex items-center gap-2 mt-8">
           <Layers className="w-4 h-4 text-muted-foreground" />
-          Méthodologie d&apos;application
+          Les 5 étapes pour appliquer le Théorème d'Ampère
         </h3>
-        <div className="space-y-3">
+        <div className="space-y-3 mb-8">
           {[
-            { step: "1", text: "Étudier les symétries et invariances pour déterminer la direction et la dépendance spatiale de B." },
-            { step: "2", text: "Choisir un contour d'Ampère (C) pertinent (cercle, rectangle) tangent à B ou perpendiculaire." },
-            { step: "3", text: "Calculer la circulation de B sur ce contour (elle se simplifie souvent en B × L)." },
-            { step: "4", text: "Calculer algébriquement la somme des courants I qui traversent la surface s'appuyant sur (C)." },
-            { step: "5", text: "Appliquer l'égalité et isoler l'expression de B." },
+            { step: "1", title: "Étude des invariances et des symétries", text: "Déterminer la direction de B et ses variables d'espace." },
+            { step: "2", title: "Choix du contour d'Ampère (C)", text: "Choisir un contour fermé (cercle, rectangle) qui respecte les symétries pour que B soit constant et tangent (ou nul) sur les segments." },
+            { step: "3", title: "Expression mathématique de la circulation", text: "Calculer l'intégrale de gauche. Elle se simplifie généralement en B × Longueur." },
+            { step: "4", title: "Calcul du courant enlacé", text: "Faire la somme algébrique des courants traversant la surface délimitée par (C) ou intégrer le vecteur densité de courant j." },
+            { step: "5", title: "Expression finale de B", text: "Égaliser les deux parties et isoler l'expression du champ magnétique B." },
           ].map((item, i) => (
             <div key={i} className="flex gap-3 items-center bg-muted/60 dark:bg-slate-900/40 p-3 rounded-lg border border-border">
-              <div className="w-6 h-6 shrink-0 rounded-full bg-slate-800 flex items-center justify-center text-[10px] font-black text-muted-foreground">
+              <div className="w-6 h-6 shrink-0 rounded-full bg-amber-500/20 text-amber-500 flex items-center justify-center text-[11px] font-black">
                 {item.step}
               </div>
-              <p className="text-[11px] text-foreground/80 dark:text-slate-300">{item.text}</p>
+              <div>
+                <span className="text-[11px] font-bold text-foreground block mb-0.5">{item.title}</span>
+                <span className="text-[10px] text-muted-foreground">{item.text}</span>
+              </div>
             </div>
           ))}
         </div>
+
+        {/* Application: Fil infini */}
+        <div className="mt-8 border-t border-border pt-8">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 text-indigo-400 text-xs font-extrabold mb-4">
+            <Lightbulb className="w-3.5 h-3.5" />
+            <span>Application 1 • Le Fil Infini (Méthode d'Ampère)</span>
+          </div>
+
+          <p className="text-[11px] text-muted-foreground leading-relaxed mb-4">
+            Nous avons déjà calculé le champ d'un fil infini avec la méthode de Biot-Savart (longue et très mathématique). Regardez comment le Théorème d'Ampère rend ce calcul <strong>extrêmement simple et rapide</strong> en appliquant les 5 étapes :
+          </p>
+
+          <div className="space-y-3">
+            {/* Etape 1 */}
+            <CollapsibleStep step={1} title="Symétries et Invariances" color="indigo" defaultOpen={true}>
+              <ul className="text-[11px] text-muted-foreground space-y-2 list-disc pl-4 mt-2">
+                <li>
+                  <strong className="text-indigo-400">Symétrie :</strong> Tout plan contenant le fil (axe Oz) est un plan de symétrie. Le champ magnétique <LatexMath math="\vec{B}" block={false} /> doit être perpendiculaire à ce plan.
+                  <br/><LatexMath math="\implies \vec{B}(M) = B(M) \vec{e_\theta}" block={false} />
+                </li>
+                <li>
+                  <strong className="text-indigo-400">Invariances :</strong> Le fil est infini (invariance par translation selon Oz) et cylindrique (invariance par rotation autour de Oz).
+                  <br/><LatexMath math="\implies B" block={false} /> ne dépend ni de <LatexMath math="z" block={false} />, ni de <LatexMath math="\theta" block={false} />. Il ne dépend que de la distance <LatexMath math="\rho" block={false} /> (ou <LatexMath math="r" block={false} />).
+                </li>
+              </ul>
+              <div className="mt-3 p-2 bg-indigo-500/10 rounded border border-indigo-500/20 text-center">
+                <LatexMath math="\text{Conclusion : } \implies \vec{B}(M) = B(\rho) \, \vec{e_\theta}" block={false} className="text-indigo-300 text-xs font-bold" />
+              </div>
+            </CollapsibleStep>
+
+            {/* Etape 2 */}
+            <CollapsibleStep step={2} title="Choix du contour (C)" color="teal">
+              <p className="text-[11px] text-muted-foreground">
+                Puisque le champ tourne selon <LatexMath math="\vec{e_\theta}" block={false} /> et dépend de <LatexMath math="\rho" block={false} />, le contour idéal est un <strong>cercle de rayon <LatexMath math="\rho" block={false} /> centré sur le fil</strong>.
+              </p>
+              <div className="text-center text-xs mt-2 text-teal-300 bg-teal-500/5 p-2 rounded border border-teal-500/20">
+                Sur ce cercle, <LatexMath math="\vec{B}" block={false} /> est tangent au contour : <LatexMath math="d\vec{l} = \rho d\theta \, \vec{e_\theta}" block={false} />
+              </div>
+            </CollapsibleStep>
+
+            {/* Etape 3 */}
+            <CollapsibleStep step={3} title="Circulation de B" color="blue">
+              <p className="text-[11px] text-muted-foreground mb-2">On calcule l'intégrale le long du cercle :</p>
+              <div className="text-center overflow-x-auto text-xs bg-blue-500/5 p-3 rounded border border-blue-500/20">
+                <LatexMath math="\oint_{(C)} \vec{B} \cdot d\vec{l} = \oint_{(C)} \left(B(\rho)\vec{e_\theta}\right) \cdot \left(dl\,\vec{e_\theta}\right) = B(\rho) \oint_{(C)} dl = B(\rho) \times 2\pi\rho" block={false} className="text-blue-300" />
+              </div>
+              <p className="text-[10px] text-blue-300/70 mt-2 text-center"><strong>On a :</strong> La circulation est simplement le champ (constant sur le cercle) multiplié par le périmètre du cercle !</p>
+            </CollapsibleStep>
+
+            {/* Etape 4 */}
+            <CollapsibleStep step={4} title="Calcul du courant enlacé" color="pink">
+              <p className="text-[11px] text-muted-foreground text-center">
+                La surface délimitée par notre cercle est un disque. Un seul courant <LatexMath math="I" block={false} /> traverse ce disque perpendiculairement, dans le même sens que le vecteur normal.
+              </p>
+              <div className="text-center text-sm font-bold text-pink-400 mt-2">
+                <LatexMath math="\implies \sum I_{enl} = + I" block={false} />
+              </div>
+            </CollapsibleStep>
+
+            {/* Etape 5 */}
+            <CollapsibleStep step={5} title="Expression Finale" color="emerald" defaultOpen={true}>
+              <p className="text-[11px] text-muted-foreground mb-2"><strong>D'après le théorème d'Ampère :</strong> <LatexMath math="\text{Circulation} = \mu_0 \sum I_{enl}" block={false} /></p>
+              <div className="text-center text-xs bg-emerald-500/5 p-2 rounded mb-3 border border-emerald-500/20">
+                <LatexMath math="B(\rho) \times 2\pi\rho = \mu_0 I" block={false} className="text-emerald-300 font-bold" />
+              </div>
+              
+              <div className="relative p-4 sm:p-5 rounded-xl bg-gradient-to-r from-emerald-500/10 via-cyan-500/10 to-teal-500/10 border-2 border-emerald-500/30 shadow-[0_0_20px_rgba(16,185,129,0.15)] mt-4">
+                <div className="absolute -top-3 left-4 px-3 py-0.5 bg-emerald-500 text-white text-[10px] font-black rounded-full uppercase tracking-wider">
+                  Résultat (Fil Infini)
+                </div>
+                <div className="text-center py-2">
+                  <span className="text-emerald-300 text-base sm:text-lg font-bold">
+                    <LatexMath math="\implies \vec{B}(M) = \frac{\mu_0 I}{2\pi \rho} \vec{e_\theta}" block={false} />
+                  </span>
+                </div>
+                <p className="text-[10px] text-center text-emerald-400/80 mt-2 font-medium">
+                  On retrouve le résultat de Biot-Savart en 3 lignes de calcul seulement ! 🎉
+                </p>
+              </div>
+            </CollapsibleStep>
+          </div>
+        </div>
+
       </section>
 
     </div>
