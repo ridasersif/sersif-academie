@@ -41,13 +41,6 @@ function AmpereContour({ radius, dir, isMain = false, yOffset = 0 }: { radius: n
           </mesh>
         </group>
       ))}
-      {isMain && (
-         <Html position={[radius * Math.cos(Math.PI/4), yOffset + 0.3, radius * Math.sin(Math.PI/4)]} center zIndexRange={[100,0]}>
-           <div className="text-rose-400 font-bold font-serif text-[10px] bg-slate-900/60 px-1.5 py-0.5 rounded backdrop-blur border border-rose-500/20 pointer-events-none whitespace-nowrap">
-             Contour (C)
-           </div>
-         </Html>
-      )}
     </group>
   );
 }
@@ -277,12 +270,12 @@ export default function InfiniteWire3DCanvas() {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full lg:w-auto">
             {/* Slider: Distance */}
             <div className="flex items-center gap-2 w-full sm:w-64 md:w-80 shrink-0">
-              <label className="text-[10px] font-bold text-orange-400 uppercase w-2">ρ</label>
+              <label className="text-[12px] font-bold text-orange-500 w-2">ρ</label>
               <input 
                 type="range" min={1} max={5} step={0.1} value={rho} 
                 onChange={(e) => setRho(parseFloat(e.target.value))} 
-                className="w-full h-2 rounded-full appearance-none cursor-pointer shadow-inner [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:bg-orange-400 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:shadow-md" 
-                style={{ background: `linear-gradient(to right, #fb923c ${percRho}%, #1e293b ${percRho}%)` }} 
+                className="w-full h-2 rounded-full appearance-none cursor-pointer shadow-inner [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:bg-orange-500 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:shadow-md" 
+                style={{ background: `linear-gradient(to right, #f97316 ${percRho}%, #f1f5f9 ${percRho}%)` }} 
               />
             </div>
 
