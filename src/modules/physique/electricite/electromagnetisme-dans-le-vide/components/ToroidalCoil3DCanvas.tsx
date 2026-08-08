@@ -132,6 +132,30 @@ function ToroidalScene({ rho, R1, R2, h, planeMode, dirI }: { rho: number, R1: n
   return (
     <group position={[0, 0, 0]} rotation={[-Math.PI/4, 0, 0]}>
       
+      {/* Solid Torus Body (Semi-transparent square section) */}
+      <group rotation={[Math.PI/2, 0, 0]}>
+        {/* Inner Wall */}
+        <mesh>
+          <cylinderGeometry args={[R1, R1, h, 64, 1, true]} />
+          <meshPhysicalMaterial color="#34d399" metalness={0.2} roughness={0.1} transparent opacity={0.15} side={THREE.DoubleSide} />
+        </mesh>
+        {/* Outer Wall */}
+        <mesh>
+          <cylinderGeometry args={[R2, R2, h, 64, 1, true]} />
+          <meshPhysicalMaterial color="#34d399" metalness={0.2} roughness={0.1} transparent opacity={0.15} side={THREE.DoubleSide} />
+        </mesh>
+        {/* Top Lid */}
+        <mesh position={[0, h/2, 0]} rotation={[Math.PI/2, 0, 0]}>
+          <ringGeometry args={[R1, R2, 64]} />
+          <meshPhysicalMaterial color="#34d399" metalness={0.2} roughness={0.1} transparent opacity={0.15} side={THREE.DoubleSide} />
+        </mesh>
+        {/* Bottom Lid */}
+        <mesh position={[0, -h/2, 0]} rotation={[-Math.PI/2, 0, 0]}>
+          <ringGeometry args={[R1, R2, 64]} />
+          <meshPhysicalMaterial color="#34d399" metalness={0.2} roughness={0.1} transparent opacity={0.15} side={THREE.DoubleSide} />
+        </mesh>
+      </group>
+
       {/* The Spires */}
       {spires.map((ang, i) => (
         <ToroidalSpire key={i} angle={ang} R1={R1} R2={R2} h={h} color="#f59e0b" dirI={dirI} />
