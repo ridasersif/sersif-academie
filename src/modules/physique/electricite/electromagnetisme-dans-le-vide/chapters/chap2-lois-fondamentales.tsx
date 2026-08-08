@@ -582,9 +582,22 @@ export default function Chap2LoisFondamentales() {
           {/* Étape 5: Bobine Plate */}
           <CollapsibleStep step={5} title="Cas d'une Bobine Plate (N Spires)" color="cyan">
             <p className="text-[11px] text-muted-foreground leading-relaxed mb-3">
-              Une bobine plate contient <LatexMath math="N" block={false} /> spires confondues. D'après le principe de superposition, on multiplie le champ de la spire par <LatexMath math="N" block={false} />.
+              Une bobine plate est constituée d'un enroulement de <LatexMath math="N" block={false} /> spires circulaires. Puisqu'elle est "plate", on considère que l'épaisseur de l'enroulement est négligeable, ce qui signifie que toutes les spires sont pratiquement confondues au même endroit dans l'espace.
             </p>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+            <div className="flex flex-col gap-3 mt-2 p-3 rounded-lg bg-cyan-500/5 border border-cyan-500/20">
+              <div className="text-cyan-400 text-xs">
+                <span className="font-bold text-cyan-300">Application du principe de superposition : </span>
+                Chaque spire crée individuellement un champ magnétique <LatexMath math="\vec{B}_{\text{spire}}" block={false} /> au point <LatexMath math="M" block={false} />. Le champ total créé par la bobine est simplement la somme vectorielle des champs créés par chacune des <LatexMath math="N" block={false} /> spires.
+                <br /><br />
+                <span className="bg-cyan-500/10 p-2 rounded block text-center font-bold">
+                  <LatexMath math="\vec{B}_T(M) = \sum_{k=1}^N \vec{B}_k = N \cdot \vec{B}_{\text{spire}}" block={false} />
+                </span>
+                <br />
+                Il suffit donc de prendre le résultat trouvé à l'étape 3 pour une seule spire et de le multiplier par <LatexMath math="N" block={false} />. On obtient ainsi les deux formes générales :
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
               <div className="p-4 rounded-xl bg-gradient-to-br from-cyan-500/10 to-blue-500/10 border-2 border-cyan-500/30 text-center flex flex-col gap-2 shadow-inner justify-between">
                 <span className="text-cyan-400 font-bold mb-2 block border-b border-cyan-500/20 pb-2">En fonction de <LatexMath math="x" block={false} /></span>
                 <span className="text-cyan-300 text-[15px] sm:text-[17px] font-bold block bg-cyan-950/50 py-4 rounded">
@@ -603,16 +616,48 @@ export default function Chap2LoisFondamentales() {
           {/* Étape 6: Solénoïde */}
           <CollapsibleStep step={6} title="Cas d'un Solénoïde" color="amber">
             <p className="text-[11px] text-muted-foreground leading-relaxed mb-3">
-              Un solénoïde est une bobine longue. En découpant en tranches de longueur <LatexMath math="dx" block={false} /> contenant <LatexMath math="n \, dx" block={false} /> spires et en intégrant sur l'angle <LatexMath math="\alpha" block={false} />, on obtient :
+              Contrairement à la bobine plate, un solénoïde est une bobine <strong>longue</strong> de longueur <LatexMath math="L" block={false} /> contenant <LatexMath math="N" block={false} /> spires réparties uniformément. On définit la densité de spires <LatexMath math="n = \frac{N}{L}" block={false} /> (nombre de spires par unité de longueur).
             </p>
-            <div className="p-4 rounded-xl bg-gradient-to-br from-amber-500/10 to-orange-500/10 border-2 border-amber-500/30 text-center shadow-inner mb-3">
-                <span className="text-amber-400 font-bold text-[14px] block mb-2">Champ d'un Solénoïde fini (entre <LatexMath math="\alpha_1" block={false} /> et <LatexMath math="\alpha_2" block={false} />) :</span>
-                <LatexMath math="\vec{B}(M) = \frac{\mu_0 n I}{2} (\cos(\alpha_2) - \cos(\alpha_1)) \vec{i}" block={false} className="text-amber-300 font-bold text-[16px] bg-amber-950/50 p-3 rounded block" />
+            <div className="flex flex-col gap-3 mt-2 p-3 rounded-lg bg-amber-500/5 border border-amber-500/20 text-amber-400 text-xs">
+              <div>
+                <span className="font-bold text-amber-300">1. Découpage en tranches élémentaires : </span>
+                On considère une tranche infinitésimale du solénoïde de longueur <LatexMath math="dx" block={false} />. Cette tranche contient <LatexMath math="dN = n \, dx" block={false} /> spires. Elle se comporte donc comme une mini bobine plate élémentaire qui crée un champ <LatexMath math="d\vec{B}" block={false} /> :
+                <div className="text-center mt-2 mb-2 bg-amber-500/10 p-2 rounded">
+                  <LatexMath math="d\vec{B} = \frac{\mu_0 (n \, dx) I}{2 R} \sin^3(\alpha) \, \vec{i}" block={false} />
+                </div>
+              </div>
+              
+              <div className="border-t border-amber-500/20 pt-3">
+                <span className="font-bold text-amber-300">2. Changement de variable (<LatexMath math="x \to \alpha" block={false} />) : </span>
+                Pour intégrer sur toute la longueur du solénoïde, on exprime <LatexMath math="dx" block={false} /> en fonction de l'angle <LatexMath math="\alpha" block={false} />. On sait que <LatexMath math="x = \frac{R}{\tan(\alpha)}" block={false} />. En dérivant, on obtient :
+                <div className="text-center mt-2 mb-2">
+                  <LatexMath math="dx = -\frac{R}{\sin^2(\alpha)} d\alpha" block={false} />
+                </div>
+                On remplace <LatexMath math="dx" block={false} /> dans l'expression de <LatexMath math="d\vec{B}" block={false} /> pour simplifier :
+                <div className="text-center mt-2 mb-2 bg-amber-500/10 p-2 rounded">
+                  <LatexMath math="d\vec{B} = \frac{\mu_0 n I}{2 R} \sin^3(\alpha) \left(-\frac{R}{\sin^2(\alpha)} d\alpha\right) \vec{i} \implies d\vec{B} = -\frac{\mu_0 n I}{2} \sin(\alpha) d\alpha \, \vec{i}" block={false} />
+                </div>
+              </div>
+
+              <div className="border-t border-amber-500/20 pt-3">
+                <span className="font-bold text-amber-300">3. Intégration sur le solénoïde fini : </span>
+                Il suffit d'intégrer <LatexMath math="d\vec{B}" block={false} /> entre les angles <LatexMath math="\alpha_1" block={false} /> (extrémité gauche) et <LatexMath math="\alpha_2" block={false} /> (extrémité droite) :
+                <div className="text-center mt-2 mb-2">
+                  <LatexMath math="\vec{B}(M) = \int_{\alpha_1}^{\alpha_2} -\frac{\mu_0 n I}{2} \sin(\alpha) d\alpha \, \vec{i} = \frac{\mu_0 n I}{2} \left[ \cos(\alpha) \right]_{\alpha_1}^{\alpha_2} \vec{i}" block={false} />
+                </div>
+              </div>
             </div>
-            <div className="p-4 rounded-xl bg-gradient-to-br from-orange-500/10 to-red-500/10 border-2 border-orange-500/30 text-center shadow-inner">
-                <span className="text-orange-400 font-bold text-[14px] block mb-2">Champ au centre d'un Solénoïde Infini :</span>
-                <span className="text-orange-300/80 text-[11px] italic block mb-2">(<LatexMath math="\alpha_1 \to \pi" block={false} /> et <LatexMath math="\alpha_2 \to 0" block={false} />)</span>
-                <LatexMath math="\vec{B}_{\text{infini}} = \mu_0 n I \, \vec{i}" block={false} className="text-orange-400 font-black text-[18px] bg-orange-950/50 p-3 rounded block" />
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
+              <div className="p-4 rounded-xl bg-gradient-to-br from-amber-500/10 to-orange-500/10 border-2 border-amber-500/30 text-center shadow-inner flex flex-col justify-center">
+                  <span className="text-amber-400 font-bold text-[14px] block mb-3 border-b border-amber-500/20 pb-2">Champ d'un Solénoïde fini (général)</span>
+                  <LatexMath math="\vec{B}(M) = \frac{\mu_0 n I}{2} (\cos(\alpha_2) - \cos(\alpha_1)) \vec{i}" block={false} className="text-amber-300 font-bold text-[15px] bg-amber-950/50 p-3 rounded block" />
+              </div>
+              <div className="p-4 rounded-xl bg-gradient-to-br from-orange-500/10 to-red-500/10 border-2 border-orange-500/30 text-center shadow-inner flex flex-col justify-center">
+                  <span className="text-orange-400 font-bold text-[14px] block mb-3 border-b border-orange-500/20 pb-2">Champ au centre d'un Solénoïde Infini</span>
+                  <p className="text-[10px] text-orange-300/80 mb-2 italic">Si le solénoïde est infiniment long, les angles tendent vers les limites <LatexMath math="\alpha_1 \to \pi" block={false} /> et <LatexMath math="\alpha_2 \to 0" block={false} />. Puisque <LatexMath math="\cos(0)=1" block={false} /> et <LatexMath math="\cos(\pi)=-1" block={false} />, le terme <LatexMath math="(1 - (-1)) = 2" block={false} /> annule le diviseur.</p>
+                  <LatexMath math="\vec{B}_{\text{infini}} = \mu_0 n I \, \vec{i}" block={false} className="text-orange-400 font-black text-[17px] bg-orange-950/50 p-3 rounded block" />
+              </div>
             </div>
           </CollapsibleStep>
         </div>

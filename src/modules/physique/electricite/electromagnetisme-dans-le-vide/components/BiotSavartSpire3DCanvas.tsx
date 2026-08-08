@@ -172,19 +172,37 @@ const SpireScene = ({ radius, distance, currentDirection, planeMode, circuitShap
               );
             })()}
 
-            {/* Current Direction arrows */}
-            {circuitShape !== "solenoide" && [0, Math.PI/2, Math.PI, 3*Math.PI/2].map((angleOffset, i) => {
-              const angle = angleOffset + time * currentDirection;
-              const x = circuitShape === "bobine" ? 0.2 : 0;
-              const y = radius * Math.cos(angle);
-              const z = radius * Math.sin(angle);
-              const tx = 0;
-              const ty = -Math.sin(angle) * currentDirection;
-              const tz = Math.cos(angle) * currentDirection;
-              return (
-                 <Arrow3D key={i} start={new THREE.Vector3(x, y, z)} dir={new THREE.Vector3(tx, ty, tz)} length={0.8} color="#fcd34d" thickness={3} headSize={0.2} />
-              );
-            })}
+            {/* Current Direction representation (moving spheres) */}
+            {circuitShape === "solenoide" 
+              ? [...Array(45)].map((_, i) => {
+                  const t = (i / 45 + (time * 0.1 * currentDirection)) % 1.0;
+                  const normalizedT = t < 0 ? t + 1 : t;
+                  const turns = 15;
+                  const length = 6;
+                  const x = (normalizedT - 0.5) * length;
+                  const angle = normalizedT * Math.PI * 2 * turns;
+                  const y = Math.cos(angle) * radius;
+                  const z = Math.sin(angle) * radius;
+                  
+                  return (
+                     <Sphere key={`curr-sol-${i}`} args={[0.08, 16, 16]} position={[x, y, z]}>
+                       <meshBasicMaterial color="#fcd34d" />
+                     </Sphere>
+                  );
+                })
+              : (circuitShape === "bobine" ? [-0.2, -0.1, 0, 0.1, 0.2] : [0]).flatMap((xOffset, loopIdx) => 
+                  [0, Math.PI/2, Math.PI, 3*Math.PI/2, Math.PI/4, 3*Math.PI/4, 5*Math.PI/4, 7*Math.PI/4].map((angleOffset, i) => {
+                    const angle = angleOffset + time * currentDirection;
+                    const y = radius * Math.cos(angle);
+                    const z = radius * Math.sin(angle);
+                    return (
+                       <Sphere key={`curr-${loopIdx}-${i}`} args={[0.08, 16, 16]} position={[xOffset, y, z]}>
+                         <meshBasicMaterial color="#fcd34d" />
+                       </Sphere>
+                    );
+                  })
+                )
+            }
 
             {/* Point M */}
             <Sphere args={[0.15, 16, 16]} position={mVec}>
