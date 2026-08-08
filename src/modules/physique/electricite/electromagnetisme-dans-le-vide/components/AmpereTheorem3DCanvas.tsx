@@ -58,7 +58,7 @@ export default function AmpereTheorem3DCanvas() {
                 <span className="text-purple-300 font-serif italic text-sm font-bold">dl</span>
               </div>
               <span className="text-slate-500 font-black text-xs mx-0.5">=</span>
-              <span className="text-amber-400 font-serif font-black text-sm drop-shadow-[0_0_8px_rgba(251,191,36,0.5)]">μ₀ I_enl</span>
+              <span className="text-amber-400 font-serif font-black text-sm drop-shadow-[0_0_8px_rgba(251,191,36,0.5)]">μ₀ I<sub className="text-[9px] ml-0.5 font-bold">enl</sub></span>
            </div>
         </div>
 
@@ -155,7 +155,9 @@ export default function AmpereTheorem3DCanvas() {
            
            {/* Résultat Bilan */}
            <div className="flex items-center gap-2 sm:gap-3 bg-slate-900/50 border border-slate-700/50 px-3 py-1 rounded-full shadow-inner mx-auto sm:mx-0">
-             <span className="text-amber-400 text-[10px] sm:text-xs font-mono font-black tracking-wider">Σ I_enl =</span>
+             <span className="text-amber-400 text-[10px] sm:text-xs font-mono font-black tracking-wider flex items-center">
+               Σ I<sub className="text-[8px] sm:text-[9px] ml-0.5 mr-1 pt-1 font-bold tracking-normal">enl</sub> =
+             </span>
              <div className={`px-2 py-0.5 rounded text-black text-[10px] sm:text-xs font-mono font-black ${iEnl > 0 ? "bg-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.4)]" : iEnl < 0 ? "bg-red-400 shadow-[0_0_10px_rgba(248,113,113,0.4)]" : "bg-slate-400"}`}>
                {iEnl > 0 ? `+${iEnl}I` : iEnl < 0 ? `${iEnl}I` : "0"}
              </div>
