@@ -388,25 +388,25 @@ export default function Chap2LoisFondamentales() {
         </div>
 
         <h2 className="text-xl sm:text-2xl font-black mb-3 sm:mb-4 text-foreground leading-tight">
-          Champ sur l'axe d'une spire
+          Champ sur l'axe : Spire, Bobine et Solénoïde
         </h2>
 
         <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed mb-6 font-medium">
-          On considère une spire circulaire de rayon <LatexMath math="R" /> parcourue par un courant <LatexMath math="I" />. On cherche le champ magnétique <LatexMath math="\vec{B}(M)" /> en un point <LatexMath math="M" /> situé sur l'axe de la spire à une distance <LatexMath math="x" /> du centre.
+          On considère un circuit circulaire de rayon <LatexMath math="R" /> parcouru par un courant <LatexMath math="I" />. On cherche le champ magnétique <LatexMath math="\vec{B}(M)" /> en un point <LatexMath math="M" /> situé sur l'axe à une distance <LatexMath math="x" /> du centre.
         </p>
 
-        {/* 3D Visualisation */}
-        <h3 className="text-sm font-bold text-foreground/80 dark:text-slate-300 mb-3 flex items-center gap-2">
-          <Sparkles className="w-4 h-4 text-emerald-400" />
-          Visualisation 3D Interactive
-        </h3>
-        <p className="text-[11px] text-muted-foreground mb-4">
-          Déplacez les curseurs pour modifier le rayon R de la spire et la distance x du point M. Observez le vecteur champ élémentaire <LatexMath math="d\vec{B}" /> et la résultante <LatexMath math="\vec{B}(M)" /> sur l'axe.
-        </p>
+            {/* 3D Visualisation */}
+            <h3 className="text-sm font-bold text-foreground/80 dark:text-slate-300 mb-3 flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-emerald-400" />
+              Visualisation 3D Interactive
+            </h3>
+            <p className="text-[11px] text-muted-foreground mb-4">
+              Déplacez les curseurs pour modifier le rayon R de la spire et la distance x du point M. Observez le vecteur champ élémentaire <LatexMath math="d\vec{B}" /> et la résultante <LatexMath math="\vec{B}(M)" /> sur l'axe.
+            </p>
 
-        <div className="mb-8 w-full flex justify-center">
-          <BiotSavartSpire3DCanvas />
-        </div>
+            <div className="mb-8 w-full flex justify-center">
+              <BiotSavartSpire3DCanvas />
+            </div>
 
         {/* Démonstration Step-by-Step */}
         <h3 className="text-sm font-bold text-foreground/80 dark:text-slate-300 mb-4 flex items-center gap-2">
@@ -576,6 +576,43 @@ export default function Chap2LoisFondamentales() {
                    </span>
                 </div>
               </div>
+            </div>
+          </CollapsibleStep>
+
+          {/* Étape 5: Bobine Plate */}
+          <CollapsibleStep step={5} title="Cas d'une Bobine Plate (N Spires)" color="cyan">
+            <p className="text-[11px] text-muted-foreground leading-relaxed mb-3">
+              Une bobine plate contient <LatexMath math="N" block={false} /> spires confondues. D'après le principe de superposition, on multiplie le champ de la spire par <LatexMath math="N" block={false} />.
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+              <div className="p-4 rounded-xl bg-gradient-to-br from-cyan-500/10 to-blue-500/10 border-2 border-cyan-500/30 text-center flex flex-col gap-2 shadow-inner justify-between">
+                <span className="text-cyan-400 font-bold mb-2 block border-b border-cyan-500/20 pb-2">En fonction de <LatexMath math="x" block={false} /></span>
+                <span className="text-cyan-300 text-[15px] sm:text-[17px] font-bold block bg-cyan-950/50 py-4 rounded">
+                  <LatexMath math="\vec{B}_T(M) = \frac{\mu_0 N I R^2}{2(R^2 + x^2)^{3/2}} \, \vec{i}" block={false} />
+                </span>
+              </div>
+              <div className="p-4 rounded-xl bg-gradient-to-br from-blue-500/10 to-indigo-500/10 border-2 border-blue-500/30 text-center flex flex-col gap-2 shadow-inner justify-between">
+                <span className="text-blue-400 font-bold mb-2 block border-b border-blue-500/20 pb-2">En fonction de <LatexMath math="\alpha" block={false} /></span>
+                <span className="text-blue-300 text-[15px] font-bold block bg-blue-950/50 py-4 rounded">
+                  <LatexMath math="\vec{B}_T(M) = \frac{\mu_0 N I}{2R} \sin^3(\alpha) \, \vec{i}" block={false} />
+                </span>
+              </div>
+            </div>
+          </CollapsibleStep>
+
+          {/* Étape 6: Solénoïde */}
+          <CollapsibleStep step={6} title="Cas d'un Solénoïde" color="amber">
+            <p className="text-[11px] text-muted-foreground leading-relaxed mb-3">
+              Un solénoïde est une bobine longue. En découpant en tranches de longueur <LatexMath math="dx" block={false} /> contenant <LatexMath math="n \, dx" block={false} /> spires et en intégrant sur l'angle <LatexMath math="\alpha" block={false} />, on obtient :
+            </p>
+            <div className="p-4 rounded-xl bg-gradient-to-br from-amber-500/10 to-orange-500/10 border-2 border-amber-500/30 text-center shadow-inner mb-3">
+                <span className="text-amber-400 font-bold text-[14px] block mb-2">Champ d'un Solénoïde fini (entre <LatexMath math="\alpha_1" block={false} /> et <LatexMath math="\alpha_2" block={false} />) :</span>
+                <LatexMath math="\vec{B}(M) = \frac{\mu_0 n I}{2} (\cos(\alpha_2) - \cos(\alpha_1)) \vec{i}" block={false} className="text-amber-300 font-bold text-[16px] bg-amber-950/50 p-3 rounded block" />
+            </div>
+            <div className="p-4 rounded-xl bg-gradient-to-br from-orange-500/10 to-red-500/10 border-2 border-orange-500/30 text-center shadow-inner">
+                <span className="text-orange-400 font-bold text-[14px] block mb-2">Champ au centre d'un Solénoïde Infini :</span>
+                <span className="text-orange-300/80 text-[11px] italic block mb-2">(<LatexMath math="\alpha_1 \to \pi" block={false} /> et <LatexMath math="\alpha_2 \to 0" block={false} />)</span>
+                <LatexMath math="\vec{B}_{\text{infini}} = \mu_0 n I \, \vec{i}" block={false} className="text-orange-400 font-black text-[18px] bg-orange-950/50 p-3 rounded block" />
             </div>
           </CollapsibleStep>
         </div>

@@ -58,7 +58,7 @@ const Arrow3D: React.FC<ArrowProps> = ({
   );
 };
 
-const SpireScene = ({ radius, distance, currentDirection, planeMode }: { radius: number, distance: number, currentDirection: number, planeMode: "none" | "sym" | "antisym" }) => {
+const SpireScene = ({ radius, distance, currentDirection, planeMode, circuitShape }: { radius: number, distance: number, currentDirection: number, planeMode: "none" | "sym" | "antisym", circuitShape: "spire" | "bobine" | "solenoide" }) => {
   const [time, setTime] = useState(0);
   const groupRef = useRef<THREE.Group>(null);
   
@@ -112,23 +112,70 @@ const SpireScene = ({ radius, distance, currentDirection, planeMode }: { radius:
             <gridHelper args={[20, 20, "#1e293b", "#0f172a"]} position={[0, -4, 0]} />
             <Arrow3D start={new THREE.Vector3(-8, 0, 0)} dir={new THREE.Vector3(1, 0, 0)} length={16} color="#334155" thickness={1} headSize={0.15} opacity={0.5} />
             
-            {/* The Spire (Torus) */}
-            <group>
-              <mesh rotation={[0, Math.PI / 2, 0]}>
-                <torusGeometry args={[radius, 0.08, 64, 100]} />
-                <meshStandardMaterial color="#fb923c" metalness={0.6} roughness={0.2} emissive="#c2410c" emissiveIntensity={0.5} />
-              </mesh>
-              {/* Highlight dl segment */}
-              <mesh rotation={[0, Math.PI / 2, Math.PI/2 - 0.15]}>
-                <torusGeometry args={[radius, 0.082, 16, 32, 0.3]} />
-                <meshStandardMaterial color="#f472b6" emissive="#be185d" emissiveIntensity={0.8} />
-              </mesh>
-            </group>
+            <Arrow3D start={new THREE.Vector3(-8, 0, 0)} dir={new THREE.Vector3(1, 0, 0)} length={16} color="#334155" thickness={1} headSize={0.15} opacity={0.5} />
+            
+            {/* The Circuits */}
+            {circuitShape === "spire" && (
+              <group>
+                <mesh rotation={[0, Math.PI / 2, 0]}>
+                  <torusGeometry args={[radius, 0.08, 64, 100]} />
+                  <meshStandardMaterial color="#fb923c" metalness={0.6} roughness={0.2} emissive="#c2410c" emissiveIntensity={0.5} />
+                </mesh>
+                {/* Highlight dl segment */}
+                <mesh rotation={[0, Math.PI / 2, Math.PI/2 - 0.15]}>
+                  <torusGeometry args={[radius, 0.082, 16, 32, 0.3]} />
+                  <meshStandardMaterial color="#f472b6" emissive="#be185d" emissiveIntensity={0.8} />
+                </mesh>
+              </group>
+            )}
 
-            {/* Current Direction arrows on Spire */}
-            {[0, Math.PI/2, Math.PI, 3*Math.PI/2].map((angleOffset, i) => {
+            {circuitShape === "bobine" && (
+              <group>
+                {[...Array(5)].map((_, i) => (
+                  <mesh key={`b-${i}`} rotation={[0, Math.PI / 2, 0]} position={[(i - 2) * 0.1, 0, 0]}>
+                    <torusGeometry args={[radius, 0.06, 32, 64]} />
+                    <meshStandardMaterial color="#06b6d4" metalness={0.6} roughness={0.2} emissive="#0891b2" emissiveIntensity={0.5} />
+                  </mesh>
+                ))}
+                {/* Highlight dl segment on middle spire */}
+                <mesh rotation={[0, Math.PI / 2, Math.PI/2 - 0.15]}>
+                  <torusGeometry args={[radius, 0.065, 16, 32, 0.3]} />
+                  <meshStandardMaterial color="#f472b6" emissive="#be185d" emissiveIntensity={0.8} />
+                </mesh>
+              </group>
+            )}
+
+            {circuitShape === "solenoide" && (() => {
+              class HelixCurve extends THREE.Curve<THREE.Vector3> {
+                constructor() { super(); }
+                getPoint(t: number, optionalTarget = new THREE.Vector3()) {
+                  const turns = 15;
+                  const length = 6;
+                  const x = (t - 0.5) * length;
+                  const angle = t * Math.PI * 2 * turns;
+                  return optionalTarget.set(x, Math.cos(angle) * radius, Math.sin(angle) * radius);
+                }
+              }
+              const helix = new HelixCurve();
+              return (
+                <group>
+                  <mesh>
+                    <tubeGeometry args={[helix, 300, 0.04, 8, false]} />
+                    <meshStandardMaterial color="#f59e0b" metalness={0.6} roughness={0.2} emissive="#d97706" emissiveIntensity={0.5} />
+                  </mesh>
+                  {/* Fake highlight for dl */}
+                  <mesh rotation={[0, Math.PI / 2, Math.PI/2 - 0.15]} position={[0, 0, 0]}>
+                    <torusGeometry args={[radius, 0.06, 16, 32, 0.3]} />
+                    <meshStandardMaterial color="#f472b6" emissive="#be185d" emissiveIntensity={0.8} />
+                  </mesh>
+                </group>
+              );
+            })()}
+
+            {/* Current Direction arrows */}
+            {circuitShape !== "solenoide" && [0, Math.PI/2, Math.PI, 3*Math.PI/2].map((angleOffset, i) => {
               const angle = angleOffset + time * currentDirection;
-              const x = 0;
+              const x = circuitShape === "bobine" ? 0.2 : 0;
               const y = radius * Math.cos(angle);
               const z = radius * Math.sin(angle);
               const tx = 0;
@@ -343,6 +390,7 @@ export default function BiotSavartSpire3DCanvas() {
   const [distance, setDistance] = useState(3.0); // Distance x of point M on axis
   const [currentDirection, setCurrentDirection] = useState<1 | -1>(1); // Direction of I
   const [planeMode, setPlaneMode] = useState<"none" | "sym" | "antisym">("none");
+  const [circuitShape, setCircuitShape] = useState<"spire" | "bobine" | "solenoide">("spire");
 
   // Angle alpha between X axis and PM
   const rDist = Math.sqrt(radius * radius + distance * distance);
@@ -353,6 +401,40 @@ export default function BiotSavartSpire3DCanvas() {
 
   return (
     <div className="w-full max-w-[800px] mx-auto flex flex-col">
+      {/* Choix du type de circuit */}
+      <div className="flex flex-col sm:flex-row gap-2 mb-3 justify-center w-full">
+        <button 
+          onClick={() => setCircuitShape("spire")} 
+          className={`px-3 py-2 rounded-lg font-bold text-xs transition-all border flex items-center justify-center gap-2 ${
+            circuitShape === "spire" 
+              ? "bg-emerald-500 text-white border-emerald-400 shadow-[0_0_10px_rgba(16,185,129,0.5)]" 
+              : "bg-slate-800/50 text-slate-400 border-slate-700 hover:bg-slate-800"
+          }`}
+        >
+          Spire Circulaire
+        </button>
+        <button 
+          onClick={() => setCircuitShape("bobine")} 
+          className={`px-3 py-2 rounded-lg font-bold text-xs transition-all border flex items-center justify-center gap-2 ${
+            circuitShape === "bobine" 
+              ? "bg-cyan-500 text-white border-cyan-400 shadow-[0_0_10px_rgba(6,182,212,0.5)]" 
+              : "bg-slate-800/50 text-slate-400 border-slate-700 hover:bg-slate-800"
+          }`}
+        >
+          Bobine Plate
+        </button>
+        <button 
+          onClick={() => setCircuitShape("solenoide")} 
+          className={`px-3 py-2 rounded-lg font-bold text-xs transition-all border flex items-center justify-center gap-2 ${
+            circuitShape === "solenoide" 
+              ? "bg-amber-500 text-white border-amber-400 shadow-[0_0_10px_rgba(245,158,11,0.5)]" 
+              : "bg-slate-800/50 text-slate-400 border-slate-700 hover:bg-slate-800"
+          }`}
+        >
+          Solénoïde
+        </button>
+      </div>
+
       <div className="w-full h-[300px] sm:h-[400px] bg-slate-950 rounded-t-2xl overflow-hidden relative border border-slate-800 border-b-0 shadow-inner">
         
         {/* HUD Légende */}
@@ -390,7 +472,7 @@ export default function BiotSavartSpire3DCanvas() {
             maxDistance={20}
           />
           
-          <SpireScene radius={radius} distance={distance} currentDirection={currentDirection} planeMode={planeMode} />
+          <SpireScene radius={radius} distance={distance} currentDirection={currentDirection} planeMode={planeMode} circuitShape={circuitShape} />
         </Canvas>
       </div>
 
