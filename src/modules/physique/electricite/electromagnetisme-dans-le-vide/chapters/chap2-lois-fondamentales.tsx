@@ -7,6 +7,8 @@ import BiotSavartSegment3DCanvas from "../components/BiotSavartSegment3DCanvas";
 import BiotSavartSpire3DCanvas from "../components/BiotSavartSpire3DCanvas";
 import AmpereTheorem3DCanvas from "../components/AmpereTheorem3DCanvas";
 import InfiniteWire3DCanvas from "../components/InfiniteWire3DCanvas";
+import Cylinder3DCanvas from "../components/Cylinder3DCanvas";
+import CylinderSurface3DCanvas from "../components/CylinderSurface3DCanvas";
 import { Calculator, RotateCw, Layers, ChevronDown, ChevronUp, Sparkles, BookOpen, Lightbulb, ArrowRight } from "lucide-react";
 
 /* ── Collapsible Panel Component ── */
@@ -926,6 +928,340 @@ export default function Chap2LoisFondamentales() {
             </CollapsibleStep>
           </div>
         
+      </section>
+
+      {/* ── APPLICATION 2 : CYLINDRE INFINI (SURFACIQUE) ── */}
+      <section className="mb-12 mt-12 bg-card rounded-3xl p-6 border border-border shadow-sm">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="bg-rose-500/10 p-2.5 rounded-xl border border-rose-500/20 shadow-inner">
+            <Sparkles className="w-5 h-5 text-rose-400" />
+          </div>
+          <div>
+            <h2 className="text-xl md:text-2xl font-black text-rose-400 mb-1">Application 2 • Le Cylindre Infini (Surfacique)</h2>
+            <p className="text-sm text-muted-foreground font-medium">Densité de courant surfacique uniforme</p>
+          </div>
+        </div>
+
+        <h3 className="text-2xl font-black text-foreground mb-4">Calcul du champ magnétique d'un cylindre creux</h3>
+        <p className="text-sm text-muted-foreground leading-relaxed mb-8">
+          Considérons un cylindre de longueur infinie et de rayon <LatexMath math="R" block={false} />, parcouru par un courant réparti <strong>uniquement sur sa surface</strong> avec une densité surfacique uniforme <LatexMath math="\vec{j_s} = j_s \vec{e_z}" block={false} />. L'intérieur du cylindre est vide de tout courant.
+        </p>
+
+        <div className="mb-6">
+          <h4 className="text-sm font-bold flex items-center gap-2 mb-4 text-slate-300">
+            <Layers className="w-4 h-4 text-slate-400" />
+            Laboratoire 3D : Symétries du Cylindre Surfacique
+          </h4>
+          <p className="text-[11px] text-muted-foreground mb-4">
+            Observez que les flèches de courant sont restreintes à la paroi externe. Regardez ce qui arrive au champ <LatexMath math="\vec{B}" block={false} /> (la flèche verte) lorsque vous déplacez le point M à l'intérieur du cylindre.
+          </p>
+          
+          <CylinderSurface3DCanvas />
+        </div>
+
+        <div className="mt-8">
+          <h4 className="text-sm font-bold text-slate-300 mb-4 border-b border-border pb-2 flex items-center gap-2">
+            <Calculator className="w-4 h-4 text-slate-400" /> 
+            Démonstration Step-by-Step (Théorème d'Ampère)
+          </h4>
+
+          <div className="space-y-3">
+            {/* Etape 1 */}
+            <CollapsibleStep step={1} title="Symétries et Invariances" color="rose" defaultOpen={true}>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="p-3 rounded-lg bg-rose-500/5 border border-rose-500/20">
+                  <div className="text-rose-400 text-xs font-bold mb-2 flex items-center gap-1">Invariances (De quoi dépend B ?)</div>
+                  <ul className="text-[11px] text-muted-foreground space-y-1 list-disc pl-4">
+                    <li><strong>Invariance par translation</strong> le long de (Oz) : Le champ ne dépend pas de <LatexMath math="z" block={false} />.</li>
+                    <li><strong>Invariance par rotation</strong> autour de (Oz) : Le champ ne dépend pas de <LatexMath math="\theta" block={false} />.</li>
+                  </ul>
+                  <div className="mt-2 text-center text-xs font-mono text-rose-300/80 bg-rose-950/40 py-1 rounded">
+                    B ne dépend que de ρ : B(ρ)
+                  </div>
+                </div>
+                
+                <div className="p-3 rounded-lg bg-rose-500/5 border border-rose-500/20">
+                  <div className="text-rose-400 text-xs font-bold mb-2 flex items-center gap-1">Symétries (Quelle est sa direction ?)</div>
+                  <p className="text-[11px] text-muted-foreground leading-relaxed mb-2">
+                    Le plan <LatexMath math="\Pi (M, \vec{e_\rho}, \vec{e_z})" block={false} /> contient l'axe du cylindre. C'est un plan de <strong>symétrie</strong> pour la distribution surfacique.
+                  </p>
+                  <p className="text-[11px] text-muted-foreground leading-relaxed">
+                    Le champ <LatexMath math="\vec{B}" block={false} /> étant un pseudo-vecteur, il doit lui être <strong>perpendiculaire</strong>.
+                  </p>
+                  <div className="mt-2 text-center text-xs font-mono text-rose-300/80 bg-rose-950/40 py-1 rounded">
+                    B est colinéaire à e_θ
+                  </div>
+                </div>
+              </div>
+              
+              <div className="mt-3 text-center bg-rose-900/30 border border-rose-500/30 p-2 rounded-lg text-sm text-rose-300 shadow-inner">
+                Conclusion de l'étape 1 : <LatexMath math="\vec{B}(M) = B(\rho) \vec{e_\theta}" block={false} className="font-bold ml-2" />
+              </div>
+            </CollapsibleStep>
+
+            {/* Etape 2 et 3 */}
+            <CollapsibleStep step={2} title="Choix du Contour et Circulation" color="teal">
+              <p className="text-[11px] text-muted-foreground leading-relaxed mb-3">
+                Comme pour tous les problèmes à symétrie cylindrique, on choisit un cercle de rayon <LatexMath math="\rho" block={false} />. La circulation est alors immédiate :
+              </p>
+              <div className="text-center overflow-x-auto text-sm bg-teal-950/40 p-3 rounded-lg border border-teal-500/30 shadow-inner">
+                <LatexMath math="\oint_{(C)} \vec{B} \cdot d\vec{l} = B(\rho) \times (2 \pi \rho)" block={false} className="text-teal-300 font-bold" />
+              </div>
+            </CollapsibleStep>
+
+            {/* Etape 4 */}
+            <CollapsibleStep step={4} title="Calcul du courant enlacé (Le piège !)" color="orange">
+              <p className="text-[11px] text-muted-foreground leading-relaxed mb-3">
+                C'est ici que la <strong>densité surfacique</strong> fait toute la différence.
+              </p>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Cas 1 : Intérieur */}
+                <div className="p-4 rounded-xl bg-orange-500/5 border border-orange-500/30 relative mt-2">
+                  <div className="absolute -top-3 left-4 bg-orange-900 text-orange-300 text-[10px] font-bold px-2 py-0.5 rounded border border-orange-500/50">
+                    Cas 1 : Intérieur (ρ {'<'} R)
+                  </div>
+                  <p className="text-[10px] text-muted-foreground/90 mt-2 mb-2 leading-relaxed">
+                    Le contour d'Ampère est entièrement <strong>à l'intérieur</strong> du cylindre. Or, tout le courant circule sur la peau (<LatexMath math="\rho = R" block={false} />).
+                  </p>
+                  <p className="text-[10px] text-muted-foreground/90 mb-2 leading-relaxed">
+                    Il n'y a <strong>absolument aucun courant</strong> qui traverse ce contour !
+                  </p>
+                  <div className="text-center font-black text-lg text-orange-400 mt-3 bg-orange-950/50 py-2 rounded-lg border border-orange-500/20">
+                    <LatexMath math="\sum I_{enl} = 0" block={false} />
+                  </div>
+                </div>
+
+                {/* Cas 2 : Extérieur */}
+                <div className="p-4 rounded-xl bg-orange-500/5 border border-orange-500/30 relative mt-2">
+                  <div className="absolute -top-3 left-4 bg-orange-900 text-orange-300 text-[10px] font-bold px-2 py-0.5 rounded border border-orange-500/50">
+                    Cas 2 : Extérieur (ρ {'>'} R)
+                  </div>
+                  <p className="text-[10px] text-muted-foreground/90 mt-2 mb-2 leading-relaxed">
+                    Le contour d'Ampère englobe tout le cylindre. Tout le courant disponible le traverse.
+                  </p>
+                  <div className="text-center text-xs bg-orange-950/40 p-2 rounded-lg border border-orange-500/20 mb-2 overflow-x-auto">
+                    <LatexMath math="I_{enl} = \int_{contour} j_s \, dl = j_s \times (2\pi R)" block={false} className="text-orange-300" />
+                  </div>
+                  <div className="text-center font-bold text-sm text-orange-400 mt-2">
+                    <LatexMath math="\implies \sum I_{enl} = j_s (2\pi R)" block={false} />
+                  </div>
+                </div>
+              </div>
+            </CollapsibleStep>
+
+            {/* Etape 5 */}
+            <CollapsibleStep step={5} title="Expression Finale (Blindage magnétique)" color="emerald" defaultOpen={true}>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Intérieur Result */}
+                <div className="p-4 rounded-xl bg-gradient-to-br from-emerald-500/10 to-teal-500/5 border border-emerald-500/30 shadow-inner flex flex-col items-center justify-center relative mt-2">
+                  <div className="absolute -top-3 bg-emerald-900 text-emerald-300 text-[10px] font-bold px-2 py-0.5 rounded-full border border-emerald-500/50 uppercase tracking-wider">
+                    À l'intérieur (ρ {'<'} R)
+                  </div>
+                  <LatexMath math="B(\rho) \times 2\pi\rho = \mu_0 (0)" block={false} className="text-xs text-muted-foreground mb-3 mt-2" />
+                  <span className="text-emerald-300 text-lg font-black drop-shadow-md">
+                    <LatexMath math="\vec{B}(M) = \vec{0}" block={false} />
+                  </span>
+                  <div className="mt-2 text-[10px] font-medium text-emerald-400/80 bg-emerald-950/50 px-2 py-1 rounded text-center">
+                    C'est un blindage magnétique parfait !
+                  </div>
+                </div>
+
+                {/* Extérieur Result */}
+                <div className="p-4 rounded-xl bg-gradient-to-br from-teal-500/10 to-emerald-500/5 border border-teal-500/30 shadow-inner flex flex-col items-center justify-center relative mt-2">
+                  <div className="absolute -top-3 bg-teal-900 text-teal-300 text-[10px] font-bold px-2 py-0.5 rounded-full border border-teal-500/50 uppercase tracking-wider">
+                    À l'extérieur (ρ {'>'} R)
+                  </div>
+                  <LatexMath math="B(\rho) \times 2\pi\rho = \mu_0 (j_s \times 2\pi R)" block={false} className="text-xs text-muted-foreground mb-3 mt-2" />
+                  <span className="text-teal-300 text-lg font-black drop-shadow-md">
+                    <LatexMath math="\vec{B}(M) = \frac{\mu_0 j_s R}{\rho} \, \vec{e_\theta}" block={false} />
+                  </span>
+                  <div className="mt-2 text-[10px] font-medium text-teal-400/80 bg-teal-950/50 px-2 py-1 rounded">Le champ diminue en 1/ρ.</div>
+                </div>
+              </div>
+            </CollapsibleStep>
+          </div>
+        </div>
+      </section>
+
+      {/* ── APPLICATION 3 : CYLINDRE INFINI (VOLUMIQUE) ── */}
+      <section className="mb-12 mt-12 bg-card rounded-3xl p-6 border border-border shadow-sm">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="bg-indigo-500/10 p-2.5 rounded-xl border border-indigo-500/20 shadow-inner">
+            <Sparkles className="w-5 h-5 text-indigo-400" />
+          </div>
+          <div>
+            <h2 className="text-xl md:text-2xl font-black text-indigo-400 mb-1">Application 3 • Le Cylindre Infini (Volumique)</h2>
+            <p className="text-sm text-muted-foreground font-medium">Densité de courant volumique uniforme</p>
+          </div>
+        </div>
+
+        <h3 className="text-2xl font-black text-foreground mb-4">Calcul du champ magnétique d'un cylindre</h3>
+        <p className="text-sm text-muted-foreground leading-relaxed mb-8">
+          Considérons maintenant un cylindre de longueur infinie et de rayon <LatexMath math="R" block={false} />, parcouru par une densité de courant volumique uniforme <LatexMath math="\vec{j} = j \vec{e_z}" block={false} />. Le théorème d'Ampère est l'outil parfait pour trouver le champ magnétique créé à l'intérieur et à l'extérieur.
+        </p>
+
+        <div className="mb-6">
+          <h4 className="text-sm font-bold flex items-center gap-2 mb-4 text-slate-300">
+            <Layers className="w-4 h-4 text-slate-400" />
+            Laboratoire 3D : Symétries du Cylindre
+          </h4>
+          <p className="text-[11px] text-muted-foreground mb-4">
+            Manipulez le point M pour l'amener à l'intérieur (ρ ≤ R) ou à l'extérieur (ρ {">"} R) du cylindre. Observez comment la valeur du champ <LatexMath math="\vec{B}" block={false} /> évolue.
+          </p>
+          
+          <Cylinder3DCanvas />
+        </div>
+
+        <div className="mt-8">
+          <h4 className="text-sm font-bold text-slate-300 mb-4 border-b border-border pb-2 flex items-center gap-2">
+            <Calculator className="w-4 h-4 text-slate-400" /> 
+            Démonstration Step-by-Step (Théorème d'Ampère)
+          </h4>
+
+          <div className="space-y-3">
+            {/* Etape 1 */}
+            <CollapsibleStep step={1} title="Symétries et Invariances" color="indigo" defaultOpen={true}>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="p-3 rounded-lg bg-indigo-500/5 border border-indigo-500/20">
+                  <div className="text-indigo-400 text-xs font-bold mb-2 flex items-center gap-1">Invariances (De quoi dépend B ?)</div>
+                  <ul className="text-[11px] text-muted-foreground space-y-1 list-disc pl-4">
+                    <li><strong>Invariance par translation</strong> le long de (Oz) : Le champ ne dépend pas de <LatexMath math="z" block={false} />.</li>
+                    <li><strong>Invariance par rotation</strong> autour de (Oz) : Le champ ne dépend pas de <LatexMath math="\theta" block={false} />.</li>
+                  </ul>
+                  <div className="mt-2 text-center text-xs font-mono text-indigo-300/80 bg-indigo-950/40 py-1 rounded">
+                    B ne dépend que de ρ : B(ρ)
+                  </div>
+                </div>
+                
+                <div className="p-3 rounded-lg bg-indigo-500/5 border border-indigo-500/20">
+                  <div className="text-indigo-400 text-xs font-bold mb-2 flex items-center gap-1">Symétries (Quelle est sa direction ?)</div>
+                  <p className="text-[11px] text-muted-foreground leading-relaxed mb-2">
+                    Le plan <LatexMath math="\Pi (M, \vec{e_\rho}, \vec{e_z})" block={false} /> contient l'axe du cylindre et le point M. Il contient les courants (qui sont selon z), c'est donc un plan de <strong>symétrie</strong>.
+                  </p>
+                  <p className="text-[11px] text-muted-foreground leading-relaxed">
+                    Le champ <LatexMath math="\vec{B}" block={false} /> est un pseudo-vecteur, il doit être <strong>perpendiculaire</strong> à ce plan de symétrie.
+                  </p>
+                  <div className="mt-2 text-center text-xs font-mono text-indigo-300/80 bg-indigo-950/40 py-1 rounded">
+                    B est colinéaire à e_θ
+                  </div>
+                </div>
+              </div>
+              
+              <div className="mt-3 text-center bg-indigo-900/30 border border-indigo-500/30 p-2 rounded-lg text-sm text-indigo-300 shadow-inner">
+                Conclusion de l'étape 1 : <LatexMath math="\vec{B}(M) = B(\rho) \vec{e_\theta}" block={false} className="font-bold ml-2" />
+              </div>
+            </CollapsibleStep>
+
+            {/* Etape 2 */}
+            <CollapsibleStep step={2} title="Choix du Contour d'Ampère (C)" color="teal">
+              <p className="text-[11px] text-muted-foreground leading-relaxed mb-3">
+                Nous devons choisir un contour fermé (C) passant par M. Pour que l'intégrale soit simple à calculer, le contour doit respecter les symétries qu'on vient de trouver.
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="p-3 rounded-lg bg-teal-500/5 border border-teal-500/20 flex flex-col justify-center">
+                  <div className="text-teal-400 text-xs font-bold mb-1">La Forme (C)</div>
+                  <div className="text-[10px] text-teal-200/70">Un <strong>cercle horizontal</strong> de rayon <LatexMath math="\rho" block={false} /> centré sur l'axe du cylindre.</div>
+                </div>
+                <div className="p-3 rounded-lg bg-teal-500/5 border border-teal-500/20 flex flex-col justify-center items-center">
+                  <div className="text-teal-400 text-xs font-bold mb-1 text-center">Orientation</div>
+                  <div className="text-[10px] text-teal-200/70 text-center">Sur ce cercle : <LatexMath math="d\vec{l} = dl \, \vec{e_\theta}" block={false} />.</div>
+                </div>
+              </div>
+            </CollapsibleStep>
+
+            {/* Etape 3 */}
+            <CollapsibleStep step={3} title="Circulation de B" color="blue">
+              <div className="p-4 rounded-xl bg-blue-500/5 border border-blue-500/20">
+                <div className="text-center overflow-x-auto text-sm bg-blue-950/40 p-3 rounded-lg border border-blue-500/30 mb-3 shadow-inner">
+                  <LatexMath math="\oint_{(C)} \vec{B} \cdot d\vec{l} = \oint_{(C)} \left( B(\rho) \vec{e_\theta} \right) \cdot \left( dl \, \vec{e_\theta} \right) = \oint_{(C)} B(\rho) dl" block={false} className="text-blue-300 font-bold" />
+                </div>
+                <ul className="text-[11px] text-muted-foreground/90 space-y-2 list-disc pl-4">
+                  <li>Sur le cercle (C), la distance <LatexMath math="\rho" block={false} /> est constante.</li>
+                  <li>Comme <LatexMath math="B(\rho)" block={false} /> ne dépend que de <LatexMath math="\rho" block={false} />, il est <strong>constant</strong> le long de ce cercle.</li>
+                  <li>On le sort de l'intégrale !</li>
+                </ul>
+                <div className="text-center overflow-x-auto text-sm mt-3 pt-3 border-t border-blue-500/20">
+                  <LatexMath math="= B(\rho) \oint_{(C)} dl = B(\rho) \times (2 \pi \rho)" block={false} className="text-blue-400 font-black" />
+                </div>
+              </div>
+            </CollapsibleStep>
+
+            {/* Etape 4 */}
+            <CollapsibleStep step={4} title="Calcul du courant enlacé (Les 2 Cas)" color="pink">
+              <p className="text-[11px] text-muted-foreground leading-relaxed mb-3">
+                C'est ici que le cylindre est différent du fil infini. Le courant total qui traverse le disque dépend de la position de M (à l'intérieur ou à l'extérieur du cylindre).
+              </p>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Cas 1 : Intérieur */}
+                <div className="p-4 rounded-xl bg-pink-500/5 border border-pink-500/30 relative mt-2">
+                  <div className="absolute -top-3 left-4 bg-pink-900 text-pink-300 text-[10px] font-bold px-2 py-0.5 rounded border border-pink-500/50">
+                    Cas 1 : Intérieur (ρ {'<'} R)
+                  </div>
+                  <p className="text-[10px] text-muted-foreground/90 mt-2 mb-2 leading-relaxed">
+                    Le contour d'Ampère est plus petit que le cylindre. Seule une <strong>fraction</strong> du courant total le traverse.
+                  </p>
+                  <div className="text-center text-xs bg-pink-950/40 p-2 rounded-lg border border-pink-500/20 mb-2 overflow-x-auto">
+                    <LatexMath math="I_{enl} = \iint \vec{j} \cdot d\vec{S} = \int_0^\rho \int_0^{2\pi} (j) (r dr d\theta)" block={false} className="text-pink-300" />
+                  </div>
+                  <div className="text-center font-bold text-sm text-pink-400 mt-2">
+                    <LatexMath math="\implies \sum I_{enl} = j \times (\pi \rho^2)" block={false} />
+                  </div>
+                </div>
+
+                {/* Cas 2 : Extérieur */}
+                <div className="p-4 rounded-xl bg-pink-500/5 border border-pink-500/30 relative mt-2">
+                  <div className="absolute -top-3 left-4 bg-pink-900 text-pink-300 text-[10px] font-bold px-2 py-0.5 rounded border border-pink-500/50">
+                    Cas 2 : Extérieur (ρ {'>'} R)
+                  </div>
+                  <p className="text-[10px] text-muted-foreground/90 mt-2 mb-2 leading-relaxed">
+                    Le contour d'Ampère englobe <strong>tout</strong> le cylindre. Tout le courant disponible le traverse.
+                  </p>
+                  <div className="text-center text-xs bg-pink-950/40 p-2 rounded-lg border border-pink-500/20 mb-2 overflow-x-auto">
+                    <LatexMath math="I_{enl} = \int_0^R \int_0^{2\pi} j \, r dr d\theta" block={false} className="text-pink-300" />
+                  </div>
+                  <div className="text-center font-bold text-sm text-pink-400 mt-2">
+                    <LatexMath math="\implies \sum I_{enl} = j \times (\pi R^2)" block={false} />
+                  </div>
+                </div>
+              </div>
+            </CollapsibleStep>
+
+            {/* Etape 5 */}
+            <CollapsibleStep step={5} title="Expression Finale (La conclusion)" color="emerald" defaultOpen={true}>
+              <p className="text-[11px] text-muted-foreground leading-relaxed mb-4">
+                On applique <LatexMath math="B(\rho) \times 2\pi\rho = \mu_0 \sum I_{enl}" block={false} className="text-emerald-400 font-bold mx-1" /> dans les deux cas :
+              </p>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Intérieur Result */}
+                <div className="p-4 rounded-xl bg-gradient-to-br from-emerald-500/10 to-teal-500/5 border border-emerald-500/30 shadow-inner flex flex-col items-center justify-center relative mt-2">
+                  <div className="absolute -top-3 bg-emerald-900 text-emerald-300 text-[10px] font-bold px-2 py-0.5 rounded-full border border-emerald-500/50 uppercase tracking-wider">
+                    À l'intérieur (ρ {'<'} R)
+                  </div>
+                  <LatexMath math="B(\rho) \times 2\pi\rho = \mu_0 (j \pi \rho^2)" block={false} className="text-xs text-muted-foreground mb-3 mt-2" />
+                  <span className="text-emerald-300 text-lg font-black drop-shadow-md">
+                    <LatexMath math="\vec{B}(M) = \frac{\mu_0 j}{2} \rho \, \vec{e_\theta}" block={false} />
+                  </span>
+                  <div className="mt-2 text-[10px] font-medium text-emerald-400/80 bg-emerald-950/50 px-2 py-1 rounded">Le champ augmente proportionnellement avec ρ.</div>
+                </div>
+
+                {/* Extérieur Result */}
+                <div className="p-4 rounded-xl bg-gradient-to-br from-teal-500/10 to-emerald-500/5 border border-teal-500/30 shadow-inner flex flex-col items-center justify-center relative mt-2">
+                  <div className="absolute -top-3 bg-teal-900 text-teal-300 text-[10px] font-bold px-2 py-0.5 rounded-full border border-teal-500/50 uppercase tracking-wider">
+                    À l'extérieur (ρ {'>'} R)
+                  </div>
+                  <LatexMath math="B(\rho) \times 2\pi\rho = \mu_0 (j \pi R^2)" block={false} className="text-xs text-muted-foreground mb-3 mt-2" />
+                  <span className="text-teal-300 text-lg font-black drop-shadow-md">
+                    <LatexMath math="\vec{B}(M) = \frac{\mu_0 j R^2}{2 \rho} \, \vec{e_\theta}" block={false} />
+                  </span>
+                  <div className="mt-2 text-[10px] font-medium text-teal-400/80 bg-teal-950/50 px-2 py-1 rounded">Le champ diminue en 1/ρ (comme un fil).</div>
+                </div>
+              </div>
+            </CollapsibleStep>
+          </div>
+        </div>
       </section>
 
     </div>
