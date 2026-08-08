@@ -175,8 +175,11 @@ const SpireScene = ({ radius, distance, currentDirection, planeMode, circuitShap
 
             {/* Current Direction representation (moving spheres) */}
             {circuitShape === "solenoide" 
-              ? [...Array(45)].map((_, i) => {
-                  const t = (i / 45 + (time * 0.1 * currentDirection)) % 1.0;
+              ? [...Array(30)].map((_, i) => {
+                  const group = Math.floor(i / 3);
+                  const item = i % 3;
+                  const baseT = (group / 10) + (item * 0.012);
+                  const t = (baseT + (time * 0.05 * currentDirection)) % 1.0;
                   const normalizedT = t < 0 ? t + 1 : t;
                   const turns = 15;
                   const length = 6;
@@ -186,7 +189,7 @@ const SpireScene = ({ radius, distance, currentDirection, planeMode, circuitShap
                   const z = Math.sin(angle) * radius;
                   
                   return (
-                     <Sphere key={`curr-sol-${i}`} args={[0.12, 16, 16]} position={[x, y, z]}>
+                     <Sphere key={`curr-sol-${i}`} args={[0.09, 16, 16]} position={[x, y, z]}>
                        <meshBasicMaterial color="#fcd34d" />
                      </Sphere>
                   );
