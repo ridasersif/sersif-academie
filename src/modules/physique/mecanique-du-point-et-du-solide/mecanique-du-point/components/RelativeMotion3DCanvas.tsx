@@ -250,14 +250,24 @@ export default function RelativeMotion3DCanvas() {
       controls.update();
 
       renderer.render(scene, camera);
-      animFrameRef.current = requestAnimationFrame(animate);
+      if (isInViewRef.current) animFrameRef.current = requestAnimationFrame(animate);
     };
 
     updateSize();
-    animate(performance.now());
+
+    const isInViewRef = { current: false };
+    const intersectionObserver = new IntersectionObserver(
+      ([entry]) => {
+        isInViewRef.current = entry.isIntersecting;
+        if (isInViewRef.current) animFrameRef.current = requestAnimationFrame(animate);
+      },
+      { threshold: 0.05 }
+    );
+    intersectionObserver.observe(container);
 
     return () => {
       if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
+      intersectionObserver.disconnect();
       controls.dispose();
       resizeObserver.disconnect();
       if (container.contains(renderer.domElement)) container.removeChild(renderer.domElement);

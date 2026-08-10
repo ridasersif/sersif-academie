@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls, Line, Html, Environment, ContactShadows, Cylinder } from "@react-three/drei";
 import * as THREE from "three";
@@ -42,9 +42,20 @@ export default function AmpereTheorem3DCanvas() {
     contourPoints.push(new THREE.Vector3(2.5 * Math.cos(angle), 0, 2.5 * Math.sin(angle)));
   }
 
+  const canvasContainerRef = useRef<HTMLDivElement>(null);
+  const [inView, setInView] = useState(false);
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => setInView(entry.isIntersecting),
+      { threshold: 0.05 }
+    );
+    if (canvasContainerRef.current) observer.observe(canvasContainerRef.current);
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <div className="w-full max-w-[900px] mx-auto flex flex-col shadow-2xl rounded-2xl overflow-hidden border border-slate-800">
-      <div className="w-full h-[280px] sm:h-[350px] bg-[#050b14] relative">
+      <div ref={canvasContainerRef} className="w-full h-[280px] sm:h-[350px] bg-[#050b14] relative">
         
 
 
@@ -62,7 +73,7 @@ export default function AmpereTheorem3DCanvas() {
            </div>
         </div>
 
-        <Canvas camera={{ position: [7, 5, 7], fov: 45 }} className="w-full flex-1 cursor-grab active:cursor-grabbing">
+        <Canvas frameloop={inView ? "always" : "demand"} camera={{ position: [7, 5, 7], fov: 45 }} className="w-full flex-1 cursor-grab active:cursor-grabbing">
           <color attach="background" args={["#050b14"]} />
           <ambientLight intensity={0.6} />
           <spotLight position={[5, 15, 5]} angle={0.4} penumbra={1} intensity={2} color="#e2e8f0" />

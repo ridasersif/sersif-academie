@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, Line, Html, Sphere, Environment, ContactShadows, Cylinder } from "@react-three/drei";
 import * as THREE from "three";
@@ -46,9 +46,20 @@ export default function BiotSavart3DCanvas() {
   const dbMagDisplay = (currentI * Math.sin(thetaRad) * 10) / (distanceR * distanceR);
   const dbVec = new THREE.Vector3(0, 0, -dbMagDisplay);
 
+  const canvasContainerRef = useRef<HTMLDivElement>(null);
+  const [inView, setInView] = useState(false);
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => setInView(entry.isIntersecting),
+      { threshold: 0.05 }
+    );
+    if (canvasContainerRef.current) observer.observe(canvasContainerRef.current);
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <div className="w-full max-w-[800px] mx-auto flex flex-col">
-      <div className="w-full h-[300px] sm:h-[400px] bg-slate-950 rounded-t-2xl overflow-hidden relative border border-slate-800 border-b-0 shadow-inner">
+      <div ref={canvasContainerRef} className="w-full h-[300px] sm:h-[400px] bg-slate-950 rounded-t-2xl overflow-hidden relative border border-slate-800 border-b-0 shadow-inner">
         
         {/* HUD Top Right */}
         <div className="absolute top-3 right-3 z-10 flex flex-col items-end gap-1 pointer-events-auto">
@@ -85,7 +96,7 @@ export default function BiotSavart3DCanvas() {
            </div>
         </div>
 
-        <Canvas camera={{ position: [5, 4, 8], fov: 45 }} className="w-full flex-1 cursor-grab active:cursor-grabbing">
+        <Canvas frameloop={inView ? "always" : "demand"} camera={{ position: [5, 4, 8], fov: 45 }} className="w-full flex-1 cursor-grab active:cursor-grabbing">
           <color attach="background" args={["#020617"]} />
           <ambientLight intensity={0.5} />
           <spotLight position={[5, 15, 5]} angle={0.3} penumbra={1} intensity={1.5} castShadow />

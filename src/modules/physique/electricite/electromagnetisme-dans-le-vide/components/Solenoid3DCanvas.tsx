@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useRef, useEffect } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, Line, Html, Environment, ContactShadows, Cylinder } from "@react-three/drei";
 import * as THREE from "three";
@@ -250,11 +250,22 @@ export default function Solenoid3DCanvas() {
   const R = 2.0;
   const L = 10.0;
 
+  const canvasContainerRef = useRef<HTMLDivElement>(null);
+  const [inView, setInView] = useState(false);
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => setInView(entry.isIntersecting),
+      { threshold: 0.05 }
+    );
+    if (canvasContainerRef.current) observer.observe(canvasContainerRef.current);
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <div className="w-full max-w-[1000px] mx-auto flex flex-col font-sans mb-8">
       
-      <div className="w-full h-[200px] sm:h-[280px] bg-slate-950 rounded-t-2xl overflow-hidden relative border border-slate-800 border-b-0 shadow-inner">
-        <Canvas camera={{ position: [0, 0, 16], fov: 35 }}>
+      <div ref={canvasContainerRef} className="w-full h-[200px] sm:h-[280px] bg-slate-950 rounded-t-2xl overflow-hidden relative border border-slate-800 border-b-0 shadow-inner">
+        <Canvas frameloop={inView ? "always" : "demand"} camera={{ position: [0, 0, 16], fov: 35 }}>
           <color attach="background" args={["#020617"]} />
           <ambientLight intensity={0.5} />
           <spotLight position={[10, 20, 10]} angle={0.4} penumbra={1} intensity={2} color="#e2e8f0" />

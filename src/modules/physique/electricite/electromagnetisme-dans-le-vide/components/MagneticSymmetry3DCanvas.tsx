@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useRef, useEffect } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, Line, Html, Cylinder, Sphere, Cone, Torus, Environment, ContactShadows } from "@react-three/drei";
 import * as THREE from "three";
@@ -260,12 +260,23 @@ export default function MagneticSymmetry3DCanvas() {
     return [0, 3.5, 0];
   }, [shape]);
 
+  const canvasContainerRef = useRef<HTMLDivElement>(null);
+  const [inView, setInView] = useState(false);
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => setInView(entry.isIntersecting),
+      { threshold: 0.05 }
+    );
+    if (canvasContainerRef.current) observer.observe(canvasContainerRef.current);
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <div className="w-full max-w-[900px] mx-auto flex flex-col">
       <style>{`.hide-scrollbar::-webkit-scrollbar { display: none; }`}</style>
 
       {/* Canvas Area */}
-      <div className="w-full h-[260px] sm:h-[300px] bg-slate-950 rounded-t-2xl overflow-hidden relative border border-slate-800 border-b-0 shadow-inner">
+      <div ref={canvasContainerRef} className="w-full h-[260px] sm:h-[300px] bg-slate-950 rounded-t-2xl overflow-hidden relative border border-slate-800 border-b-0 shadow-inner">
         
         {/* Shape Selector Float */}
         <div 
@@ -284,7 +295,7 @@ export default function MagneticSymmetry3DCanvas() {
         </div>
 
         {/* 3D Scene */}
-        <Canvas camera={{ position: [8, 6, 8], fov: 45 }} className="w-full flex-1 cursor-grab active:cursor-grabbing">
+        <Canvas frameloop={inView ? "always" : "demand"} camera={{ position: [8, 6, 8], fov: 45 }} className="w-full flex-1 cursor-grab active:cursor-grabbing">
           <color attach="background" args={["#020617"]} />
           <ambientLight intensity={0.5} />
           <spotLight position={[10, 15, 5]} angle={0.3} penumbra={1} intensity={2} castShadow />

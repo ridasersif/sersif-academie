@@ -321,14 +321,26 @@ export default function ThreeDCoordinateCanvas() {
     window.addEventListener("resize", handleResize);
 
     let animId: number;
+    let isInView = false;
+
     const animate = () => {
+      if (!isInView) return;
       animId = requestAnimationFrame(animate);
       renderer.render(scene, camera);
     };
-    animate();
+
+    const intersectionObserver = new IntersectionObserver(
+      ([entry]) => {
+        isInView = entry.isIntersecting;
+        if (isInView) animate();
+      },
+      { threshold: 0.05 }
+    );
+    intersectionObserver.observe(container);
 
     return () => {
       cancelAnimationFrame(animId);
+      intersectionObserver.disconnect();
       window.removeEventListener("resize", handleResize);
       domElem.removeEventListener("mousedown", handleMouseDown);
       window.removeEventListener("mousemove", handleMouseMove);
@@ -342,6 +354,7 @@ export default function ThreeDCoordinateCanvas() {
       renderer.dispose();
     };
   }, []);
+
 
   // Update 3D Vector & Dynamically Scale/Orient Filled Ring Sector Geometries
   useEffect(() => {

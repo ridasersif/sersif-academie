@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useRef, useEffect } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, Line, Html, Sphere, Cylinder } from "@react-three/drei";
 import * as THREE from "three";
@@ -104,9 +104,20 @@ export default function BiotSavartSegment3DCanvas() {
   const percD = ((distance - 0.5) / (5 - 0.5)) * 100;
   const percZ = ((heightM - (-5)) / (5 - (-5))) * 100;
 
+  const canvasContainerRef = useRef<HTMLDivElement>(null);
+  const [inView, setInView] = useState(false);
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => setInView(entry.isIntersecting),
+      { threshold: 0.05 }
+    );
+    if (canvasContainerRef.current) observer.observe(canvasContainerRef.current);
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <div className="w-full max-w-[800px] mx-auto flex flex-col">
-      <div className="w-full h-[300px] sm:h-[400px] bg-slate-950 rounded-t-2xl overflow-hidden relative border border-slate-800 border-b-0 shadow-inner">
+      <div ref={canvasContainerRef} className="w-full h-[300px] sm:h-[400px] bg-slate-950 rounded-t-2xl overflow-hidden relative border border-slate-800 border-b-0 shadow-inner">
 
         {/* HUD Légende */}
         <div className="absolute top-3 right-3 z-10">
@@ -144,7 +155,7 @@ export default function BiotSavartSegment3DCanvas() {
           </div>
         </div>
 
-        <Canvas camera={{ position: [5, 2, 5], fov: 50 }} dpr={[1, 1.5]} className="w-full flex-1 cursor-grab active:cursor-grabbing">
+        <Canvas frameloop={inView ? "always" : "demand"} camera={{ position: [5, 2, 5], fov: 50 }} dpr={[1, 1.5]} className="w-full flex-1 cursor-grab active:cursor-grabbing">
           <color attach="background" args={["#020617"]} />
           <ambientLight intensity={0.3} />
           <directionalLight position={[5, 5, 5]} intensity={0.8} />

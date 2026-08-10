@@ -32,22 +32,46 @@ export default function ExerciseCircleRolling3DCanvas() {
     omegaRef.current = omega;
   }, [omega]);
 
-  // Ultra-Smooth 60 FPS Animation loop
+  // Ultra-Smooth 60 FPS Animation loop — pauses when out of viewport
+  const containerRef = useRef<HTMLDivElement | null>(null);
   useEffect(() => {
     if (!isExerciseOpen || mode !== "ANIMATED") return;
-    let last = performance.now();
-    const loop = (now: number) => {
-      const delta = Math.min((now - last) / 1000, 0.04);
-      last = now;
-      if (isPlayingRef.current) {
-        timeRef.current += delta * omegaRef.current * 0.75;
-        setAnimTime(timeRef.current);
-      }
-      animFrameRef.current = requestAnimationFrame(loop);
+    let running = false;
+    let animRef: number | null = null;
+
+    const startLoop = () => {
+      if (running) return;
+      running = true;
+      let last = performance.now();
+      const loop = (now: number) => {
+        const delta = Math.min((now - last) / 1000, 0.04);
+        last = now;
+        if (isPlayingRef.current) {
+          timeRef.current += delta * omegaRef.current * 0.75;
+          setAnimTime(timeRef.current);
+        }
+        if (running) animRef = requestAnimationFrame(loop);
+      };
+      animRef = requestAnimationFrame(loop);
     };
-    animFrameRef.current = requestAnimationFrame(loop);
+
+    const stopLoop = () => {
+      running = false;
+      if (animRef !== null) cancelAnimationFrame(animRef);
+    };
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) startLoop();
+        else stopLoop();
+      },
+      { threshold: 0.05 }
+    );
+    if (containerRef.current) observer.observe(containerRef.current);
+
     return () => {
-      if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
+      stopLoop();
+      observer.disconnect();
     };
   }, [isExerciseOpen, mode]);
 
@@ -128,7 +152,7 @@ export default function ExerciseCircleRolling3DCanvas() {
   };
 
   return (
-    <div className="rounded-2xl sm:rounded-3xl bg-slate-950 border border-slate-800 text-white shadow-2xl max-w-full overflow-hidden mb-5">
+    <div ref={containerRef} className="rounded-2xl sm:rounded-3xl bg-slate-950 border border-slate-800 text-white shadow-2xl max-w-full overflow-hidden mb-5">
       
       {/* 1. EXERCICE 1 ACCORDION HEADER BAR (ALWAYS VISIBLE & COLLAPSIBLE BY DEFAULT) */}
       <button

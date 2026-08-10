@@ -1,7 +1,7 @@
 "use client";
 /* eslint-disable react-hooks/exhaustive-deps, react-hooks/purity */
 
-import React, { useRef, useMemo, useState } from "react";
+import React, { useRef, useMemo, useState, useEffect } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, Line, Html, ContactShadows, Environment } from "@react-three/drei";
 import * as THREE from "three";
@@ -76,8 +76,19 @@ export default function CurrentFlux3DCanvas() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const controlsRef = useRef<any>(null);
 
+  const canvasContainerRef = useRef<HTMLDivElement>(null);
+  const [inView, setInView] = useState(false);
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => setInView(entry.isIntersecting),
+      { threshold: 0.05 }
+    );
+    if (canvasContainerRef.current) observer.observe(canvasContainerRef.current);
+    return () => observer.disconnect();
+  }, []);
+
   return (
-    <div className="w-full flex flex-col gap-4 font-sans">
+      <div ref={canvasContainerRef} className="w-full flex flex-col gap-0">
       
       {/* Zone 3D */}
       <div className="w-full max-w-[800px] mx-auto h-[280px] sm:h-[320px] md:h-[350px] bg-slate-950 rounded-2xl overflow-hidden relative shadow-inner border border-slate-800">
@@ -121,7 +132,7 @@ export default function CurrentFlux3DCanvas() {
           </div>
         </div>
 
-        <Canvas camera={{ position: [5, 3, 5], fov: 45 }} className="w-full h-full cursor-grab active:cursor-grabbing">
+        <Canvas frameloop={inView ? "always" : "demand"} camera={{ position: [5, 3, 5], fov: 45 }} className="w-full h-full cursor-grab active:cursor-grabbing">
           <color attach="background" args={["#020617"]} />
           <ambientLight intensity={0.5} />
           <spotLight position={[5, 10, 5]} intensity={1.5} penumbra={1} />

@@ -280,14 +280,24 @@ export default function FrenetFrame3DCanvas() {
       setStats({ speed: vNorm, rc: Rc_val, aT: aT_val, aN: aN_val, aTotal: acc.length() });
 
       renderer.render(scene, camera);
-      animFrameRef.current = requestAnimationFrame(renderFrame);
+      if (isInViewRef.current) animFrameRef.current = requestAnimationFrame(renderFrame);
     };
 
     updateSize();
-    renderFrame(performance.now());
+
+    const isInViewRef = { current: false };
+    const intersectionObserver = new IntersectionObserver(
+      ([entry]) => {
+        isInViewRef.current = entry.isIntersecting;
+        if (isInViewRef.current) animFrameRef.current = requestAnimationFrame(renderFrame);
+      },
+      { threshold: 0.05 }
+    );
+    intersectionObserver.observe(container);
 
     return () => {
       if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
+      intersectionObserver.disconnect();
       controls.dispose();
       resizeObserver.disconnect();
       if (container.contains(renderer.domElement)) container.removeChild(renderer.domElement);

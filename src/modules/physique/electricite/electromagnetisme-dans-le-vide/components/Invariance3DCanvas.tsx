@@ -189,12 +189,23 @@ export default function Invariance3DCanvas() {
     }
   }, [mode, supportsTranslation, supportsRotation, shape]);
 
+  const canvasContainerRef = useRef<HTMLDivElement>(null);
+  const [inView, setInView] = useState(false);
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => setInView(entry.isIntersecting),
+      { threshold: 0.05 }
+    );
+    if (canvasContainerRef.current) observer.observe(canvasContainerRef.current);
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <div className="w-full max-w-[900px] mx-auto flex flex-col mb-8">
       <style>{`.hide-scrollbar::-webkit-scrollbar { display: none; }`}</style>
 
       {/* 3D Canvas Container */}
-      <div className="w-full h-[400px] bg-slate-950 rounded-t-2xl overflow-hidden relative border border-slate-800 border-b-0 shadow-inner">
+      <div ref={canvasContainerRef} className="w-full h-[400px] bg-slate-950 rounded-t-2xl overflow-hidden relative border border-slate-800 border-b-0 shadow-inner">
 
         {/* Shape Selector Float */}
         <div
@@ -212,7 +223,7 @@ export default function Invariance3DCanvas() {
           ))}
         </div>
 
-        <Canvas camera={{ position: [8, 6, 8], fov: 45 }} className="w-full h-full cursor-grab active:cursor-grabbing">
+        <Canvas frameloop={inView ? "always" : "demand"} camera={{ position: [8, 6, 8], fov: 45 }} className="w-full h-full cursor-grab active:cursor-grabbing">
           <color attach="background" args={["#020617"]} />
           <ambientLight intensity={0.5} />
           <spotLight position={[10, 15, 10]} angle={0.3} penumbra={1} intensity={2} />

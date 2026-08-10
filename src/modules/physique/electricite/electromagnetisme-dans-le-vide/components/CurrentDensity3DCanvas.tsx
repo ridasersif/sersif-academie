@@ -1,7 +1,7 @@
 "use client";
 /* eslint-disable react-hooks/exhaustive-deps, react-hooks/purity, react-hooks/immutability */
 
-import React, { useRef, useMemo, useState } from "react";
+import React, { useRef, useMemo, useState, useEffect } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, Line, Html, Environment, ContactShadows } from "@react-three/drei";
 import { EffectComposer, Bloom } from "@react-three/postprocessing";
@@ -127,11 +127,22 @@ export default function CurrentDensity3DCanvas() {
   const absQStr = chargeSign === -1 ? "e" : "q";
   const iValue = (density * speed * 3.14).toFixed(0);
 
+  const canvasContainerRef = useRef<HTMLDivElement>(null);
+  const [inView, setInView] = useState(false);
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => setInView(entry.isIntersecting),
+      { threshold: 0.05 }
+    );
+    if (canvasContainerRef.current) observer.observe(canvasContainerRef.current);
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <div className="w-full flex flex-col gap-4 font-sans">
       
       {/* Zone 3D */}
-      <div className="w-full max-w-[800px] mx-auto h-[280px] sm:h-[320px] md:h-[350px] bg-slate-950 rounded-2xl overflow-hidden relative shadow-inner border border-slate-800">
+      <div ref={canvasContainerRef} className="w-full max-w-[800px] mx-auto h-[280px] sm:h-[320px] md:h-[350px] bg-slate-950 rounded-2xl overflow-hidden relative shadow-inner border border-slate-800">
 
         {/* HUD: Formules en Temps Réel */}
         <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 pointer-events-auto">
@@ -158,7 +169,7 @@ export default function CurrentDensity3DCanvas() {
           </div>
         </div>
 
-        <Canvas camera={{ position: [10, 6, -10], fov: 40 }} className="w-full h-full cursor-grab active:cursor-grabbing">
+        <Canvas frameloop={inView ? "always" : "demand"} camera={{ position: [10, 6, -10], fov: 40 }} className="w-full h-full cursor-grab active:cursor-grabbing">
           <color attach="background" args={["#020617"]} />
           <ambientLight intensity={0.4} />
           <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} intensity={2} castShadow />

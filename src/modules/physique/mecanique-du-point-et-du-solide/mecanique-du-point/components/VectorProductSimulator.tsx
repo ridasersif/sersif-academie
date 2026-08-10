@@ -168,14 +168,26 @@ export default function VectorProductSimulator() {
     window.addEventListener("resize", handleResize);
 
     let animId: number;
+    let isInView = false;
+
     const animate = () => {
+      if (!isInView) return;
       animId = requestAnimationFrame(animate);
       renderer.render(scene, camera);
     };
-    animate();
+
+    const intersectionObserver = new IntersectionObserver(
+      ([entry]) => {
+        isInView = entry.isIntersecting;
+        if (isInView) animate();
+      },
+      { threshold: 0.05 }
+    );
+    intersectionObserver.observe(container);
 
     return () => {
       cancelAnimationFrame(animId);
+      intersectionObserver.disconnect();
       window.removeEventListener("resize", handleResize);
       if (container) container.innerHTML = "";
       renderer.dispose();

@@ -35,7 +35,7 @@ sersif-academie/
 │       │   └── mecanique-du-point-et-du-solide/
 │       │       └── mecanique-du-point/
 │       │           ├── components/
-│       │           │   └── ThreeDCoordinateCanvas.tsx # Canvas 3D WebGL Three.js
+│       │           │   └── ThreeDCoordinateCanvas.tsx # Canvas 3D  WebGL Three.js
 │       │           └── chapters/
 │       │               ├── chap1-rappels-mathematiques.tsx
 │       │               ├── chap2-cinematique-du-point.tsx

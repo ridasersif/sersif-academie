@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo, useRef } from "react";
+import React, { useState, useMemo, useRef, useEffect } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, Line, Html, Environment, ContactShadows, Cylinder, Sphere } from "@react-three/drei";
 import * as THREE from "three";
@@ -273,10 +273,21 @@ export default function CoaxialCable3DCanvas() {
     bFormula = "\\vec{B}(M) = \\frac{\\mu_0}{\\rho} (j_{s1} R_1 - j_{s2} R_2) \\vec{e_\\theta}";
   }
 
+  const canvasContainerRef = useRef<HTMLDivElement>(null);
+  const [inView, setInView] = useState(false);
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => setInView(entry.isIntersecting),
+      { threshold: 0.05 }
+    );
+    if (canvasContainerRef.current) observer.observe(canvasContainerRef.current);
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <div className="w-full max-w-[1000px] mx-auto flex flex-col font-sans mb-8">
       
-      <div className="w-full h-[300px] sm:h-[400px] bg-slate-950 rounded-t-2xl overflow-hidden relative border border-slate-800 border-b-0 shadow-inner">
+      <div ref={canvasContainerRef} className="w-full h-[300px] sm:h-[400px] bg-slate-950 rounded-t-2xl overflow-hidden relative border border-slate-800 border-b-0 shadow-inner">
         {/* Label Concours */}
         <div className="absolute top-2 left-2 sm:top-4 sm:left-4 z-10 max-w-[calc(100%-1rem)] pointer-events-none">
           <div className="bg-yellow-500/20 border border-yellow-500/50 text-yellow-400 text-[9px] sm:text-xs font-bold px-2 py-1 sm:px-3 rounded-full flex items-center gap-1 sm:gap-2 backdrop-blur-md shadow-lg shadow-yellow-500/10 whitespace-normal text-center sm:text-left leading-tight">
@@ -285,7 +296,7 @@ export default function CoaxialCable3DCanvas() {
           </div>
         </div>
 
-        <Canvas camera={{ position: [8, 8, 8], fov: 45 }}>
+        <Canvas frameloop={inView ? "always" : "demand"} camera={{ position: [8, 8, 8], fov: 45 }}>
           <color attach="background" args={["#020617"]} />
           <ambientLight intensity={0.5} />
           <spotLight position={[10, 20, 10]} angle={0.4} penumbra={1} intensity={2} color="#e2e8f0" />

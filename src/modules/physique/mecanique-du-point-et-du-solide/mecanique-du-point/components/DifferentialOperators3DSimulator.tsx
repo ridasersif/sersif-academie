@@ -127,8 +127,10 @@ export default function DifferentialOperators3DSimulator() {
     window.addEventListener("resize", handleResize);
 
     let animId: number;
+    let isInView = false;
     let time = 0;
     const animate = () => {
+      if (!isInView) return;
       animId = requestAnimationFrame(animate);
       time += 0.02;
 
@@ -139,10 +141,19 @@ export default function DifferentialOperators3DSimulator() {
 
       renderer.render(scene, camera);
     };
-    animate();
+
+    const intersectionObserver = new IntersectionObserver(
+      ([entry]) => {
+        isInView = entry.isIntersecting;
+        if (isInView) animate();
+      },
+      { threshold: 0.05 }
+    );
+    intersectionObserver.observe(container);
 
     return () => {
       cancelAnimationFrame(animId);
+      intersectionObserver.disconnect();
       window.removeEventListener("resize", handleResize);
       if (container) container.innerHTML = "";
       renderer.dispose();

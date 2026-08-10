@@ -103,11 +103,22 @@ export default function DriftVelocity3DCanvas() {
   const [isPlaying, setIsPlaying] = useState(true);
   const [showHUD, setShowHUD] = useState(false);
 
+  const canvasContainerRef = useRef<HTMLDivElement>(null);
+  const [inView, setInView] = useState(false);
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => setInView(entry.isIntersecting),
+      { threshold: 0.05 }
+    );
+    if (canvasContainerRef.current) observer.observe(canvasContainerRef.current);
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <div className="w-full flex flex-col gap-4 font-sans">
       
       {/* Zone 3D */}
-      <div className="w-full max-w-[800px] mx-auto h-[280px] sm:h-[320px] md:h-[350px] bg-slate-950 rounded-2xl overflow-hidden relative shadow-inner border border-slate-800">
+      <div ref={canvasContainerRef} className="w-full max-w-[800px] mx-auto h-[280px] sm:h-[320px] md:h-[350px] bg-slate-950 rounded-2xl overflow-hidden relative shadow-inner border border-slate-800">
         
         {/* HUD: Titre et Status */}
         <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 pointer-events-auto">
@@ -145,7 +156,7 @@ export default function DriftVelocity3DCanvas() {
           </div>
         </div>
 
-        <Canvas camera={{ position: [8, 6, 8], fov: 40 }} className="w-full h-full cursor-grab active:cursor-grabbing">
+        <Canvas frameloop={inView ? "always" : "demand"} camera={{ position: [8, 6, 8], fov: 40 }} className="w-full h-full cursor-grab active:cursor-grabbing">
           <color attach="background" args={["#020617"]} />
           <ambientLight intensity={0.4} />
           <spotLight position={[10, 10, 10]} intensity={1.5} penumbra={1} />

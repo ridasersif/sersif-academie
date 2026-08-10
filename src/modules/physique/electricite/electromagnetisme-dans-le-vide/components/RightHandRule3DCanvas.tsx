@@ -120,9 +120,20 @@ export default function RightHandRule3DCanvas() {
   const [resetTrigger, setResetTrigger] = useState(0);
   const [showHUD, setShowHUD] = useState(false);
 
+  const canvasContainerRef = useRef<HTMLDivElement>(null);
+  const [inView, setInView] = useState(false);
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => setInView(entry.isIntersecting),
+      { threshold: 0.05 }
+    );
+    if (canvasContainerRef.current) observer.observe(canvasContainerRef.current);
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <div className="w-full max-w-[800px] mx-auto flex flex-col">
-      <div className="w-full h-[200px] sm:h-[260px] bg-slate-950 rounded-t-2xl overflow-hidden relative border border-slate-800 border-b-0 shadow-inner">
+      <div ref={canvasContainerRef} className="w-full h-[200px] sm:h-[260px] bg-slate-950 rounded-t-2xl overflow-hidden relative border border-slate-800 border-b-0 shadow-inner">
         
         {/* HUD Top Right */}
         <div className="absolute top-3 right-3 z-10 flex flex-col items-end gap-1 pointer-events-auto">
@@ -155,7 +166,7 @@ export default function RightHandRule3DCanvas() {
         </div>
 
         {/* Caméra plongeante zoomée */}
-        <Canvas camera={{ position: [3, 5, 7], fov: 45 }} className="w-full flex-1 cursor-grab active:cursor-grabbing">
+        <Canvas frameloop={inView ? "always" : "demand"} camera={{ position: [3, 5, 7], fov: 45 }} className="w-full flex-1 cursor-grab active:cursor-grabbing">
           <color attach="background" args={["#020617"]} />
           <ambientLight intensity={0.5} />
           <spotLight position={[5, 15, 5]} angle={0.3} penumbra={1} intensity={1.5} castShadow />
