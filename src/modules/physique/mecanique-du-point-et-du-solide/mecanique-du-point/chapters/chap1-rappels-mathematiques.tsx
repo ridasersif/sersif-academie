@@ -1,8 +1,13 @@
 "use client";
 
 import React, { useState } from "react";
+import dynamic from 'next/dynamic';
+import LazyMount from "@/components/ui/LazyMount";
+
+const ThreeDCoordinateCanvas = dynamic(() => import("../components/ThreeDCoordinateCanvas"), { ssr: false });
+
 import LatexMath from "@/components/ui/LatexMath";
-import ThreeDCoordinateCanvas from "../components/ThreeDCoordinateCanvas";
+
 import VectorProductSimulator from "../components/VectorProductSimulator";
 import DifferentialOperators3DSimulator from "../components/DifferentialOperators3DSimulator";
 import { ChevronDown, ChevronUp, Sparkles, BookOpen, Compass } from "lucide-react";
@@ -227,7 +232,7 @@ export default function Chap1RappelsMathematiques() {
         </p>
 
         {/* Three.js WebGL Canvas Component */}
-        <ThreeDCoordinateCanvas />
+        <LazyMount fallbackText="Préparation de ThreeDCoordinate..."><ThreeDCoordinateCanvas /></LazyMount>
 
         {/* EXPLICIT POSITION VECTOR OM CARDS FOR ALL 3 COORDINATE SYSTEMS */}
         <div className="mt-6 p-4 sm:p-6 rounded-2xl bg-slate-950 border border-slate-800 text-white">

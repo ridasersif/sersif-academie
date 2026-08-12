@@ -1,12 +1,21 @@
 "use client";
 
 import React, { useState } from "react";
+import dynamic from 'next/dynamic';
+import LazyMount from "@/components/ui/LazyMount";
+
+const KinematicsTrajectory3DCanvas = dynamic(() => import("../components/KinematicsTrajectory3DCanvas"), { ssr: false });
+const FrenetFrame3DCanvas = dynamic(() => import("../components/FrenetFrame3DCanvas"), { ssr: false });
+const RelativeMotion3DCanvas = dynamic(() => import("../components/RelativeMotion3DCanvas"), { ssr: false });
+const ChaslesReferenceFrames3DCanvas = dynamic(() => import("../components/ChaslesReferenceFrames3DCanvas"), { ssr: false });
+const ExerciseCircleRolling3DCanvas = dynamic(() => import("../components/ExerciseCircleRolling3DCanvas"), { ssr: false });
+
 import LatexMath from "@/components/ui/LatexMath";
-import KinematicsTrajectory3DCanvas from "../components/KinematicsTrajectory3DCanvas";
-import FrenetFrame3DCanvas from "../components/FrenetFrame3DCanvas";
-import RelativeMotion3DCanvas from "../components/RelativeMotion3DCanvas";
-import ChaslesReferenceFrames3DCanvas from "../components/ChaslesReferenceFrames3DCanvas";
-import ExerciseCircleRolling3DCanvas from "../components/ExerciseCircleRolling3DCanvas";
+
+
+
+
+
 import { ChevronDown, ChevronUp, Sparkles, BookOpen, Compass, Activity, Target, CheckCircle2, RefreshCw, Zap, ArrowRight } from "lucide-react";
 
 export default function Chap2CinematiqueDuPoint() {
@@ -212,7 +221,7 @@ export default function Chap2CinematiqueDuPoint() {
         </div>
 
         {/* 3D WEBGL TRAJECTORY SIMULATOR */}
-        <KinematicsTrajectory3DCanvas />
+        <LazyMount fallbackText="Préparation de KinematicsTrajectory..."><KinematicsTrajectory3DCanvas /></LazyMount>
       </section>
 
       {/* PARTIE 3: VECTEUR ACCÉLÉRATION AVEC DÉMONSTRATIONS DANS TOUS LES SYSTÈMES */}
@@ -338,7 +347,7 @@ export default function Chap2CinematiqueDuPoint() {
         </div>
 
         {/* 3D FRENET CANVAS SIMULATOR */}
-        <FrenetFrame3DCanvas />
+        <LazyMount fallbackText="Préparation de FrenetFrame..."><FrenetFrame3DCanvas /></LazyMount>
       </section>
 
       {/* PARTIE 5: TYPES DE MOUVEMENTS REMARQUABLES */}
@@ -424,7 +433,7 @@ export default function Chap2CinematiqueDuPoint() {
 
         {/* 3D REFERENCE FRAMES & CHASLES CANVAS */}
         <div className="mb-6">
-          <ChaslesReferenceFrames3DCanvas />
+          <LazyMount fallbackText="Préparation de ChaslesReferenceFrames..."><ChaslesReferenceFrames3DCanvas /></LazyMount>
         </div>
 
         {/* Formule de Bour Card */}
@@ -627,11 +636,11 @@ export default function Chap2CinematiqueDuPoint() {
         </div>
 
         {/* 3D RELATIVE MOTION SIMULATOR */}
-        <RelativeMotion3DCanvas />
+        <LazyMount fallbackText="Préparation de RelativeMotion..."><RelativeMotion3DCanvas /></LazyMount>
       </section>
 
       {/* SECTION EXERCICE 1 */}
-      <ExerciseCircleRolling3DCanvas />
+      <LazyMount fallbackText="Préparation de ExerciseCircleRolling..."><ExerciseCircleRolling3DCanvas /></LazyMount>
 
     </div>
   );

@@ -1,8 +1,13 @@
 "use client";
 
 import React from "react";
+import dynamic from 'next/dynamic';
+import LazyMount from "@/components/ui/LazyMount";
+
+const ThreeDCoordinateCanvas = dynamic(() => import("@/components/3d/ThreeDCoordinateCanvas"), { ssr: false });
+
 import LatexMath from "@/components/ui/LatexMath";
-import ThreeDCoordinateCanvas from "@/components/3d/ThreeDCoordinateCanvas";
+
 import { CheckCircle2, Sparkles, BookOpen } from "lucide-react";
 
 export default function Chapter1MathRefresher() {
@@ -143,7 +148,7 @@ export default function Chapter1MathRefresher() {
         </p>
 
         {/* Three.js WebGL Canvas Component */}
-        <ThreeDCoordinateCanvas />
+        <LazyMount fallbackText="Préparation de ThreeDCoordinate..."><ThreeDCoordinateCanvas /></LazyMount>
       </section>
 
       {/* SECTION 4: DÉRIVATION DES VECTEURS DE LA BASE MOBILE */}

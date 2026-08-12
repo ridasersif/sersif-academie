@@ -2,16 +2,19 @@
 
 import React, { useState } from "react";
 import LatexMath from "@/components/ui/LatexMath";
-import BiotSavart3DCanvas from "../components/BiotSavart3DCanvas";
-import BiotSavartSegment3DCanvas from "../components/BiotSavartSegment3DCanvas";
-import BiotSavartSpire3DCanvas from "../components/BiotSavartSpire3DCanvas";
-import AmpereTheorem3DCanvas from "../components/AmpereTheorem3DCanvas";
-import InfiniteWire3DCanvas from "../components/InfiniteWire3DCanvas";
-import Cylinder3DCanvas from "../components/Cylinder3DCanvas";
-import CylinderSurface3DCanvas from "../components/CylinderSurface3DCanvas";
-import CoaxialCable3DCanvas from "../components/CoaxialCable3DCanvas";
-import Solenoid3DCanvas from "../components/Solenoid3DCanvas";
-import ToroidalCoil3DCanvas from "../components/ToroidalCoil3DCanvas";
+import dynamic from 'next/dynamic';
+import LazyMount from "@/components/ui/LazyMount";
+
+const BiotSavart3DCanvas = dynamic(() => import("../components/BiotSavart3DCanvas"), { ssr: false });
+const BiotSavartSegment3DCanvas = dynamic(() => import("../components/BiotSavartSegment3DCanvas"), { ssr: false });
+const BiotSavartSpire3DCanvas = dynamic(() => import("../components/BiotSavartSpire3DCanvas"), { ssr: false });
+const AmpereTheorem3DCanvas = dynamic(() => import("../components/AmpereTheorem3DCanvas"), { ssr: false });
+const InfiniteWire3DCanvas = dynamic(() => import("../components/InfiniteWire3DCanvas"), { ssr: false });
+const Cylinder3DCanvas = dynamic(() => import("../components/Cylinder3DCanvas"), { ssr: false });
+const CylinderSurface3DCanvas = dynamic(() => import("../components/CylinderSurface3DCanvas"), { ssr: false });
+const CoaxialCable3DCanvas = dynamic(() => import("../components/CoaxialCable3DCanvas"), { ssr: false });
+const Solenoid3DCanvas = dynamic(() => import("../components/Solenoid3DCanvas"), { ssr: false });
+const ToroidalCoil3DCanvas = dynamic(() => import("../components/ToroidalCoil3DCanvas"), { ssr: false });
 import MagneticFieldChart from "@/components/ui/MagneticFieldChart";
 import { Calculator, RotateCw, Layers, ChevronDown, ChevronUp, Sparkles, BookOpen, Lightbulb, ArrowRight, HelpCircle } from "lucide-react";
 
@@ -151,7 +154,7 @@ export default function Chap2LoisFondamentales() {
         </p>
 
         <div className="mb-6 w-full flex justify-center">
-          <BiotSavart3DCanvas />
+          <LazyMount fallbackText="Préparation de BiotSavart..."><BiotSavart3DCanvas /></LazyMount>
         </div>
 
         {/* Champ Total */}
@@ -201,7 +204,7 @@ export default function Chap2LoisFondamentales() {
         </p>
 
         <div className="mb-8 w-full flex justify-center">
-          <BiotSavartSegment3DCanvas />
+          <LazyMount fallbackText="Préparation de BiotSavartSegment..."><BiotSavartSegment3DCanvas /></LazyMount>
         </div>
 
         {/* Démonstration Step-by-Step */}
@@ -411,7 +414,7 @@ export default function Chap2LoisFondamentales() {
             </p>
 
             <div className="mb-8 w-full flex justify-center">
-              <BiotSavartSpire3DCanvas />
+              <LazyMount fallbackText="Préparation de BiotSavartSpire..."><BiotSavartSpire3DCanvas /></LazyMount>
             </div>
 
         {/* Démonstration Step-by-Step */}
@@ -740,7 +743,7 @@ export default function Chap2LoisFondamentales() {
         </p>
 
         <div className="mb-8 w-full flex justify-center">
-          <AmpereTheorem3DCanvas />
+          <LazyMount fallbackText="Préparation de AmpereTheorem..."><AmpereTheorem3DCanvas /></LazyMount>
         </div>
 
         {/* Méthodologie */}
@@ -799,7 +802,7 @@ export default function Chap2LoisFondamentales() {
         </p>
 
         <div className="mb-8 w-full flex justify-center">
-          <InfiniteWire3DCanvas />
+          <LazyMount fallbackText="Préparation de InfiniteWire..."><InfiniteWire3DCanvas /></LazyMount>
         </div>
 
         {/* Démonstration Step-by-Step */}
@@ -982,7 +985,7 @@ export default function Chap2LoisFondamentales() {
             Observez que les flèches de courant sont restreintes à la paroi externe. Regardez ce qui arrive au champ <LatexMath math="\vec{B}" block={false} /> (la flèche verte) lorsque vous déplacez le point M à l'intérieur du cylindre.
           </p>
           
-          <CylinderSurface3DCanvas />
+          <LazyMount fallbackText="Préparation de CylinderSurface..."><CylinderSurface3DCanvas /></LazyMount>
         </div>
 
         <div className="mt-8">
@@ -1167,7 +1170,7 @@ export default function Chap2LoisFondamentales() {
             Manipulez le point M pour l'amener à l'intérieur (ρ ≤ R) ou à l'extérieur (ρ {">"} R) du cylindre. Observez comment la valeur du champ <LatexMath math="\vec{B}" block={false} /> évolue.
           </p>
           
-          <Cylinder3DCanvas />
+          <LazyMount fallbackText="Préparation de Cylinder..."><Cylinder3DCanvas /></LazyMount>
         </div>
 
         <div className="mt-8">
@@ -1370,7 +1373,7 @@ export default function Chap2LoisFondamentales() {
           Le cylindre extérieur de rayon <LatexMath math="R_2 > R_1" block={false} /> est parcouru par un courant de retour <LatexMath math="-j_{s2} \vec{e_z}" block={false} /> (<LatexMath math="j_{s2} > 0" block={false} />).
         </p>
 
-        <CoaxialCable3DCanvas />
+        <LazyMount fallbackText="Préparation de CoaxialCable..."><CoaxialCable3DCanvas /></LazyMount>
 
         <div className="mt-8 flex flex-col gap-6 relative z-10">
           <h3 className="text-xl font-bold text-foreground">Démonstration par le théorème d'Ampère</h3>
@@ -1515,7 +1518,7 @@ export default function Chap2LoisFondamentales() {
           Il est modélisé par une distribution de courant surfacique cylindrique. On note <LatexMath math="n" block={false} /> le nombre de spires par unité de longueur.
         </p>
 
-        <Solenoid3DCanvas />
+        <LazyMount fallbackText="Préparation de Solenoid..."><Solenoid3DCanvas /></LazyMount>
 
         <div className="mt-8 flex flex-col gap-6">
           <h3 className="text-xl font-bold text-foreground">Démonstration par le théorème d'Ampère</h3>
@@ -1669,7 +1672,7 @@ export default function Chap2LoisFondamentales() {
           Elle comporte <LatexMath math="N" block={false} /> spires régulièrement distribuées. On étudie le champ dans le système de coordonnées cylindriques <LatexMath math="(\rho, \phi, z)" block={false} />.
         </p>
 
-        <ToroidalCoil3DCanvas />
+        <LazyMount fallbackText="Préparation de ToroidalCoil..."><ToroidalCoil3DCanvas /></LazyMount>
 
         <div className="mt-8 flex flex-col gap-6">
           <h3 className="text-xl font-bold text-foreground">Résolution de l'Exercice</h3>

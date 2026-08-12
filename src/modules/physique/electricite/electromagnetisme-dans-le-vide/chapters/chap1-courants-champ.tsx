@@ -1,14 +1,25 @@
 "use client";
 
 import React, { useState } from "react";
+import dynamic from 'next/dynamic';
+import LazyMount from "@/components/ui/LazyMount";
+
+const CurrentDensity3DCanvas = dynamic(() => import("../components/CurrentDensity3DCanvas"), { ssr: false });
+const CurrentFlux3DCanvas = dynamic(() => import("../components/CurrentFlux3DCanvas"), { ssr: false });
+const DriftVelocity3DCanvas = dynamic(() => import("../components/DriftVelocity3DCanvas"), { ssr: false });
+const MagneticSymmetry3DCanvas = dynamic(() => import("../components/MagneticSymmetry3DCanvas"), { ssr: false });
+const RightHandRule3DCanvas = dynamic(() => import("../components/RightHandRule3DCanvas"), { ssr: false });
+const Invariance3DCanvas = dynamic(() => import("../components/Invariance3DCanvas"), { ssr: false });
+const MagneticSources3DCanvas = dynamic(() => import("../components/MagneticSources3DCanvas"), { ssr: false });
+
 import LatexMath from "@/components/ui/LatexMath";
-import CurrentDensity3DCanvas from "../components/CurrentDensity3DCanvas";
-import CurrentFlux3DCanvas from "../components/CurrentFlux3DCanvas";
-import DriftVelocity3DCanvas from "../components/DriftVelocity3DCanvas";
-import MagneticSymmetry3DCanvas from "../components/MagneticSymmetry3DCanvas";
-import RightHandRule3DCanvas from "../components/RightHandRule3DCanvas";
-import Invariance3DCanvas from "../components/Invariance3DCanvas";
-import MagneticSources3DCanvas from "../components/MagneticSources3DCanvas";
+
+
+
+
+
+
+
 import { ChevronDown, ChevronUp, BookOpen, Zap, Layers, Compass, Magnet, Wind } from "lucide-react";
 
 export default function Chap1CourantsChamp() {
@@ -32,7 +43,7 @@ export default function Chap1CourantsChamp() {
           Historiquement, le magnétisme a été découvert à travers les aimants naturels. Aujourd&apos;hui, on sait que tout champ magnétique <LatexMath math="\vec{B}" /> a pour origine des <strong>charges électriques en mouvement</strong>. On distingue principalement trois sources du champ magnétique :
         </p>
 
-        <MagneticSources3DCanvas />
+        <LazyMount fallbackText="Préparation de MagneticSources..."><MagneticSources3DCanvas /></LazyMount>
       </section>
 
       {/* PARTIE 1: COURANT ÉLECTRIQUE ET DENSITÉ */}
@@ -58,7 +69,7 @@ export default function Chap1CourantsChamp() {
           En l&apos;absence de champ électrique, les électrons libres ont un mouvement chaotique très rapide (vitesse thermique). La vitesse moyenne est nulle. En appliquant un champ <LatexMath math="\vec{E}" />, ils acquièrent une lente <strong>vitesse de dérive</strong> superposée à ce chaos.
         </p>
         <div className="mb-8 rounded-2xl overflow-hidden border border-slate-800 relative ring-1 ring-slate-800 shadow-xl">
-          <DriftVelocity3DCanvas />
+          <LazyMount fallbackText="Préparation de DriftVelocity..."><DriftVelocity3DCanvas /></LazyMount>
         </div>
 
         {/* 2. Vecteur Densité de Courant */}
@@ -70,7 +81,7 @@ export default function Chap1CourantsChamp() {
         </p>
         
         <div className="mb-6 rounded-2xl overflow-hidden border border-slate-800 relative ring-1 ring-slate-800 shadow-xl">
-          <CurrentDensity3DCanvas />
+          <LazyMount fallbackText="Préparation de CurrentDensity..."><CurrentDensity3DCanvas /></LazyMount>
         </div>
 
         {/* 3. L'intensité (Flux) */}
@@ -82,7 +93,7 @@ export default function Chap1CourantsChamp() {
         </p>
         
         <div className="mb-6 rounded-2xl overflow-hidden border border-slate-800 relative ring-1 ring-slate-800 shadow-xl">
-          <CurrentFlux3DCanvas />
+          <LazyMount fallbackText="Préparation de CurrentFlux..."><CurrentFlux3DCanvas /></LazyMount>
         </div>
       </section>
 
@@ -225,7 +236,7 @@ export default function Chap1CourantsChamp() {
           Modifiez le signe de la particule pour observer le sens de la force magnétique <LatexMath math="\vec{F}_m" /> résultant du produit vectoriel.
         </p>
         <div className="mb-8 rounded-2xl overflow-hidden border border-slate-800 relative ring-1 ring-slate-800 shadow-xl">
-          <RightHandRule3DCanvas />
+          <LazyMount fallbackText="Préparation de RightHandRule..."><RightHandRule3DCanvas /></LazyMount>
         </div>
 
         {/* Effet Hall */}
@@ -305,7 +316,7 @@ export default function Chap1CourantsChamp() {
 
         {/* 3D Simulation for Symmetries */}
         <div className="mb-6 rounded-2xl overflow-hidden border border-slate-800 relative ring-1 ring-slate-800 shadow-xl">
-          <MagneticSymmetry3DCanvas />
+          <LazyMount fallbackText="Préparation de MagneticSymmetry..."><MagneticSymmetry3DCanvas /></LazyMount>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
@@ -369,7 +380,7 @@ export default function Chap1CourantsChamp() {
 
         {/* 3D Simulation for Invariances */}
         <div className="mb-8 rounded-2xl overflow-hidden border border-slate-800 relative ring-1 ring-slate-800 shadow-xl">
-          <Invariance3DCanvas />
+          <LazyMount fallbackText="Préparation de Invariance..."><Invariance3DCanvas /></LazyMount>
         </div>
 
       </section>
