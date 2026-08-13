@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import LatexMath from "@/components/ui/LatexMath";
 import dynamic from 'next/dynamic';
 import LazyMount from "@/components/ui/LazyMount";
@@ -8,8 +8,65 @@ import LazyMount from "@/components/ui/LazyMount";
 const VectorPotential3DCanvas = dynamic(() => import("../components/VectorPotential3DCanvas"), { ssr: false });
 const MagneticDipole3DCanvas = dynamic(() => import("../components/MagneticDipole3DCanvas"), { ssr: false });
 const HallEffect3DCanvas = dynamic(() => import("../components/HallEffect3DCanvas"), { ssr: false });
+const VectorPotentialExercise3DCanvas = dynamic(() => import("../components/VectorPotentialExercise3DCanvas"), { ssr: false });
 
-import { Calculator, Compass, Layers, Sparkles, Activity, Magnet } from "lucide-react";
+import { Calculator, Compass, Layers, Sparkles, Activity, Magnet, ChevronDown, ChevronUp, BookOpen } from "lucide-react";
+
+/* ── Collapsible Panel Component ── */
+function CollapsibleStep({
+  step,
+  title,
+  color,
+  children,
+  defaultOpen = false,
+}: {
+  step: number;
+  title: string;
+  color: string;
+  children: React.ReactNode;
+  defaultOpen?: boolean;
+}) {
+  const [open, setOpen] = useState(defaultOpen);
+  const colorMap: Record<string, { bg: string; border: string; text: string; dot: string }> = {
+    cyan: { bg: "bg-cyan-500/5", border: "border-cyan-500/20", text: "text-cyan-300", dot: "bg-cyan-500" },
+    teal: { bg: "bg-teal-500/5", border: "border-teal-500/20", text: "text-teal-300", dot: "bg-teal-500" },
+    blue: { bg: "bg-blue-500/5", border: "border-blue-500/20", text: "text-blue-300", dot: "bg-blue-500" },
+    emerald: { bg: "bg-emerald-500/5", border: "border-emerald-500/20", text: "text-emerald-300", dot: "bg-emerald-500" },
+    amber: { bg: "bg-amber-500/5", border: "border-amber-500/20", text: "text-amber-300", dot: "bg-amber-500" },
+    pink: { bg: "bg-pink-500/5", border: "border-pink-500/20", text: "text-pink-300", dot: "bg-pink-500" },
+    orange: { bg: "bg-orange-500/5", border: "border-orange-500/20", text: "text-orange-300", dot: "bg-orange-500" },
+    purple: { bg: "bg-purple-500/5", border: "border-purple-500/20", text: "text-purple-300", dot: "bg-purple-500" },
+  };
+  const c = colorMap[color] || colorMap.cyan;
+
+  return (
+    <div className={`rounded-xl ${c.bg} border ${c.border} overflow-hidden transition-all duration-300`}>
+      <button
+        onClick={() => setOpen(!open)}
+        className="w-full px-4 py-3 flex items-center gap-3 hover:bg-white/[0.02] transition-colors"
+      >
+        <div className={`w-7 h-7 rounded-full ${c.dot} flex items-center justify-center text-white text-xs font-black shrink-0 shadow-lg`}>
+          {step}
+        </div>
+        <span className={`text-xs sm:text-sm font-bold ${c.text} flex-1 text-left`}>{title}</span>
+        {open ? (
+          <ChevronUp className={`w-4 h-4 ${c.text} shrink-0`} />
+        ) : (
+          <ChevronDown className={`w-4 h-4 ${c.text} shrink-0`} />
+        )}
+      </button>
+      <div
+        className={`overflow-hidden transition-all duration-500 ease-in-out ${
+          open ? "max-h-[2000px] opacity-100" : "max-h-0 opacity-0"
+        }`}
+      >
+        <div className="px-4 pb-4 pt-1 space-y-3">
+          {children}
+        </div>
+      </div>
+    </div>
+  );
+}
 
 /* ── Formula Card ── */
 function FormulaCard({ children, label, color = "cyan" }: { children: React.ReactNode; label: string; color?: string }) {
@@ -326,6 +383,122 @@ export default function Chap3PotentielDipole() {
 
             </div>
           </details>
+        </div>
+      </section>
+      {/* ═══════════════════════════════════════════ */}
+      {/* PARTIE 3: EXERCICE - LE CYLINDRE INFINI     */}
+      {/* ═══════════════════════════════════════════ */}
+      <section className="bg-card/90 border border-border/80 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 shadow-sm w-full max-w-full overflow-x-hidden">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-500/10 text-orange-600 dark:text-orange-400 text-xs font-extrabold mb-3">
+          <Activity className="w-3.5 h-3.5" />
+          <span>Partie 3 • Exercice d'Application</span>
+        </div>
+        
+        <h2 className="text-xl sm:text-2xl font-black mb-4 text-foreground leading-tight">
+          3. Exercice Complet : Le Cylindre Conducteur Infini
+        </h2>
+
+        <p className="text-sm sm:text-base text-muted-foreground leading-relaxed mb-6">
+          Un cylindre conducteur infini de rayon <LatexMath math="R" /> et d'axe <LatexMath math="(Oz)" /> est parcouru par un courant stationnaire de densité uniforme <LatexMath math="\vec{j} = j_0 \vec{e}_z" />. On se propose de déterminer le champ magnétique <LatexMath math="\vec{B}" /> et le potentiel vecteur <LatexMath math="\vec{A}" /> en tout point de l'espace.
+        </p>
+
+        {/* 3D Visualisation */}
+        <h3 className="text-sm font-bold text-foreground/80 dark:text-slate-300 mb-3 flex items-center gap-2">
+          <Sparkles className="w-4 h-4 text-orange-400" />
+          Visualisation 3D Interactive
+        </h3>
+        <p className="text-[11px] text-muted-foreground mb-4">
+          Visualisez le vecteur courant <LatexMath math="\vec{j}" />, les lignes de champ <LatexMath math="\vec{B}" /> et le potentiel vecteur <LatexMath math="\vec{A}" />. Déplacez le curseur pour faire varier le rayon <LatexMath math="R" />.
+        </p>
+
+        <div className="mb-8 w-full flex justify-center">
+          <div className="w-full relative">
+            <LazyMount height="400px" fallbackText="Chargement du Cylindre Conducteur...">
+              <VectorPotentialExercise3DCanvas />
+            </LazyMount>
+            <p className="text-xs text-center text-muted-foreground mt-2 italic absolute -bottom-6 left-0 right-0">
+              On visualise bien que A est parallèle à j, maximum au centre, et décroît vers l'extérieur. Les lignes de champ B enroulent le cylindre.
+            </p>
+          </div>
+        </div>
+
+        {/* Démonstration Step-by-Step */}
+        <h3 className="text-sm font-bold text-foreground/80 dark:text-slate-300 mb-4 mt-12 flex items-center gap-2">
+          <BookOpen className="w-4 h-4 text-orange-400" />
+          Questions et Correction détaillée
+        </h3>
+
+        <div className="space-y-3">
+          
+          <CollapsibleStep step={1} title="Symétries et invariances" color="orange" defaultOpen={true}>
+            <p className="text-[11px] text-muted-foreground leading-relaxed mb-3">
+              <strong>Question 1 :</strong> Déterminer, par des arguments de symétrie, la direction et les dépendances du champ <LatexMath math="\vec{B}" /> et du potentiel vecteur <LatexMath math="\vec{A}" />.
+            </p>
+            <div className="border-t border-orange-500/10 pt-4">
+              <p className="text-[11px] mb-2">La distribution est invariante par translation selon <LatexMath math="z" /> et rotation autour de <LatexMath math="z" /> (indépendance de <LatexMath math="\theta" /> et <LatexMath math="z" />).</p>
+              <p className="text-[11px] mb-2">Le plan <LatexMath math="(M, \vec{e}_r, \vec{e}_z)" /> contient le vecteur densité de courant <LatexMath math="\vec{j}" />, c'est donc un plan de symétrie de la distribution. <LatexMath math="\vec{B}" /> étant un pseudo-vecteur, il lui est perpendiculaire, donc dirigé selon <LatexMath math="\vec{e}_\theta" />. Le potentiel vecteur <LatexMath math="\vec{A}" /> est un vrai vecteur, il appartient au plan de symétrie et a la même direction que <LatexMath math="\vec{j}" />, soit <LatexMath math="\vec{e}_z" />.</p>
+              <div className="flex justify-center bg-black/20 p-2 rounded mb-2">
+                <LatexMath math="\vec{B}(M) = B(r)\vec{e}_\theta \quad \text{et} \quad \vec{A}(M) = A(r)\vec{e}_z" />
+              </div>
+            </div>
+          </CollapsibleStep>
+
+          <CollapsibleStep step={2} title="Champ Magnétique (Théorème d'Ampère)" color="cyan">
+            <p className="text-[11px] text-muted-foreground leading-relaxed mb-3">
+              <strong>Question 2 :</strong> Calculer <LatexMath math="\vec{B}" /> à l'intérieur (<LatexMath math="r < R" />) et à l'extérieur (<LatexMath math="r > R" />) du cylindre via le théorème d'Ampère.
+            </p>
+            <div className="border-t border-cyan-500/10 pt-4">
+              <p className="text-[11px] mb-2">On choisit comme contour un cercle de rayon <LatexMath math="r" />. La circulation est <LatexMath math="C = B(r) \times 2\pi r" />.</p>
+              <ul className="list-disc list-inside space-y-1 mb-2 text-[11px]">
+                <li><strong>Pour <LatexMath math="r < R" /> :</strong> <LatexMath math="I_{encl} = j_0 \pi r^2 \implies B_{int}(r) = \frac{\mu_0 j_0 r}{2}" /></li>
+                <li><strong>Pour <LatexMath math="r > R" /> :</strong> <LatexMath math="I_{encl} = j_0 \pi R^2 = I \implies B_{ext}(r) = \frac{\mu_0 I}{2\pi r}" /></li>
+              </ul>
+            </div>
+          </CollapsibleStep>
+
+          <CollapsibleStep step={3} title="Potentiel Vecteur A" color="emerald">
+            <p className="text-[11px] text-muted-foreground leading-relaxed mb-3">
+              <strong>Question 3 :</strong> En déduire le potentiel vecteur <LatexMath math="\vec{A}" /> en intégrant <LatexMath math="\vec{B} = \vec{\text{rot}} \vec{A}" />.
+            </p>
+            <div className="border-t border-emerald-500/10 pt-4 text-[11px]">
+              <p className="mb-2">En utilisant le rotationnel en cylindriques avec <LatexMath math="\vec{A} = A(r)\vec{e}_z" /> :</p>
+              <div className="flex justify-center bg-black/20 p-2 rounded mb-2">
+                <LatexMath math="\vec{\text{rot}}\vec{A} = -\frac{\partial A}{\partial r}\vec{e}_\theta = \vec{B}" />
+              </div>
+              
+              <p className="mt-3 mb-1"><strong>Intérieur (<LatexMath math="r < R" />) :</strong></p>
+              <div className="flex justify-center bg-black/20 p-2 rounded mb-2">
+                <LatexMath math="-\frac{\partial A_{int}}{\partial r} = \frac{\mu_0 j_0 r}{2} \implies A_{int}(r) = -\frac{\mu_0 j_0 r^2}{4} + C_1" />
+              </div>
+              <p className="italic mb-2">En posant <LatexMath math="A(0) = 0" /> arbitrairement, on a <LatexMath math="C_1 = 0" />.</p>
+
+              <p className="mt-3 mb-1"><strong>Extérieur (<LatexMath math="r > R" />) :</strong></p>
+              <div className="flex justify-center bg-black/20 p-2 rounded mb-2">
+                <LatexMath math="-\frac{\partial A_{ext}}{\partial r} = \frac{\mu_0 j_0 R^2}{2r} \implies A_{ext}(r) = -\frac{\mu_0 j_0 R^2}{2} \ln(r) + C_2" />
+              </div>
+              
+              <p className="mt-3 mb-2">La continuité de <LatexMath math="\vec{A}" /> en <LatexMath math="r = R" /> impose :</p>
+              <div className="flex justify-center bg-emerald-500/10 border border-emerald-500/30 p-2 rounded">
+                <LatexMath math="-\frac{\mu_0 j_0 R^2}{4} = -\frac{\mu_0 j_0 R^2}{2} \ln(R) + C_2 \implies C_2 = \frac{\mu_0 j_0 R^2}{2}\left(\ln(R) - \frac{1}{2}\right)" />
+              </div>
+            </div>
+          </CollapsibleStep>
+
+          <CollapsibleStep step={4} title="Méthode alternative : Équation de Poisson" color="purple">
+            <p className="text-[11px] text-muted-foreground leading-relaxed mb-3">
+              Peut-on trouver <LatexMath math="\vec{A}" /> sans passer par le champ magnétique <LatexMath math="\vec{B}" /> ?
+            </p>
+            <div className="border-t border-purple-500/10 pt-4 text-[11px]">
+              <p>
+                À l'intérieur du conducteur : <LatexMath math="\Delta \vec{A} = -\mu_0 \vec{j}" />. Puisque <LatexMath math="\vec{A}" /> est selon <LatexMath math="z" /> et ne dépend que de <LatexMath math="r" /> :
+              </p>
+              <div className="flex justify-center bg-black/20 p-2 rounded my-2 overflow-x-auto">
+                <LatexMath math="\frac{1}{r} \frac{\partial}{\partial r}\left(r \frac{\partial A}{\partial r}\right) = -\mu_0 j_0" />
+              </div>
+              <p>En intégrant deux fois par rapport à r (et avec la condition de champ non divergent en r=0), on retrouve directement le même résultat parabolique pour l'intérieur.</p>
+            </div>
+          </CollapsibleStep>
+
         </div>
       </section>
 
