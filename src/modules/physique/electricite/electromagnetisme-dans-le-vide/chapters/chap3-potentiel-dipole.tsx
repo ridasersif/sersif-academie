@@ -329,58 +329,6 @@ export default function Chap3PotentielDipole() {
         </div>
       </section>
 
-      {/* ═══════════════════════════════════════════ */}
-      {/* PARTIE 3: L'EFFET HALL                      */}
-      {/* ═══════════════════════════════════════════ */}
-      <section className="bg-card/90 border border-border/80 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 shadow-sm w-full max-w-full overflow-x-hidden">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 text-xs font-extrabold mb-3">
-          <Activity className="w-3.5 h-3.5" />
-          <span>Partie 3 • Application Classique</span>
-        </div>
-        
-        <h2 className="text-xl sm:text-2xl font-black mb-4 text-foreground leading-tight">
-          3. L'Effet Hall
-        </h2>
-
-        <p className="text-sm sm:text-base text-muted-foreground leading-relaxed mb-6">
-          Découvert par Edwin Hall en 1879, cet effet se produit lorsqu'un conducteur parcouru par un courant <LatexMath math="I" /> est placé dans un champ magnétique <LatexMath math="\vec{B}" /> perpendiculaire. La force de Lorentz dévie les porteurs de charge, créant une accumulation sur les bords de la plaque, générant ainsi un <strong>Champ de Hall</strong> <LatexMath math="\vec{E}_H" /> et une tension mesurable.
-        </p>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-6">
-          <div className="space-y-4">
-            <div className="bg-background border border-border p-4 sm:p-5 rounded-xl">
-              <h3 className="font-bold text-foreground mb-2">Origine Physique</h3>
-              <p className="text-sm text-muted-foreground mb-3 leading-relaxed">
-                Les porteurs animés à la vitesse <LatexMath math="\vec{v}" /> subissent la force de Lorentz <LatexMath math="\vec{F}_m = q(\vec{v} \wedge \vec{B})" />. 
-                <br /><br />
-                En régime permanent, la force électrique due au champ de Hall compense exactement la force magnétique :
-              </p>
-              <div className="flex justify-center mb-3">
-                <LatexMath math="q\vec{E}_H + q(\vec{v} \wedge \vec{B}) = \vec{0} \implies \vec{E}_H = -\vec{v} \wedge \vec{B}" />
-              </div>
-            </div>
-
-            <div className="bg-cyan-500/5 border border-cyan-500/20 p-4 sm:p-5 rounded-xl">
-              <h3 className="font-bold text-cyan-400 mb-2">Utilité de l'Effet Hall</h3>
-              <ul className="list-disc list-inside text-sm text-muted-foreground leading-relaxed space-y-1">
-                <li>Déterminer le signe des porteurs de charge (Trous vs Électrons).</li>
-                <li>Mesurer l'intensité d'un champ magnétique (Teslamètre à effet Hall).</li>
-                <li>Mesurer la densité <LatexMath math="n" /> des porteurs de charge.</li>
-              </ul>
-            </div>
-          </div>
-          
-          <div className="flex flex-col">
-            <LazyMount height="400px" fallbackText="Chargement Effet Hall 3D...">
-              <HallEffect3DCanvas />
-            </LazyMount>
-            <p className="text-xs text-center text-muted-foreground mt-2 italic">
-              Remarque : Indépendamment du signe de la charge, la déviation s'effectue du même côté. C'est donc le signe de la tension de Hall <LatexMath math="U_H" /> qui révèle la nature des porteurs.
-            </p>
-          </div>
-        </div>
-      </section>
-
     </div>
   );
 }

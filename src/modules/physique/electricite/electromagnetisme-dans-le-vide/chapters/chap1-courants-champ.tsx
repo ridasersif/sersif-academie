@@ -11,6 +11,7 @@ const MagneticSymmetry3DCanvas = dynamic(() => import("../components/MagneticSym
 const RightHandRule3DCanvas = dynamic(() => import("../components/RightHandRule3DCanvas"), { ssr: false });
 const Invariance3DCanvas = dynamic(() => import("../components/Invariance3DCanvas"), { ssr: false });
 const MagneticSources3DCanvas = dynamic(() => import("../components/MagneticSources3DCanvas"), { ssr: false });
+const HallEffect3DCanvas = dynamic(() => import("../components/HallEffect3DCanvas"), { ssr: false });
 
 import LatexMath from "@/components/ui/LatexMath";
 
@@ -20,7 +21,7 @@ import LatexMath from "@/components/ui/LatexMath";
 
 
 
-import { ChevronDown, ChevronUp, BookOpen, Zap, Layers, Compass, Magnet, Wind } from "lucide-react";
+import { ChevronDown, ChevronUp, BookOpen, Zap, Layers, Compass, Magnet, Wind, Activity } from "lucide-react";
 
 export default function Chap1CourantsChamp() {
   const [showContinuityProof, setShowContinuityProof] = useState(false);
@@ -240,29 +241,89 @@ export default function Chap1CourantsChamp() {
         </div>
 
         {/* Effet Hall */}
-        <h3 className="text-sm font-bold text-amber-400 mb-3 border-b border-amber-500/20 pb-1">L&apos;Effet Hall Classique</h3>
+        <h3 className="text-sm font-bold text-amber-400 mb-3 border-b border-amber-500/20 pb-1 mt-8">L&apos;Effet Hall Classique</h3>
         <p className="text-[11px] text-muted-foreground leading-relaxed mb-4">
-          Lorsqu&apos;un ruban conducteur parcouru par un courant est placé dans un champ magnétique perpendiculaire, les porteurs de charge sont déviés par la force de Lorentz. Ils s&apos;accumulent sur un bord, créant un champ électrique de Hall <LatexMath math="\vec{E}_H" /> qui s&apos;oppose à cette déviation jusqu&apos;à l&apos;équilibre.
+          Découvert par Edwin Hall en 1879, cet effet se produit lorsqu&apos;un ruban conducteur parcouru par un courant <LatexMath math="I" /> est placé dans un champ magnétique <LatexMath math="\vec{B}" /> perpendiculaire. La force de Lorentz dévie les porteurs de charge, créant une accumulation sur les bords de la plaque, générant ainsi un <strong>Champ de Hall</strong> <LatexMath math="\vec{E}_H" /> et une tension mesurable <LatexMath math="U_H" />.
         </p>
         
-        <div className="bg-amber-500/5 border border-amber-500/20 p-4 rounded-2xl">
+        <div className="bg-amber-500/5 border border-amber-500/20 p-4 rounded-2xl mb-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <span className="text-[11px] text-amber-500 font-bold block mb-1">Équilibre des forces :</span>
+              <span className="text-[11px] text-amber-500 font-bold block mb-1">Équilibre des forces en régime permanent :</span>
               <div className="p-2 rounded bg-slate-950 border border-slate-800 font-mono text-xs text-amber-300 text-center">
                 <LatexMath math="q\vec{E}_H + q(\vec{v} \wedge \vec{B}) = \vec{0}" />
               </div>
             </div>
             <div>
-              <span className="text-[11px] text-amber-500 font-bold block mb-1">Champ de Hall :</span>
+              <span className="text-[11px] text-amber-500 font-bold block mb-1">Champ de Hall généré :</span>
               <div className="p-2 rounded bg-slate-950 border border-slate-800 font-mono text-xs text-amber-300 text-center">
                 <LatexMath math="\vec{E}_H = -\vec{v} \wedge \vec{B}" />
               </div>
             </div>
           </div>
           <p className="text-[10px] text-amber-600/80 mt-3 italic text-center">
-            Cette accumulation crée une tension mesurable (Tension de Hall <LatexMath math="V_H" />) qui permet notamment de déterminer le signe des porteurs de charge (effet très utilisé dans les capteurs magnétiques).
+            Cette accumulation crée une tension mesurable (Tension de Hall <LatexMath math="U_H" />) qui permet notamment de déterminer le signe des porteurs de charge (Trous vs Électrons), l'intensité du champ magnétique ou la densité <LatexMath math="n" /> des porteurs.
           </p>
+        </div>
+
+        {/* Démonstration Rigoureuse Effet Hall */}
+        <div className="mb-6">
+          <details className="group border border-amber-500/30 bg-slate-950/50 rounded-xl overflow-hidden [&_summary::-webkit-details-marker]:hidden">
+            <summary className="flex items-center justify-between p-4 cursor-pointer select-none bg-amber-500/10 hover:bg-amber-500/20 transition-colors">
+              <div className="flex items-center gap-3">
+                <div className="bg-amber-500/20 p-1.5 rounded-lg text-amber-400">
+                  <Activity className="w-4 h-4" />
+                </div>
+                <span className="font-bold text-amber-400 text-sm">Démonstration Détaillée : Calcul de la Tension de Hall (<LatexMath math="U_H" />)</span>
+              </div>
+              <ChevronDown className="w-5 h-5 text-amber-400 group-open:rotate-180 transition-transform duration-300" />
+            </summary>
+            
+            <div className="p-5 border-t border-amber-500/20 text-sm text-slate-300 leading-relaxed space-y-4">
+              <p>Considérons un ruban conducteur de largeur <LatexMath math="a" /> (selon <LatexMath math="Oz" />) et d'épaisseur <LatexMath math="b" /> (selon <LatexMath math="Oy" />). Le courant <LatexMath math="I" /> circule selon <LatexMath math="+Ox" />. Le champ magnétique <LatexMath math="\vec{B}" /> est uniforme et dirigé selon <LatexMath math="+Oy" />.</p>
+              
+              <div className="bg-slate-900/50 p-4 rounded-lg border border-slate-700/50">
+                <h4 className="font-bold text-slate-200 mb-2">1. Vitesse de dérive et Vecteur Courant</h4>
+                <p className="mb-2">Le courant d'intensité <LatexMath math="I" /> est lié à la densité de porteurs <LatexMath math="n" />, leur charge <LatexMath math="q" /> et leur vitesse de dérive <LatexMath math="\vec{v} = v_x \vec{u}_x" />.</p>
+                <div className="flex flex-col gap-2 bg-black/30 p-3 rounded text-center overflow-x-auto">
+                  <LatexMath math="\vec{j} = n q \vec{v} \implies j_x = n q v_x" />
+                  <LatexMath math="I = \iint \vec{j} \cdot d\vec{S} = j_x (a \times b) = n q v_x (ab) \implies v_x = \frac{I}{n q a b}" />
+                </div>
+              </div>
+
+              <div className="bg-slate-900/50 p-4 rounded-lg border border-slate-700/50">
+                <h4 className="font-bold text-slate-200 mb-2">2. Équilibre des forces et Champ de Hall</h4>
+                <p className="mb-2">La force magnétique dévie les porteurs selon l'axe <LatexMath math="Oz" /> :</p>
+                <div className="flex flex-col gap-2 bg-black/30 p-3 rounded text-center overflow-x-auto mb-2">
+                  <LatexMath math="\vec{F}_m = q (\vec{v} \wedge \vec{B}) = q (v_x \vec{u}_x \wedge B \vec{u}_y) = q v_x B \vec{u}_z" />
+                </div>
+                <p className="mb-2">Les charges s'accumulent sur les bords <LatexMath math="z=0" /> et <LatexMath math="z=a" />, créant un champ de Hall <LatexMath math="\vec{E}_H = E_H \vec{u}_z" /> qui finit par compenser exactement la force magnétique en régime permanent :</p>
+                <div className="flex justify-center bg-black/30 p-3 rounded text-center overflow-x-auto">
+                  <LatexMath math="\vec{F}_{total} = \vec{0} \implies q \vec{E}_H + q v_x B \vec{u}_z = \vec{0} \implies E_H = -v_x B" />
+                </div>
+              </div>
+
+              <div className="bg-amber-900/20 p-4 rounded-lg border border-amber-500/30">
+                <h4 className="font-bold text-amber-300 mb-2">3. Tension de Hall et Constante de Hall (<LatexMath math="R_H" />)</h4>
+                <p className="mb-2">La tension de Hall <LatexMath math="U_H" /> mesurée transversalement sur la largeur <LatexMath math="a" /> est :</p>
+                <div className="flex flex-col gap-2 bg-black/40 p-3 rounded text-center overflow-x-auto mb-2 border border-amber-500/20">
+                  <LatexMath math="U_H = V(a) - V(0) = -\int_{0}^{a} E_H dz = -E_H a = v_x B a" />
+                </div>
+                <p className="mb-2">En remplaçant la vitesse <LatexMath math="v_x" /> par son expression en fonction du courant <LatexMath math="I" /> :</p>
+                <div className="flex flex-col gap-2 bg-black/40 p-3 rounded text-center overflow-x-auto mb-2 border border-amber-500/50 shadow-[0_0_15px_rgba(245,158,11,0.15)]">
+                  <LatexMath math="U_H = \left(\frac{I}{n q a b}\right) B a = \frac{I B}{n q b} = R_H \frac{I B}{b}" />
+                </div>
+                <p className="text-center mt-2 text-amber-200 font-bold">Où <LatexMath math="R_H = \frac{1}{nq}" /> est la constante de Hall du matériau.</p>
+              </div>
+
+            </div>
+          </details>
+        </div>
+
+        <div className="mb-8 rounded-2xl overflow-hidden border border-slate-800 relative ring-1 ring-slate-800 shadow-xl">
+          <LazyMount height="400px" fallbackText="Chargement Effet Hall 3D...">
+             <HallEffect3DCanvas />
+          </LazyMount>
         </div>
       </section>
 
@@ -311,7 +372,7 @@ export default function Chap1CourantsChamp() {
           Symétries et Principe de Curie (Direction du champ)
         </h3>
         <p className="text-[11px] text-muted-foreground leading-relaxed mb-4">
-          Le principe de Curie stipule que &quot;les effets conservent les symétries des causes&quot;. Analyser les plans de symétrie <LatexMath math="\Pi" /> et d&apos;antisymétrie <LatexMath math="\Pi^*" /> est l&apos;étape clé pour déterminer la direction du vecteur <LatexMath math="\vec{B}" />.
+          Le <strong>principe de Curie</strong> stipule que &quot;les effets conservent les symétries des causes&quot;. L&apos;analyse des plans de symétrie <LatexMath math="\Pi" /> et d&apos;antisymétrie <LatexMath math="\Pi^*" /> de la distribution de courants (la cause) est l&apos;étape clé pour déterminer la direction du vecteur champ magnétique <LatexMath math="\vec{B}" /> (l'effet).
         </p>
 
         {/* 3D Simulation for Symmetries */}
@@ -319,19 +380,19 @@ export default function Chap1CourantsChamp() {
           <LazyMount fallbackText="Préparation de MagneticSymmetry..."><MagneticSymmetry3DCanvas /></LazyMount>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
           <div className="p-5 rounded-2xl bg-blue-500/10 border border-blue-500/20 relative overflow-hidden group">
             <div className="absolute top-0 right-0 w-24 h-24 bg-blue-500/20 rounded-full blur-2xl -mr-10 -mt-10 group-hover:bg-blue-500/30 transition-all"></div>
             <span className="text-[13px] font-bold text-blue-500 block mb-2 font-sans flex items-center gap-2 relative z-10">
               Plan de Symétrie (<LatexMath math="\Pi" />)
             </span>
             <p className="text-[11px] text-muted-foreground leading-relaxed mb-3 relative z-10">
-              Un plan est de symétrie si la distribution de courants y est symétrique (les courants &quot;appartiennent&quot; ou &quot;longent&quot; le plan).
+              Un plan est dit de symétrie si la distribution des courants est invariante par réflexion à travers ce plan (les courants sont contenus dans ou parallèles au plan).
             </p>
             <div className="p-3 rounded-xl bg-blue-950/50 border border-blue-800/50 text-center font-mono text-sm text-blue-300 shadow-inner relative z-10">
               <LatexMath math="\vec{B}(M) \perp \Pi" />
             </div>
-            <p className="text-[10px] text-blue-400 mt-2 text-center italic relative z-10">Conséquence du fait que B est un pseudo-vecteur.</p>
+            <p className="text-[10px] text-blue-400 mt-2 text-center italic relative z-10">Le pseudo-vecteur B lui est perpendiculaire.</p>
           </div>
 
           <div className="p-5 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 relative overflow-hidden group">
@@ -340,13 +401,61 @@ export default function Chap1CourantsChamp() {
               Plan d&apos;Antisymétrie (<LatexMath math="\Pi^*" />)
             </span>
             <p className="text-[11px] text-muted-foreground leading-relaxed mb-3 relative z-10">
-              Un plan est d&apos;antisymétrie si les courants le traversent perpendiculairement de part et d&apos;autre avec le même sens.
+              Un plan est dit d&apos;antisymétrie si les courants le traversent perpendiculairement, le sens s'inversant par la réflexion symétrique.
             </p>
             <div className="p-3 rounded-xl bg-emerald-950/50 border border-emerald-800/50 text-center font-mono text-sm text-emerald-300 shadow-inner relative z-10">
               <LatexMath math="\vec{B}(M) \in \Pi^*" />
             </div>
-            <p className="text-[10px] text-emerald-400 mt-2 text-center italic relative z-10">Le champ B appartient au plan.</p>
+            <p className="text-[10px] text-emerald-400 mt-2 text-center italic relative z-10">Le pseudo-vecteur B appartient au plan.</p>
           </div>
+        </div>
+
+        {/* Démonstration Rigoureuse Symmetries */}
+        <div className="mb-8">
+          <details className="group border border-emerald-500/30 bg-slate-950/50 rounded-xl overflow-hidden [&_summary::-webkit-details-marker]:hidden">
+            <summary className="flex items-center justify-between p-4 cursor-pointer select-none bg-emerald-500/10 hover:bg-emerald-500/20 transition-colors">
+              <div className="flex items-center gap-3">
+                <div className="bg-emerald-500/20 p-1.5 rounded-lg text-emerald-400">
+                  <Wind className="w-4 h-4" />
+                </div>
+                <span className="font-bold text-emerald-400 text-sm">Démonstration Mathématique : Propriétés du Pseudo-Vecteur <LatexMath math="\vec{B}" /></span>
+              </div>
+              <ChevronDown className="w-5 h-5 text-emerald-400 group-open:rotate-180 transition-transform duration-300" />
+            </summary>
+            
+            <div className="p-5 border-t border-emerald-500/20 text-sm text-slate-300 leading-relaxed space-y-4">
+              <p>Le champ magnétique est défini fondamentalement par la <strong>loi de Biot et Savart</strong> :</p>
+              <div className="flex justify-center bg-black/30 p-3 rounded shadow-inner border border-emerald-500/20 mb-2 overflow-x-auto">
+                <LatexMath math="d\vec{B}(M) = \frac{\mu_0}{4\pi} \frac{I d\vec{l} \wedge \vec{u}_{PM}}{PM^2}" />
+              </div>
+              <p>Cette relation contient un <strong>produit vectoriel</strong> (<LatexMath math="\wedge" />), ce qui donne à <LatexMath math="\vec{B}" /> sa nature de <em>pseudo-vecteur</em> (ou vecteur axial). Examinons l'effet d'une réflexion géométrique par rapport à un plan.</p>
+
+              <div className="bg-slate-900/50 p-4 rounded-lg border border-slate-700/50 mt-4">
+                <h4 className="font-bold text-blue-400 mb-2">1. Cas d'un Plan de Symétrie <LatexMath math="\Pi" /></h4>
+                <p className="mb-2">Soit un plan <LatexMath math="\Pi" /> de symétrie pour le courant. Le vecteur élémentaire <LatexMath math="d\vec{l}" /> et le vecteur position relative <LatexMath math="\vec{r} = \vec{PM}" /> (si le point M y appartient) vérifient :</p>
+                <div className="flex flex-col gap-2 bg-black/30 p-3 rounded text-center overflow-x-auto mb-2">
+                  <LatexMath math="\text{Sym}(d\vec{l}) = d\vec{l}_{\text{sym}} \implies d\vec{l} \in \Pi" />
+                  <LatexMath math="\text{Sym}(\vec{r}) = \vec{r}_{\text{sym}} \implies \vec{r} \in \Pi \quad \text{(pour } M \in \Pi)" />
+                </div>
+                <p className="mb-2">Le produit vectoriel de deux vecteurs appartenant au même plan donne un vecteur nécessairement <strong>perpendiculaire</strong> à ce plan. Donc, d'après Biot-Savart :</p>
+                <div className="flex justify-center bg-blue-900/20 p-3 rounded text-center overflow-x-auto border border-blue-500/30 shadow-[0_0_15px_rgba(59,130,246,0.1)]">
+                  <LatexMath math="d\vec{l} \wedge \vec{r} \perp \Pi \implies \vec{B}(M \in \Pi) \perp \Pi" />
+                </div>
+              </div>
+
+              <div className="bg-slate-900/50 p-4 rounded-lg border border-slate-700/50 mt-4">
+                <h4 className="font-bold text-emerald-400 mb-2">2. Cas d'un Plan d'Antisymétrie <LatexMath math="\Pi^*" /></h4>
+                <p className="mb-2">Pour un plan d'antisymétrie <LatexMath math="\Pi^*" />, le courant traverse le plan de manière opposée :</p>
+                <div className="flex flex-col gap-2 bg-black/30 p-3 rounded text-center overflow-x-auto mb-2">
+                  <LatexMath math="\text{Sym}(d\vec{l}) = -d\vec{l} \implies d\vec{l} \perp \Pi^*" />
+                </div>
+                <p className="mb-2">Si le point <LatexMath math="M" /> appartient à <LatexMath math="\Pi^*" />, le vecteur <LatexMath math="\vec{r}" /> y appartient. Le produit vectoriel d'un vecteur perpendiculaire à <LatexMath math="\Pi^*" /> (<LatexMath math="d\vec{l}" />) et d'un vecteur appartenant à <LatexMath math="\Pi^*" /> (<LatexMath math="\vec{r}" />) donne un vecteur qui <strong>appartient</strong> au plan <LatexMath math="\Pi^*" />.</p>
+                <div className="flex justify-center bg-emerald-900/20 p-3 rounded text-center overflow-x-auto border border-emerald-500/30 shadow-[0_0_15px_rgba(16,185,129,0.1)]">
+                  <LatexMath math="(d\vec{l} \perp \Pi^*) \wedge (\vec{r} \in \Pi^*) \in \Pi^* \implies \vec{B}(M \in \Pi^*) \in \Pi^*" />
+                </div>
+              </div>
+            </div>
+          </details>
         </div>
 
         {/* INVARIANCES */}
