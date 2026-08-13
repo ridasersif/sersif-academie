@@ -4,13 +4,13 @@ import React, { useRef, useState, useEffect, useMemo } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, Line, Html, ContactShadows, Cylinder, Environment } from "@react-three/drei";
 import * as THREE from "three";
-import { Eye, EyeOff, RefreshCw } from "lucide-react";
+import { Eye, EyeOff, RefreshCw, Info } from "lucide-react";
 import LatexMath from "@/components/ui/LatexMath";
 
 // Animation du courant
 const CurrentParticles = ({ direction }: { direction: number }) => {
   const meshRef = useRef<THREE.InstancedMesh>(null);
-  const numParticles = 120; // Plus de particules pour la fluidité
+  const numParticles = 200; // Plus de particules pour une vraie continuité fluide
   const dummy = useMemo(() => new THREE.Object3D(), []);
   
   const [positions, setPositions] = useState(() => 
@@ -21,8 +21,8 @@ const CurrentParticles = ({ direction }: { direction: number }) => {
     if (!meshRef.current) return;
     
     setPositions(prev => prev.map(z => {
-      // Vitesse plus douce
-      let newZ = z + delta * 2.5 * direction;
+      // Vitesse plus douce et très fluide
+      let newZ = z + delta * 1.5 * direction;
       if (direction > 0 && newZ > 4) newZ = -4;
       if (direction < 0 && newZ < -4) newZ = 4;
       return newZ;
@@ -40,7 +40,7 @@ const CurrentParticles = ({ direction }: { direction: number }) => {
   return (
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     <instancedMesh ref={meshRef} args={[null, null, numParticles] as any}>
-      <sphereGeometry args={[0.04, 16, 16]} />
+      <sphereGeometry args={[0.025, 8, 8]} />
       <meshBasicMaterial color="#3b82f6" transparent opacity={0.8} />
     </instancedMesh>
   );
@@ -73,16 +73,16 @@ const Vectors = ({ showA, showB, radius, direction }: { showA: boolean; showB: b
         if (showA) {
           const scaleA = Math.max(0.2, 1.5 - 0.4 * radius);
           
-          // Corps de la flèche A
+          // Corps de la flèche A (plus fin)
           dummy.position.set(x, y, z + (scaleA * 0.4 * direction));
-          dummy.scale.set(0.04, scaleA * 0.8, 0.04);
+          dummy.scale.set(0.02, scaleA * 0.8, 0.02);
           dummy.rotation.set(Math.PI / 2, 0, 0); // Vers Z
           dummy.updateMatrix();
           meshA.current.setMatrixAt(index, dummy.matrix);
           
-          // Pointe de la flèche A
+          // Pointe de la flèche A (plus fine)
           dummy.position.set(x, y, z + (scaleA * 0.8 * direction));
-          dummy.scale.set(0.08, 0.16, 0.08); // Tête plus petite
+          dummy.scale.set(0.05, 0.12, 0.05);
           dummy.rotation.set(direction > 0 ? Math.PI / 2 : -Math.PI / 2, 0, 0);
           dummy.updateMatrix();
           meshAArrow.current.setMatrixAt(index, dummy.matrix);
@@ -99,16 +99,16 @@ const Vectors = ({ showA, showB, radius, direction }: { showA: boolean; showB: b
           const by = Math.cos(angle) * direction;
           const scaleB = 1.2 / radius;
           
-          // Corps de la flèche B
+          // Corps de la flèche B (plus fin)
           dummy.position.set(x + bx * scaleB * 0.4, y + by * scaleB * 0.4, z);
-          dummy.scale.set(0.04, scaleB * 0.8, 0.04);
+          dummy.scale.set(0.02, scaleB * 0.8, 0.02);
           dummy.rotation.set(0, 0, angle + (direction > 0 ? 0 : Math.PI)); // Tangent
           dummy.updateMatrix();
           meshB.current.setMatrixAt(index, dummy.matrix);
           
-          // Pointe de la flèche B
+          // Pointe de la flèche B (plus fine)
           dummy.position.set(x + bx * scaleB * 0.8, y + by * scaleB * 0.8, z);
-          dummy.scale.set(0.08, 0.16, 0.08); // Tête plus petite
+          dummy.scale.set(0.05, 0.12, 0.05);
           dummy.rotation.set(0, 0, angle + (direction > 0 ? 0 : Math.PI));
           dummy.updateMatrix();
           meshBArrow.current.setMatrixAt(index, dummy.matrix);
@@ -133,24 +133,24 @@ const Vectors = ({ showA, showB, radius, direction }: { showA: boolean; showB: b
     <group>
       {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
       <instancedMesh ref={meshA} args={[null, null, total] as any}>
-        <cylinderGeometry args={[1, 1, 1, 8]} />
-        <meshBasicMaterial color="#a855f7" transparent opacity={0.7} />
+        <cylinderGeometry args={[1, 1, 1, 6]} />
+        <meshBasicMaterial color="#00e5ff" transparent opacity={0.8} />
       </instancedMesh>
       {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
       <instancedMesh ref={meshAArrow} args={[null, null, total] as any}>
-        <coneGeometry args={[1, 1, 8]} />
-        <meshBasicMaterial color="#a855f7" />
+        <coneGeometry args={[1, 1, 6]} />
+        <meshBasicMaterial color="#00e5ff" />
       </instancedMesh>
       
       {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
       <instancedMesh ref={meshB} args={[null, null, total] as any}>
-        <cylinderGeometry args={[1, 1, 1, 8]} />
-        <meshBasicMaterial color="#10b981" transparent opacity={0.7} />
+        <cylinderGeometry args={[1, 1, 1, 6]} />
+        <meshBasicMaterial color="#ff007f" transparent opacity={0.8} />
       </instancedMesh>
       {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
       <instancedMesh ref={meshBArrow} args={[null, null, total] as any}>
-        <coneGeometry args={[1, 1, 8]} />
-        <meshBasicMaterial color="#10b981" />
+        <coneGeometry args={[1, 1, 6]} />
+        <meshBasicMaterial color="#ff007f" />
       </instancedMesh>
     </group>
   );
@@ -175,6 +175,7 @@ export default function VectorPotential3DCanvas() {
   const [showB, setShowB] = useState(true);
   const [radius, setRadius] = useState(1.5);
   const [direction, setDirection] = useState(1); // 1 = +Z, -1 = -Z
+  const [showLegend, setShowLegend] = useState(true);
   
   const canvasContainerRef = useRef<HTMLDivElement>(null);
   const [inView, setInView] = useState(false);
@@ -190,22 +191,38 @@ export default function VectorPotential3DCanvas() {
       <div ref={canvasContainerRef} className="w-full max-w-[800px] mx-auto h-[320px] sm:h-[400px] bg-slate-950 rounded-2xl overflow-hidden relative shadow-inner border border-slate-800">
         
         {/* HUD Legend */}
-        <div className="absolute top-4 left-4 z-10 pointer-events-none">
-          <div className="bg-slate-900/80 backdrop-blur-sm border border-slate-700 p-3 rounded-xl shadow-lg flex flex-col gap-2 min-w-[120px]">
-            <span className="text-[10px] font-bold text-slate-400 mb-1 uppercase tracking-wide">Légende</span>
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-1 bg-purple-500 rounded-full" />
-              <span className="text-purple-400 font-bold text-xs"><LatexMath math="\vec{A}" /> (Potentiel)</span>
+        <div className="absolute top-4 left-4 z-10">
+          {showLegend ? (
+            <div className="bg-slate-900/80 backdrop-blur-sm border border-slate-700 p-3 rounded-xl shadow-lg flex flex-col gap-2 min-w-[120px] pointer-events-auto transition-all">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wide">Légende</span>
+                <button onClick={() => setShowLegend(false)} className="text-slate-400 hover:text-white bg-slate-800/50 hover:bg-slate-800 p-1 rounded-md transition-colors">
+                  <EyeOff className="w-3.5 h-3.5" />
+                </button>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-1 bg-[#00e5ff] rounded-full shadow-[0_0_8px_#00e5ff]" />
+                <span className="text-[#00e5ff] font-bold text-xs"><LatexMath math="\vec{A}" /> (Potentiel)</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-1 bg-[#ff007f] rounded-full shadow-[0_0_8px_#ff007f]" />
+                <span className="text-[#ff007f] font-bold text-xs"><LatexMath math="\vec{B}" /> (Champ)</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-1 bg-blue-500 rounded-full" />
+                <span className="text-blue-400 font-bold text-xs"><LatexMath math="I" /> (Courant)</span>
+              </div>
             </div>
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-1 bg-emerald-500 rounded-full" />
-              <span className="text-emerald-400 font-bold text-xs"><LatexMath math="\vec{B}" /> (Champ)</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-1 bg-blue-500 rounded-full" />
-              <span className="text-blue-400 font-bold text-xs"><LatexMath math="I" /> (Courant)</span>
-            </div>
-          </div>
+          ) : (
+            <button 
+              onClick={() => setShowLegend(true)}
+              className="bg-slate-900/80 backdrop-blur-sm border border-slate-700 p-2.5 rounded-xl shadow-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-all pointer-events-auto flex items-center gap-2"
+              title="Afficher la légende"
+            >
+              <Info className="w-4 h-4" />
+              <span className="text-[10px] font-bold uppercase tracking-wide">Légende</span>
+            </button>
+          )}
         </div>
 
         <Canvas frameloop={inView ? "always" : "demand"} camera={{ position: [4, 4, 4], fov: 45 }} className="w-full h-full">
@@ -218,7 +235,7 @@ export default function VectorPotential3DCanvas() {
           <AnimatedGroup>
             <group position={[0, -0.5, 0]}>
               {/* Fil Infini (le long de Z) */}
-              <Cylinder args={[0.1, 0.1, 8, 32]} rotation={[Math.PI / 2, 0, 0]}>
+              <Cylinder args={[0.08, 0.08, 8, 16]} rotation={[Math.PI / 2, 0, 0]}>
                 <meshStandardMaterial color="#64748b" metalness={0.9} roughness={0.1} transparent opacity={0.4} />
               </Cylinder>
               
@@ -231,7 +248,7 @@ export default function VectorPotential3DCanvas() {
                   return new THREE.Vector3(radius * Math.cos(a), radius * Math.sin(a), 0);
                 })} 
                 color="#475569" 
-                lineWidth={2} 
+                lineWidth={1} 
                 transparent 
                 opacity={0.8} 
               />
@@ -245,9 +262,11 @@ export default function VectorPotential3DCanvas() {
       </div>
 
       {/* Controls */}
-      <div className="w-full max-w-[800px] mx-auto bg-slate-900/40 border border-slate-800/50 p-3 rounded-xl flex items-center justify-between gap-4 flex-wrap">
-        <div className="flex-1 min-w-[150px] flex flex-col gap-1.5">
-          <div className="flex justify-between text-[9px] font-bold text-slate-300 uppercase">
+      <div className="w-full max-w-[800px] mx-auto bg-slate-900/40 border border-slate-800/50 p-3 sm:p-4 rounded-xl flex flex-col sm:flex-row items-center justify-between gap-4">
+        
+        {/* Slider */}
+        <div className="w-full sm:flex-1 flex flex-col gap-1.5">
+          <div className="flex justify-between text-[10px] font-bold text-slate-300 uppercase px-1">
             <span>Rayon (r)</span>
             <span className="text-cyan-400">{radius.toFixed(1)} m</span>
           </div>
@@ -257,26 +276,28 @@ export default function VectorPotential3DCanvas() {
           />
         </div>
         
-        <div className="flex gap-2 shrink-0 flex-wrap justify-end">
+        {/* Buttons (Responsive Wrapper) */}
+        <div className="w-full sm:w-auto flex flex-row flex-wrap items-center justify-center sm:justify-end gap-2 shrink-0">
           <button 
             onClick={() => setDirection(d => -d)} 
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-blue-500/20 text-blue-400 border border-blue-500/30 hover:bg-blue-500/30 transition-all"
+            className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3 py-2 sm:py-1.5 rounded-lg text-xs font-bold bg-blue-500/10 text-blue-400 border border-blue-500/30 hover:bg-blue-500/20 transition-all min-w-[120px]"
           >
-            <RefreshCw className="w-3.5 h-3.5" /> Inverser Courant
+            <RefreshCw className="w-3.5 h-3.5" /> Inverser
           </button>
           <button 
             onClick={() => setShowA(!showA)} 
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${showA ? 'bg-purple-500/20 text-purple-400 border border-purple-500/30' : 'bg-slate-800 text-slate-400 border border-slate-700'}`}
+            className={`flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3 py-2 sm:py-1.5 rounded-lg text-xs font-bold transition-all min-w-[120px] ${showA ? 'bg-[#00e5ff]/10 text-[#00e5ff] border border-[#00e5ff]/30 shadow-[0_0_10px_rgba(0,229,255,0.1)]' : 'bg-slate-800 text-slate-400 border border-slate-700'}`}
           >
             {showA ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />} Potentiel <LatexMath math="\vec{A}" />
           </button>
           <button 
             onClick={() => setShowB(!showB)} 
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${showB ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-slate-800 text-slate-400 border border-slate-700'}`}
+            className={`flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3 py-2 sm:py-1.5 rounded-lg text-xs font-bold transition-all min-w-[120px] ${showB ? 'bg-[#ff007f]/10 text-[#ff007f] border border-[#ff007f]/30 shadow-[0_0_10px_rgba(255,0,127,0.1)]' : 'bg-slate-800 text-slate-400 border border-slate-700'}`}
           >
             {showB ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />} Champ <LatexMath math="\vec{B}" />
           </button>
         </div>
+        
       </div>
     </div>
   );
