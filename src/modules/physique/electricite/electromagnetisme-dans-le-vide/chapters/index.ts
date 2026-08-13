@@ -1,5 +1,9 @@
 import Chap1CourantsChamp from "./chap1-courants-champ";
 import Chap2LoisFondamentales from "./chap2-lois-fondamentales";
+import Chap3PotentielDipole from "./chap3-potentiel-dipole";
+import Chap4InductionElectromagnetique from "./chap4-induction-electromagnetique";
+import Chap5EnergieElectromagnetique from "./chap5-energie-electromagnetique";
+import Chap6ARQS from "./chap6-arqs";
 
 export const ELECTROMAGNETISME_VIDE_CHAPTERS = [
   {
@@ -12,39 +16,52 @@ export const ELECTROMAGNETISME_VIDE_CHAPTERS = [
   {
     id: "lois-fondamentales",
     num: "02",
-    title: "Lois Fondamentales",
+    title: "Lois Fondamentales de la Magnétostatique",
     subtitle: "Biot-Savart et Théorème d'Ampère",
     component: Chap2LoisFondamentales,
   },
   {
     id: "potentiel-dipole",
     num: "03",
-    title: "Potentiel Vecteur et Dipôle",
+    title: "Potentiel Vecteur et Dipôle Magnétique",
     subtitle: "Dipôle magnétique et Effet Hall",
-    component: null,
+    component: Chap3PotentielDipole,
   },
   {
-    id: "equations-maxwell",
+    id: "induction-electromagnetique",
     num: "04",
-    title: "Équations de Maxwell",
-    subtitle: "Formulations locales et intégrales",
-    component: null,
+    title: "Induction Électromagnétique",
+    subtitle: "Lois de Faraday, Lenz et Rail de Laplace",
+    component: Chap4InductionElectromagnetique,
   },
   {
     id: "energie-electromagnetique",
     num: "05",
     title: "Énergie Électromagnétique",
     subtitle: "Vecteur et identité de Poynting",
-    component: null,
+    component: Chap5EnergieElectromagnetique,
   },
   {
-    id: "potentiels-arqs",
+    id: "arqs",
     num: "06",
-    title: "Potentiels et ARQS",
-    subtitle: "Jauge de Lorentz et potentiels retardés",
+    title: "ARQS",
+    subtitle: "Approximation des Régimes Quasi-Stationnaires",
+    component: Chap6ARQS,
+  },
+  {
+    id: "equations-maxwell",
+    num: "07",
+    title: "Équations de Maxwell et Potentiels",
+    subtitle: "Formulations locales et intégrales",
     component: null,
   }
 ];
 
-export { Chap1CourantsChamp };
-
+export { 
+  Chap1CourantsChamp, 
+  Chap2LoisFondamentales, 
+  Chap3PotentielDipole, 
+  Chap4InductionElectromagnetique,
+  Chap5EnergieElectromagnetique,
+  Chap6ARQS
+};

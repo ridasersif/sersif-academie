@@ -20,10 +20,21 @@ export default function LazyMount({
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
+    let mountTimeout: NodeJS.Timeout;
+
     const observer = new IntersectionObserver(
       ([entry]) => {
-        // Mount if intersecting. Unmount if not intersecting.
-        setIsMounted(entry.isIntersecting);
+        if (entry.isIntersecting) {
+          // Attendre 400ms avant d'afficher pour éviter de charger 
+          // si l'utilisateur fait juste défiler la page rapidement
+          mountTimeout = setTimeout(() => {
+            setIsMounted(true);
+          }, 400);
+        } else {
+          // S'il quitte l'écran, annuler le chargement ou fermer immédiatement
+          clearTimeout(mountTimeout);
+          setIsMounted(false);
+        }
       },
       {
         rootMargin,
@@ -36,6 +47,7 @@ export default function LazyMount({
     }
 
     return () => {
+      clearTimeout(mountTimeout);
       observer.disconnect();
     };
   }, [rootMargin]);
