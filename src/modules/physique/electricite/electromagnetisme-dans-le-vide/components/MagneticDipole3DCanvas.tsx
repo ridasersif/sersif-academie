@@ -2,7 +2,7 @@
 
 import React, { useRef, useState, useEffect, useMemo } from "react";
 import { Canvas } from "@react-three/fiber";
-import { OrbitControls, Html, ContactShadows, Environment } from "@react-three/drei";
+import { OrbitControls, Html, ContactShadows, Environment, Line } from "@react-three/drei";
 import * as THREE from "three";
 import { Settings, Eye, EyeOff } from "lucide-react";
 import LatexMath from "@/components/ui/LatexMath";
@@ -39,18 +39,7 @@ function Arrow({ start, dir, length, color, thickness = 0.05, label, labelOffset
 
 // Dashed line helper
 function DashedLine({ start, end, color }: { start: THREE.Vector3, end: THREE.Vector3, color: string }) {
-  const ref = useRef<THREE.Line>(null);
-  
-  const geometry = useMemo(() => {
-    const geo = new THREE.BufferGeometry().setFromPoints([start, end]);
-    return geo;
-  }, [start, end]);
-
-  return (
-    <line ref={ref} geometry={geometry}>
-      <lineDashedMaterial color={color} dashSize={0.2} gapSize={0.1} />
-    </line>
-  );
+  return <Line points={[start, end]} color={color} dashed dashSize={0.2} gapSize={0.1} lineWidth={1} />;
 }
 
 // Draw the angle arc for theta
@@ -66,13 +55,9 @@ function AngleArc({ radius, theta, color }: { radius: number, theta: number, col
     return pts;
   }, [radius, theta]);
 
-  const geometry = useMemo(() => new THREE.BufferGeometry().setFromPoints(points), [points]);
-
   return (
     <group>
-      <line geometry={geometry}>
-        <lineBasicMaterial color={color} linewidth={2} />
-      </line>
+      <Line points={points} color={color} lineWidth={2} />
       <Html position={[radius * 1.2 * Math.sin(theta/2), radius * 1.2 * Math.cos(theta/2), 0]} center>
         <span className="text-orange-400 font-bold"><LatexMath math="\theta" /></span>
       </Html>
