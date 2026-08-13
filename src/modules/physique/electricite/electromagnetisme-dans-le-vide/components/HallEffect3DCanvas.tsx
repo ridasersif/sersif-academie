@@ -58,9 +58,13 @@ const Carriers = ({ chargeSign, isPlaying }: { chargeSign: number, isPlaying: bo
       dummy.position.set(p.x, p.y, p.z);
       dummy.scale.setScalar(1);
       dummy.updateMatrix();
-      mesh.current.setMatrixAt(i, dummy.matrix);
+      if (mesh.current) {
+        mesh.current.setMatrixAt(i, dummy.matrix);
+      }
     });
-    mesh.current.instanceMatrix.needsUpdate = true;
+    if (mesh.current) {
+      mesh.current.instanceMatrix.needsUpdate = true;
+    }
   });
 
   const color = chargeSign > 0 ? "#ef4444" : "#3b82f6";

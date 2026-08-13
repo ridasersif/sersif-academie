@@ -146,8 +146,8 @@ export default function SkinEffect3DCanvas() {
           
           <group position={[0, 0, 0]}>
             {/* Le Fil Conducteur (Transparent pour voir dedans) */}
-            <Cylinder args={[2.05, 2.05, 6, 32]} transparent opacity={0.15} color="#94a3b8">
-              <meshPhysicalMaterial roughness={0.1} transmission={0.9} thickness={0.1} />
+            <Cylinder args={[2.05, 2.05, 6, 32]}>
+              <meshPhysicalMaterial color="#94a3b8" transparent opacity={0.15} roughness={0.1} transmission={0.9} thickness={0.1} />
             </Cylinder>
             
             {/* Bordures pour délimiter */}

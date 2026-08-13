@@ -66,8 +66,8 @@ const Coil = ({ inducedCurrent }: { inducedCurrent: number }) => {
   return (
     <group>
       {/* Tube de verre */}
-      <Cylinder args={[0.65, 0.65, 1.6, 32]} transparent opacity={0.15} color="#e2e8f0">
-        <meshPhysicalMaterial roughness={0.1} transmission={0.9} thickness={0.1} />
+      <Cylinder args={[0.65, 0.65, 1.6, 32]}>
+        <meshPhysicalMaterial color="#e2e8f0" transparent opacity={0.15} roughness={0.1} transmission={0.9} thickness={0.1} />
       </Cylinder>
       
       {/* Fil de la bobine */}
