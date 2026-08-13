@@ -201,15 +201,25 @@ const AxisymmetricPhysics = ({ direction, showA, showB, radius, shape }: any) =>
   const dummy = useMemo(() => new THREE.Object3D(), []);
   
   const solRadius = 1;
-  const zPositions = [-1.5, 0, 1.5];
-  const count = 12;
-  const obsPoints = [];
+  const isToroidal = shape.includes('tore');
+  const obsPoints: any[] = [];
   
-  // Clean, limited observation points on a cylinder
-  for (let z of zPositions) {
-    for (let i = 0; i < count; i++) {
-      const theta = (i / count) * Math.PI * 2;
-      obsPoints.push({ r: radius, theta, z });
+  if (isToroidal) {
+    // Torus: B is azimuthal inside the tube (R=1.5). A is axial inside the hole (r=0).
+    for (let i = 0; i < 16; i++) {
+      obsPoints.push({ r: 1.5, theta: (i/16)*Math.PI*2, z: 0, type: 'tube' });
+    }
+    for (let z = -1.5; z <= 1.5; z += 0.5) {
+      obsPoints.push({ r: 0.01, theta: 0, z, type: 'hole' });
+    }
+  } else {
+    // Azimuthal currents (Spire, Solenoid, Sphere): B is poloidal, A is azimuthal
+    const zPositions = [-1.5, 0, 1.5];
+    const count = 12;
+    for (let z of zPositions) {
+      for (let i = 0; i < count; i++) {
+        obsPoints.push({ r: radius, theta: (i/count)*Math.PI*2, z, type: 'poloidal' });
+      }
     }
   }
   const total = obsPoints.length;
@@ -224,21 +234,61 @@ const AxisymmetricPhysics = ({ direction, showA, showB, radius, shape }: any) =>
       const z = pt.z;
       const d = Math.sqrt(x*x + y*y + z*z);
       
-      if (showA) {
-        // Safe scale for A
-        const scaleA = Math.max(0.1, Math.min(1.2, 0.8 / pt.r));
-        const dirX = -Math.sin(pt.theta) * direction;
-        const dirY = Math.cos(pt.theta) * direction;
-        
-        dummy.position.set(x + dirX * scaleA * 0.4, y + dirY * scaleA * 0.4, z);
+      let scaleA = 0; let scaleB = 0;
+      let eulerA = new THREE.Euler(0,0,0); let eulerB = new THREE.Euler(0,0,0);
+      let showThisA = showA; let showThisB = showB;
+
+      if (isToroidal) {
+        if (pt.type === 'tube') {
+          showThisA = false; // We don't show A inside the tube for simplicity
+          scaleB = 1.0;
+          const dirX = -Math.sin(pt.theta) * direction;
+          const dirY = Math.cos(pt.theta) * direction;
+          const bDir = new THREE.Vector3(dirX, dirY, 0).normalize();
+          eulerB.setFromQuaternion(new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), bDir));
+        } else if (pt.type === 'hole') {
+          showThisB = false; // B is zero in the hole
+          scaleA = 1.0;
+          eulerA = new THREE.Euler(direction > 0 ? 0 : Math.PI, 0, 0); // A is axial
+        }
+      } else {
+        // Poloidal (Spire/Solenoid)
+        showThisA = showA; showThisB = showB;
+        // A is azimuthal
+        scaleA = Math.max(0.1, Math.min(1.2, 0.8 / Math.max(pt.r, 0.5)));
+        const aDir = new THREE.Vector3(-Math.sin(pt.theta) * direction, Math.cos(pt.theta) * direction, 0).normalize();
+        eulerA.setFromQuaternion(new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), aDir));
+
+        // B is poloidal
+        if (shape === 'bobine' && pt.r < 1.2) {
+          scaleB = 1.0;
+          eulerB = new THREE.Euler(direction > 0 ? Math.PI/2 : -Math.PI/2, 0, 0);
+        } else {
+          const m = direction * 2;
+          const d5 = Math.pow(Math.max(d, 0.5), 5);
+          const bx = 3 * x * z * m / d5;
+          const by = 3 * y * z * m / d5;
+          const bz = (3 * z * z - d * d) * m / d5;
+          const bMag = Math.sqrt(bx*bx + by*by + bz*bz);
+          scaleB = Math.max(0.1, Math.min(1.2, bMag * 0.5));
+          if (bMag > 0.001) {
+            const bDir = new THREE.Vector3(bx, by, bz).normalize();
+            eulerB.setFromQuaternion(new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), bDir));
+          }
+        }
+      }
+
+      // Draw A
+      if (showThisA && scaleA > 0.01) {
+        dummy.position.copy(new THREE.Vector3(x, y, z).add(new THREE.Vector3(0,1,0).applyEuler(eulerA).multiplyScalar(scaleA * 0.4)));
         dummy.scale.set(0.02, scaleA * 0.8, 0.02);
-        dummy.rotation.set(0, 0, pt.theta + (direction > 0 ? 0 : Math.PI));
+        dummy.rotation.copy(eulerA);
         dummy.updateMatrix();
         meshA.current.setMatrixAt(index, dummy.matrix);
         
-        dummy.position.set(x + dirX * scaleA * 0.8, y + dirY * scaleA * 0.8, z);
+        dummy.position.copy(new THREE.Vector3(x, y, z).add(new THREE.Vector3(0,1,0).applyEuler(eulerA).multiplyScalar(scaleA * 0.8)));
         dummy.scale.set(0.05, 0.12, 0.05);
-        dummy.rotation.set(0, 0, pt.theta + (direction > 0 ? 0 : Math.PI));
+        dummy.rotation.copy(eulerA);
         dummy.updateMatrix();
         meshAArrow.current.setMatrixAt(index, dummy.matrix);
       } else {
@@ -246,53 +296,24 @@ const AxisymmetricPhysics = ({ direction, showA, showB, radius, shape }: any) =>
         meshA.current.setMatrixAt(index, dummy.matrix); meshAArrow.current.setMatrixAt(index, dummy.matrix);
       }
 
-      if (showB) {
-        let scaleB = 0;
-        let bDir = new THREE.Vector3(0,0,0);
-        let euler = new THREE.Euler(0,0,0);
+      // Draw B
+      if (showThisB && scaleB > 0.01) {
+        dummy.position.copy(new THREE.Vector3(x, y, z).add(new THREE.Vector3(0,1,0).applyEuler(eulerB).multiplyScalar(scaleB * 0.4)));
+        dummy.scale.set(0.02, scaleB * 0.8, 0.02);
+        dummy.rotation.copy(eulerB);
+        dummy.updateMatrix();
+        meshB.current.setMatrixAt(index, dummy.matrix);
         
-        if (shape === 'bobine' && pt.r < 1.2) {
-          scaleB = 1.0;
-          bDir = new THREE.Vector3(0, 0, direction);
-          euler = new THREE.Euler(direction > 0 ? Math.PI / 2 : -Math.PI / 2, 0, 0);
-        } else {
-          // Safe dipole formula
-          const m = direction * 2;
-          const d5 = Math.pow(Math.max(d, 0.5), 5); // Prevent divide by zero
-          const bx = 3 * x * z * m / d5;
-          const by = 3 * y * z * m / d5;
-          const bz = (3 * z * z - d * d) * m / d5;
-          
-          const bMag = Math.sqrt(bx*bx + by*by + bz*bz);
-          scaleB = Math.max(0.1, Math.min(1.2, bMag * 0.5)); 
-          
-          if (bMag > 0.001) {
-            bDir = new THREE.Vector3(bx, by, bz).normalize();
-            const rot = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), bDir);
-            euler.setFromQuaternion(rot);
-          }
-        }
-        
-        if (scaleB > 0.01 && bDir.lengthSq() > 0.5) {
-          dummy.position.copy(new THREE.Vector3(x, y, z).add(bDir.clone().multiplyScalar(scaleB * 0.4)));
-          dummy.scale.set(0.02, scaleB * 0.8, 0.02);
-          dummy.rotation.copy(euler);
-          dummy.updateMatrix();
-          meshB.current.setMatrixAt(index, dummy.matrix);
-          
-          dummy.position.copy(new THREE.Vector3(x, y, z).add(bDir.clone().multiplyScalar(scaleB * 0.8)));
-          dummy.scale.set(0.05, 0.12, 0.05);
-          dummy.rotation.copy(euler);
-          dummy.updateMatrix();
-          meshBArrow.current.setMatrixAt(index, dummy.matrix);
-        } else {
-          dummy.scale.setScalar(0); dummy.updateMatrix();
-          meshB.current.setMatrixAt(index, dummy.matrix); meshBArrow.current.setMatrixAt(index, dummy.matrix);
-        }
+        dummy.position.copy(new THREE.Vector3(x, y, z).add(new THREE.Vector3(0,1,0).applyEuler(eulerB).multiplyScalar(scaleB * 0.8)));
+        dummy.scale.set(0.05, 0.12, 0.05);
+        dummy.rotation.copy(eulerB);
+        dummy.updateMatrix();
+        meshBArrow.current.setMatrixAt(index, dummy.matrix);
       } else {
         dummy.scale.setScalar(0); dummy.updateMatrix();
         meshB.current.setMatrixAt(index, dummy.matrix); meshBArrow.current.setMatrixAt(index, dummy.matrix);
       }
+
       index++;
     }
     meshA.current.instanceMatrix.needsUpdate = true; meshAArrow.current.instanceMatrix.needsUpdate = true;
@@ -471,21 +492,7 @@ export default function VectorPotential3DCanvas() {
 
   return (
     <div className="w-full flex flex-col gap-4 font-sans max-w-[900px] mx-auto">
-      
-      {/* SHAPE SELECTOR MENU (GLASSMORPHISM STYLE) */}
-      <div className="w-full overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-transparent">
-        <div className="flex items-center justify-start gap-2 min-w-max px-2">
-          {SHAPES.map(s => (
-            <button 
-              key={s.id} 
-              onClick={() => setShape(s.id)}
-              className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all border backdrop-blur-md ${shape === s.id ? s.activeColor : s.inactiveColor}`}
-            >
-              {s.label}
-            </button>
-          ))}
-        </div>
-      </div>
+
 
       <div ref={canvasContainerRef} className="w-full h-[280px] sm:h-[350px] bg-[#050b14] rounded-2xl overflow-hidden relative shadow-[inset_0_0_50px_rgba(0,0,0,0.5)] border border-slate-800">
         
@@ -522,6 +529,21 @@ export default function VectorPotential3DCanvas() {
               <span className="text-[10px] font-bold uppercase tracking-wide">Légende</span>
             </button>
           )}
+        </div>
+
+        {/* HUD Shape Selector (Internal) */}
+        <div className="absolute top-4 left-[140px] right-4 z-10 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-slate-700/50 scrollbar-track-transparent pointer-events-auto">
+          <div className="flex items-center gap-1.5 min-w-max pr-2">
+            {SHAPES.map(s => (
+              <button 
+                key={s.id} 
+                onClick={() => setShape(s.id)}
+                className={`px-2.5 py-1 rounded-lg text-[9px] sm:text-[10px] font-bold transition-all border backdrop-blur-md ${shape === s.id ? s.activeColor : s.inactiveColor}`}
+              >
+                {s.label}
+              </button>
+            ))}
+          </div>
         </div>
 
         <Canvas frameloop={inView ? "always" : "demand"} camera={{ position: [6, 5, 6], fov: 45 }} className="w-full h-full cursor-move">
