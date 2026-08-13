@@ -137,42 +137,45 @@ export default function Chap3PotentielDipole() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-6">
-          <div className="space-y-4">
-            <div className="bg-background border border-border p-4 sm:p-5 rounded-xl">
-              <h3 className="font-bold text-foreground mb-2 flex items-center gap-2">
-                <Compass className="w-4 h-4" /> La Jauge de Coulomb
-              </h3>
-              <p className="text-sm text-muted-foreground mb-3 leading-relaxed">
-                Le vecteur <LatexMath math="\vec{A}" /> n'est pas unique. On fixe généralement sa divergence à zéro en magnétostatique (Jauge de Coulomb) :
-              </p>
-              <div className="flex justify-center mb-3">
-                <LatexMath math="\text{div}(\vec{A}) = 0" />
-              </div>
-            </div>
-            
-            <div className="bg-background border border-border p-4 sm:p-5 rounded-xl">
-              <h3 className="font-bold text-foreground mb-2 flex items-center gap-2">
-                <Calculator className="w-4 h-4" /> Équation de Poisson
-              </h3>
-              <p className="text-sm text-muted-foreground mb-3 leading-relaxed">
-                Avec la jauge de Coulomb et le théorème d'Ampère local (<LatexMath math="\text{rot}(\vec{B}) = \mu_0 \vec{j}" />), on obtient l'équation de Poisson vectorielle, analogue à l'électrostatique :
-              </p>
-              <div className="flex justify-center">
-                <LatexMath math="\Delta \vec{A} + \mu_0 \vec{j} = \vec{0}" />
-              </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-8">
+          <div className="bg-background border border-border p-4 sm:p-5 rounded-xl h-full flex flex-col">
+            <h3 className="font-bold text-foreground mb-2 flex items-center gap-2">
+              <Compass className="w-4 h-4 text-blue-400" /> La Jauge de Coulomb
+            </h3>
+            <p className="text-sm text-muted-foreground mb-3 leading-relaxed flex-1">
+              Le vecteur <LatexMath math="\vec{A}" /> n'est pas unique. On fixe généralement sa divergence à zéro en magnétostatique (Jauge de Coulomb) :
+            </p>
+            <div className="flex justify-center mb-3">
+              <LatexMath math="\text{div}(\vec{A}) = 0" />
             </div>
           </div>
-
-          <div className="flex flex-col">
-            <h3 className="text-sm font-bold text-foreground/80 dark:text-slate-300 mb-3 flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-purple-400" />
-              Visualisation 3D : Lignes de <LatexMath math="\vec{A}" /> et <LatexMath math="\vec{B}" />
+          
+          <div className="bg-background border border-border p-4 sm:p-5 rounded-xl h-full flex flex-col">
+            <h3 className="font-bold text-foreground mb-2 flex items-center gap-2">
+              <Calculator className="w-4 h-4 text-emerald-400" /> Équation de Poisson
             </h3>
-            <p className="text-[11px] text-muted-foreground mb-4">
-              Pour un fil infini rectiligne parcouru par <LatexMath math="I" />, le champ <LatexMath math="\vec{B}" /> tourne autour du fil, tandis que le potentiel vecteur <LatexMath math="\vec{A}" /> est parallèle au fil.
+            <p className="text-sm text-muted-foreground mb-3 leading-relaxed flex-1">
+              Avec la jauge de Coulomb et le théorème d'Ampère local (<LatexMath math="\text{rot}(\vec{B}) = \mu_0 \vec{j}" />), on obtient l'équation de Poisson vectorielle, analogue à l'électrostatique :
             </p>
-            <LazyMount height="400px" fallbackText="Chargement Potentiel Vecteur 3D...">
+            <div className="flex justify-center">
+              <LatexMath math="\Delta \vec{A} + \mu_0 \vec{j} = \vec{0}" />
+            </div>
+          </div>
+        </div>
+
+        <div className="flex flex-col w-full max-w-[950px] mx-auto">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-2">
+            <h3 className="text-base sm:text-lg font-bold text-foreground mb-1 flex items-center gap-2">
+              <Sparkles className="w-5 h-5 text-purple-400" />
+              Simulateur 3D : Lignes de <LatexMath math="\vec{A}" /> et <LatexMath math="\vec{B}" />
+            </h3>
+            <div className="text-xs text-muted-foreground bg-muted/50 px-3 py-1 rounded-full border border-border/50">
+              Observer la relation entre <LatexMath math="\vec{A}" />, <LatexMath math="\vec{B}" /> et le courant <LatexMath math="I" />
+            </div>
+          </div>
+          
+          <div className="w-full">
+            <LazyMount height="380px" fallbackText="Chargement Potentiel Vecteur 3D...">
               <VectorPotential3DCanvas />
             </LazyMount>
           </div>
