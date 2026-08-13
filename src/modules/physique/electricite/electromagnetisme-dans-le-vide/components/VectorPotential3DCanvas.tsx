@@ -339,9 +339,22 @@ const AxisymmetricPhysics = ({ direction, showA, showB, radius, shape }: any) =>
         </Torus>
       )}
       {shape === 'tore_carre' && (
-        <Torus args={[1.5, 0.5, 4, 100]} rotation={[0, 0, Math.PI/4]}>
+        <mesh position={[0,0,-0.5]}>
+          <extrudeGeometry args={[
+            new THREE.Shape().absarc(0, 0, 2.0, 0, Math.PI * 2, false).holes.push(
+              new THREE.Path().absarc(0, 0, 1.0, 0, Math.PI * 2, true)
+            ) && undefined || (()=>{
+              const s = new THREE.Shape();
+              s.absarc(0, 0, 2.0, 0, Math.PI * 2, false);
+              const hole = new THREE.Path();
+              hole.absarc(0, 0, 1.0, 0, Math.PI * 2, true);
+              s.holes.push(hole);
+              return s;
+            })(),
+            { depth: 1, curveSegments: 64, bevelEnabled: false }
+          ]} />
           <meshPhysicalMaterial color="#1e293b" metalness={0.8} roughness={0.2} transparent opacity={0.4} wireframe />
-        </Torus>
+        </mesh>
       )}
       {shape === 'cone' && (
         <Cone args={[1.5, 3, 32]} rotation={[Math.PI / 2, 0, 0]} position={[0,0,-1.5]}>
@@ -385,7 +398,7 @@ const AxisymmetricPhysics = ({ direction, showA, showB, radius, shape }: any) =>
 // -------------------------------------------------------------
 const CurrentParticles = ({ direction, geometryType, solRadius = 1 }: { direction: number, geometryType: string, solRadius?: number }) => {
   const meshRef = useRef<THREE.InstancedMesh>(null);
-  const numParticles = geometryType === 'plane' ? 400 : (geometryType === 'bobine' || geometryType.includes('tore') || geometryType.includes('sphere')) ? 800 : 300; 
+  const numParticles = geometryType === 'plane' ? 1200 : (geometryType === 'bobine' || geometryType.includes('tore') || geometryType.includes('sphere')) ? 4000 : 800; 
   const dummy = useMemo(() => new THREE.Object3D(), []);
   
   const [positions, setPositions] = useState(() => 
@@ -401,7 +414,7 @@ const CurrentParticles = ({ direction, geometryType, solRadius = 1 }: { directio
     if (!meshRef.current) return;
     
     setPositions(prev => prev.map(p => {
-      let newVal = p.val + delta * 0.3 * direction;
+      let newVal = p.val + delta * 0.15 * direction; // Slower movement due to density
       if (newVal > 1) newVal -= 1;
       if (newVal < 0) newVal += 1;
       return { ...p, val: newVal };
@@ -414,30 +427,57 @@ const CurrentParticles = ({ direction, geometryType, solRadius = 1 }: { directio
       } else if (geometryType === 'plane') {
         dummy.position.set((p.val - 0.5) * 8, 0, p.offset2 * 8);
       } else if (geometryType === 'bobine') {
-        const theta = p.val * Math.PI * 2 * 10;
+        const theta = p.val * Math.PI * 2 * 40;
         const z = (p.val - 0.5) * 6;
         dummy.position.set(solRadius * Math.cos(theta), solRadius * Math.sin(theta), z);
       } else if (geometryType === 'spire') {
         const theta = p.val * Math.PI * 2;
         dummy.position.set(solRadius * Math.cos(theta), solRadius * Math.sin(theta), 0);
-      } else if (geometryType === 'tore_circulaire' || geometryType === 'tore_carre') {
-        const theta = p.val * Math.PI * 2 * 15; // spirale
+      } else if (geometryType === 'tore_circulaire') {
+        const theta = p.val * Math.PI * 2 * 40; // spirale très dense
         const R = 1.5;
         const r = 0.5;
         const phi = p.val * Math.PI * 2;
         dummy.position.set((R + r*Math.cos(theta))*Math.cos(phi), (R + r*Math.cos(theta))*Math.sin(phi), r*Math.sin(theta));
+      } else if (geometryType === 'tore_carre') {
+        const theta = p.val * Math.PI * 2 * 40; // spirale très dense (autour du tube)
+        const phi = p.val * Math.PI * 2; // azimuthal (autour de Z)
+        
+        // Tracé parfait d'une section carrée plate (Tore Carré = cylindre creux)
+        const t4 = (theta / (Math.PI / 2)) % 4; 
+        let R_curr = 0, z_curr = 0;
+        
+        if (t4 < 1) { 
+          // Inner wall going UP
+          R_curr = 1.0; 
+          z_curr = -0.5 + t4 * 1.0; 
+        } else if (t4 < 2) { 
+          // Top wall going OUT
+          R_curr = 1.0 + (t4 - 1) * 1.0; 
+          z_curr = 0.5; 
+        } else if (t4 < 3) { 
+          // Outer wall going DOWN
+          R_curr = 2.0; 
+          z_curr = 0.5 - (t4 - 2) * 1.0; 
+        } else { 
+          // Bottom wall going IN
+          R_curr = 2.0 - (t4 - 3) * 1.0; 
+          z_curr = -0.5; 
+        }
+
+        dummy.position.set(R_curr * Math.cos(phi), R_curr * Math.sin(phi), z_curr);
       } else if (geometryType === 'sphere' || geometryType === 'demi_sphere') {
-        const theta = p.val * Math.PI * 2 * 10;
+        const theta = p.val * Math.PI * 2 * 30;
         const R = 1.5;
         const phi = (p.val - 0.5) * Math.PI * (geometryType === 'demi_sphere' ? 1 : 2); // pole to pole
         dummy.position.set(R * Math.cos(phi) * Math.cos(theta), R * Math.cos(phi) * Math.sin(theta), R * Math.sin(phi));
       } else if (geometryType === 'cone') {
-        const theta = p.val * Math.PI * 2 * 10;
+        const theta = p.val * Math.PI * 2 * 20;
         const z = (p.val) * -3;
         const R = (p.val) * 1.5;
         dummy.position.set(R * Math.cos(theta), R * Math.sin(theta), z);
       } else if (geometryType === 'double_cone') {
-        const theta = p.val * Math.PI * 2 * 20;
+        const theta = p.val * Math.PI * 2 * 40;
         const z = (p.val - 0.5) * 6;
         const R = Math.abs(z) * 0.5;
         dummy.position.set(R * Math.cos(theta), R * Math.sin(theta), z);
@@ -551,7 +591,7 @@ export default function VectorPotential3DCanvas() {
           <ambientLight intensity={0.6} />
           <spotLight position={[5, 10, 5]} intensity={2.5} color="#e2e8f0" />
           <Environment preset="night" />
-          <OrbitControls enableZoom={true} autoRotate autoRotateSpeed={0.5} maxPolarAngle={Math.PI / 1.5} />
+          <OrbitControls enableZoom={true} autoRotate autoRotateSpeed={0.5} />
           
           <gridHelper args={[24, 24, 0x1e293b, 0x090f1e]} position={[0, -2, 0]} />
 
