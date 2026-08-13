@@ -572,13 +572,13 @@ export default function VectorPotential3DCanvas() {
         </div>
 
         {/* HUD Shape Selector (Internal) */}
-        <div className="absolute top-4 left-[140px] right-4 z-10 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-slate-700/50 scrollbar-track-transparent pointer-events-auto">
-          <div className="flex items-center gap-1.5 min-w-max pr-2">
+        <div className={`absolute top-4 right-4 z-10 transition-all duration-300 pointer-events-none flex ${showLegend ? 'left-[160px] sm:left-[170px]' : 'left-[110px] sm:left-[120px]'}`}>
+          <div className="pointer-events-auto flex items-center gap-1.5 overflow-x-auto px-2 py-1.5 w-full bg-slate-900/60 backdrop-blur-md border border-slate-700/50 rounded-xl shadow-lg [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] mask-image-linear-gradient">
             {SHAPES.map(s => (
               <button 
                 key={s.id} 
                 onClick={() => setShape(s.id)}
-                className={`px-2.5 py-1 rounded-lg text-[9px] sm:text-[10px] font-bold transition-all border backdrop-blur-md ${shape === s.id ? s.activeColor : s.inactiveColor}`}
+                className={`px-2.5 py-1 rounded-lg text-[9px] sm:text-[10px] font-bold transition-all border backdrop-blur-md whitespace-nowrap shrink-0 ${shape === s.id ? s.activeColor : s.inactiveColor}`}
               >
                 {s.label}
               </button>
