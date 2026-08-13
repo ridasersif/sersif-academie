@@ -199,31 +199,25 @@ export default function Chap3PotentielDipole() {
           Un circuit filiforme plan fermé parcouru par un courant <LatexMath math="I" /> constitue un dipôle magnétique. Il est caractérisé par son <strong>moment magnétique</strong> <LatexMath math="\vec{m}" />. L'approximation dipolaire consiste à calculer le champ à une distance <LatexMath math="r" /> très grande devant les dimensions du circuit.
         </p>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-6">
-          <div className="flex flex-col">
-            <LazyMount height="400px" fallbackText="Chargement Dipôle Magnétique 3D...">
-              <MagneticDipole3DCanvas />
-            </LazyMount>
-          </div>
-          
-          <div className="space-y-4">
-            <FormulaCard label="Moment Magnétique" color="amber">
-              <span className="text-yellow-500">
-                <LatexMath math="\vec{m} = I \iint d\vec{S} = I \cdot S \cdot \vec{n}" />
-              </span>
-            </FormulaCard>
+        <div className="space-y-4 sm:space-y-6 mb-8">
+          <FormulaCard label="Moment Magnétique" color="amber">
+            <span className="text-yellow-500">
+              <LatexMath math="\vec{m} = I \iint d\vec{S} = I \cdot S \cdot \vec{n}" />
+            </span>
+          </FormulaCard>
 
-            <div className="bg-background border border-border p-4 sm:p-5 rounded-xl">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+            <div className="bg-background border border-border p-4 sm:p-5 rounded-xl h-full flex flex-col">
               <h3 className="font-bold text-foreground mb-2 flex items-center gap-2">
-                <Activity className="w-4 h-4" /> Expressions en lointain (Coordonnées Sphériques)
+                <Activity className="w-4 h-4" /> Expressions en lointain
               </h3>
-              <p className="text-sm text-muted-foreground mb-3 leading-relaxed">
+              <p className="text-sm text-muted-foreground mb-3 leading-relaxed flex-1">
                 Le potentiel vecteur créé par le dipôle en un point éloigné est :
               </p>
               <div className="flex justify-center mb-3">
                 <LatexMath math="\vec{A}(M) = \frac{\mu_0}{4\pi} \frac{\vec{m} \wedge \vec{u}_r}{r^2}" />
               </div>
-              <p className="text-sm text-muted-foreground mb-3 leading-relaxed">
+              <p className="text-sm text-muted-foreground mb-3 leading-relaxed flex-1">
                 Le champ magnétique dipolaire (qui dérive de <LatexMath math="\vec{A}" />) est :
               </p>
               <div className="flex justify-center">
@@ -231,14 +225,107 @@ export default function Chap3PotentielDipole() {
               </div>
             </div>
             
-            <div className="bg-red-500/5 border border-red-500/20 p-4 sm:p-5 rounded-xl">
+            <div className="bg-red-500/5 border border-red-500/20 p-4 sm:p-5 rounded-xl h-full flex flex-col">
               <h3 className="font-bold text-red-400 mb-2">Actions Mécaniques</h3>
-              <p className="text-[13px] text-muted-foreground mb-2">Placé dans un champ <LatexMath math="\vec{B}_{ext}" /> uniforme, le dipôle subit un couple (moment des forces) tendant à l'aligner avec le champ :</p>
-              <div className="flex justify-center mb-2"><LatexMath math="\vec{\Gamma} = \vec{m} \wedge \vec{B}_{ext}" /></div>
-              <p className="text-[13px] text-muted-foreground mb-2">Son énergie potentielle est minimale lorsqu'il est aligné :</p>
+              <p className="text-[13px] text-muted-foreground mb-2 flex-1">Placé dans un champ <LatexMath math="\vec{B}_{ext}" /> uniforme, le dipôle subit un couple tendant à l'aligner avec le champ :</p>
+              <div className="flex justify-center mb-4"><LatexMath math="\vec{\Gamma} = \vec{m} \wedge \vec{B}_{ext}" /></div>
+              <p className="text-[13px] text-muted-foreground mb-2 flex-1">Son énergie potentielle est minimale lorsqu'il est aligné :</p>
               <div className="flex justify-center"><LatexMath math="E_p = -\vec{m} \cdot \vec{B}_{ext}" /></div>
             </div>
           </div>
+        </div>
+
+        <div className="flex flex-col w-full max-w-[950px] mx-auto mb-8">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-2">
+            <h3 className="text-base sm:text-lg font-bold text-foreground mb-1 flex items-center gap-2">
+              <Magnet className="w-5 h-5 text-yellow-500" />
+              Simulateur 3D : Vecteurs <LatexMath math="\vec{A}" /> et <LatexMath math="\vec{B}" />
+            </h3>
+            <div className="text-xs text-muted-foreground bg-muted/50 px-3 py-1 rounded-full border border-border/50">
+              Déplacez M pour observer les champs
+            </div>
+          </div>
+          
+          <div className="w-full">
+            <LazyMount height="450px" fallbackText="Chargement Dipôle Magnétique 3D...">
+              <MagneticDipole3DCanvas />
+            </LazyMount>
+          </div>
+        </div>
+
+        {/* Démonstration Détaillée : Dipôle Magnétique */}
+        <div className="space-y-4 mb-8 mt-6">
+          <details className="group bg-yellow-500/5 border border-yellow-500/20 rounded-xl overflow-hidden cursor-pointer transition-colors hover:border-yellow-500/40">
+            <summary className="p-5 font-bold text-yellow-500 text-sm uppercase tracking-wide flex items-center justify-between outline-none">
+              Démonstration Détaillée : Calcul de A et B pour le Dipôle
+              <span className="text-yellow-500 group-open:rotate-180 transition-transform duration-300">▼</span>
+            </summary>
+            
+            <div className="p-5 pt-0 border-t border-yellow-500/10 mt-2 text-sm text-muted-foreground space-y-6">
+              
+              {/* Étape 1 */}
+              <div>
+                <h4 className="text-yellow-400 font-bold mb-2 flex items-center gap-2">
+                  <span className="bg-yellow-500/20 text-yellow-500 w-5 h-5 flex items-center justify-center rounded-full text-xs">1</span> 
+                  Expression Intégrale et Théorème de Kelvin
+                </h4>
+                <p className="mb-2">Le potentiel vecteur créé par une boucle de courant <LatexMath math="I" /> en un point <LatexMath math="M" /> est donné par l'intégrale sur le contour fermé :</p>
+                <div className="flex justify-center bg-black/20 p-2 rounded mb-3">
+                  <LatexMath math="\vec{A}(M) = \frac{\mu_0 I}{4\pi} \oint \frac{d\vec{l}}{r'}" />
+                </div>
+                <p className="mb-2">En appliquant le théorème de Stokes (ou théorème de Kelvin) pour une fonction scalaire <LatexMath math="f = \frac{1}{r'}" /> :</p>
+                <div className="flex justify-center bg-black/20 p-2 rounded mb-3 overflow-x-auto">
+                  <LatexMath math="\oint f d\vec{l} = \iint d\vec{S} \wedge \vec{\text{grad}}(f)" />
+                </div>
+                <p>Or le gradient de <LatexMath math="\frac{1}{r'}" /> par rapport au point source <LatexMath math="P" /> donne : <LatexMath math="\vec{\text{grad}}_P\left(\frac{1}{r'}\right) = \frac{\vec{r}'}{r'^3}" />. D'où :</p>
+                <div className="flex justify-center bg-black/20 p-3 rounded border border-yellow-500/20 mt-3 overflow-x-auto">
+                  <LatexMath math="\vec{A}(M) = \frac{\mu_0 I}{4\pi} \iint d\vec{S} \wedge \frac{\vec{r}'}{r'^3}" />
+                </div>
+              </div>
+
+              {/* Étape 2 */}
+              <div className="border-t border-yellow-500/10 pt-4">
+                <h4 className="text-yellow-400 font-bold mb-2 flex items-center gap-2">
+                  <span className="bg-yellow-500/20 text-yellow-500 w-5 h-5 flex items-center justify-center rounded-full text-xs">2</span> 
+                  Approximation Dipolaire et Moment Magnétique
+                </h4>
+                <p className="mb-2">Pour un point <LatexMath math="M" /> très éloigné de la boucle (<LatexMath math="OM = r \gg R" />), on peut faire l'approximation <LatexMath math="\vec{r}' \approx \vec{r}" />. Puisque <LatexMath math="\vec{r}" /> ne dépend pas de la surface d'intégration, on peut le sortir :</p>
+                <div className="flex justify-center bg-black/20 p-2 rounded mb-3 overflow-x-auto">
+                  <LatexMath math="\vec{A}(M) = \frac{\mu_0}{4\pi} \left( I \iint d\vec{S} \right) \wedge \frac{\vec{r}}{r^3}" />
+                </div>
+                <p className="mb-2">On identifie le <strong>moment magnétique</strong> <LatexMath math="\vec{m} = I \vec{S}" /> :</p>
+                <div className="flex justify-center bg-black/20 p-3 rounded shadow-inner border border-yellow-500/20 overflow-x-auto">
+                  <LatexMath math="\vec{A}(M) = \frac{\mu_0}{4\pi} \frac{\vec{m} \wedge \vec{r}}{r^3} = \frac{\mu_0}{4\pi} \frac{\vec{m} \wedge \vec{u}_r}{r^2}" />
+                </div>
+              </div>
+
+              {/* Étape 3 */}
+              <div className="border-t border-yellow-500/10 pt-4">
+                <h4 className="text-yellow-400 font-bold mb-2 flex items-center gap-2">
+                  <span className="bg-yellow-500/20 text-yellow-500 w-5 h-5 flex items-center justify-center rounded-full text-xs">3</span> 
+                  Calcul en Coordonnées Sphériques
+                </h4>
+                <p className="mb-2">En choisissant l'axe z selon le moment magnétique (<LatexMath math="\vec{m} = m \vec{e}_z" />), le produit vectoriel s'écrit :</p>
+                <div className="flex justify-center bg-black/20 p-2 rounded mb-3 overflow-x-auto">
+                  <LatexMath math="\vec{m} \wedge \vec{u}_r = m (\vec{e}_z \wedge \vec{u}_r) = m \sin\theta \vec{e}_\phi" />
+                </div>
+                <p className="mb-2">Ce qui nous donne les composantes du potentiel vecteur :</p>
+                <div className="flex justify-center bg-emerald-500/10 p-3 rounded mb-4 text-emerald-400 font-bold border border-emerald-500/30 overflow-x-auto">
+                  <LatexMath math="A_r = 0 \quad , \quad A_\theta = 0 \quad , \quad A_\phi = \frac{\mu_0 m \sin\theta}{4\pi r^2}" />
+                </div>
+                <p className="mb-2">Pour obtenir le champ magnétique <LatexMath math="\vec{B} = \vec{\text{rot}} \vec{A}" />, on utilise l'opérateur rotationnel en sphériques :</p>
+                <ul className="list-disc list-inside space-y-2 mb-3 ml-2 text-xs sm:text-sm">
+                  <li><LatexMath math="B_r = \frac{1}{r\sin\theta} \frac{\partial (\sin\theta A_\phi)}{\partial \theta} = \frac{1}{r\sin\theta} \frac{\mu_0 m}{4\pi r^2} 2\sin\theta\cos\theta = \frac{\mu_0 m}{4\pi r^3} 2\cos\theta" /></li>
+                  <li><LatexMath math="B_\theta = -\frac{1}{r} \frac{\partial (r A_\phi)}{\partial r} = -\frac{1}{r} \frac{\partial}{\partial r} \left( \frac{\mu_0 m \sin\theta}{4\pi r} \right) = \frac{\mu_0 m}{4\pi r^3} \sin\theta" /></li>
+                  <li><LatexMath math="B_\phi = 0" /> (car <LatexMath math="A_r" /> et <LatexMath math="A_\theta" /> sont nuls)</li>
+                </ul>
+                <div className="flex justify-center bg-black/20 p-3 rounded shadow-inner border border-yellow-500/20 mt-4 overflow-x-auto">
+                  <LatexMath math="\vec{B}(M) = \frac{\mu_0 m}{4\pi r^3} \left( 2\cos\theta \vec{u}_r + \sin\theta \vec{u}_\theta \right)" />
+                </div>
+              </div>
+
+            </div>
+          </details>
         </div>
       </section>
 
