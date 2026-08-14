@@ -181,6 +181,30 @@ const HeroCharge = ({ chargeSign, phase }: { chargeSign: number, phase: number }
   );
 };
 
+// Repère (x, y, z)
+const AxesBase = () => {
+  // Placé en bas à gauche pour ne pas gêner
+  const origin = new THREE.Vector3(-3.5, -0.8, 1.5);
+  
+  return (
+    <group>
+      <mesh position={origin}>
+        <sphereGeometry args={[0.04]} />
+        <meshBasicMaterial color="#ffffff" />
+      </mesh>
+      
+      {/* Axe x : direction du courant (ThreeJS +X) */}
+      <Arrow start={origin} dir={new THREE.Vector3(1, 0, 0)} length={1} color="#ef4444" thickness={0.012} label="x" labelOffset={[0.2, 0, 0]} opacity={0.8} />
+      
+      {/* Axe y : vers l'intérieur (ThreeJS -Z) */}
+      <Arrow start={origin} dir={new THREE.Vector3(0, 0, -1)} length={1} color="#22c55e" thickness={0.012} label="y" labelOffset={[0, 0, -0.2]} opacity={0.8} />
+      
+      {/* Axe z : vertical (ThreeJS +Y) */}
+      <Arrow start={origin} dir={new THREE.Vector3(0, 1, 0)} length={1} color="#3b82f6" thickness={0.012} label="z" labelOffset={[0, 0.2, 0]} opacity={0.8} />
+    </group>
+  );
+};
+
 export default function HallEffect3DCanvas() {
   const [chargeSign, setChargeSign] = useState(-1);
   const [phase, setPhase] = useState(0); 
@@ -257,13 +281,13 @@ export default function HallEffect3DCanvas() {
                 
                 <div className="flex flex-col gap-1.5 mb-2">
                   <div className="flex justify-between items-center bg-slate-900/50 px-2 py-1.5 rounded">
-                    <span className="text-[11px] text-slate-400">Face Avant (Z+)</span>
+                    <span className="text-[11px] text-slate-400">Face Avant (y-)</span>
                     <span className={`text-xs font-black px-1.5 py-0.5 rounded ${chargeSign > 0 ? 'bg-red-500/20 text-red-400' : 'bg-blue-500/20 text-blue-400'}`}>
                       {chargeSign > 0 ? '+' : '-'}
                     </span>
                   </div>
                   <div className="flex justify-between items-center bg-slate-900/50 px-2 py-1.5 rounded">
-                    <span className="text-[11px] text-slate-400">Face Arrière (Z-)</span>
+                    <span className="text-[11px] text-slate-400">Face Arrière (y+)</span>
                     <span className={`text-xs font-black px-1.5 py-0.5 rounded ${chargeSign > 0 ? 'bg-blue-500/20 text-blue-400' : 'bg-red-500/20 text-red-400'}`}>
                       {chargeSign > 0 ? '-' : '+'}
                     </span>
@@ -288,6 +312,8 @@ export default function HallEffect3DCanvas() {
             <Environment preset="city" />
             <OrbitControls enableZoom={true} maxPolarAngle={Math.PI / 2.1} autoRotate={false} />
             
+            <AxesBase />
+
             <group position={[0, -0.2, 0]}>
               <Plate />
               <AccumulatedCharges chargeSign={chargeSign} phase={phase} />
