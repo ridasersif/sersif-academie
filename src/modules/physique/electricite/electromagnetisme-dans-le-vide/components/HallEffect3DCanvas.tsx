@@ -102,38 +102,47 @@ const AccumulatedCharges = ({ chargeSign, phase, bMagnitude }: { chargeSign: num
   );
 };
 
-const Carriers = ({ chargeSign, phase }: { chargeSign: number, phase: number }) => {
+const Carriers = ({ chargeSign, phase, bMagnitude }: { chargeSign: number, phase: number, bMagnitude: number }) => {
+  const count = 150;
   const mesh = useRef<THREE.InstancedMesh>(null);
   const dummy = useMemo(() => new THREE.Object3D(), []);
   
   const particles = useMemo(() => {
     const temp = [];
-    for (let i = 0; i < 30; i++) {
-      const startX = (Math.random() - 0.5) * 4;
-      const startZ = (Math.random() - 0.5) * 0.8; 
-      temp.push({ x: startX, y: 0, z: startZ });
+    for (let i = 0; i < count; i++) {
+      temp.push({ 
+        x: (Math.random() - 0.5) * 4, 
+        y: (Math.random() - 0.5) * 0.04, 
+        z: (Math.random() - 0.5) * 1.6, 
+        speedOffset: 0.8 + Math.random() * 0.4 
+      });
     }
     return temp;
-  }, []);
+  }, [count]);
 
   useFrame((state, delta) => {
     if (!mesh.current) return;
-    const speed = chargeSign > 0 ? 1.5 : -1.5; 
-    let driftZ = phase === 1 ? 1.0 : 0; 
+    const baseSpeed = chargeSign > 0 ? 1.5 : -1.5; 
+    const driftSpeed = 1.5 * bMagnitude; 
     
     particles.forEach((p, i) => {
-      p.x += speed * delta;
+      p.x += baseSpeed * p.speedOffset * delta;
       
       if (phase === 1) {
-        if (p.z < 0.9 && p.z > -0.9) p.z += driftZ * delta;
-      } else if (phase === 2) {
-        p.z = THREE.MathUtils.lerp(p.z, (Math.random() - 0.5) * 0.4, 0.05);
-      } else {
-        p.z = THREE.MathUtils.lerp(p.z, (Math.random() - 0.5) * 1.5, 0.02);
+        // Both electrons and holes drift towards +Z (front edge / y-)
+        p.z += driftSpeed * delta;
+        if (p.z > 0.9) p.z = 0.9;
       }
 
-      if (chargeSign > 0 && p.x > 2.2) { p.x = -2.2; p.z = (Math.random() - 0.5) * 1.5; }
-      if (chargeSign < 0 && p.x < -2.2) { p.x = 2.2; p.z = (Math.random() - 0.5) * 1.5; }
+      // Loop around
+      if (chargeSign > 0 && p.x > 2.2) { 
+        p.x = -2.2; 
+        p.z = (Math.random() - 0.5) * 1.6; 
+      }
+      if (chargeSign < 0 && p.x < -2.2) { 
+        p.x = 2.2; 
+        p.z = (Math.random() - 0.5) * 1.6; 
+      }
       
       dummy.position.set(p.x, p.y, p.z);
       dummy.scale.setScalar(1);
@@ -143,11 +152,11 @@ const Carriers = ({ chargeSign, phase }: { chargeSign: number, phase: number }) 
     if (mesh.current) mesh.current.instanceMatrix.needsUpdate = true;
   });
 
-  const color = chargeSign > 0 ? "#ef4444" : "#3b82f6";
+  const color = chargeSign > 0 ? "#ef4444" : "#60a5fa"; // lighter blue for particles to pop
   
   return (
-    <instancedMesh ref={mesh} args={[null as any, null as any, 30]}>
-      <sphereGeometry args={[0.06, 16, 16]} />
+    <instancedMesh ref={mesh} args={[null as any, null as any, count]}>
+      <sphereGeometry args={[0.035, 16, 16]} />
       <meshStandardMaterial color={color} emissive={color} emissiveIntensity={1} toneMapped={false} />
     </instancedMesh>
   );
@@ -368,7 +377,7 @@ export default function HallEffect3DCanvas() {
             <group position={[0, -0.2, 0]}>
               <Plate />
               <AccumulatedCharges chargeSign={chargeSign} phase={phase} bMagnitude={bMagnitude} />
-              <Carriers chargeSign={chargeSign} phase={phase} />
+              <Carriers chargeSign={chargeSign} phase={phase} bMagnitude={bMagnitude} />
               <HeroCharge chargeSign={chargeSign} phase={phase} bMagnitude={bMagnitude} />
               
               {/* Champ Magnétique B */}
