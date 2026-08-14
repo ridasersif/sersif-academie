@@ -10,6 +10,7 @@ const MagneticDipole3DCanvas = dynamic(() => import("../components/MagneticDipol
 const HallEffect3DCanvas = dynamic(() => import("../components/HallEffect3DCanvas"), { ssr: false });
 const VectorPotentialExercise3DCanvas = dynamic(() => import("../components/VectorPotentialExercise3DCanvas"), { ssr: false });
 const VectorPotentialCurves = dynamic(() => import("../components/VectorPotentialCurves"), { ssr: false });
+const SolenoidPotentialExercise3DCanvas = dynamic(() => import("../components/SolenoidPotentialExercise3DCanvas"), { ssr: false });
 
 import { Calculator, Compass, Layers, Sparkles, Activity, Magnet, ChevronDown, ChevronUp, BookOpen } from "lucide-react";
 
@@ -396,7 +397,7 @@ export default function Chap3PotentielDipole() {
         </div>
         
         <h2 className="text-xl sm:text-2xl font-black mb-4 text-foreground leading-tight">
-          3. Exercice Complet : Le Cylindre Conducteur Infini
+          Application 1 : Le Cylindre Conducteur Infini
         </h2>
 
         <p className="text-sm sm:text-base text-muted-foreground leading-relaxed mb-6">
@@ -509,6 +510,152 @@ export default function Chap3PotentielDipole() {
               <LazyMount height="350px" fallbackText="Chargement du graphe...">
                 <VectorPotentialCurves />
               </LazyMount>
+            </div>
+          </CollapsibleStep>
+
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════ */}
+      {/* PARTIE 4: APPLICATION 2 - LE SOLÉNOÏDE        */}
+      {/* ═══════════════════════════════════════════ */}
+      <section className="bg-card/90 border border-border/80 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 shadow-sm w-full max-w-full overflow-x-hidden mt-8">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-violet-500/10 text-violet-600 dark:text-violet-400 text-xs font-extrabold mb-3">
+          <Activity className="w-3.5 h-3.5" />
+          <span>Partie 4 • Exercice d'Application</span>
+        </div>
+        
+        <h2 className="text-xl sm:text-2xl font-black mb-4 text-foreground leading-tight">
+          Application 2 : Le Solénoïde Infini et le Potentiel Vecteur A
+        </h2>
+
+        <p className="text-sm sm:text-base text-muted-foreground leading-relaxed mb-6">
+          Considérons un solénoïde infiniment long d'axe <LatexMath math="(Oz)" /> et de rayon <LatexMath math="R" />, comportant <LatexMath math="n" /> spires par unité de longueur parcourues par un courant d'intensité <LatexMath math="I" />. On rappelle l'expression du champ magnétique : <LatexMath math="\vec{B}_{int} = \mu_0 n I \vec{u}_z" /> à l'intérieur (<LatexMath math="r < R" />) et <LatexMath math="\vec{B}_{ext} = \vec{0}" /> à l'extérieur (<LatexMath math="r > R" />). L'objectif est de déterminer le potentiel vecteur <LatexMath math="\vec{A}" /> généré par ce solénoïde.
+        </p>
+
+        {/* 3D Visualisation */}
+        <h3 className="text-sm font-bold text-foreground/80 dark:text-slate-300 mb-3 flex items-center gap-2">
+          <Sparkles className="w-4 h-4 text-violet-400" />
+          Visualisation 3D Interactive du Solénoïde
+        </h3>
+        <p className="text-[11px] text-muted-foreground mb-4">
+          Observez la structure du solénoïde (spires rouges), le champ magnétique <LatexMath math="\vec{B}" /> uniforme à l'intérieur, et le potentiel vecteur <LatexMath math="\vec{A}" /> qui tourne autour de l'axe.
+        </p>
+
+        <div className="mb-8 w-full flex justify-center">
+          <div className="w-full relative">
+            <LazyMount height="350px" fallbackText="Chargement du Solénoïde...">
+              <SolenoidPotentialExercise3DCanvas />
+            </LazyMount>
+          </div>
+        </div>
+
+        <div className="bg-orange-500/10 border-l-4 border-orange-500 p-4 rounded-r-lg mb-8">
+          <h4 className="font-bold text-orange-600 dark:text-orange-400 text-sm mb-1 flex items-center gap-2">
+            <Sparkles className="w-4 h-4" /> Remarque Physique Importante
+          </h4>
+          <p className="text-xs text-orange-700 dark:text-orange-300">
+            Cet exercice illustre un paradoxe apparent très célèbre en électromagnétisme quantique (Effet Aharonov-Bohm) : bien que le champ magnétique <LatexMath math="\vec{B}" /> soit <strong>strictement nul</strong> à l'extérieur du solénoïde, le potentiel vecteur <LatexMath math="\vec{A}" /> n'y est pas nul ! Le potentiel vecteur possède donc une réalité physique tangible, au-delà d'être un simple outil mathématique.
+          </p>
+        </div>
+
+        <div className="space-y-4">
+          <CollapsibleStep step={1} title="Analyse des symétries et invariances" color="blue">
+            <p className="text-[11px] text-muted-foreground leading-relaxed mb-3">
+              <strong>Question 1 :</strong> Par des arguments de symétrie et d'invariance, déterminer la direction de <LatexMath math="\vec{A}" /> et les variables d'espace dont il dépend.
+            </p>
+            <div className="border-t border-blue-500/10 pt-4 text-[11px]">
+              <ul className="list-disc list-inside space-y-1 mb-2">
+                <li><strong>Invariances :</strong> La distribution de courant est invariante par translation selon l'axe <LatexMath math="(Oz)" /> et par rotation autour de <LatexMath math="(Oz)" /> (invariance azimutale). Donc, <LatexMath math="\vec{A}" /> ne dépend que de la distance radiale <LatexMath math="r" />.</li>
+                <li><strong>Symétries :</strong> Tout plan contenant l'axe <LatexMath math="(Oz)" /> est un plan d'antisymétrie pour la distribution de courant (les spires traversent perpendiculairement ce plan). Or <LatexMath math="\vec{A}" /> est un vecteur polaire, il est donc perpendiculaire aux plans d'antisymétrie, c'est-à-dire porté par <LatexMath math="\vec{u}_\theta" />.</li>
+              </ul>
+              <p className="font-bold text-blue-400">Conclusion : <LatexMath math="\vec{A}(M) = A(r) \vec{u}_\theta" /></p>
+            </div>
+          </CollapsibleStep>
+
+          <CollapsibleStep step={2} title="Jauge de Coulomb" color="cyan">
+            <p className="text-[11px] text-muted-foreground leading-relaxed mb-3">
+              <strong>Question 2 :</strong> Vérifier que cette forme du potentiel vecteur satisfait la jauge de Coulomb <LatexMath math="\text{div}(\vec{A}) = 0" />.
+            </p>
+            <div className="border-t border-cyan-500/10 pt-4 text-[11px]">
+              <p className="mb-2">L'expression de la divergence en coordonnées cylindriques pour un vecteur <LatexMath math="\vec{A} = A_r \vec{u}_r + A_\theta \vec{u}_\theta + A_z \vec{u}_z" /> est :</p>
+              <div className="flex justify-center bg-black/20 p-2 rounded mb-2">
+                <LatexMath math="\text{div}(\vec{A}) = \frac{1}{r}\frac{\partial (r A_r)}{\partial r} + \frac{1}{r}\frac{\partial A_\theta}{\partial \theta} + \frac{\partial A_z}{\partial z}" />
+              </div>
+              <p>Puisque <LatexMath math="A_r = 0" />, <LatexMath math="A_z = 0" /> et que <LatexMath math="A_\theta = A(r)" /> ne dépend pas de <LatexMath math="\theta" />, tous les termes s'annulent.</p>
+              <p className="font-bold text-cyan-400 mt-2">Donc <LatexMath math="\text{div}(\vec{A}) = 0" />, la jauge de Coulomb est bien respectée.</p>
+            </div>
+          </CollapsibleStep>
+
+          <CollapsibleStep step={3} title="Calcul de A par le théorème de Stokes" color="emerald">
+            <p className="text-[11px] text-muted-foreground leading-relaxed mb-3">
+              <strong>Question 3 :</strong> Calculer <LatexMath math="\vec{A}" /> à l'intérieur (<LatexMath math="r < R" />) et à l'extérieur (<LatexMath math="r > R" />) en utilisant la circulation de <LatexMath math="\vec{A}" /> et le flux de <LatexMath math="\vec{B}" />.
+            </p>
+            <div className="border-t border-emerald-500/10 pt-4 text-[11px]">
+              <p className="mb-2">Par le théorème de Stokes (ou d'Ampère pour A) : <LatexMath math="\oint_C \vec{A} \cdot d\vec{\ell} = \iint_S \vec{\text{rot}}(\vec{A}) \cdot d\vec{S} = \iint_S \vec{B} \cdot d\vec{S} = \Phi_B" />.</p>
+              <p className="mb-2">On choisit un cercle <LatexMath math="C" /> de rayon <LatexMath math="r" /> centré sur l'axe. La circulation vaut : <LatexMath math="A(r) \times 2\pi r" />.</p>
+              
+              <ul className="list-disc list-inside space-y-2 mt-4">
+                <li>
+                  <strong>Pour <LatexMath math="r < R" /> (Intérieur) :</strong> Le flux à travers le disque de rayon <LatexMath math="r" /> est <LatexMath math="\Phi_B = B_{int} \times \pi r^2 = \mu_0 n I \pi r^2" />.
+                  <div className="flex justify-center bg-black/20 p-2 rounded my-1">
+                    <LatexMath math="A(r) \times 2\pi r = \mu_0 n I \pi r^2 \implies A_{int}(r) = \frac{\mu_0 n I r}{2}" />
+                  </div>
+                </li>
+                <li>
+                  <strong>Pour <LatexMath math="r > R" /> (Extérieur) :</strong> Le champ <LatexMath math="B" /> n'existe que dans la région <LatexMath math="r \le R" />. Le flux total est constant : <LatexMath math="\Phi_B = B_{int} \times \pi R^2 = \mu_0 n I \pi R^2" />.
+                  <div className="flex justify-center bg-black/20 p-2 rounded my-1">
+                    <LatexMath math="A(r) \times 2\pi r = \mu_0 n I \pi R^2 \implies A_{ext}(r) = \frac{\mu_0 n I R^2}{2r}" />
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </CollapsibleStep>
+
+          <CollapsibleStep step={4} title="Calcul de A par intégration de rot(A) = B" color="purple">
+            <p className="text-[11px] text-muted-foreground leading-relaxed mb-3">
+              <strong>Question 4 :</strong> Retrouver l'expression de <LatexMath math="\vec{A}" /> en intégrant directement l'équation différentielle issue de <LatexMath math="\vec{B} = \vec{\text{rot}}(\vec{A})" />.
+            </p>
+            <div className="border-t border-purple-500/10 pt-4 text-[11px]">
+              <p className="mb-2">En coordonnées cylindriques, sachant que <LatexMath math="\vec{A} = A(r) \vec{u}_\theta" />, le rotationnel se simplifie en :</p>
+              <div className="flex justify-center bg-black/20 p-2 rounded mb-3">
+                <LatexMath math="\vec{\text{rot}}(\vec{A}) = \frac{1}{r}\frac{\partial (r A(r))}{\partial r} \vec{u}_z = \vec{B}" />
+              </div>
+
+              <ul className="list-disc list-inside space-y-4">
+                <li>
+                  <strong>À l'intérieur (<LatexMath math="r < R" />) :</strong> <LatexMath math="\vec{B} = \mu_0 n I \vec{u}_z" />
+                  <div className="flex justify-center bg-black/20 p-2 rounded my-1">
+                    <LatexMath math="\frac{\partial (r A_{int})}{\partial r} = \mu_0 n I r \implies r A_{int}(r) = \frac{\mu_0 n I r^2}{2} + C_1" />
+                  </div>
+                  <p>Soit <LatexMath math="A_{int}(r) = \frac{\mu_0 n I r}{2} + \frac{C_1}{r}" />. Pour que le potentiel ne diverge pas sur l'axe (<LatexMath math="r=0" />), on doit avoir <LatexMath math="C_1 = 0" />.</p>
+                  <p className="font-bold text-purple-300 mt-1">Résultat : <LatexMath math="A_{int}(r) = \frac{\mu_0 n I r}{2}" /></p>
+                </li>
+                <li>
+                  <strong>À l'extérieur (<LatexMath math="r > R" />) :</strong> <LatexMath math="\vec{B} = \vec{0}" />
+                  <div className="flex justify-center bg-black/20 p-2 rounded my-1">
+                    <LatexMath math="\frac{\partial (r A_{ext})}{\partial r} = 0 \implies r A_{ext}(r) = C_2" />
+                  </div>
+                  <p>Soit <LatexMath math="A_{ext}(r) = \frac{C_2}{r}" />. La constante se trouve par continuité.</p>
+                </li>
+              </ul>
+            </div>
+          </CollapsibleStep>
+
+          <CollapsibleStep step={5} title="Continuité du Potentiel Vecteur en r = R" color="rose">
+            <p className="text-[11px] text-muted-foreground leading-relaxed mb-4">
+              <strong>Question 5 :</strong> Déterminer la constante <LatexMath math="C_2" /> en appliquant la condition de continuité de <LatexMath math="\vec{A}" /> à la surface du solénoïde (<LatexMath math="r = R" />).
+            </p>
+            <div className="border-t border-rose-500/10 pt-4 text-[11px]">
+              <p className="mb-2">Le potentiel vecteur est une grandeur continue dans tout l'espace (contrairement au champ B qui est discontinu à la traversée d'une nappe de courant). En <LatexMath math="r = R" /> :</p>
+              <div className="flex justify-center bg-black/20 p-2 rounded mb-2">
+                <LatexMath math="A_{int}(R) = A_{ext}(R) \implies \frac{\mu_0 n I R}{2} = \frac{C_2}{R}" />
+              </div>
+              <p>On en déduit la constante d'intégration de la zone extérieure :</p>
+              <div className="flex justify-center bg-rose-500/10 border border-rose-500/30 p-2 rounded my-2">
+                <LatexMath math="C_2 = \frac{\mu_0 n I R^2}{2} \implies A_{ext}(r) = \frac{\mu_0 n I R^2}{2r}" />
+              </div>
+              <p>On retrouve exactement les mêmes expressions que par la méthode du flux de Stokes, ce qui confirme la cohérence physique globale du modèle !</p>
             </div>
           </CollapsibleStep>
 
