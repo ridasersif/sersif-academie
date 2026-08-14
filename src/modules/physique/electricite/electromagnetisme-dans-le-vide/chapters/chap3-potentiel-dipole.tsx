@@ -9,6 +9,7 @@ const VectorPotential3DCanvas = dynamic(() => import("../components/VectorPotent
 const MagneticDipole3DCanvas = dynamic(() => import("../components/MagneticDipole3DCanvas"), { ssr: false });
 const HallEffect3DCanvas = dynamic(() => import("../components/HallEffect3DCanvas"), { ssr: false });
 const VectorPotentialExercise3DCanvas = dynamic(() => import("../components/VectorPotentialExercise3DCanvas"), { ssr: false });
+const VectorPotentialCurves = dynamic(() => import("../components/VectorPotentialCurves"), { ssr: false });
 
 import { Calculator, Compass, Layers, Sparkles, Activity, Magnet, ChevronDown, ChevronUp, BookOpen } from "lucide-react";
 
@@ -496,6 +497,18 @@ export default function Chap3PotentielDipole() {
                 <LatexMath math="\frac{1}{r} \frac{\partial}{\partial r}\left(r \frac{\partial A}{\partial r}\right) = -\mu_0 j_0" />
               </div>
               <p>En intégrant deux fois par rapport à r (et avec la condition de champ non divergent en r=0), on retrouve directement le même résultat parabolique pour l'intérieur.</p>
+            </div>
+          </CollapsibleStep>
+
+          <CollapsibleStep step={5} title="Allure des courbes de B(ρ) et A(ρ)" color="rose">
+            <p className="text-[11px] text-muted-foreground leading-relaxed mb-4">
+              <strong>Question 5 :</strong> Tracer l'allure de l'intensité du champ magnétique <LatexMath math="B" /> et du potentiel vecteur <LatexMath math="A" /> en fonction de la distance axiale <LatexMath math="\rho" />.
+            </p>
+            
+            <div className="w-full relative mt-4">
+              <LazyMount height="350px" fallbackText="Chargement du graphe...">
+                <VectorPotentialCurves />
+              </LazyMount>
             </div>
           </CollapsibleStep>
 
