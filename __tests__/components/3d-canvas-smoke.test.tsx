@@ -48,16 +48,36 @@ describe("3D Canvas Components — Smoke Tests (avec mocks WebGL)", () => {
       render(React.createElement(BiotSavart3DCanvas));
     }).not.toThrow();
   });
+
+  it("HallEffect3DCanvas doit se rendre sans erreur", () => {
+    expect(() => {
+      // Must use require to avoid hoisting issues with mocks if not top-level
+      const HallEffect = require("@/modules/physique/electricite/electromagnetisme-dans-le-vide/components/HallEffect3DCanvas").default;
+      render(React.createElement(HallEffect));
+    }).not.toThrow();
+  });
+
+  it("RightHandRule3DCanvas doit se rendre sans erreur", () => {
+    expect(() => {
+      const RightHandRule = require("@/modules/physique/electricite/electromagnetisme-dans-le-vide/components/RightHandRule3DCanvas").default;
+      render(React.createElement(RightHandRule));
+    }).not.toThrow();
+  });
+
+  it("SolenoidPotentialExercise3DCanvas doit se rendre sans erreur", () => {
+    expect(() => {
+      const Solenoid = require("@/modules/physique/electricite/electromagnetisme-dans-le-vide/components/SolenoidPotentialExercise3DCanvas").default;
+      render(React.createElement(Solenoid));
+    }).not.toThrow();
+  });
 });
 
 describe("Chapitre 1 — Smoke Test du composant entier", () => {
   it("Chap1CourantsChamp doit se rendre sans exception fatale", () => {
-    // We need to lazy-import since it uses many 3D components
-    jest.isolateModules(() => {
-      const { default: Chap1 } = require("@/modules/physique/electricite/electromagnetisme-dans-le-vide/chapters/chap1-courants-champ");
-      expect(() => {
-        render(React.createElement(Chap1));
-      }).not.toThrow();
-    });
+    // We import dynamically if needed, or directly
+    const Chap1 = require("@/modules/physique/electricite/electromagnetisme-dans-le-vide/chapters/chap1-courants-champ").default;
+    expect(() => {
+      render(React.createElement(Chap1));
+    }).not.toThrow();
   });
 });

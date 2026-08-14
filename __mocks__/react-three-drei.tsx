@@ -18,4 +18,6 @@ export const Stars = () => null;
 export const Float = ({ children }: { children: React.ReactNode }) =>
   React.createElement(React.Fragment, null, children);
 export const Environment = () => null;
+export const ContactShadows = () => null;
+export const QuadraticBezierLine = () => null;
 export const useGLTF = jest.fn(() => ({ nodes: {}, materials: {} }));

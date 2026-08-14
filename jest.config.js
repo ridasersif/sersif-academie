@@ -2,12 +2,13 @@
 module.exports = {
   preset: "ts-jest",
   testEnvironment: "jsdom",
-  setupFilesAfterFramework: ["<rootDir>/jest.setup.ts"],
+  setupFilesAfterEnv: ["<rootDir>/jest.setup.ts"],
   moduleNameMapper: {
     "^@/(.*)$": "<rootDir>/src/$1",
     "^three$": "<rootDir>/__mocks__/three.ts",
     "^@react-three/fiber$": "<rootDir>/__mocks__/react-three-fiber.tsx",
     "^@react-three/drei$": "<rootDir>/__mocks__/react-three-drei.tsx",
+    "^@react-three/postprocessing$": "<rootDir>/__mocks__/@react-three/postprocessing.tsx",
     "^fuse\\.js$": "<rootDir>/__mocks__/fuse.ts",
     "\\.(css|less|scss|sass)$": "identity-obj-proxy",
   },
