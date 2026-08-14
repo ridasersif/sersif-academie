@@ -206,75 +206,72 @@ export default function HallEffect3DCanvas() {
         {/* LEFT PANEL: EXPLANATIONS & RESULTS */}
         <div className="w-full lg:w-[40%] flex flex-col border-b lg:border-b-0 lg:border-r border-slate-800 bg-slate-900/40">
           
-          <div className="p-5 flex-1 flex flex-col gap-5">
+          <div className="p-3 flex-1 flex flex-col gap-3 justify-center">
             {/* Phase Title */}
-            <div className="bg-slate-800/80 border border-slate-700 p-4 rounded-xl shadow-md">
-              <h3 className="text-orange-400 font-black text-lg mb-2 flex items-center gap-2">
-                <Info className="w-5 h-5" />
+            <div className="bg-slate-800/80 border border-slate-700 p-3 rounded-xl shadow-md">
+              <h3 className="text-orange-400 font-black text-base mb-2 flex items-center gap-2">
+                <Info className="w-4 h-4" />
                 Étape {phase + 1}/3
               </h3>
               
               {/* Dynamic Text based on Phase */}
               {phase === 0 && (
-                <div className="space-y-2 text-sm text-slate-300 leading-relaxed">
+                <div className="space-y-1 text-xs text-slate-300 leading-relaxed">
                   <p className="font-bold text-white">Le Courant Électrique Seul</p>
-                  <p>Le courant <LatexMath math="\vec{I}" /> circule dans la plaque. Les porteurs de charge (de vitesse <LatexMath math="\vec{v}" />) se déplacent en ligne droite.</p>
-                  <div className="bg-black/30 p-2 rounded mt-2 border border-slate-700/50">
+                  <p>Le courant <LatexMath math="\vec{I}" /> circule. Les porteurs (vitesse <LatexMath math="\vec{v}" />) vont tout droit.</p>
+                  <div className="bg-black/30 p-1.5 rounded mt-1 border border-slate-700/50">
                     <LatexMath math="\vec{F}_m = \vec{0}" /> (Aucun champ magnétique)
                   </div>
                 </div>
               )}
               
               {phase === 1 && (
-                <div className="space-y-2 text-sm text-slate-300 leading-relaxed">
-                  <p className="font-bold text-white">Application du Champ Magnétique <LatexMath math="\vec{B}" /></p>
-                  <p>La force de Lorentz <LatexMath math="\vec{F}_m = q(\vec{v} \wedge \vec{B})" /> dévie les charges vers le bord de la plaque (la face Avant).</p>
-                  <div className="bg-orange-500/10 p-2 rounded mt-2 border border-orange-500/30 text-orange-200">
-                    Remarquez que la force <LatexMath math="\vec{F}_m" /> pointe <strong>toujours</strong> vers le même côté, quel que soit le signe de la charge <LatexMath math="q" /> !
+                <div className="space-y-1 text-xs text-slate-300 leading-relaxed">
+                  <p className="font-bold text-white">Application de <LatexMath math="\vec{B}" /></p>
+                  <p>La force <LatexMath math="\vec{F}_m = q(\vec{v} \wedge \vec{B})" /> dévie les charges vers le bord.</p>
+                  <div className="bg-orange-500/10 p-1.5 rounded mt-1 border border-orange-500/30 text-orange-200">
+                    <LatexMath math="\vec{F}_m" /> pointe <strong>toujours</strong> du même côté, peu importe <LatexMath math="q" /> !
                   </div>
                 </div>
               )}
 
               {phase === 2 && (
-                <div className="space-y-2 text-sm text-slate-300 leading-relaxed">
-                  <p className="font-bold text-emerald-400">Régime Permanent (Équilibre)</p>
-                  <p>L'accumulation des charges crée un champ électrique de Hall <LatexMath math="\vec{E}_H" />.</p>
-                  <p>La force électrique <LatexMath math="\vec{F}_e = q\vec{E}_H" /> compense exactement la force magnétique. Les charges filent de nouveau droit !</p>
-                  <div className="bg-emerald-500/10 p-2 rounded mt-2 border border-emerald-500/30 flex justify-center text-emerald-300 font-bold">
-                    <LatexMath math="\vec{F}_m + \vec{F}_e = \vec{0} \implies \vec{E}_H = - (\vec{v} \wedge \vec{B})" />
+                <div className="space-y-1 text-xs text-slate-300 leading-relaxed">
+                  <p className="font-bold text-emerald-400">Régime Permanent</p>
+                  <p>L'accumulation crée un champ de Hall <LatexMath math="\vec{E}_H" />.</p>
+                  <p><LatexMath math="\vec{F}_e = q\vec{E}_H" /> compense <LatexMath math="\vec{F}_m" />. Les charges filent droit.</p>
+                  <div className="bg-emerald-500/10 p-1.5 rounded mt-1 border border-emerald-500/30 flex justify-center text-emerald-300 font-bold">
+                    <LatexMath math="\vec{E}_H = - (\vec{v} \wedge \vec{B})" />
                   </div>
                 </div>
               )}
             </div>
 
             {/* Hall Voltage Results Container */}
-            <div className={`transition-all duration-500 overflow-hidden ${phase === 2 ? 'opacity-100 max-h-[500px]' : 'opacity-30 max-h-[100px] pointer-events-none grayscale'}`}>
-              <div className="bg-slate-800/50 border border-slate-700 p-4 rounded-xl shadow-md h-full flex flex-col">
-                <h4 className="text-sm font-black text-slate-200 uppercase tracking-widest border-b border-slate-700 pb-2 mb-3 flex items-center gap-2">
+            <div className={`transition-all duration-500 overflow-hidden ${phase === 2 ? 'opacity-100 max-h-[250px]' : 'opacity-30 max-h-[60px] pointer-events-none grayscale'}`}>
+              <div className="bg-slate-800/50 border border-slate-700 p-3 rounded-xl shadow-md h-full flex flex-col">
+                <h4 className="text-xs font-black text-slate-200 uppercase tracking-widest border-b border-slate-700 pb-1.5 mb-2 flex items-center gap-2">
                   <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                  Résultat : Tension de Hall
+                  Tension de Hall
                 </h4>
                 
-                <div className="flex flex-col gap-2 mb-4">
-                  <div className="flex justify-between items-center bg-slate-900/50 px-3 py-2 rounded">
-                    <span className="text-xs text-slate-400">Polarité Face Avant (Z+)</span>
-                    <span className={`text-sm font-black px-2 py-0.5 rounded ${chargeSign > 0 ? 'bg-red-500/20 text-red-400' : 'bg-blue-500/20 text-blue-400'}`}>
+                <div className="flex flex-col gap-1.5 mb-2">
+                  <div className="flex justify-between items-center bg-slate-900/50 px-2 py-1.5 rounded">
+                    <span className="text-[11px] text-slate-400">Face Avant (Z+)</span>
+                    <span className={`text-xs font-black px-1.5 py-0.5 rounded ${chargeSign > 0 ? 'bg-red-500/20 text-red-400' : 'bg-blue-500/20 text-blue-400'}`}>
                       {chargeSign > 0 ? '+' : '-'}
                     </span>
                   </div>
-                  <div className="flex justify-between items-center bg-slate-900/50 px-3 py-2 rounded">
-                    <span className="text-xs text-slate-400">Polarité Face Arrière (Z-)</span>
-                    <span className={`text-sm font-black px-2 py-0.5 rounded ${chargeSign > 0 ? 'bg-blue-500/20 text-blue-400' : 'bg-red-500/20 text-red-400'}`}>
+                  <div className="flex justify-between items-center bg-slate-900/50 px-2 py-1.5 rounded">
+                    <span className="text-[11px] text-slate-400">Face Arrière (Z-)</span>
+                    <span className={`text-xs font-black px-1.5 py-0.5 rounded ${chargeSign > 0 ? 'bg-blue-500/20 text-blue-400' : 'bg-red-500/20 text-red-400'}`}>
                       {chargeSign > 0 ? '-' : '+'}
                     </span>
                   </div>
                 </div>
                 
-                <div className="bg-black/40 p-4 rounded-lg border border-slate-700 flex flex-col items-center justify-center flex-1">
-                  <span className="text-white font-bold text-lg drop-shadow-md"><LatexMath math="U_H = \frac{I B}{n q b}" /></span>
-                  <p className="text-[10px] text-slate-400 mt-2 text-center">
-                    (où <strong>n</strong> = densité des porteurs, <strong>b</strong> = épaisseur)
-                  </p>
+                <div className="bg-black/40 p-2 rounded-lg border border-slate-700 flex flex-col items-center justify-center flex-1">
+                  <span className="text-white font-bold text-base drop-shadow-md"><LatexMath math="U_H = \frac{I B}{n q b}" /></span>
                 </div>
               </div>
             </div>
@@ -283,7 +280,7 @@ export default function HallEffect3DCanvas() {
         </div>
 
         {/* RIGHT PANEL: 3D CANVAS */}
-        <div className="w-full lg:w-[60%] h-[400px] lg:h-[600px] relative">
+        <div className="w-full lg:w-[60%] h-[350px] lg:h-[450px] relative">
           <Canvas frameloop={inView ? "always" : "demand"} camera={{ position: [5, 6, 8], fov: 35 }} className="w-full h-full">
             <color attach="background" args={["#020617"]} />
             <ambientLight intensity={0.8} />
@@ -323,14 +320,14 @@ export default function HallEffect3DCanvas() {
       </div>
 
       {/* BOTTOM PANEL: CONTROLS */}
-      <div className="w-full bg-slate-900/80 border border-slate-700 p-4 rounded-xl flex items-center justify-between gap-4 flex-wrap shadow-lg">
+      <div className="w-full bg-slate-900/80 border border-slate-700 p-3 rounded-xl flex items-center justify-between gap-3 flex-wrap shadow-lg">
         
         {/* Step Navigation */}
         <div className="flex gap-2">
           <button 
             onClick={prevPhase}
             disabled={phase === 0}
-            className={`px-4 py-2 flex items-center gap-1 rounded-lg border font-bold text-sm transition-all ${phase === 0 ? 'bg-slate-800 border-slate-700 text-slate-500 cursor-not-allowed' : 'bg-slate-700 border-slate-600 text-white hover:bg-slate-600 shadow-sm'}`}
+            className={`px-3 py-1.5 flex items-center gap-1 rounded-lg border font-bold text-sm transition-all ${phase === 0 ? 'bg-slate-800 border-slate-700 text-slate-500 cursor-not-allowed' : 'bg-slate-700 border-slate-600 text-white hover:bg-slate-600 shadow-sm'}`}
           >
             <ChevronLeft className="w-4 h-4" /> Précédent
           </button>
@@ -338,25 +335,25 @@ export default function HallEffect3DCanvas() {
           <button 
             onClick={nextPhase}
             disabled={phase === 2}
-            className={`px-6 py-2 flex items-center gap-1 rounded-lg border font-bold text-sm transition-all ${phase === 2 ? 'bg-slate-800 border-slate-700 text-slate-500 cursor-not-allowed' : 'bg-orange-600 border-orange-500 text-white hover:bg-orange-500 shadow-[0_0_10px_rgba(234,88,12,0.3)]'}`}
+            className={`px-4 py-1.5 flex items-center gap-1 rounded-lg border font-bold text-sm transition-all ${phase === 2 ? 'bg-slate-800 border-slate-700 text-slate-500 cursor-not-allowed' : 'bg-orange-600 border-orange-500 text-white hover:bg-orange-500 shadow-[0_0_10px_rgba(234,88,12,0.3)]'}`}
           >
             Suivant <ChevronRight className="w-4 h-4" />
           </button>
         </div>
 
         {/* Porteurs de charge toggle */}
-        <div className="flex items-center gap-3">
-          <span className="text-slate-400 text-xs font-bold uppercase tracking-wider hidden sm:block">Porteurs :</span>
-          <div className="flex bg-slate-950 p-1.5 rounded-lg border border-slate-800 shadow-inner">
+        <div className="flex items-center gap-2">
+          <span className="text-slate-400 text-[11px] font-bold uppercase tracking-wider hidden sm:block">Porteurs :</span>
+          <div className="flex bg-slate-950 p-1 rounded-lg border border-slate-800 shadow-inner">
             <button 
               onClick={() => setChargeSign(-1)}
-              className={`px-6 py-2 text-sm font-black rounded-md transition-all ${chargeSign === -1 ? "bg-blue-600 text-white shadow-[0_0_10px_rgba(37,99,235,0.4)]" : "text-slate-500 hover:text-slate-300"}`}
+              className={`px-4 py-1.5 text-sm font-black rounded-md transition-all ${chargeSign === -1 ? "bg-blue-600 text-white shadow-[0_0_10px_rgba(37,99,235,0.4)]" : "text-slate-500 hover:text-slate-300"}`}
             >
               Électrons (<LatexMath math="q < 0" />)
             </button>
             <button 
               onClick={() => setChargeSign(1)}
-              className={`px-6 py-2 text-sm font-black rounded-md transition-all ${chargeSign === 1 ? "bg-red-600 text-white shadow-[0_0_10px_rgba(220,38,38,0.4)]" : "text-slate-500 hover:text-slate-300"}`}
+              className={`px-4 py-1.5 text-sm font-black rounded-md transition-all ${chargeSign === 1 ? "bg-red-600 text-white shadow-[0_0_10px_rgba(220,38,38,0.4)]" : "text-slate-500 hover:text-slate-300"}`}
             >
               Trous (<LatexMath math="q > 0" />)
             </button>
