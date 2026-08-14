@@ -8,74 +8,72 @@ import LatexMath from "@/components/ui/LatexMath";
 const FluxVisualization = ({ angle }: { angle: number }) => {
   const surfaceRef = useRef<THREE.Mesh>(null);
   const normalRef = useRef<THREE.Group>(null);
-  const fieldGroupRef = useRef<THREE.Group>(null);
   
-  // Create moving field particles/arrows
-  const numParticles = 40;
-  const particles = useMemo(() => {
-    const arr = [];
-    for(let i = 0; i < numParticles; i++) {
-      // distribute inside a cylinder of radius 1.5
-      const r = Math.sqrt(Math.random()) * 1.4;
-      const theta = Math.random() * 2 * Math.PI;
-      const x = r * Math.cos(theta);
-      const z = r * Math.sin(theta);
-      const y = (Math.random() - 0.5) * 6; // range from -3 to 3
-      arr.push({ x, y, z, speed: 1.5 + Math.random() * 1.5 });
-    }
-    return arr;
-  }, []);
+  const rad = (angle * Math.PI) / 180;
 
-  const particlesRef = useRef<THREE.InstancedMesh>(null);
-  const dummy = useMemo(() => new THREE.Object3D(), []);
-
-  useFrame((state, delta) => {
-    // Rotate surface
+  useFrame(() => {
+    // Rotate surface and normal
     if (surfaceRef.current && normalRef.current) {
-      const rad = (angle * Math.PI) / 180;
       surfaceRef.current.rotation.x = rad;
       normalRef.current.rotation.x = rad;
     }
+  });
 
-    // Move field lines/particles upwards
-    if (particlesRef.current) {
-      particles.forEach((p, i) => {
-        p.y += p.speed * delta;
-        if (p.y > 3) p.y = -3; // wrap around
+  // Calculate arc points for the angle
+  const arcPoints = useMemo(() => {
+    const points = [];
+    const radius = 0.6; // Arc radius
+    const segments = 20;
+    for (let i = 0; i <= segments; i++) {
+      const theta = (i / segments) * rad;
+      points.push(new THREE.Vector3(0, radius * Math.cos(theta), radius * Math.sin(theta)));
+    }
+    return points;
+  }, [rad]);
+
+  // Generate static field lines
+  const fieldLines = useMemo(() => {
+    const lines = [];
+    const spacing = 0.8;
+    for (let x = -1.5; x <= 1.5; x += spacing) {
+      for (let z = -1.5; z <= 1.5; z += spacing) {
+        // Skip the center to leave space for the main vectors
+        if (Math.abs(x) < 0.5 && Math.abs(z) < 0.5) continue;
+        // Only place lines within the circle radius ~1.5
+        if (Math.sqrt(x*x + z*z) > 1.4) continue;
         
-        dummy.position.set(p.x, p.y, p.z);
-        // Make arrows point up
-        dummy.rotation.set(0, 0, 0); 
-        dummy.scale.set(1, 1, 1);
-        dummy.updateMatrix();
-        if (particlesRef.current && typeof particlesRef.current.setMatrixAt === 'function') {
-          particlesRef.current.setMatrixAt(i, dummy.matrix);
-        }
-      });
-      if (particlesRef.current && particlesRef.current.instanceMatrix) {
-        particlesRef.current.instanceMatrix.needsUpdate = true;
+        lines.push({ x, z });
       }
     }
-  });
+    return lines;
+  }, []);
 
   return (
     <group>
-      {/* Moving Magnetic Field */}
-      <group ref={fieldGroupRef}>
-        {/* Transparent cylinder representing the bounds of the field */}
-        <mesh position={[0, 0, 0]}>
-          <cylinderGeometry args={[1.5, 1.5, 6, 32, 1, true]} />
-          <meshBasicMaterial color="#3b82f6" transparent opacity={0.05} side={THREE.DoubleSide} />
+      {/* Magnetic Field B (Global) */}
+      <group>
+        {fieldLines.map((pos, i) => (
+          <group key={i} position={[pos.x, 0, pos.z]}>
+            {/* Field Line */}
+            <Line points={[[0, -2.5, 0], [0, 2.5, 0]]} color="#3b82f6" lineWidth={1} opacity={0.3} transparent />
+            {/* Arrow Head */}
+            <mesh position={[0, 1.5, 0]}>
+              <coneGeometry args={[0.04, 0.15, 8]} />
+              <meshBasicMaterial color="#3b82f6" opacity={0.4} transparent />
+            </mesh>
+          </group>
+        ))}
+      </group>
+
+      {/* Main Central B Vector */}
+      <group>
+        <Line points={[[0, 0, 0], [0, 2, 0]]} color="#0ea5e9" lineWidth={4} />
+        <mesh position={[0, 2, 0]}>
+          <coneGeometry args={[0.08, 0.25, 16]} />
+          <meshBasicMaterial color="#0ea5e9" />
         </mesh>
-        
-        <instancedMesh ref={particlesRef} args={[null, null, numParticles] as any}>
-          {/* Create an arrow-like shape for the field */}
-          <coneGeometry args={[0.06, 0.4, 8]} />
-          <meshBasicMaterial color="#3b82f6" transparent opacity={0.7} />
-        </instancedMesh>
-        
-        <Html position={[1.8, 1.5, 0]} center>
-          <div className="text-blue-400 font-bold drop-shadow-md bg-slate-900/50 px-1 rounded">
+        <Html position={[0, 2.3, 0]} center>
+          <div className="text-cyan-400 font-bold drop-shadow-md text-sm">
             <LatexMath math="\vec{B}" />
           </div>
         </Html>
@@ -83,34 +81,48 @@ const FluxVisualization = ({ angle }: { angle: number }) => {
 
       {/* Surface S (Disque 3D) */}
       <mesh ref={surfaceRef} receiveShadow castShadow>
-        <cylinderGeometry args={[1.5, 1.5, 0.02, 64]} />
+        <cylinderGeometry args={[1.5, 1.5, 0.04, 64]} />
         <meshPhysicalMaterial 
           color="#f59e0b" 
           transparent 
-          opacity={0.5} 
-          metalness={0.3}
+          opacity={0.6} 
+          metalness={0.4}
           roughness={0.2}
+          emissive="#d97706"
+          emissiveIntensity={0.1}
         />
         {/* Border of the disk */}
         <lineSegments>
-          <edgesGeometry args={[new THREE.CylinderGeometry(1.5, 1.5, 0.02, 64)]} />
-          <lineBasicMaterial color="#d97706" linewidth={2} />
+          <edgesGeometry args={[new THREE.CylinderGeometry(1.5, 1.5, 0.04, 64)]} />
+          <lineBasicMaterial color="#fbbf24" linewidth={2} />
         </lineSegments>
       </mesh>
 
       {/* Normal vector n */}
       <group ref={normalRef}>
-        <Line points={[[0, 0, 0], [0, 1.5, 0]]} color="#ef4444" lineWidth={3} />
-        <mesh position={[0, 1.5, 0]}>
-          <coneGeometry args={[0.08, 0.2, 16]} />
+        <Line points={[[0, 0, 0], [0, 1.8, 0]]} color="#ef4444" lineWidth={4} />
+        <mesh position={[0, 1.8, 0]}>
+          <coneGeometry args={[0.08, 0.25, 16]} />
           <meshBasicMaterial color="#ef4444" />
         </mesh>
-        <Html position={[0, 1.7, 0]} center>
-          <div className="text-red-400 font-bold drop-shadow-md bg-slate-900/50 px-1 rounded">
+        <Html position={[0, 2.1, 0]} center>
+          <div className="text-red-400 font-bold drop-shadow-md text-sm">
             <LatexMath math="\vec{n}" />
           </div>
         </Html>
       </group>
+
+      {/* Angle Arc */}
+      {angle > 0 && (
+        <group>
+          <Line points={arcPoints} color="#a855f7" lineWidth={3} />
+          <Html position={[0, 0.7 * Math.cos(rad / 2), 0.7 * Math.sin(rad / 2)]} center>
+            <div className="text-purple-400 font-bold text-xs bg-slate-900/60 px-1.5 py-0.5 rounded-full backdrop-blur-sm border border-purple-500/30">
+              <LatexMath math="\alpha" />
+            </div>
+          </Html>
+        </group>
+      )}
     </group>
   );
 };
@@ -123,39 +135,42 @@ export default function MagneticFlux3DCanvas() {
 
   return (
     <div className="w-full flex flex-col gap-3 font-sans max-w-[500px] mx-auto">
-      <div className="w-full h-[220px] sm:h-[260px] bg-slate-950 rounded-xl overflow-hidden relative shadow-inner border border-slate-800">
+      <div className="w-full h-[220px] sm:h-[260px] bg-gradient-to-b from-slate-900 to-slate-950 rounded-xl overflow-hidden relative shadow-[0_0_15px_rgba(59,130,246,0.15)] border border-slate-800">
         
         {/* HUD */}
-        <div className="absolute top-2 left-2 sm:top-3 sm:left-3 z-10 pointer-events-auto bg-slate-900/70 backdrop-blur-sm border border-slate-700/50 p-2 rounded-lg shadow-md">
-          <div className="text-[9px] sm:text-[10px] text-slate-300 mb-0.5">
-            Angle <LatexMath math="\alpha" /> : <span className="font-bold text-white">{angle}°</span>
+        <div className="absolute top-2 left-2 sm:top-3 sm:left-3 z-10 pointer-events-auto bg-slate-900/80 backdrop-blur-md border border-slate-700/50 p-2 sm:p-2.5 rounded-lg shadow-lg">
+          <div className="text-[10px] sm:text-xs text-slate-300 mb-1 flex items-center gap-1.5">
+            Angle <span className="text-purple-400 font-semibold"><LatexMath math="\alpha" /></span> : <span className="font-bold text-white">{angle}°</span>
           </div>
-          <div className="text-[10px] sm:text-xs font-bold text-amber-400">
-            Flux <LatexMath math="\Phi" /> ≈ {fluxSign}{fluxPercentage}% du max
+          <div className="text-xs sm:text-sm font-bold text-amber-400 flex items-center gap-1.5">
+            Flux <LatexMath math="\Phi" /> ≈ {fluxSign}{fluxPercentage}%
           </div>
         </div>
 
-        <Canvas camera={{ position: [3, 2, 4], fov: 45 }} className="w-full h-full cursor-grab active:cursor-grabbing">
+        <Canvas camera={{ position: [3.5, 2.5, 4.5], fov: 45 }} className="w-full h-full cursor-grab active:cursor-grabbing">
           <color attach="background" args={["#020617"]} />
-          <ambientLight intensity={0.6} />
-          <spotLight position={[5, 5, 5]} intensity={1} penumbra={1} castShadow />
+          <ambientLight intensity={0.7} />
+          <spotLight position={[5, 8, 5]} intensity={1.5} penumbra={1} castShadow />
+          <pointLight position={[-3, -3, -3]} intensity={0.5} color="#3b82f6" />
           <Environment preset="city" />
           
           <OrbitControls enableZoom={true} maxPolarAngle={Math.PI / 1.5} />
           
-          <group position={[0, 0, 0]}>
+          <group position={[0, -0.5, 0]}>
             <FluxVisualization angle={angle} />
           </group>
 
-          <ContactShadows resolution={256} scale={10} blur={2} opacity={0.4} far={5} color="#000000" position={[0, -2.5, 0]} />
+          <ContactShadows resolution={256} scale={10} blur={2} opacity={0.5} far={5} color="#000000" position={[0, -3, 0]} />
         </Canvas>
       </div>
 
       {/* Controls */}
-      <div className="w-full bg-slate-900/40 border border-slate-800/50 p-3 rounded-xl flex flex-col gap-2">
-        <label className="text-[10px] sm:text-xs text-slate-300 font-medium flex justify-between">
-          <span>Rotation du disque (Angle <LatexMath math="\alpha" />)</span>
-          <span className="text-cyan-400 font-mono">{angle}°</span>
+      <div className="w-full bg-slate-900/60 border border-slate-800/80 p-3 sm:p-4 rounded-xl flex flex-col gap-3 shadow-sm backdrop-blur-sm">
+        <label className="text-[10px] sm:text-xs text-slate-300 font-medium flex justify-between items-center">
+          <span className="flex items-center gap-1.5">
+            Inclinaison de la surface (Angle <span className="text-purple-400"><LatexMath math="\alpha" /></span>)
+          </span>
+          <span className="text-purple-400 font-mono bg-purple-500/10 px-2 py-0.5 rounded">{angle}°</span>
         </label>
         <input 
           type="range" 
@@ -163,7 +178,7 @@ export default function MagneticFlux3DCanvas() {
           max="180" 
           value={angle} 
           onChange={(e) => setAngle(Number(e.target.value))}
-          className="w-full accent-cyan-500 h-1 sm:h-1.5"
+          className="w-full accent-purple-500 h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer"
         />
       </div>
     </div>
