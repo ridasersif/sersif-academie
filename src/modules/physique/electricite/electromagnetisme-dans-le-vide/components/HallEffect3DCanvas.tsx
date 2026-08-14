@@ -51,7 +51,7 @@ function DimensionLine({ start, end, label, color = "#94a3b8", offset = [0,0,0] 
       <mesh position={start}><sphereGeometry args={[0.03]} /><meshBasicMaterial color={color}/></mesh>
       <mesh position={end}><sphereGeometry args={[0.03]} /><meshBasicMaterial color={color}/></mesh>
       <Html position={[mid.x + offset[0], mid.y + offset[1], mid.z + offset[2]]} center>
-        <div className="text-xs font-bold px-1.5 py-0.5 rounded bg-slate-900/80 border border-slate-700" style={{ color }}>
+        <div className="text-sm font-black" style={{ color, textShadow: '0px 0px 6px rgba(0,0,0,0.9), 0px 0px 2px rgba(0,0,0,0.8)' }}>
           <LatexMath math={label} />
         </div>
       </Html>
@@ -164,7 +164,7 @@ const HeroCharge = ({ chargeSign, phase }: { chargeSign: number, phase: number }
         <meshStandardMaterial color={color} emissive={color} emissiveIntensity={0.5} />
       </mesh>
       <Html position={[0, 0.25, 0]} center zIndexRange={[100, 0]}>
-        <div className="font-bold text-[12px] bg-black/80 px-2 py-0.5 rounded text-white border border-slate-700 shadow-md whitespace-nowrap">
+        <div className="font-black text-[13px] text-white whitespace-nowrap" style={{ textShadow: '0px 0px 6px rgba(0,0,0,1), 0px 0px 3px rgba(0,0,0,0.8)' }}>
           {mathLabel}
         </div>
       </Html>
@@ -280,7 +280,7 @@ export default function HallEffect3DCanvas() {
         </div>
 
         {/* RIGHT PANEL: 3D CANVAS */}
-        <div className="w-full lg:w-[60%] h-[350px] lg:h-[450px] relative">
+        <div className="w-full lg:w-[60%] h-[300px] lg:h-[380px] relative">
           <Canvas frameloop={inView ? "always" : "demand"} camera={{ position: [5, 6, 8], fov: 35 }} className="w-full h-full">
             <color attach="background" args={["#020617"]} />
             <ambientLight intensity={0.8} />
