@@ -614,14 +614,35 @@ export default function Chap3PotentielDipole() {
 
           <CollapsibleStep step={4} title="Calcul de A par intégration de rot(A) = B" color="purple">
             <p className="text-[11px] text-muted-foreground leading-relaxed mb-3">
-              <strong>Question 4 :</strong> Retrouver l'expression de <LatexMath math="\vec{A}" /> en intégrant directement l'équation différentielle issue de <LatexMath math="\vec{B} = \vec{\text{rot}}(\vec{A})" />.
+              <strong>Question 4 :</strong> Retrouver l'expression de <LatexMath math="\vec{A}" /> en détaillant le calcul du rotationnel <LatexMath math="\vec{B} = \vec{\text{rot}}(\vec{A})" />.
             </p>
             <div className="border-t border-purple-500/10 pt-4 text-[11px]">
-              <p className="mb-2">En coordonnées cylindriques, sachant que <LatexMath math="\vec{A} = A(r) \vec{u}_\theta" />, le rotationnel se simplifie en :</p>
-              <div className="flex justify-center bg-black/20 p-2 rounded mb-3">
+              <p className="mb-2">Le rotationnel est défini formellement par le produit vectoriel avec l'opérateur Nabla : <LatexMath math="\vec{\text{rot}}(\vec{A}) = \vec{\nabla} \wedge \vec{A}" />.</p>
+              <p className="mb-2">En coordonnées cylindriques, ce produit vectoriel se calcule à l'aide du déterminant symbolique suivant :</p>
+              
+              <div className="flex justify-center bg-black/20 p-2 rounded mb-3 overflow-x-auto">
+                <LatexMath math="\vec{\text{rot}}(\vec{A}) = \frac{1}{r} \begin{vmatrix} \vec{u}_r & r\vec{u}_\theta & \vec{u}_z \\ \frac{\partial}{\partial r} & \frac{\partial}{\partial \theta} & \frac{\partial}{\partial z} \\ A_r & rA_\theta & A_z \end{vmatrix}" />
+              </div>
+              
+              <p className="mb-2">D'après la Q1, on sait que <LatexMath math="\vec{A} = A(r) \vec{u}_\theta" />. Donc <LatexMath math="A_r = 0" />, <LatexMath math="A_z = 0" /> et <LatexMath math="A_\theta = A(r)" />. On remplace dans le déterminant :</p>
+              
+              <div className="flex justify-center bg-black/20 p-2 rounded mb-3 overflow-x-auto">
+                <LatexMath math="\vec{\text{rot}}(\vec{A}) = \frac{1}{r} \begin{vmatrix} \vec{u}_r & r\vec{u}_\theta & \vec{u}_z \\ \frac{\partial}{\partial r} & \frac{\partial}{\partial \theta} & \frac{\partial}{\partial z} \\ 0 & rA(r) & 0 \end{vmatrix}" />
+              </div>
+              
+              <p className="mb-2">On développe ce déterminant selon la première ligne :</p>
+              <ul className="list-disc list-inside space-y-1 mb-4 opacity-90">
+                <li>Composante selon <LatexMath math="\vec{u}_r" /> : <LatexMath math="\frac{\partial}{\partial \theta}(0) - \frac{\partial}{\partial z}(rA(r)) = 0 - 0 = 0" /></li>
+                <li>Composante selon <LatexMath math="\vec{u}_\theta" /> : <LatexMath math="-\left( \frac{\partial}{\partial r}(0) - \frac{\partial}{\partial z}(0) \right) = 0" /></li>
+                <li>Composante selon <LatexMath math="\vec{u}_z" /> : <LatexMath math="\frac{\partial}{\partial r}(rA(r)) - \frac{\partial}{\partial \theta}(0) = \frac{\partial (r A(r))}{\partial r}" /></li>
+              </ul>
+              
+              <p className="mb-4">En multipliant par le <LatexMath math="\frac{1}{r}" /> en facteur devant le déterminant, on obtient finalement l'équation différentielle :</p>
+              <div className="flex justify-center bg-purple-500/10 border border-purple-500/30 p-2 rounded mb-4">
                 <LatexMath math="\vec{\text{rot}}(\vec{A}) = \frac{1}{r}\frac{\partial (r A(r))}{\partial r} \vec{u}_z = \vec{B}" />
               </div>
 
+              <p className="mb-2 font-bold text-purple-300">Intégration pas à pas :</p>
               <ul className="list-disc list-inside space-y-4">
                 <li>
                   <strong>À l'intérieur (<LatexMath math="r < R" />) :</strong> <LatexMath math="\vec{B} = \mu_0 n I \vec{u}_z" />
