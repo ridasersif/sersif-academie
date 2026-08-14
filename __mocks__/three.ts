@@ -22,6 +22,10 @@ class QuaternionMock {
   setFromUnitVectors() { return this; }
 }
 
+class EulerMock {
+  setFromQuaternion() { return this; }
+}
+
 class Object3DMock {
   position = new Vector3Mock();
   scale = new Vector3Mock();
@@ -40,12 +44,15 @@ class CubicBezierCurve3Mock {
 const THREE = {
   Vector3: Vector3Mock,
   Quaternion: QuaternionMock,
+  Euler: EulerMock,
   Object3D: Object3DMock,
   CubicBezierCurve3: CubicBezierCurve3Mock,
   Color: jest.fn().mockImplementation(() => ({})),
-  Group: jest.fn().mockImplementation(() => ({})),
-  Mesh: jest.fn().mockImplementation(() => ({})),
+  Group: jest.fn().mockImplementation(() => ({ position: new Vector3Mock(), rotation: new EulerMock() })),
+  Mesh: jest.fn().mockImplementation(() => ({ position: new Vector3Mock(), rotation: new EulerMock() })),
+  InstancedMesh: jest.fn().mockImplementation(() => ({ position: new Vector3Mock(), rotation: new EulerMock(), setMatrixAt: jest.fn() })),
   BufferGeometry: jest.fn().mockImplementation(() => ({})),
+  CircleGeometry: jest.fn().mockImplementation(() => ({})),
   MeshStandardMaterial: jest.fn().mockImplementation(() => ({})),
   ArrowHelper: jest.fn().mockImplementation(() => ({})),
   CylinderGeometry: jest.fn().mockImplementation(() => ({})),
@@ -64,10 +71,14 @@ const THREE = {
 export default THREE;
 export const Vector3 = THREE.Vector3;
 export const Quaternion = THREE.Quaternion;
+export const Euler = THREE.Euler;
 export const Object3D = THREE.Object3D;
 export const CubicBezierCurve3 = THREE.CubicBezierCurve3;
 export const Color = THREE.Color;
 export const Group = THREE.Group;
 export const Mesh = THREE.Mesh;
+export const InstancedMesh = THREE.InstancedMesh;
 export const BufferGeometry = THREE.BufferGeometry;
+export const CircleGeometry = THREE.CircleGeometry;
+export const CylinderGeometry = THREE.CylinderGeometry;
 export const MathUtils = THREE.MathUtils;

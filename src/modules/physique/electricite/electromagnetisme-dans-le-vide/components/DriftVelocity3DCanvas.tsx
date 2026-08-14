@@ -29,11 +29,15 @@ const Lattice = () => {
             (z - gridSize / 2 + 0.5) * spacing
           );
           dummy.updateMatrix();
-          mesh.current.setMatrixAt(i++, dummy.matrix);
+          if (mesh.current && typeof mesh.current.setMatrixAt === 'function') {
+            mesh.current.setMatrixAt(i++, dummy.matrix);
+          }
         }
       }
     }
-    mesh.current.instanceMatrix.needsUpdate = true;
+    if (mesh.current && mesh.current.instanceMatrix) {
+      mesh.current.instanceMatrix.needsUpdate = true;
+    }
   }, []);
 
   return (
@@ -84,9 +88,13 @@ const Electrons = ({ hasField = false, isPlaying = true }) => {
       
       dummy.position.copy(e.pos);
       dummy.updateMatrix();
-      mesh.current!.setMatrixAt(i, dummy.matrix);
+      if (mesh.current && typeof mesh.current.setMatrixAt === 'function') {
+        mesh.current.setMatrixAt(i, dummy.matrix);
+      }
     });
-    mesh.current.instanceMatrix.needsUpdate = true;
+    if (mesh.current && mesh.current.instanceMatrix) {
+      mesh.current.instanceMatrix.needsUpdate = true;
+    }
   });
 
   return (

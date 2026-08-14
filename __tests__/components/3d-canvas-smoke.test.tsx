@@ -43,6 +43,27 @@ describe("3D Canvas Components — Smoke Tests (avec mocks WebGL)", () => {
     }).not.toThrow();
   });
 
+  it("LaplaceRail3DCanvas doit se rendre sans erreur", () => {
+    expect(() => {
+      const LaplaceRail = require("@/modules/physique/electricite/electromagnetisme-dans-le-vide/components/LaplaceRail3DCanvas").default;
+      render(React.createElement(LaplaceRail));
+    }).not.toThrow();
+  });
+
+  it("LaplaceRails3DCanvas doit se rendre sans erreur", () => {
+    expect(() => {
+      const LaplaceRails = require("@/modules/physique/electricite/electromagnetisme-dans-le-vide/components/LaplaceRails3DCanvas").default;
+      render(React.createElement(LaplaceRails));
+    }).not.toThrow();
+  });
+
+  it("MagneticFlux3DCanvas doit se rendre sans erreur", () => {
+    expect(() => {
+      const MagneticFlux = require("@/modules/physique/electricite/electromagnetisme-dans-le-vide/components/MagneticFlux3DCanvas").default;
+      render(React.createElement(MagneticFlux));
+    }).not.toThrow();
+  });
+
   it("BiotSavart3DCanvas doit se rendre sans erreur", () => {
     expect(() => {
       render(React.createElement(BiotSavart3DCanvas));
