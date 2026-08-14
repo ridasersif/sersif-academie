@@ -72,7 +72,7 @@ const Plate = () => (
   </group>
 );
 
-const AccumulatedCharges = ({ chargeSign, phase }: { chargeSign: number, phase: number }) => {
+const AccumulatedCharges = ({ chargeSign, phase, bMagnitude }: { chargeSign: number, phase: number, bMagnitude: number }) => {
   if (phase < 2) return null;
 
   const signsFront = chargeSign > 0 ? "+" : "-";
@@ -80,17 +80,19 @@ const AccumulatedCharges = ({ chargeSign, phase }: { chargeSign: number, phase: 
   const colorFront = chargeSign > 0 ? "#ef4444" : "#3b82f6";
   const colorBack = chargeSign > 0 ? "#3b82f6" : "#ef4444";
 
-  const arr = [-1.5, -0.5, 0.5, 1.5];
+  const numCharges = Math.max(1, Math.floor(bMagnitude * 4));
+  const spacing = 3 / Math.max(1, numCharges - 1);
+  const arr = Array.from({ length: numCharges }, (_, i) => numCharges === 1 ? 0 : -1.5 + i * spacing);
   
   return (
     <group>
       {arr.map((x, i) => (
         <group key={i}>
-          {/* Front Edge (+Z) */}
+          {/* Front Edge (+Z / -y in user space) */}
           <Html position={[x, 0.15, 1.0]} center zIndexRange={[100, 0]}>
             <div className="font-bold text-xl drop-shadow-lg" style={{ color: colorFront }}>{signsFront}</div>
           </Html>
-          {/* Back Edge (-Z) */}
+          {/* Back Edge (-Z / +y in user space) */}
           <Html position={[x, 0.15, -1.0]} center zIndexRange={[100, 0]}>
             <div className="font-bold text-xl drop-shadow-lg" style={{ color: colorBack }}>{signsBack}</div>
           </Html>
@@ -151,7 +153,7 @@ const Carriers = ({ chargeSign, phase }: { chargeSign: number, phase: number }) 
   );
 };
 
-const HeroCharge = ({ chargeSign, phase }: { chargeSign: number, phase: number }) => {
+const HeroCharge = ({ chargeSign, phase, bMagnitude }: { chargeSign: number, phase: number, bMagnitude: number }) => {
   const color = chargeSign > 0 ? "#ef4444" : "#3b82f6";
   // Text instead of LaTeX to avoid wrapping issues in small boxes
   const mathLabel = chargeSign > 0 ? "q > 0" : "q < 0";
@@ -173,10 +175,10 @@ const HeroCharge = ({ chargeSign, phase }: { chargeSign: number, phase: number }
       <Arrow start={new THREE.Vector3(0,0,0)} dir={new THREE.Vector3(vDir,0,0)} length={0.8} color={color} thickness={0.02} label="\vec{v}" labelOffset={[0, 0.2, 0]} opacity={1} />
       
       {/* Force Magnétique Fm */}
-      <Arrow start={new THREE.Vector3(0,0,0)} dir={new THREE.Vector3(0,0,1)} length={1.2} color="#f97316" thickness={0.02} label="\vec{F}_m" labelOffset={[0, 0.15, 0]} opacity={phase >= 1 ? 1 : 0} />
+      <Arrow start={new THREE.Vector3(0,0,0)} dir={new THREE.Vector3(0,0,1)} length={0.5 + bMagnitude * 0.5} color="#f97316" thickness={0.02} label="\vec{F}_m" labelOffset={[0, 0.15, 0]} opacity={phase >= 1 ? 1 : 0} />
       
       {/* Force Electrique Fe */}
-      <Arrow start={new THREE.Vector3(0,0,0)} dir={new THREE.Vector3(0,0,-1)} length={1.2} color="#eab308" thickness={0.02} label="\vec{F}_e" labelOffset={[0, 0.15, 0]} opacity={phase === 2 ? 1 : 0} />
+      <Arrow start={new THREE.Vector3(0,0,0)} dir={new THREE.Vector3(0,0,-1)} length={0.5 + bMagnitude * 0.5} color="#eab308" thickness={0.02} label="\vec{F}_e" labelOffset={[0, 0.15, 0]} opacity={phase === 2 ? 1 : 0} />
     </group>
   );
 };
@@ -205,9 +207,58 @@ const AxesBase = () => {
   );
 };
 
+// Voltmètre 3D avec fils
+const Voltmeter = ({ phase, chargeSign, bMagnitude }: any) => {
+  const value = phase === 2 ? (chargeSign * bMagnitude * 2.5).toFixed(2) : "0.00";
+  const displayColor = phase === 2 ? (chargeSign > 0 ? "#ef4444" : "#3b82f6") : "#475569";
+  const glowOpacity = phase === 2 ? 1 : 0.2;
+  
+  return (
+    <group position={[2.5, -0.2, 2.5]}>
+      {/* Voltmeter Body */}
+      <Box args={[1.5, 0.8, 0.4]} position={[0, 0, 0]}>
+        <meshStandardMaterial color="#1e293b" metalness={0.6} roughness={0.4} />
+      </Box>
+      <Box args={[1.3, 0.5, 0.45]} position={[0, 0.1, 0]}>
+        <meshBasicMaterial color="#0f172a" />
+      </Box>
+      
+      {/* Screen */}
+      <Html position={[0, 0.1, 0.23]} center transform distanceFactor={5}>
+        <div className="bg-black/90 px-4 py-2 rounded-lg border border-slate-700/80 flex flex-col items-center justify-center min-w-[140px] shadow-inner">
+          <span className="text-[9px] text-slate-500 font-bold mb-0.5 uppercase tracking-widest flex items-center gap-1">
+            <span className={`w-1.5 h-1.5 rounded-full`} style={{ backgroundColor: displayColor, opacity: glowOpacity, boxShadow: `0 0 5px ${displayColor}` }}></span>
+            Voltmètre
+          </span>
+          <span className="font-mono text-3xl font-black" style={{ color: displayColor, textShadow: `0 0 12px ${displayColor}`, opacity: glowOpacity }}>
+            {value} <span className="text-sm">mV</span>
+          </span>
+        </div>
+      </Html>
+      
+      {/* Terminals */}
+      <mesh position={[-0.4, -0.2, 0.2]}>
+        <cylinderGeometry args={[0.06, 0.06, 0.1]} />
+        <meshStandardMaterial color="#ef4444" />
+      </mesh>
+      <mesh position={[0.4, -0.2, 0.2]}>
+        <cylinderGeometry args={[0.06, 0.06, 0.1]} />
+        <meshStandardMaterial color="#3b82f6" />
+      </mesh>
+      
+      {/* Wires connecting to the plate */}
+      {/* Wire from Front edge (y-) to Voltmeter Red Terminal */}
+      <Line points={[[-0.4, -0.2, 0.2], [-0.8, -0.2, 0.5], [-2.5, -0.2, 0.5], [-2.5, 0.15, -1.5]]} color="#ef4444" lineWidth={3} opacity={0.8} transparent />
+      {/* Wire from Back edge (y+) to Voltmeter Blue Terminal */}
+      <Line points={[[0.4, -0.2, 0.2], [0.8, -0.2, 0.5], [1.2, -0.2, 0.5], [1.2, -0.2, -2.5], [0, 0.15, -3.5]]} color="#3b82f6" lineWidth={3} opacity={0.8} transparent />
+    </group>
+  );
+};
+
 export default function HallEffect3DCanvas() {
   const [chargeSign, setChargeSign] = useState(-1);
   const [phase, setPhase] = useState(0); 
+  const [bMagnitude, setBMagnitude] = useState(1);
   
   const canvasContainerRef = useRef<HTMLDivElement>(null);
   const [inView, setInView] = useState(false);
@@ -316,12 +367,12 @@ export default function HallEffect3DCanvas() {
 
             <group position={[0, -0.2, 0]}>
               <Plate />
-              <AccumulatedCharges chargeSign={chargeSign} phase={phase} />
+              <AccumulatedCharges chargeSign={chargeSign} phase={phase} bMagnitude={bMagnitude} />
               <Carriers chargeSign={chargeSign} phase={phase} />
-              <HeroCharge chargeSign={chargeSign} phase={phase} />
+              <HeroCharge chargeSign={chargeSign} phase={phase} bMagnitude={bMagnitude} />
               
               {/* Champ Magnétique B */}
-              <Arrow start={new THREE.Vector3(0, -1.5, 0)} dir={new THREE.Vector3(0,1,0)} length={3} color="#10b981" thickness={0.02} label="\vec{B}" labelOffset={[0.2, 0, 0]} opacity={phase >= 1 ? 1 : 0} />
+              <Arrow start={new THREE.Vector3(0, -1.5, 0)} dir={new THREE.Vector3(0,1,0)} length={1.5 + bMagnitude} color="#10b981" thickness={0.02 + bMagnitude * 0.01} label="\vec{B}" labelOffset={[0.2, 0, 0]} opacity={phase >= 1 ? 1 : 0} />
 
               {/* Courant I */}
               <Arrow start={new THREE.Vector3(-3.5, 0.2, 0)} dir={new THREE.Vector3(1,0,0)} length={1.5} color="#facc15" thickness={0.04} label="\vec{I}" labelOffset={[0, 0.3, 0]} opacity={1} />
@@ -330,13 +381,15 @@ export default function HallEffect3DCanvas() {
               <Arrow 
                 start={new THREE.Vector3(0, 1.2, chargeSign * 1.2)} 
                 dir={new THREE.Vector3(0, 0, chargeSign * -1)} 
-                length={2.4} 
+                length={1.5 + bMagnitude} 
                 color="#a855f7" 
                 thickness={0.015} 
                 label="\vec{E}_H" 
                 labelOffset={[0, 0.2, 0]} 
                 opacity={phase === 2 ? 1 : (phase === 1 ? 0.3 : 0)}
               />
+              
+              <Voltmeter phase={phase} chargeSign={chargeSign} bMagnitude={bMagnitude} />
             </group>
             
             <ContactShadows resolution={256} scale={15} blur={2.5} opacity={0.8} far={5} color="#000000" position={[0, -1.5, 0]} />
@@ -367,22 +420,43 @@ export default function HallEffect3DCanvas() {
           </button>
         </div>
 
-        {/* Porteurs de charge toggle */}
-        <div className="flex items-center gap-2">
-          <span className="text-slate-400 text-[11px] font-bold uppercase tracking-wider hidden sm:block">Porteurs :</span>
-          <div className="flex bg-slate-950 p-1 rounded-lg border border-slate-800 shadow-inner">
-            <button 
-              onClick={() => setChargeSign(-1)}
-              className={`px-4 py-1.5 text-sm font-black rounded-md transition-all ${chargeSign === -1 ? "bg-blue-600 text-white shadow-[0_0_10px_rgba(37,99,235,0.4)]" : "text-slate-500 hover:text-slate-300"}`}
-            >
-              Électrons (<LatexMath math="q < 0" />)
-            </button>
-            <button 
-              onClick={() => setChargeSign(1)}
-              className={`px-4 py-1.5 text-sm font-black rounded-md transition-all ${chargeSign === 1 ? "bg-red-600 text-white shadow-[0_0_10px_rgba(220,38,38,0.4)]" : "text-slate-500 hover:text-slate-300"}`}
-            >
-              Trous (<LatexMath math="q > 0" />)
-            </button>
+        {/* Controls block (Porteurs + B-field slider) */}
+        <div className="flex items-center gap-6">
+          {/* Slider pour B */}
+          <div className="flex flex-col gap-1 w-[120px] sm:w-[150px]">
+            <label className="text-[10px] sm:text-xs text-slate-400 font-bold flex justify-between uppercase tracking-wider">
+              <span>Champ <LatexMath math="\vec{B}" /></span>
+              <span className="text-emerald-400">{bMagnitude.toFixed(1)} T</span>
+            </label>
+            <input 
+              type="range" 
+              min="0.5" 
+              max="2.5" 
+              step="0.1" 
+              value={bMagnitude} 
+              onChange={(e) => setBMagnitude(parseFloat(e.target.value))} 
+              disabled={phase === 0}
+              className={`accent-emerald-500 cursor-pointer ${phase === 0 ? 'opacity-30' : 'opacity-100'}`}
+            />
+          </div>
+
+          {/* Porteurs de charge toggle */}
+          <div className="flex items-center gap-2">
+            <span className="text-slate-400 text-[11px] font-bold uppercase tracking-wider hidden sm:block">Porteurs :</span>
+            <div className="flex bg-slate-950 p-1 rounded-lg border border-slate-800 shadow-inner">
+              <button 
+                onClick={() => setChargeSign(-1)}
+                className={`px-3 sm:px-4 py-1.5 text-xs sm:text-sm font-black rounded-md transition-all ${chargeSign === -1 ? "bg-blue-600 text-white shadow-[0_0_10px_rgba(37,99,235,0.4)]" : "text-slate-500 hover:text-slate-300"}`}
+              >
+                Électrons (<LatexMath math="q < 0" />)
+              </button>
+              <button 
+                onClick={() => setChargeSign(1)}
+                className={`px-3 sm:px-4 py-1.5 text-xs sm:text-sm font-black rounded-md transition-all ${chargeSign === 1 ? "bg-red-600 text-white shadow-[0_0_10px_rgba(220,38,38,0.4)]" : "text-slate-500 hover:text-slate-300"}`}
+              >
+                Trous (<LatexMath math="q > 0" />)
+              </button>
+            </div>
           </div>
         </div>
         
