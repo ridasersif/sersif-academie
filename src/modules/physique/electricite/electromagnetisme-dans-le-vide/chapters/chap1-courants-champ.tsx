@@ -23,6 +23,59 @@ import LatexMath from "@/components/ui/LatexMath";
 
 import { ChevronDown, ChevronUp, BookOpen, Zap, Layers, Compass, Magnet, Wind, Activity } from "lucide-react";
 
+/* ── Collapsible Panel Component ── */
+function CollapsibleStep({
+  step,
+  title,
+  color,
+  children,
+  defaultOpen = false,
+}: {
+  step: number;
+  title: string;
+  color: string;
+  children: React.ReactNode;
+  defaultOpen?: boolean;
+}) {
+  const [open, setOpen] = useState(defaultOpen);
+  const colorMap: Record<string, { bg: string; border: string; text: string; dot: string }> = {
+    cyan: { bg: "bg-cyan-500/5", border: "border-cyan-500/20", text: "text-cyan-300", dot: "bg-cyan-500" },
+    emerald: { bg: "bg-emerald-500/5", border: "border-emerald-500/20", text: "text-emerald-300", dot: "bg-emerald-500" },
+    amber: { bg: "bg-amber-500/5", border: "border-amber-500/20", text: "text-amber-300", dot: "bg-amber-500" },
+    orange: { bg: "bg-orange-500/5", border: "border-orange-500/20", text: "text-orange-300", dot: "bg-orange-500" },
+    purple: { bg: "bg-purple-500/5", border: "border-purple-500/20", text: "text-purple-300", dot: "bg-purple-500" },
+  };
+  const c = colorMap[color] || colorMap.cyan;
+
+  return (
+    <div className={`rounded-xl ${c.bg} border ${c.border} overflow-hidden transition-all duration-300`}>
+      <button
+        onClick={() => setOpen(!open)}
+        className="w-full px-4 py-3 flex items-center gap-3 hover:bg-white/[0.02] transition-colors"
+      >
+        <div className={`w-7 h-7 rounded-full ${c.dot} flex items-center justify-center text-white text-xs font-black shrink-0 shadow-lg`}>
+          {step}
+        </div>
+        <span className={`text-xs sm:text-sm font-bold ${c.text} flex-1 text-left`}>{title}</span>
+        {open ? (
+          <ChevronUp className={`w-4 h-4 ${c.text} shrink-0`} />
+        ) : (
+          <ChevronDown className={`w-4 h-4 ${c.text} shrink-0`} />
+        )}
+      </button>
+      <div
+        className={`overflow-hidden transition-all duration-500 ease-in-out ${
+          open ? "max-h-[2000px] opacity-100" : "max-h-0 opacity-0"
+        }`}
+      >
+        <div className="px-4 pb-4 pt-1 space-y-3">
+          {children}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function Chap1CourantsChamp() {
   const [showContinuityProof, setShowContinuityProof] = useState(false);
 
@@ -267,64 +320,72 @@ export default function Chap1CourantsChamp() {
         </div>
 
         {/* Démonstration Rigoureuse Effet Hall */}
-        <div className="mb-6">
-          <details className="group border border-amber-500/30 bg-slate-950/50 rounded-xl overflow-hidden [&_summary::-webkit-details-marker]:hidden">
-            <summary className="flex items-center justify-between p-4 cursor-pointer select-none bg-amber-500/10 hover:bg-amber-500/20 transition-colors">
-              <div className="flex items-center gap-3">
-                <div className="bg-amber-500/20 p-1.5 rounded-lg text-amber-400">
-                  <Activity className="w-4 h-4" />
-                </div>
-                <span className="font-bold text-amber-400 text-sm">Démonstration Détaillée : Calcul de la Tension de Hall (<LatexMath math="U_H" />)</span>
-              </div>
-              <ChevronDown className="w-5 h-5 text-amber-400 group-open:rotate-180 transition-transform duration-300" />
-            </summary>
-            
-            <div className="p-5 border-t border-amber-500/20 text-sm text-slate-300 leading-relaxed space-y-4">
-              <p>Considérons un ruban conducteur de largeur <LatexMath math="a" /> (selon <LatexMath math="Oz" />) et d'épaisseur <LatexMath math="b" /> (selon <LatexMath math="Oy" />). Le courant <LatexMath math="I" /> circule selon <LatexMath math="+Ox" />. Le champ magnétique <LatexMath math="\vec{B}" /> est uniforme et dirigé selon <LatexMath math="+Oy" />.</p>
-              
-              <div className="bg-slate-900/50 p-4 rounded-lg border border-slate-700/50">
-                <h4 className="font-bold text-slate-200 mb-2">1. Vitesse de dérive et Vecteur Courant</h4>
-                <p className="mb-2">Le courant d'intensité <LatexMath math="I" /> est lié à la densité de porteurs <LatexMath math="n" />, leur charge <LatexMath math="q" /> et leur vitesse de dérive <LatexMath math="\vec{v} = v_x \vec{u}_x" />.</p>
-                <div className="flex flex-col gap-2 bg-black/30 p-3 rounded text-center overflow-x-auto">
-                  <LatexMath math="\vec{j} = n q \vec{v} \implies j_x = n q v_x" />
-                  <LatexMath math="I = \iint \vec{j} \cdot d\vec{S} = j_x (a \times b) = n q v_x (ab) \implies v_x = \frac{I}{n q a b}" />
-                </div>
-              </div>
-
-              <div className="bg-slate-900/50 p-4 rounded-lg border border-slate-700/50">
-                <h4 className="font-bold text-slate-200 mb-2">2. Équilibre des forces et Champ de Hall</h4>
-                <p className="mb-2">La force magnétique dévie les porteurs selon l'axe <LatexMath math="Oz" /> :</p>
-                <div className="flex flex-col gap-2 bg-black/30 p-3 rounded text-center overflow-x-auto mb-2">
-                  <LatexMath math="\vec{F}_m = q (\vec{v} \wedge \vec{B}) = q (v_x \vec{u}_x \wedge B \vec{u}_y) = q v_x B \vec{u}_z" />
-                </div>
-                <p className="mb-2">Les charges s'accumulent sur les bords <LatexMath math="z=0" /> et <LatexMath math="z=a" />, créant un champ de Hall <LatexMath math="\vec{E}_H = E_H \vec{u}_z" /> qui finit par compenser exactement la force magnétique en régime permanent :</p>
-                <div className="flex justify-center bg-black/30 p-3 rounded text-center overflow-x-auto">
-                  <LatexMath math="\vec{F}_{total} = \vec{0} \implies q \vec{E}_H + q v_x B \vec{u}_z = \vec{0} \implies E_H = -v_x B" />
-                </div>
-              </div>
-
-              <div className="bg-amber-900/20 p-4 rounded-lg border border-amber-500/30">
-                <h4 className="font-bold text-amber-300 mb-2">3. Tension de Hall et Constante de Hall (<LatexMath math="R_H" />)</h4>
-                <p className="mb-2">La tension de Hall <LatexMath math="U_H" /> mesurée transversalement sur la largeur <LatexMath math="a" /> est :</p>
-                <div className="flex flex-col gap-2 bg-black/40 p-3 rounded text-center overflow-x-auto mb-2 border border-amber-500/20">
-                  <LatexMath math="U_H = V(a) - V(0) = -\int_{0}^{a} E_H dz = -E_H a = v_x B a" />
-                </div>
-                <p className="mb-2">En remplaçant la vitesse <LatexMath math="v_x" /> par son expression en fonction du courant <LatexMath math="I" /> :</p>
-                <div className="flex flex-col gap-2 bg-black/40 p-3 rounded text-center overflow-x-auto mb-2 border border-amber-500/50 shadow-[0_0_15px_rgba(245,158,11,0.15)]">
-                  <LatexMath math="U_H = \left(\frac{I}{n q a b}\right) B a = \frac{I B}{n q b} = R_H \frac{I B}{b}" />
-                </div>
-                <p className="text-center mt-2 text-amber-200 font-bold">Où <LatexMath math="R_H = \frac{1}{nq}" /> est la constante de Hall du matériau.</p>
-              </div>
-
-            </div>
-          </details>
-        </div>
-
-        <div className="mb-8 rounded-2xl overflow-hidden border border-slate-800 relative ring-1 ring-slate-800 shadow-xl">
+        <div className="mb-4 rounded-2xl overflow-hidden border border-slate-800 relative ring-1 ring-slate-800 shadow-xl">
           <LazyMount height="400px" fallbackText="Chargement Effet Hall 3D...">
              <HallEffect3DCanvas />
           </LazyMount>
         </div>
+
+        {/* QUESTIONS DÉMONSTRATION EN FRANÇAIS */}
+        <div className="space-y-4">
+          
+          <CollapsibleStep step={1} title="1. Forces et Vitesse de dérive" color="amber" defaultOpen={true}>
+            <p className="text-sm font-bold text-slate-200 mb-2">Question : Écrire l'expression de la force magnétique <LatexMath math="\vec{F}_m" /> appliquée sur un porteur de charge <LatexMath math="q" /> animé d'une vitesse de dérive <LatexMath math="\vec{v}" />, puis extraire l'expression de la vitesse <LatexMath math="v" /> en fonction de <LatexMath math="I, n, q, a, b" />.</p>
+            <div className="text-xs text-slate-300 leading-relaxed bg-black/20 p-4 rounded-lg border border-slate-700/50">
+              <p className="mb-2 text-amber-200">Réponse :</p>
+              <p>Expression de la force :</p>
+              <div className="flex justify-center bg-black/40 p-2 rounded my-2"><LatexMath math="\vec{F}_m = q(\vec{v} \wedge \vec{B})" /></div>
+              <p>Expression de la vitesse à partir de l'intensité du courant <LatexMath math="I = j \cdot S = (n \cdot q \cdot v) \cdot (a \cdot b)" /> :</p>
+              <div className="flex justify-center bg-black/40 p-2 rounded my-2"><LatexMath math="v = \frac{I}{n \cdot q \cdot a \cdot b}" /></div>
+            </div>
+          </CollapsibleStep>
+
+          <CollapsibleStep step={2} title="2. Champ de Hall en équilibre" color="cyan">
+            <p className="text-sm font-bold text-slate-200 mb-2">Question : En régime permanent, écrire la condition d'équilibre et déduire l'expression du champ de Hall <LatexMath math="\vec{E}_H" /> en fonction de <LatexMath math="\vec{v}" /> et <LatexMath math="\vec{B}" />.</p>
+            <div className="text-xs text-slate-300 leading-relaxed bg-black/20 p-4 rounded-lg border border-slate-700/50">
+              <p className="mb-2 text-cyan-200">Réponse :</p>
+              <p>Condition d'équilibre : <LatexMath math="\vec{F}_e + \vec{F}_m = \vec{0} \implies q\vec{E}_H + q(\vec{v} \wedge \vec{B}) = \vec{0}" /></p>
+              <p>En simplifiant par <LatexMath math="q" /> :</p>
+              <div className="flex justify-center bg-black/40 p-2 rounded my-2"><LatexMath math="\vec{E}_H = -(\vec{v} \wedge \vec{B})" /></div>
+            </div>
+          </CollapsibleStep>
+
+          <CollapsibleStep step={3} title="3. Tension et Constante de Hall" color="emerald">
+            <p className="text-sm font-bold text-slate-200 mb-2">Question : Déduire l'expression de la tension de Hall <LatexMath math="U_H = V_1 - V_2" /> apparaissant entre les faces de la plaque, et définir la constante de Hall <LatexMath math="R_H" />.</p>
+            <div className="text-xs text-slate-300 leading-relaxed bg-black/20 p-4 rounded-lg border border-slate-700/50">
+              <p className="mb-2 text-emerald-200">Réponse :</p>
+              <p>On sait que <LatexMath math="U_H = E_H \cdot a = v \cdot B \cdot a" />.</p>
+              <p>En remplaçant <LatexMath math="v" /> :</p>
+              <div className="flex justify-center bg-black/40 p-2 rounded my-2"><LatexMath math="U_H = \left(\frac{I}{n \cdot q \cdot a \cdot b}\right) \cdot B \cdot a = \frac{I \cdot B}{n \cdot q \cdot b}" /></div>
+              <p>On pose la constante de Hall : <LatexMath math="R_H = \frac{1}{n \cdot q}" />, l'équation devient alors :</p>
+              <div className="flex justify-center bg-black/40 p-2 rounded my-2"><LatexMath math="U_H = R_H \cdot \frac{I \cdot B}{b}" /></div>
+            </div>
+          </CollapsibleStep>
+
+          <CollapsibleStep step={4} title="4. Détermination de la nature des porteurs" color="purple">
+            <p className="text-sm font-bold text-slate-200 mb-2">Question : On applique un courant <LatexMath math="I > 0" /> et un champ <LatexMath math="B > 0" />. Sachant que la mesure expérimentale donne une tension <LatexMath math="U_H > 0" />, déterminer la nature des porteurs de charge (s'agit-il d'électrons <LatexMath math="q = -e" /> ou de trous <LatexMath math="q = +e" />) ?</p>
+            <div className="text-xs text-slate-300 leading-relaxed bg-black/20 p-4 rounded-lg border border-slate-700/50">
+              <p className="mb-2 text-purple-200">Réponse :</p>
+              <p>On s'appuie sur l'expression de la constante de Hall <LatexMath math="R_H = \frac{1}{n \cdot q}" /> :</p>
+              <ul className="list-disc list-inside space-y-2 mt-2 ml-4">
+                <li>Si <LatexMath math="U_H > 0" />, cela implique que <LatexMath math="R_H > 0 \implies q > 0" /> (les porteurs sont des trous positifs / matériau de type P).</li>
+                <li>Si <LatexMath math="U_H < 0" />, cela implique que <LatexMath math="R_H < 0 \implies q < 0" /> (les porteurs sont des électrons / matériau de type N).</li>
+              </ul>
+            </div>
+          </CollapsibleStep>
+
+          <CollapsibleStep step={5} title="5. Application Numérique" color="orange">
+            <p className="text-sm font-bold text-slate-200 mb-2">Question : Calculer la concentration des porteurs de charge <LatexMath math="n" /> sachant que : <LatexMath math="I = 10 \text{ mA}" />, <LatexMath math="B = 0.5 \text{ T}" />, <LatexMath math="b = 1 \text{ mm}" />, et <LatexMath math="U_H = 2 \text{ mV}" />.</p>
+            <div className="text-xs text-slate-300 leading-relaxed bg-black/20 p-4 rounded-lg border border-slate-700/50">
+              <p className="mb-2 text-orange-200">Réponse :</p>
+              <p>À partir de l'expression <LatexMath math="U_H = \frac{I \cdot B}{n \cdot e \cdot b}" />, on extrait <LatexMath math="n" /> :</p>
+              <div className="flex justify-center bg-black/40 p-2 rounded my-2"><LatexMath math="n = \frac{I \cdot B}{e \cdot b \cdot U_H}" /></div>
+              <p>Application numérique directe en convertissant les unités dans le système international (SI).</p>
+            </div>
+          </CollapsibleStep>
+          
+        </div>
+
       </section>
 
       {/* PARTIE 4: CHAMP MAGNETOSTATIQUE ET SYMETRIES */}
