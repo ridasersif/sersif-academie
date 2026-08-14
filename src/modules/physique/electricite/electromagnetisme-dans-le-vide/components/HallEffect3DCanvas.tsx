@@ -66,9 +66,9 @@ const Plate = () => (
       <meshPhysicalMaterial color="#60a5fa" transmission={0.5} thickness={0.5} roughness={0.1} metalness={0.2} transparent opacity={0.4} side={THREE.DoubleSide} />
     </Box>
     {/* Dimensions */}
-    <DimensionLine start={new THREE.Vector3(-2, 0.15, 1.2)} end={new THREE.Vector3(2, 0.15, 1.2)} label="L" offset={[0, 0, 0.15]} />
-    <DimensionLine start={new THREE.Vector3(2.3, 0.15, -1)} end={new THREE.Vector3(2.3, 0.15, 1)} label="a" offset={[0.15, 0, 0]} />
-    <DimensionLine start={new THREE.Vector3(2.3, -0.1, 1.2)} end={new THREE.Vector3(2.3, 0.1, 1.2)} label="b" offset={[0.15, 0, 0.15]} />
+    <DimensionLine start={new THREE.Vector3(-2, 0.15, 1.2)} end={new THREE.Vector3(2, 0.15, 1.2)} label="L" offset={[0, 0, 0.3]} />
+    <DimensionLine start={new THREE.Vector3(2.3, 0.15, -1)} end={new THREE.Vector3(2.3, 0.15, 1)} label="a" offset={[0.3, 0, 0]} />
+    <DimensionLine start={new THREE.Vector3(2.3, -0.1, 1.2)} end={new THREE.Vector3(2.3, 0.1, 1.2)} label="b" offset={[0.3, 0, 0.3]} />
   </group>
 );
 
@@ -163,7 +163,7 @@ const HeroCharge = ({ chargeSign, phase }: { chargeSign: number, phase: number }
         <sphereGeometry args={[0.15, 32, 32]} />
         <meshStandardMaterial color={color} emissive={color} emissiveIntensity={0.5} />
       </mesh>
-      <Html position={[0, 0.25, 0]} center zIndexRange={[100, 0]}>
+      <Html position={[0, 0.35, 0]} center zIndexRange={[100, 0]}>
         <div className="font-black text-[13px] text-white whitespace-nowrap" style={{ textShadow: '0px 0px 6px rgba(0,0,0,1), 0px 0px 3px rgba(0,0,0,0.8)' }}>
           {mathLabel}
         </div>
