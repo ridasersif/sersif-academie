@@ -33,41 +33,207 @@ function Arrow({ start, dir, length, color, thickness = 0.06 }: any) {
   );
 }
 
-// Modern Semi-Circle Dashboard Gauge
-function ModernGauge({ value, max, label, unit, color, glowColor }: { value: number, max: number, label: string, unit: string, color: string, glowColor: string }) {
+// Ultra-Premium Circular Dial Gauge (Compteur Rond Lumineux avec Aiguille Réaliste)
+function ModernGauge({ 
+  value, 
+  max, 
+  label, 
+  unit, 
+  color, 
+  glowColor 
+}: { 
+  value: number; 
+  max: number; 
+  label: string; 
+  unit: string; 
+  color: string; 
+  glowColor: string; 
+}) {
   const percentage = Math.min(1, Math.max(0, value / max));
-  const radius = 40;
+  const startAngle = -125;
+  const sweepAngle = 250;
+  const currentAngle = startAngle + percentage * sweepAngle;
+
+  const size = 150;
+  const cx = size / 2;
+  const cy = size / 2;
+  const radius = 52;
   const circumference = 2 * Math.PI * radius;
-  const strokeDashoffset = circumference - (percentage * circumference) / 2; // Half circle is / 2
+  const arcLength = (sweepAngle / 360) * circumference;
+  const progressLength = percentage * arcLength;
+
+  // Generate tick marks & graduations
+  const totalTicks = 10;
+  const ticks = Array.from({ length: totalTicks + 1 }, (_, i) => {
+    const tickAngle = startAngle + (i / totalTicks) * sweepAngle;
+    const rad = ((tickAngle - 90) * Math.PI) / 180;
+    const isMajor = i % 2 === 0;
+    const rIn = isMajor ? radius - 9 : radius - 5;
+    const rOut = radius + 2;
+    const val = (i / totalTicks) * max;
+
+    return {
+      x1: cx + rIn * Math.cos(rad),
+      y1: cy + rIn * Math.sin(rad),
+      x2: cx + rOut * Math.cos(rad),
+      y2: cy + rOut * Math.sin(rad),
+      isMajor,
+      val: val < 10 ? val.toFixed(1) : Math.round(val),
+      tx: cx + (radius - 17) * Math.cos(rad),
+      ty: cy + (radius - 17) * Math.sin(rad),
+    };
+  });
 
   return (
-    <div className="flex flex-col items-center bg-slate-900/80 backdrop-blur-xl p-4 rounded-2xl border border-slate-700 shadow-2xl relative overflow-hidden" style={{ width: '160px' }}>
-      {/* Background Glow */}
-      <div className="absolute inset-0 opacity-20 pointer-events-none" style={{ background: `radial-gradient(circle at bottom, ${color}, transparent)` }} />
-      
-      <div className="text-xs font-black tracking-widest text-slate-300 mb-2 z-10 pointer-events-none">{label}</div>
-      
-      {/* SVG Arc */}
-      <div className="relative w-24 h-12 overflow-hidden mb-2 z-10">
-        <svg className="w-24 h-24 absolute top-0 left-0" viewBox="0 0 100 100">
-          {/* Background Arc */}
-          <circle cx="50" cy="50" r={radius} fill="none" stroke="#334155" strokeWidth="8" strokeDasharray={`${circumference/2} ${circumference}`} strokeDashoffset={circumference} transform="rotate(180 50 50)" />
-          {/* Progress Arc */}
-          <circle cx="50" cy="50" r={radius} fill="none" stroke={color} strokeWidth="8" strokeDasharray={`${circumference/2} ${circumference}`} strokeDashoffset={strokeDashoffset} transform="rotate(180 50 50)" style={{ transition: 'stroke-dashoffset 0.1s linear', filter: `drop-shadow(0 0 6px ${glowColor})` }} strokeLinecap="round" />
-        </svg>
-        {/* Needle */}
-        <div 
-          className="absolute bottom-0 left-1/2 w-1 h-10 origin-bottom rounded-full transition-transform duration-100 z-20"
-          style={{ transform: `translate(-50%, 0) rotate(${-90 + percentage * 180}deg)`, backgroundColor: '#f8fafc', boxShadow: '0 0 5px rgba(255,255,255,0.8)' }}
+    <div 
+      className="relative flex flex-col items-center justify-center rounded-full select-none pointer-events-none"
+      style={{ 
+        width: `${size}px`, 
+        height: `${size}px`,
+        background: 'radial-gradient(circle at 35% 30%, #1e293b 0%, #0f172a 60%, #020617 100%)',
+        boxShadow: `0 0 30px rgba(0,0,0,0.9), 0 0 20px ${glowColor}, inset 0 2px 4px rgba(255,255,255,0.2), inset 0 -4px 10px rgba(0,0,0,0.9)`,
+        border: '3px solid #334155'
+      }}
+    >
+      {/* Outer Glow Ring */}
+      <div 
+        className="absolute inset-1 rounded-full border border-slate-700/50" 
+        style={{ boxShadow: `inset 0 0 14px ${glowColor}` }} 
+      />
+
+      {/* SVG Dial */}
+      <svg className="absolute inset-0 w-full h-full" viewBox={`0 0 ${size} ${size}`}>
+        <defs>
+          <linearGradient id={`grad-${label}`} x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#ffffff" stopOpacity="0.9" />
+            <stop offset="100%" stopColor={color} stopOpacity="1" />
+          </linearGradient>
+          <filter id={`glow-${label}`} x="-20%" y="-20%" width="140%" height="140%">
+            <feGaussianBlur stdDeviation="2.5" result="blur" />
+            <feComposite in="SourceGraphic" in2="blur" operator="over" />
+          </filter>
+        </defs>
+
+        {/* Background Track Arc */}
+        <circle
+          cx={cx}
+          cy={cy}
+          r={radius}
+          fill="none"
+          stroke="#1e293b"
+          strokeWidth="6"
+          strokeDasharray={`${arcLength} ${circumference}`}
+          strokeDashoffset={0}
+          transform={`rotate(${startAngle - 90} ${cx} ${cy})`}
+          strokeLinecap="round"
+        />
+
+        {/* Illuminated Progress Arc */}
+        <circle
+          cx={cx}
+          cy={cy}
+          r={radius}
+          fill="none"
+          stroke={`url(#grad-${label})`}
+          strokeWidth="6"
+          strokeDasharray={`${progressLength} ${circumference}`}
+          strokeDashoffset={0}
+          transform={`rotate(${startAngle - 90} ${cx} ${cy})`}
+          strokeLinecap="round"
+          filter={`url(#glow-${label})`}
+          style={{ transition: 'stroke-dasharray 0.08s ease-out' }}
+        />
+
+        {/* Ticks & Numbers */}
+        {ticks.map((t, idx) => (
+          <g key={idx}>
+            <line
+              x1={t.x1}
+              y1={t.y1}
+              x2={t.x2}
+              y2={t.y2}
+              stroke={t.isMajor ? '#cbd5e1' : '#475569'}
+              strokeWidth={t.isMajor ? 2 : 1}
+              strokeLinecap="round"
+            />
+            {t.isMajor && (
+              <text
+                x={t.tx}
+                y={t.ty}
+                fill="#94a3b8"
+                fontSize="7"
+                fontWeight="bold"
+                textAnchor="middle"
+                dominantBaseline="central"
+                fontFamily="sans-serif"
+              >
+                {t.val}
+              </text>
+            )}
+          </g>
+        ))}
+
+        {/* Dial Title / Label */}
+        <text
+          x={cx}
+          y={cy - 20}
+          fill="#f8fafc"
+          fontSize="9"
+          fontWeight="900"
+          letterSpacing="1.5"
+          textAnchor="middle"
+          style={{ textShadow: `0 0 10px ${color}` }}
         >
-          <div className="absolute -bottom-1.5 -left-1 w-3 h-3 rounded-full bg-white shadow-md border-2 border-slate-800" />
-        </div>
-      </div>
-      
-      {/* Value Display */}
-      <div className="flex items-end gap-1 z-10 pointer-events-none">
-        <span className="text-2xl font-black text-white" style={{ textShadow: `0 0 15px ${glowColor}` }}>{value.toFixed(2)}</span>
-        <span className="text-xs font-bold text-slate-400 mb-1">{unit}</span>
+          {label}
+        </text>
+
+        {/* Needle Line (Smooth Rotating Group) */}
+        <g 
+          style={{ 
+            transform: `rotate(${currentAngle}deg)`, 
+            transformOrigin: `${cx}px ${cy}px`,
+            transition: 'transform 0.08s cubic-bezier(0.2, 0, 0.2, 1)' 
+          }}
+        >
+          {/* Needle Shadow */}
+          <polygon
+            points={`${cx - 2.5},${cy + 8} ${cx + 2.5},${cy + 8} ${cx},${cy - radius + 4}`}
+            fill="rgba(0,0,0,0.5)"
+            transform="translate(2, 2)"
+          />
+          {/* Needle Body */}
+          <polygon
+            points={`${cx - 2},${cy + 6} ${cx + 2},${cy + 6} ${cx},${cy - radius + 4}`}
+            fill="#ffffff"
+          />
+          {/* Needle Tip Glowing Color */}
+          <polygon
+            points={`${cx - 1.2},${cy - radius/2} ${cx + 1.2},${cy - radius/2} ${cx},${cy - radius + 4}`}
+            fill={color}
+            style={{ filter: `drop-shadow(0 0 5px ${color})` }}
+          />
+          {/* Needle Counterweight Pin */}
+          <circle cx={cx} cy={cy + 8} r="3" fill="#64748b" />
+        </g>
+
+        {/* Center Pivot Hub (Metallic Cap) */}
+        <circle cx={cx} cy={cy} r="7" fill="#0f172a" stroke="#475569" strokeWidth="1.5" />
+        <circle cx={cx} cy={cy} r="4" fill="#e2e8f0" />
+        <circle cx={cx - 1} cy={cy - 1} r="1.5" fill="#ffffff" />
+      </svg>
+
+      {/* Digital Readout at the bottom */}
+      <div 
+        className="absolute bottom-4 flex items-baseline gap-1 px-2.5 py-0.5 rounded-md bg-slate-950/90 border border-slate-700/80 shadow-inner"
+        style={{ boxShadow: `0 0 10px rgba(0,0,0,0.6), inset 0 0 6px ${glowColor}` }}
+      >
+        <span 
+          className="text-base font-black tracking-tight" 
+          style={{ color: '#ffffff', textShadow: `0 0 8px ${color}` }}
+        >
+          {value.toFixed(2)}
+        </span>
+        <span className="text-[10px] font-bold text-slate-400">{unit}</span>
       </div>
     </div>
   );
@@ -354,10 +520,10 @@ function SimulationScene({ isPlaying, setIsPlaying, bMagnitude, resistance, rese
       </group>
 
       {/* Dashboards for Speed and Current (Responsive for Mobile) */}
-      <Html position={[6.5, 3.5, 0]} center transform sprite scale={0.9}>
-        <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 items-center">
-          <ModernGauge value={physicsData.v} max={15.0} label="VITESSE" unit="m/s" color="#06b6d4" glowColor="rgba(6,182,212,0.5)" />
-          <ModernGauge value={physicsData.I} max={1.5} label="COURANT" unit="A" color="#f59e0b" glowColor="rgba(245,158,11,0.5)" />
+      <Html position={[7.0, 3.2, 0]} center transform sprite scale={0.95}>
+        <div className="flex flex-col sm:flex-row gap-5 items-center">
+          <ModernGauge value={physicsData.v} max={15.0} label="VITESSE" unit="m/s" color="#06b6d4" glowColor="rgba(6,182,212,0.6)" />
+          <ModernGauge value={physicsData.I} max={1.5} label="COURANT" unit="A" color="#f59e0b" glowColor="rgba(245,158,11,0.6)" />
         </div>
       </Html>
 
