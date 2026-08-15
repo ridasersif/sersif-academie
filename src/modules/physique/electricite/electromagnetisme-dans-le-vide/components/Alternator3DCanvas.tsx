@@ -4,7 +4,7 @@ import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, ContactShadows } from "@react-three/drei";
 import * as THREE from "three";
 import LatexMath from "@/components/ui/LatexMath";
-import { Play, Pause, RotateCcw, Zap, Gauge, BatteryCharging, Wind } from "lucide-react";
+import { Play, Pause, RotateCcw, Zap, Gauge, BatteryCharging, Wind, Lightbulb, Move3d, Compass } from "lucide-react";
 
 // Real-time Mini Oscilloscope Waveform Component
 function LiveOscilloscope({ emf, eMax }: { emf: number; eMax: number }) {
@@ -49,12 +49,12 @@ function LiveOscilloscope({ emf, eMax }: { emf: number; eMax: number }) {
   );
 }
 
-// Curved Magnet Pole Shell (Aligned horizontally along Z)
+// Sleek Cylindrical Magnet Pole Shoes (Open arc so the rotor is always visible)
 function CylindricalPoleShell({
   type,
-  radius = 1.15,
-  length = 1.8,
-  arcDeg = 95,
+  radius = 1.12,
+  length = 1.6,
+  arcDeg = 75,
 }: {
   type: "N" | "S";
   radius?: number;
@@ -68,7 +68,7 @@ function CylindricalPoleShell({
 
   const geometry = useMemo(() => {
     const shape = new THREE.Shape();
-    const segments = 28;
+    const segments = 24;
     const rIn = radius;
     const rOut = radius + 0.1;
 
@@ -104,9 +104,10 @@ function CylindricalPoleShell({
     <mesh geometry={geometry} castShadow receiveShadow>
       <meshPhysicalMaterial
         color={mainColor}
-        roughness={0.3}
-        metalness={0.2}
-        clearcoat={0.3}
+        roughness={0.25}
+        metalness={0.3}
+        clearcoat={0.5}
+        clearcoatRoughness={0.2}
       />
     </mesh>
   );
@@ -115,27 +116,25 @@ function CylindricalPoleShell({
 // B-Field Lines: Strictly pointing from North Pole (Red, +X) to South Pole (Blue, -X)
 function FieldFluxLines() {
   const lines = useMemo(() => [
-    { y: 0.4, z: 0.35 },
-    { y: 0.4, z: -0.35 },
-    { y: 0.0, z: 0.45 },
-    { y: 0.0, z: -0.45 },
-    { y: -0.4, z: 0.35 },
-    { y: -0.4, z: -0.35 },
+    { y: 0.35, z: 0.3 },
+    { y: 0.35, z: -0.3 },
+    { y: 0.0, z: 0.4 },
+    { y: 0.0, z: -0.4 },
+    { y: -0.35, z: 0.3 },
+    { y: -0.35, z: -0.3 },
   ], []);
 
   return (
     <group>
       {lines.map((pos, idx) => (
         <group key={idx} position={[0, pos.y, pos.z]}>
-          {/* Cyan streamline from +X (North) to -X (South) */}
           <mesh rotation={[0, 0, Math.PI / 2]}>
             <cylinderGeometry args={[0.006, 0.006, 1.7, 8]} />
-            <meshBasicMaterial color="#38bdf8" transparent opacity={0.35} />
+            <meshBasicMaterial color="#38bdf8" transparent opacity={0.4} />
           </mesh>
-          {/* Arrowhead cone pointing strictly towards -X (South Pole) */}
           <mesh position={[-0.45, 0, 0]} rotation={[0, 0, Math.PI / 2]}>
             <coneGeometry args={[0.025, 0.1, 8]} />
-            <meshBasicMaterial color="#38bdf8" transparent opacity={0.85} />
+            <meshBasicMaterial color="#38bdf8" transparent opacity={0.9} />
           </mesh>
         </group>
       ))}
@@ -143,77 +142,137 @@ function FieldFluxLines() {
   );
 }
 
-// Wind Turbine Propeller / Blades (Mirwaha) mounted at the back of the shaft
+// Beautiful Realistic 3D Propeller Blade (Sleek aerodynamic curved blade)
+function ModernFanBlade({ angle }: { angle: number }) {
+  const bladeGeometry = useMemo(() => {
+    const shape = new THREE.Shape();
+    // Smooth aerodynamic paddle profile with curved trailing & leading edges
+    shape.moveTo(0, 0.04);
+    shape.bezierCurveTo(0.08, 0.15, 0.14, 0.45, 0.12, 0.85);
+    shape.quadraticCurveTo(0.08, 1.05, 0.0, 1.08);
+    shape.quadraticCurveTo(-0.06, 1.02, -0.07, 0.85);
+    shape.bezierCurveTo(-0.08, 0.45, -0.05, 0.15, 0, 0.04);
+    shape.closePath();
+
+    const extrudeSettings = {
+      depth: 0.02,
+      bevelEnabled: true,
+      bevelSegments: 3,
+      steps: 1,
+      bevelSize: 0.012,
+      bevelThickness: 0.012,
+    };
+
+    const geom = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+    geom.center();
+    geom.translate(0, 0.55, 0);
+    return geom;
+  }, []);
+
+  return (
+    <group rotation={[0, 0, angle]}>
+      {/* Blade Root Neck */}
+      <mesh position={[0, 0.12, 0]}>
+        <cylinderGeometry args={[0.025, 0.03, 0.1, 16]} />
+        <meshPhysicalMaterial color="#334155" metalness={0.9} roughness={0.2} />
+      </mesh>
+
+      {/* Aerodynamic Blade with Angle of Attack (Twist) */}
+      <group rotation={[0.3, 0, -0.05]}>
+        <mesh geometry={bladeGeometry} castShadow>
+          <meshPhysicalMaterial
+            color="#f8fafc"
+            metalness={0.3}
+            roughness={0.15}
+            clearcoat={1.0}
+            clearcoatRoughness={0.1}
+          />
+        </mesh>
+
+        {/* Glossy Cyan Wingtip Badge */}
+        <mesh position={[0, 1.02, 0]}>
+          <boxGeometry args={[0.08, 0.09, 0.024]} />
+          <meshPhysicalMaterial color="#0284c7" emissive="#38bdf8" emissiveIntensity={0.5} roughness={0.2} metalness={0.5} />
+        </mesh>
+      </group>
+    </group>
+  );
+}
+
+// Complete Turbine Fan Assembly (Modern 3-Blade Propeller with Chrome Bullet Spinner)
 function WindTurbinePropeller({ active }: { active: boolean }) {
   if (!active) return null;
 
   const blades = [0, (2 * Math.PI) / 3, (4 * Math.PI) / 3];
 
   return (
-    <group position={[0, 0, -1.25]}>
-      {/* Aerodynamic Nose Cone Hub */}
+    <group position={[0, 0, -1.3]}>
+      {/* Chrome Streamlined Bullet Spinner Hub */}
       <mesh rotation={[-Math.PI / 2, 0, 0]}>
-        <coneGeometry args={[0.12, 0.3, 20]} />
-        <meshPhysicalMaterial color="#0284c7" metalness={0.8} roughness={0.2} clearcoat={1} />
+        <coneGeometry args={[0.18, 0.42, 32]} />
+        <meshPhysicalMaterial
+          color="#0284c7"
+          metalness={0.9}
+          roughness={0.12}
+          clearcoat={1.0}
+          clearcoatRoughness={0.05}
+        />
       </mesh>
 
-      {/* 3 Aerodynamic Turbine Blades */}
+      {/* Chrome Central Hub Cap Base */}
+      <mesh position={[0, 0, 0.05]} rotation={[Math.PI / 2, 0, 0]}>
+        <cylinderGeometry args={[0.18, 0.18, 0.1, 32]} />
+        <meshPhysicalMaterial color="#1e293b" metalness={0.9} roughness={0.2} />
+      </mesh>
+
+      {/* 3 Aerodynamic Blades */}
       {blades.map((angle, idx) => (
-        <group key={idx} rotation={[0, 0, angle]}>
-          {/* Blade Root Connector */}
-          <mesh position={[0, 0.16, 0]}>
-            <cylinderGeometry args={[0.02, 0.02, 0.12, 12]} />
-            <meshPhysicalMaterial color="#94a3b8" metalness={0.9} roughness={0.2} />
-          </mesh>
-          {/* Aerodynamic Curved Blade */}
-          <mesh position={[0, 0.55, 0]} rotation={[0.2, 0, -0.05]}>
-            <boxGeometry args={[0.09, 0.72, 0.015]} />
-            <meshPhysicalMaterial
-              color="#f8fafc"
-              metalness={0.4}
-              roughness={0.2}
-              clearcoat={1}
-            />
-          </mesh>
-          {/* Cyan/Blue Aerodynamic Tip Accent */}
-          <mesh position={[0, 0.92, 0]} rotation={[0.2, 0, -0.05]}>
-            <boxGeometry args={[0.07, 0.06, 0.016]} />
-            <meshPhysicalMaterial color="#38bdf8" emissive="#38bdf8" emissiveIntensity={0.6} />
-          </mesh>
-        </group>
+        <ModernFanBlade key={idx} angle={angle} />
       ))}
     </group>
   );
 }
 
-// Animated Wind Flow Streamlines (Blowing into the Propeller)
-function AnimatedWindFlow({ active, speed }: { active: boolean; speed: number }) {
-  const count = 16;
-  const linesRef = useRef<THREE.Group>(null);
-  
-  const particles = useMemo(() => {
-    return Array.from({ length: count }).map((_, i) => {
-      const angle = (i / count) * Math.PI * 2;
-      const radius = 0.35 + (i % 3) * 0.28;
+// Pure Fluid Dynamic Wind Simulation (Moving Air Streaks + Travelling Gust Wavefronts)
+function WindTunnelAerodynamics({ active, speed }: { active: boolean; speed: number }) {
+  const streaksCount = 32;
+  const ringsCount = 4;
+
+  // 1. Dynamic Wind Streaks (Tapered glowing air filaments moving towards the turbine)
+  const streakConfig = useMemo(() => {
+    return Array.from({ length: streaksCount }).map((_, i) => {
+      const angle = (i / streaksCount) * Math.PI * 2 + (i * 0.45);
+      const rad = 0.15 + (i % 6) * 0.16;
       return {
-        x: Math.cos(angle) * radius,
-        y: Math.sin(angle) * radius,
-        z: -3.2 + ((i * 1.7) % 2.0),
-        len: 0.6 + Math.random() * 0.5,
-        opacity: 0.3 + Math.random() * 0.4,
+        angle,
+        radius: rad,
+        initZ: -4.8 + ((i * 1.4) % 3.8),
+        speedMult: 0.9 + (i % 5) * 0.15,
+        length: 0.65 + (i % 4) * 0.25,
+        thickness: 0.008 + (i % 3) * 0.003,
+        opacity: 0.4 + Math.random() * 0.45,
       };
     });
   }, []);
 
-  const [zOffsets, setZOffsets] = useState(() => particles.map((p) => p.z));
+  const [streakZ, setStreakZ] = useState(() => streakConfig.map((s) => s.initZ));
+  const [ringZ, setRingZ] = useState(() => [ -4.4, -3.4, -2.4, -1.4 ]);
 
   useFrame((_, delta) => {
     if (!active || speed === 0) return;
-    const move = Math.max(1.2, speed * 1.5) * delta;
-    setZOffsets((prev) =>
+    const rate = Math.max(2.2, speed * 2.5) * delta;
+
+    setStreakZ((prev) =>
+      prev.map((z, idx) => {
+        const nextZ = z + rate * streakConfig[idx].speedMult;
+        return nextZ > -0.8 ? -4.8 + (nextZ + 0.8) : nextZ;
+      })
+    );
+
+    setRingZ((prev) =>
       prev.map((z) => {
-        const nextZ = z + move;
-        return nextZ > -1.0 ? -3.4 + (nextZ + 1.0) : nextZ;
+        const nextZ = z + rate * 0.85;
+        return nextZ > -1.2 ? -4.8 + (nextZ + 1.2) : nextZ;
       })
     );
   });
@@ -221,21 +280,56 @@ function AnimatedWindFlow({ active, speed }: { active: boolean; speed: number })
   if (!active || speed === 0) return null;
 
   return (
-    <group ref={linesRef}>
-      {particles.map((p, idx) => (
-        <mesh
-          key={idx}
-          position={[p.x, p.y, zOffsets[idx]]}
-          rotation={[Math.PI / 2, 0, 0]}
-        >
-          <cylinderGeometry args={[0.008, 0.008, p.len, 6]} />
-          <meshBasicMaterial
-            color="#bae6fd"
-            transparent
-            opacity={p.opacity * Math.min(1, speed / 1.5)}
-          />
-        </mesh>
-      ))}
+    <group>
+      {/* 1. Flowing Wind Air Streaks (Moving towards the turbine) */}
+      {streakConfig.map((s, idx) => {
+        const z = streakZ[idx];
+        // Deflect slightly as air approaches blades
+        const flare = z > -1.6 ? 1.0 + (z + 1.6) * 0.5 : 1.0;
+        const x = Math.cos(s.angle) * s.radius * flare;
+        const y = Math.sin(s.angle) * s.radius * flare;
+
+        return (
+          <group key={idx} position={[x, y, z]}>
+            {/* Streamline Body */}
+            <mesh rotation={[Math.PI / 2, 0, 0]}>
+              <cylinderGeometry args={[s.thickness, s.thickness * 0.3, s.length, 8]} />
+              <meshBasicMaterial
+                color="#bae6fd"
+                transparent
+                opacity={s.opacity * Math.min(1, speed / 1.0)}
+              />
+            </mesh>
+
+            {/* Glowing Tip */}
+            <mesh position={[0, 0, s.length / 2]}>
+              <sphereGeometry args={[s.thickness * 1.6, 8, 8]} />
+              <meshBasicMaterial
+                color="#ffffff"
+                transparent
+                opacity={s.opacity * 1.3 * Math.min(1, speed / 1.0)}
+              />
+            </mesh>
+          </group>
+        );
+      })}
+
+      {/* 2. Travelling Wind Gust Wavefront Rings (Visualizing wind pressure pulse) */}
+      {ringZ.map((z, i) => {
+        const radius = 0.5 + (z + 4.8) * 0.12;
+        const fade = Math.sin(((z + 4.8) / 3.6) * Math.PI);
+
+        return (
+          <mesh key={i} position={[0, 0, z]}>
+            <torusGeometry args={[radius, 0.007, 8, 32]} />
+            <meshBasicMaterial
+              color="#38bdf8"
+              transparent
+              opacity={Math.max(0, fade * 0.35 * Math.min(1, speed / 1.0))}
+            />
+          </mesh>
+        );
+      })}
     </group>
   );
 }
@@ -273,7 +367,7 @@ function LaplaceForceVectors({ loopH, loopL, active }: { loopH: number; loopL: n
   );
 }
 
-// Circuit Component at Front: Load Resistor (Generator) OR DC Power Source (Motor)
+// Circuit Output Element: Light Bulb + Resistor (Generator) OR DC Power Supply (Motor)
 function FrontCircuitElement({
   mode,
   emf,
@@ -287,14 +381,13 @@ function FrontCircuitElement({
 }) {
   const isMotor = mode === "motor";
   const genIntensity = eMax > 0.05 ? Math.min(1, Math.abs(emf) / Math.max(eMax, 4.0)) : 0;
-  const isGenGlowing = genIntensity > 0.02;
-
+  const isBulbLit = genIntensity > 0.05;
   const motorActive = Math.abs(appliedVoltage) > 0.1;
 
   return (
     <group position={[0, 0, 1.85]}>
       {isMotor ? (
-        /* DC Power Source / Battery */
+        /* DC Power Supply Battery */
         <group>
           <mesh rotation={[0, 0, Math.PI / 2]}>
             <cylinderGeometry args={[0.08, 0.08, 0.3, 20]} />
@@ -306,7 +399,6 @@ function FrontCircuitElement({
               emissiveIntensity={motorActive ? 0.8 : 0}
             />
           </mesh>
-          {/* Glowing central battery band */}
           <mesh rotation={[0, 0, Math.PI / 2]}>
             <cylinderGeometry args={[0.082, 0.082, 0.1, 20]} />
             <meshPhysicalMaterial
@@ -315,71 +407,72 @@ function FrontCircuitElement({
               emissiveIntensity={motorActive ? 1.5 : 0.2}
             />
           </mesh>
-          {/* Negative Cap (-) Left */}
           <mesh position={[-0.15, 0, 0]} rotation={[0, 0, Math.PI / 2]}>
             <cylinderGeometry args={[0.085, 0.085, 0.03, 20]} />
             <meshPhysicalMaterial color="#3b82f6" metalness={0.8} roughness={0.2} />
           </mesh>
-          {/* Positive Cap (+) Right */}
           <mesh position={[0.15, 0, 0]} rotation={[0, 0, Math.PI / 2]}>
             <cylinderGeometry args={[0.085, 0.085, 0.03, 20]} />
             <meshPhysicalMaterial color="#ef4444" metalness={0.8} roughness={0.2} />
           </mesh>
           {motorActive && (
-            <pointLight position={[0, 0, 0]} intensity={1.8} distance={1.8} color="#38bdf8" />
+            <pointLight position={[0, 0, 0]} intensity={2.0} distance={2.0} color="#38bdf8" />
           )}
         </group>
       ) : (
-        /* Load Resistor R (Generator Mode) */
+        /* Generator Output: Load Resistor with Glowing Demonstration Bulb */
         <group>
+          {/* Resistor Base Block */}
           <mesh rotation={[0, 0, Math.PI / 2]}>
-            <cylinderGeometry args={[0.07, 0.07, 0.3, 20]} />
+            <cylinderGeometry args={[0.065, 0.065, 0.3, 20]} />
             <meshPhysicalMaterial
               color="#0284c7"
               roughness={0.3}
               metalness={0.4}
-              emissive={isGenGlowing ? "#38bdf8" : "#000000"}
-              emissiveIntensity={genIntensity * 1.8}
+              emissive={isBulbLit ? "#38bdf8" : "#000000"}
+              emissiveIntensity={genIntensity * 1.5}
             />
           </mesh>
           <mesh position={[-0.15, 0, 0]} rotation={[0, 0, Math.PI / 2]}>
-            <cylinderGeometry args={[0.075, 0.075, 0.03, 20]} />
+            <cylinderGeometry args={[0.07, 0.07, 0.03, 20]} />
             <meshPhysicalMaterial color="#e2e8f0" metalness={0.95} roughness={0.15} />
           </mesh>
           <mesh position={[0.15, 0, 0]} rotation={[0, 0, Math.PI / 2]}>
-            <cylinderGeometry args={[0.075, 0.075, 0.03, 20]} />
+            <cylinderGeometry args={[0.07, 0.07, 0.03, 20]} />
             <meshPhysicalMaterial color="#e2e8f0" metalness={0.95} roughness={0.15} />
           </mesh>
-          {isGenGlowing && (
-            <pointLight position={[0, 0, 0]} intensity={genIntensity * 2.5} distance={1.8} color="#38bdf8" />
-          )}
+
+          {/* Demonstration Glass Bulb */}
+          <group position={[0, 0.18, 0]}>
+            <mesh position={[0, -0.04, 0]}>
+              <cylinderGeometry args={[0.04, 0.04, 0.06, 16]} />
+              <meshPhysicalMaterial color="#f59e0b" metalness={0.9} roughness={0.2} />
+            </mesh>
+            <mesh position={[0, 0.06, 0]}>
+              <sphereGeometry args={[0.09, 20, 20]} />
+              <meshPhysicalMaterial
+                color={isBulbLit ? "#fef08a" : "#94a3b8"}
+                emissive={isBulbLit ? "#fbbf24" : "#000000"}
+                emissiveIntensity={genIntensity * 2.8}
+                transparent
+                opacity={0.85}
+                roughness={0.1}
+                clearcoat={1.0}
+              />
+            </mesh>
+            {isBulbLit && (
+              <pointLight
+                position={[0, 0.06, 0]}
+                intensity={genIntensity * 3.5}
+                distance={2.5}
+                color="#f59e0b"
+              />
+            )}
+          </group>
         </group>
       )}
     </group>
   );
-}
-
-// Cinematic Camera Controller with Smooth Intro Zoom Animation
-function CinematicCameraController({ resetTrigger }: { resetTrigger: number }) {
-  const targetPos = useMemo(() => new THREE.Vector3(3.6, 2.3, 4.4), []);
-  const isAnimating = useRef(true);
-
-  useEffect(() => {
-    isAnimating.current = true;
-  }, [resetTrigger]);
-
-  useFrame((state) => {
-    if (isAnimating.current) {
-      state.camera.position.lerp(targetPos, 0.04);
-      state.camera.lookAt(0, 0, 0.1);
-      if (state.camera.position.distanceTo(targetPos) < 0.02) {
-        state.camera.position.copy(targetPos);
-        isAnimating.current = false;
-      }
-    }
-  });
-
-  return null;
 }
 
 // 3D Scene Controller
@@ -431,7 +524,7 @@ const AlternatorVisualization = ({
   const currentEMax = mode === "generator" ? B0 * S * effectiveSpeed : appliedVoltage;
 
   // Instantaneous magnetic flux & induced EMF factor
-  const fluxFactor = Math.cos(thetaState); // in [-1, 1]
+  const fluxFactor = Math.cos(thetaState);
   const isFluxPositive = fluxFactor >= 0;
   const fluxIntensity = Math.abs(fluxFactor);
 
@@ -441,24 +534,24 @@ const AlternatorVisualization = ({
   return (
     <group position={[0, 0, 0]}>
       {/* 1. Curved Stator Pole Shells */}
-      <CylindricalPoleShell type="N" radius={1.05} length={1.6} arcDeg={95} />
-      <CylindricalPoleShell type="S" radius={1.05} length={1.6} arcDeg={95} />
+      <CylindricalPoleShell type="N" radius={1.08} length={1.5} arcDeg={80} />
+      <CylindricalPoleShell type="S" radius={1.08} length={1.5} arcDeg={80} />
 
       {/* 2. Magnetic Flux Streamlines */}
       <FieldFluxLines />
 
-      {/* 3. Central Stainless Steel Axle (Extends to back for propeller) */}
+      {/* 3. Central Stainless Steel Shaft */}
       <mesh position={[0, 0, 0.0]}>
-        <cylinderGeometry args={[0.025, 0.025, 3.2, 20]} />
-        <meshPhysicalMaterial color="#cbd5e1" metalness={0.95} roughness={0.15} />
+        <cylinderGeometry args={[0.024, 0.024, 3.4, 24]} />
+        <meshPhysicalMaterial color="#e2e8f0" metalness={0.95} roughness={0.12} />
       </mesh>
 
-      {/* 4. Animated Wind Airflow Particles (Generator / Wind Turbine Mode) */}
-      <AnimatedWindFlow active={mode === "generator"} speed={speed} />
+      {/* 4. Realistic Aerodynamic Wind Tunnel Streamlines & Particles (Generator Mode) */}
+      <WindTunnelAerodynamics active={mode === "generator"} speed={speed} />
 
       {/* 5. ROTATING ASSEMBLY (Propeller + Loop + Commutator Rings) */}
       <group ref={rotorRef} position={[0, 0, 0]}>
-        {/* Wind Turbine Propeller (Mirwaha) mounted at the back of the shaft */}
+        {/* Wind Turbine Propeller (Mirwaha) */}
         <WindTurbinePropeller active={mode === "generator"} />
 
         {/* Rectangular Copper Loop Wires */}
@@ -490,14 +583,14 @@ const AlternatorVisualization = ({
             metalness={0.3}
             side={THREE.DoubleSide}
             transparent
-            opacity={0.88}
+            opacity={0.85}
           />
         </mesh>
 
         {/* Laplace Force Vectors (Active in Motor Mode) */}
         <LaplaceForceVectors loopH={loopH} loopL={loopL} active={mode === "motor" && Math.abs(appliedVoltage) > 0.2} />
 
-        {/* CONTINUOUS ROTATING COPPER TERMINALS (Welded to Loop & Commutator) */}
+        {/* CONTINUOUS ROTATING COPPER TERMINALS */}
         <mesh position={[0, (loopH / 2 + commutatorRadius) / 2, loopL / 2]}>
           <cylinderGeometry args={[0.02, 0.02, loopH / 2 - commutatorRadius, 16]} />
           <meshPhysicalMaterial color="#d97706" metalness={0.9} roughness={0.15} clearcoat={1} />
@@ -541,7 +634,7 @@ const AlternatorVisualization = ({
         </group>
       </group>
 
-      {/* 6. STATIONARY CARBON BRUSHES & COLOR-CODED OUTPUT CIRCUIT */}
+      {/* 6. STATIONARY CARBON BRUSHES & OUTPUT WIRES */}
       <mesh position={[-(commutatorRadius + 0.035), 0, commutatorZ]}>
         <boxGeometry args={[0.07, 0.07, 0.12]} />
         <meshPhysicalMaterial color="#0f172a" metalness={0.8} roughness={0.5} />
@@ -580,7 +673,7 @@ const AlternatorVisualization = ({
         <meshPhysicalMaterial color="#ef4444" metalness={0.5} roughness={0.2} />
       </mesh>
 
-      {/* 7. Front Circuit Element (Resistor in Gen Mode / Battery in Motor Mode) */}
+      {/* 7. Front Circuit Output Element (Load Lamp in Gen Mode / Battery in Motor Mode) */}
       <FrontCircuitElement
         mode={mode}
         emf={currentEmf}
@@ -589,18 +682,17 @@ const AlternatorVisualization = ({
       />
 
       {/* Studio Floor Shadow */}
-      <ContactShadows position={[0, -1.2, 0]} opacity={0.35} scale={5} blur={2.0} far={2.5} />
+      <ContactShadows position={[0, -1.05, 0]} opacity={0.35} scale={6} blur={2.0} far={3.0} />
     </group>
   );
 };
 
 export default function Alternator3DCanvas() {
   const [mode, setMode] = useState<"generator" | "motor">("generator");
-  const [speed, setSpeed] = useState(2.5);             // wind speed / omega for Generator mode
+  const [speed, setSpeed] = useState(2.8);             // wind speed / omega for Generator mode
   const [appliedVoltage, setAppliedVoltage] = useState(6.0); // U (Volts) for Motor mode
   const [isPaused, setIsPaused] = useState(false);
-  const [simData, setSimData] = useState({ e: 0, eMax: 0, speed: 2.5 });
-  const [resetTrigger, setResetTrigger] = useState(0);
+  const [simData, setSimData] = useState({ e: 0, eMax: 0, speed: 2.8 });
 
   return (
     <div className="w-full flex flex-col gap-2.5 font-sans max-w-full select-none">
@@ -608,7 +700,7 @@ export default function Alternator3DCanvas() {
       <div className="flex items-center justify-between gap-2 bg-slate-900/90 border border-slate-800 p-1.5 rounded-xl shadow-md backdrop-blur-sm">
         <div className="grid grid-cols-2 w-full gap-1.5 sm:gap-2">
           <button
-            onClick={() => { setMode("generator"); setIsPaused(false); setResetTrigger((n) => n + 1); }}
+            onClick={() => { setMode("generator"); setIsPaused(false); }}
             className={`flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-lg text-xs font-bold transition-all shadow-sm border ${
               mode === "generator"
                 ? "bg-sky-500/20 text-sky-300 border-sky-500/60 shadow-sky-500/10"
@@ -620,7 +712,7 @@ export default function Alternator3DCanvas() {
           </button>
 
           <button
-            onClick={() => { setMode("motor"); setIsPaused(false); setResetTrigger((n) => n + 1); }}
+            onClick={() => { setMode("motor"); setIsPaused(false); }}
             className={`flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-lg text-xs font-bold transition-all shadow-sm border ${
               mode === "motor"
                 ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/60 shadow-emerald-500/10"
@@ -633,7 +725,7 @@ export default function Alternator3DCanvas() {
         </div>
       </div>
 
-      <div className="w-full h-[280px] sm:h-[330px] bg-gradient-to-b from-slate-900 via-slate-950 to-slate-950 rounded-2xl overflow-hidden relative shadow-[0_15px_40px_rgba(0,0,0,0.6)] border border-slate-800">
+      <div className="w-full h-[320px] sm:h-[370px] bg-gradient-to-b from-slate-900 via-slate-950 to-slate-950 rounded-2xl overflow-hidden relative shadow-[0_15px_40px_rgba(0,0,0,0.6)] border border-slate-800">
         
         {/* Top-Left Badge */}
         <div className="absolute top-2.5 left-2.5 z-10 flex items-center gap-1.5 pointer-events-none">
@@ -654,6 +746,12 @@ export default function Alternator3DCanvas() {
               </>
             )}
           </div>
+        </div>
+
+        {/* 3D Navigation Hint Pill */}
+        <div className="absolute bottom-2.5 left-2.5 z-10 pointer-events-none hidden sm:flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-slate-900/70 border border-slate-700/40 text-[9px] text-slate-400">
+          <Compass size={11} className="text-cyan-400" />
+          <span>Rotation 360° libre • Zoom molette</span>
         </div>
 
         {/* Top-Right HUD: Oscilloscope & Digital Voltmeter / Speedometer */}
@@ -696,17 +794,21 @@ export default function Alternator3DCanvas() {
           )}
         </div>
 
-        {/* 3D Canvas with clean view, wind turbine, and smooth intro zoom animation */}
-        <Canvas camera={{ position: [6.5, 4.5, 7.8], fov: 33 }} className="w-full h-full cursor-grab active:cursor-grabbing">
+        {/* 3D Canvas with 100% FREE ORBIT CONTROLS (Full 360° rotation, smooth zoom, pan) */}
+        <Canvas camera={{ position: [3.6, 1.8, 2.4], fov: 34 }} className="w-full h-full cursor-grab active:cursor-grabbing">
           <color attach="background" args={["#0b1120"]} />
-          <ambientLight intensity={0.9} />
-          <directionalLight position={[5, 7, 5]} intensity={1.8} castShadow />
-          <directionalLight position={[-5, -3, -3]} intensity={0.6} color="#38bdf8" />
-          <pointLight position={[2, 2, 3]} intensity={0.8} color="#f59e0b" />
+          <ambientLight intensity={0.95} />
+          <directionalLight position={[6, 8, 6]} intensity={2.0} castShadow />
+          <directionalLight position={[-6, 4, -4]} intensity={0.8} color="#38bdf8" />
+          <pointLight position={[2, 3, 3]} intensity={1.0} color="#f59e0b" />
           
-          <OrbitControls makeDefault maxPolarAngle={Math.PI / 2 - 0.05} minDistance={2.5} maxDistance={9} />
-          
-          <CinematicCameraController resetTrigger={resetTrigger} />
+          <OrbitControls 
+            makeDefault 
+            enableDamping 
+            dampingFactor={0.08}
+            minDistance={0.5} 
+            maxDistance={25}
+          />
 
           <AlternatorVisualization 
             mode={mode}
@@ -737,17 +839,21 @@ export default function Alternator3DCanvas() {
             </button>
             
             <button
-              onClick={() => { setSpeed(2.5); setAppliedVoltage(6.0); setIsPaused(false); setResetTrigger((n) => n + 1); }}
+              onClick={() => { setSpeed(2.8); setAppliedVoltage(6.0); setIsPaused(false); }}
               className="p-1 rounded-lg bg-slate-800 text-slate-300 border border-slate-700 hover:bg-slate-700 hover:text-white transition-all shadow-sm"
-              title="Réinitialiser paramètres & Animation caméra"
+              title="Réinitialiser paramètres"
             >
               <RotateCcw size={12} />
             </button>
           </div>
 
-          <div className="text-[10px] text-slate-400 font-mono">
+          <div className="text-[10px] text-slate-400 font-mono flex items-center gap-1">
             {mode === "generator" ? (
-              <>e₀ = <span className="text-cyan-400 font-bold">{(1 * 1.0 * (1.3 * 1.4) * speed).toFixed(2)} V</span></>
+              <>
+                <Lightbulb size={11} className="text-amber-400" />
+                <span>Puissance générée : </span>
+                <span className="text-cyan-400 font-bold">{(1 * 1.0 * (1.3 * 1.4) * speed).toFixed(2)} V</span>
+              </>
             ) : (
               <>Couple Laplace : <span className="text-emerald-400 font-bold">Γ = {(appliedVoltage * 0.15).toFixed(2)} N·m</span></>
             )}
