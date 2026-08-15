@@ -262,6 +262,29 @@ function FrontCircuitElement({
   );
 }
 
+// Cinematic Camera Controller with Smooth Intro Zoom Animation
+function CinematicCameraController({ resetTrigger }: { resetTrigger: number }) {
+  const targetPos = useMemo(() => new THREE.Vector3(3.4, 2.2, 4.3), []);
+  const isAnimating = useRef(true);
+
+  useEffect(() => {
+    isAnimating.current = true;
+  }, [resetTrigger]);
+
+  useFrame((state) => {
+    if (isAnimating.current) {
+      state.camera.position.lerp(targetPos, 0.04);
+      state.camera.lookAt(0, 0, 0.3);
+      if (state.camera.position.distanceTo(targetPos) < 0.02) {
+        state.camera.position.copy(targetPos);
+        isAnimating.current = false;
+      }
+    }
+  });
+
+  return null;
+}
+
 // 3D Scene Controller
 const AlternatorVisualization = ({
   mode,
@@ -278,6 +301,7 @@ const AlternatorVisualization = ({
 }) => {
   const rotorRef = useRef<THREE.Group>(null);
   const thetaRef = useRef(0);
+  const [thetaState, setThetaState] = useState(0);
 
   const loopH = 1.3;
   const loopL = 1.4;
@@ -298,6 +322,7 @@ const AlternatorVisualization = ({
     if (rotorRef.current) {
       thetaRef.current += effectiveSpeed * delta;
       rotorRef.current.rotation.z = thetaRef.current;
+      setThetaState(thetaRef.current);
 
       const e = mode === "generator" ? B0 * S * effectiveSpeed * Math.sin(thetaRef.current) : appliedVoltage;
       const eMax = mode === "generator" ? B0 * S * effectiveSpeed : appliedVoltage;
@@ -307,6 +332,11 @@ const AlternatorVisualization = ({
 
   const currentEmf = mode === "generator" ? B0 * S * effectiveSpeed * Math.sin(thetaRef.current) : appliedVoltage;
   const currentEMax = mode === "generator" ? B0 * S * effectiveSpeed : appliedVoltage;
+
+  // Instantaneous magnetic flux & induced EMF factor
+  const fluxFactor = Math.cos(thetaState); // in [-1, 1]
+  const isFluxPositive = fluxFactor >= 0;
+  const fluxIntensity = Math.abs(fluxFactor);
 
   const commutatorRadius = 0.16;
   const commutatorZ = loopL / 2 + 0.35; // z = 1.05
@@ -346,14 +376,19 @@ const AlternatorVisualization = ({
           <meshPhysicalMaterial color="#d97706" metalness={0.9} roughness={0.15} clearcoat={1} />
         </mesh>
 
-        {/* Central Dual-Color Flux Area (Blue front, Red back) */}
+        {/* DYNAMIC FLUX INVERSION SURFACE: Colors dynamically flip & pulse with AC magnetic flux */}
         <mesh position={[0.004, 0, 0]} rotation={[0, Math.PI / 2, 0]}>
           <planeGeometry args={[loopL, loopH]} />
-          <meshPhysicalMaterial color="#3b82f6" roughness={0.3} metalness={0.1} side={THREE.FrontSide} />
-        </mesh>
-        <mesh position={[-0.004, 0, 0]} rotation={[0, -Math.PI / 2, 0]}>
-          <planeGeometry args={[loopL, loopH]} />
-          <meshPhysicalMaterial color="#ef4444" roughness={0.3} metalness={0.1} side={THREE.FrontSide} />
+          <meshPhysicalMaterial
+            color={isFluxPositive ? "#0284c7" : "#ef4444"}
+            emissive={isFluxPositive ? "#38bdf8" : "#f43f5e"}
+            emissiveIntensity={fluxIntensity * 0.75}
+            roughness={0.2}
+            metalness={0.3}
+            side={THREE.DoubleSide}
+            transparent
+            opacity={0.88}
+          />
         </mesh>
 
         {/* Laplace Force Vectors (Active in Motor Mode) */}
@@ -462,6 +497,7 @@ export default function Alternator3DCanvas() {
   const [appliedVoltage, setAppliedVoltage] = useState(6.0); // U (Volts) for Motor mode
   const [isPaused, setIsPaused] = useState(false);
   const [simData, setSimData] = useState({ e: 0, eMax: 0, speed: 2.0 });
+  const [resetTrigger, setResetTrigger] = useState(0);
 
   return (
     <div className="w-full flex flex-col gap-2.5 font-sans max-w-full select-none">
@@ -469,7 +505,7 @@ export default function Alternator3DCanvas() {
       <div className="flex items-center justify-between gap-2 bg-slate-900/90 border border-slate-800 p-1.5 rounded-xl shadow-md backdrop-blur-sm">
         <div className="grid grid-cols-2 w-full gap-1.5 sm:gap-2">
           <button
-            onClick={() => { setMode("generator"); setIsPaused(false); }}
+            onClick={() => { setMode("generator"); setIsPaused(false); setResetTrigger((n) => n + 1); }}
             className={`flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-lg text-xs font-bold transition-all shadow-sm border ${
               mode === "generator"
                 ? "bg-amber-500/20 text-amber-300 border-amber-500/60 shadow-amber-500/10"
@@ -481,7 +517,7 @@ export default function Alternator3DCanvas() {
           </button>
 
           <button
-            onClick={() => { setMode("motor"); setIsPaused(false); }}
+            onClick={() => { setMode("motor"); setIsPaused(false); setResetTrigger((n) => n + 1); }}
             className={`flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-lg text-xs font-bold transition-all shadow-sm border ${
               mode === "motor"
                 ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/60 shadow-emerald-500/10"
@@ -557,8 +593,8 @@ export default function Alternator3DCanvas() {
           )}
         </div>
 
-        {/* 3D Canvas with clean, unobstructed view */}
-        <Canvas camera={{ position: [3.4, 2.2, 4.3], fov: 33 }} className="w-full h-full cursor-grab active:cursor-grabbing">
+        {/* 3D Canvas with clean view & smooth intro zoom animation */}
+        <Canvas camera={{ position: [6.5, 4.5, 7.8], fov: 33 }} className="w-full h-full cursor-grab active:cursor-grabbing">
           <color attach="background" args={["#0b1120"]} />
           <ambientLight intensity={0.9} />
           <directionalLight position={[5, 7, 5]} intensity={1.8} castShadow />
@@ -567,6 +603,8 @@ export default function Alternator3DCanvas() {
           
           <OrbitControls makeDefault maxPolarAngle={Math.PI / 2 - 0.05} minDistance={2.5} maxDistance={9} />
           
+          <CinematicCameraController resetTrigger={resetTrigger} />
+
           <AlternatorVisualization 
             mode={mode}
             speed={speed} 
@@ -596,9 +634,9 @@ export default function Alternator3DCanvas() {
             </button>
             
             <button
-              onClick={() => { setSpeed(2.0); setAppliedVoltage(6.0); setIsPaused(false); }}
+              onClick={() => { setSpeed(2.0); setAppliedVoltage(6.0); setIsPaused(false); setResetTrigger((n) => n + 1); }}
               className="p-1 rounded-lg bg-slate-800 text-slate-300 border border-slate-700 hover:bg-slate-700 hover:text-white transition-all shadow-sm"
-              title="Réinitialiser paramètres"
+              title="Réinitialiser paramètres & Animation caméra"
             >
               <RotateCcw size={12} />
             </button>
