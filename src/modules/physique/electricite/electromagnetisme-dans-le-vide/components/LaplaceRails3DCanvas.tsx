@@ -354,7 +354,7 @@ function SimulationScene({ isPlaying, setIsPlaying, bMagnitude, resistance, rese
       </group>
 
       {/* Dashboards for Speed and Current (Responsive for Mobile) */}
-      <Html position={[4.5, 2.5, 0]} center transform sprite scale={0.9}>
+      <Html position={[6.5, 3.5, 0]} center transform sprite scale={0.9}>
         <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 items-center">
           <ModernGauge value={physicsData.v} max={15.0} label="VITESSE" unit="m/s" color="#06b6d4" glowColor="rgba(6,182,212,0.5)" />
           <ModernGauge value={physicsData.I} max={1.5} label="COURANT" unit="A" color="#f59e0b" glowColor="rgba(245,158,11,0.5)" />
