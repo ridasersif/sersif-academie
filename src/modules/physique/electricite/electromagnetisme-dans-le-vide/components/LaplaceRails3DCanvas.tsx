@@ -29,69 +29,60 @@ function Arrow({ start, dir, length, color, thickness = 0.08, label, labelOffset
         <coneGeometry args={[thickness * 2.5, thickness * 5, 16]} />
         <meshPhysicalMaterial color={color} emissive={color} emissiveIntensity={0.5} roughness={0.2} metalness={0.8} />
       </mesh>
-      {label && (
-        <Html position={[labelOffset[0], length + labelOffset[1], labelOffset[2]]} center className="pointer-events-none">
-          <div className="px-2 py-1 rounded-md text-xs font-black text-white shadow-lg backdrop-blur-md border border-white/20"
-               style={{ backgroundColor: `${color}dd`, textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>
-            {label}
-          </div>
-        </Html>
-      )}
     </group>
   );
 }
 
-// Glowing Magnetic Field Particles
+// XYZ Axis Helper
+function AxisHelper({ size = 2, position = [-4, -4, 0] }: { size?: number, position?: [number, number, number] }) {
+  return (
+    <group position={position}>
+      {/* X Axis (Red) */}
+      <Arrow start={new THREE.Vector3(0, 0, 0)} dir={new THREE.Vector3(1, 0, 0)} length={size} color="#ef4444" thickness={0.05} label="x" labelOffset={[0.2, 0, 0]} />
+      {/* Y Axis (Green) */}
+      <Arrow start={new THREE.Vector3(0, 0, 0)} dir={new THREE.Vector3(0, 1, 0)} length={size} color="#22c55e" thickness={0.05} label="y" labelOffset={[0, 0.2, 0]} />
+      {/* Z Axis (Blue) */}
+      <Arrow start={new THREE.Vector3(0, 0, 0)} dir={new THREE.Vector3(0, 0, 1)} length={size} color="#3b82f6" thickness={0.05} label="z" labelOffset={[0, 0, 0.2]} />
+    </group>
+  );
+}
+
+// Premium Magnetic Field (Array of Arrows instead of stars)
 function PremiumMagneticField({ bMagnitude }: { bMagnitude: number }) {
   return (
-    <group position={[0, 0, -1]}>
-      {/* Background glowing aura representing the field */}
-      <mesh position={[0, 0, -2]}>
-        <planeGeometry args={[15, 15]} />
-        <meshBasicMaterial color="#0284c7" transparent opacity={0.05 * bMagnitude} depthWrite={false} />
-      </mesh>
-      <Sparkles count={100} scale={12} size={6 * bMagnitude} color="#38bdf8" speed={0.2} opacity={0.4} />
-      
-      {/* Visual B field indicators */}
+    <group position={[0, 0, 0]}>
+      {/* Visual B field arrows pointing in +Y direction (UP) */}
       {[-3, -1, 1, 3].map((x) => 
-        [-3, -1, 1, 3, 5].map((y) => (
-          <Float key={`${x}-${y}`} speed={2} rotationIntensity={0.2} floatIntensity={0.5} position={[x, y, -0.5]}>
-            <mesh>
-              <circleGeometry args={[0.15, 32]} />
-              <meshBasicMaterial color="#0ea5e9" transparent opacity={0.2 + bMagnitude * 0.1} side={THREE.DoubleSide} />
-            </mesh>
-            <mesh position={[0, 0, 0.02]}>
-              <circleGeometry args={[0.05, 16]} />
-              <meshBasicMaterial color="#7dd3fc" />
-            </mesh>
-          </Float>
+        [-2, 0, 2].map((z) => (
+          <Arrow 
+            key={`${x}-${z}`} 
+            start={new THREE.Vector3(x, -1.5, z)} 
+            dir={new THREE.Vector3(0, 1, 0)} 
+            length={1.0 + bMagnitude * 0.5} 
+            color="#22c55e" // Green arrows as in sketch
+            thickness={0.03}
+          />
         ))
       )}
     </group>
   );
 }
 
-// Premium Resistor
-function PremiumResistor({ position, rotation, value }: { position: [number, number, number], rotation?: [number, number, number], value: number }) {
+// Premium Resistor spanning the whole gap
+function PremiumResistor({ position, rotation }: { position: [number, number, number], rotation?: [number, number, number] }) {
   return (
     <group position={position} rotation={rotation}>
       <mesh>
-        <cylinderGeometry args={[0.25, 0.25, 1.5, 32]} />
+        <cylinderGeometry args={[0.12, 0.12, 4, 32]} />
         <meshPhysicalMaterial color="#b45309" roughness={0.6} metalness={0.4} clearcoat={0.5} />
       </mesh>
       {/* Bands */}
-      {[-0.4, -0.15, 0.15, 0.4].map((y, i) => (
+      {[-0.6, -0.2, 0.2, 0.6].map((y, i) => (
         <mesh key={i} position={[0, y, 0]}>
-          <cylinderGeometry args={[0.26, 0.26, 0.15, 32]} />
+          <cylinderGeometry args={[0.13, 0.13, 0.2, 32]} />
           <meshStandardMaterial color={['#ef4444', '#eab308', '#000', '#fbbf24'][i]} />
         </mesh>
       ))}
-      <Html position={[0, -0.8, 0]} center className="pointer-events-none">
-        <div className="bg-slate-900/90 backdrop-blur-md text-amber-400 px-3 py-1.5 rounded-lg text-sm font-bold border border-amber-500/30 shadow-xl flex items-center gap-2">
-          <Zap size={14} className="text-amber-500" />
-          R = {value.toFixed(1)} Ω
-        </div>
-      </Html>
     </group>
   );
 }
@@ -100,15 +91,15 @@ function SimulationScene({ isPlaying, bMagnitude, resistance, resetTrigger }: an
   const rodRef = useRef<THREE.Group>(null);
   
   // Physics constants
-  const g = 9.81;
+  const g = 2.0; // Reduced "gravity" or driving force so it moves slower
   const m = 0.05;
-  const l = 3.0; // Distance between rails
+  const l = 4.0; // Distance between rails (along Z)
   
-  const state = useRef({ y: 4, v: 0 });
+  const state = useRef({ x: -3.5, v: 0 }); // Moving along X
 
   useEffect(() => {
-    state.current = { y: 4, v: 0 };
-    if (rodRef.current) rodRef.current.position.y = 4;
+    state.current = { x: -3.5, v: 0 };
+    if (rodRef.current) rodRef.current.position.x = -3.5;
   }, [resetTrigger]);
 
   const [physicsData, setPhysicsData] = useState({ v: 0, Fm: 0, P: m * g, I: 0 });
@@ -116,22 +107,24 @@ function SimulationScene({ isPlaying, bMagnitude, resistance, resetTrigger }: an
   useFrame((_, delta) => {
     if (!isPlaying) return;
 
-    const timeScale = 4.0; 
+    const timeScale = 1.0; // Slowed down simulation
     const dt = 0.016 * timeScale; // Fixed delta for smoother, consistent physics
     
-    const tau = (m * resistance) / (bMagnitude * bMagnitude * l * l);
-    const dv_dt = g - state.current.v / tau;
+    // Avoid division by zero if B = 0
+    const tau = bMagnitude === 0 ? Infinity : (m * resistance) / (bMagnitude * bMagnitude * l * l);
+    // Driving force is "g" (gravity equivalent pulling it along +X)
+    const dv_dt = tau === Infinity ? g : (g - state.current.v / tau);
     
     state.current.v += dv_dt * dt;
-    state.current.y -= state.current.v * dt;
+    state.current.x += state.current.v * dt;
 
-    if (state.current.y < -3) {
-      state.current.y = -3;
+    if (state.current.x > 3.5) {
+      state.current.x = 3.5;
       state.current.v = 0;
     }
 
     if (rodRef.current) {
-      rodRef.current.position.y = state.current.y;
+      rodRef.current.position.x = state.current.x;
     }
 
     const current_I = (bMagnitude * l * state.current.v) / resistance;
@@ -140,83 +133,73 @@ function SimulationScene({ isPlaying, bMagnitude, resistance, resetTrigger }: an
     setPhysicsData({
       v: state.current.v,
       Fm: Fm,
-      P: m * g,
+      P: m * g, // driving force
       I: current_I
     });
   });
 
-  const pVec = new THREE.Vector3(0, -1, 0);
-  const fmVec = new THREE.Vector3(0, 1, 0);
+  const pVec = new THREE.Vector3(1, 0, 0); // Moving +X
+  const fmVec = new THREE.Vector3(-1, 0, 0); // Opposing -X
   const forceScale = 5.0; // scale up forces for better visual
 
   return (
     <group position={[0, 0, 0]}>
-      {/* Premium Rails */}
-      <mesh position={[-l/2, 0.5, 0]}>
+      {/* Premium Rails (along X) */}
+      <mesh position={[0, 0, -l/2]} rotation={[0, 0, Math.PI/2]}>
         <cylinderGeometry args={[0.1, 0.1, 9, 32]} />
-        <meshPhysicalMaterial color="#cbd5e1" metalness={1} roughness={0.15} clearcoat={1} />
+        <meshPhysicalMaterial color="#3b82f6" metalness={1} roughness={0.15} clearcoat={1} /> {/* Blue rails like sketch */}
       </mesh>
-      <mesh position={[l/2, 0.5, 0]}>
+      <mesh position={[0, 0, l/2]} rotation={[0, 0, Math.PI/2]}>
         <cylinderGeometry args={[0.1, 0.1, 9, 32]} />
-        <meshPhysicalMaterial color="#cbd5e1" metalness={1} roughness={0.15} clearcoat={1} />
+        <meshPhysicalMaterial color="#3b82f6" metalness={1} roughness={0.15} clearcoat={1} /> {/* Blue rails like sketch */}
       </mesh>
 
-      {/* Top connector & Bottom Connector */}
-      <mesh position={[0, 4.8, 0]} rotation={[0, 0, Math.PI/2]}>
+      {/* Left connector */}
+      <mesh position={[-4.5, 0, 0]} rotation={[Math.PI/2, 0, 0]}>
         <cylinderGeometry args={[0.08, 0.08, l, 32]} />
         <meshPhysicalMaterial color="#475569" metalness={0.8} roughness={0.5} />
       </mesh>
 
       {/* Rail Labels */}
-      <Html position={[-l/2 - 0.5, 5, 0]} className="text-sm font-black text-white drop-shadow-md pointer-events-none">A</Html>
-      <Html position={[l/2 + 0.5, 5, 0]} className="text-sm font-black text-white drop-shadow-md pointer-events-none">A'</Html>
-      <Html position={[-l/2 - 0.5, -4, 0]} className="text-sm font-black text-white drop-shadow-md pointer-events-none">A₁</Html>
-      <Html position={[l/2 + 0.5, -4, 0]} className="text-sm font-black text-white drop-shadow-md pointer-events-none">A'₁</Html>
+      <Html position={[-4.5, 0.5, -l/2]} className="text-sm font-bold text-slate-300 pointer-events-none">A</Html>
+      <Html position={[-4.5, 0.5, l/2]} className="text-sm font-bold text-slate-300 pointer-events-none">A'</Html>
+      <Html position={[4.5, 0.5, -l/2]} className="text-sm font-bold text-slate-300 pointer-events-none">A₁</Html>
+      <Html position={[4.5, 0.5, l/2]} className="text-sm font-bold text-slate-300 pointer-events-none">A'₁</Html>
 
-      {/* Bottom Resistor System */}
-      <mesh position={[-l/2 + 0.4, -4, 0]} rotation={[0, 0, Math.PI/2]}>
-         <cylinderGeometry args={[0.08, 0.08, 0.8, 32]} />
-         <meshPhysicalMaterial color="#cbd5e1" metalness={1} roughness={0.2} />
-      </mesh>
-      <mesh position={[l/2 - 0.4, -4, 0]} rotation={[0, 0, Math.PI/2]}>
-         <cylinderGeometry args={[0.08, 0.08, 0.8, 32]} />
-         <meshPhysicalMaterial color="#cbd5e1" metalness={1} roughness={0.2} />
-      </mesh>
-      <PremiumResistor position={[0, -4, 0]} rotation={[0, 0, Math.PI/2]} value={resistance} />
+      {/* Resistor at the right end (x = 4.5) spans the whole gap */}
+      <PremiumResistor position={[4.5, 0, 0]} rotation={[Math.PI/2, 0, 0]} />
 
       <PremiumMagneticField bMagnitude={bMagnitude} />
 
-      {/* Moving Rod MN */}
-      <group ref={rodRef} position={[0, 4, 0.15]}>
+      {/* Moving Rod MN (Pink like sketch) */}
+      <group ref={rodRef} position={[-3.5, 0.15, 0]}>
         {/* The Rod */}
-        <mesh rotation={[0, 0, Math.PI/2]}>
+        <mesh rotation={[Math.PI/2, 0, 0]}>
           <cylinderGeometry args={[0.15, 0.15, l + 0.6, 64]} />
-          <meshPhysicalMaterial color="#fbbf24" emissive="#d97706" emissiveIntensity={0.1} metalness={1} roughness={0.1} clearcoat={1} />
+          <meshPhysicalMaterial color="#ec4899" emissive="#be185d" emissiveIntensity={0.2} metalness={0.8} roughness={0.2} clearcoat={1} />
         </mesh>
         
         {/* End Caps for Premium Look */}
-        <mesh position={[-l/2 - 0.3, 0, 0]} rotation={[0, 0, Math.PI/2]}>
+        <mesh position={[0, 0, -l/2 - 0.3]} rotation={[Math.PI/2, 0, 0]}>
           <sphereGeometry args={[0.15, 32, 32]} />
-          <meshPhysicalMaterial color="#fbbf24" metalness={1} roughness={0.1} />
+          <meshPhysicalMaterial color="#ec4899" metalness={0.8} roughness={0.2} />
         </mesh>
-        <mesh position={[l/2 + 0.3, 0, 0]} rotation={[0, 0, Math.PI/2]}>
+        <mesh position={[0, 0, l/2 + 0.3]} rotation={[Math.PI/2, 0, 0]}>
           <sphereGeometry args={[0.15, 32, 32]} />
-          <meshPhysicalMaterial color="#fbbf24" metalness={1} roughness={0.1} />
+          <meshPhysicalMaterial color="#ec4899" metalness={0.8} roughness={0.2} />
         </mesh>
 
-        <Html position={[-l/2 - 0.7, 0.4, 0]} className="text-sm font-black text-amber-400 drop-shadow-md pointer-events-none">M</Html>
-        <Html position={[l/2 + 0.7, 0.4, 0]} className="text-sm font-black text-amber-400 drop-shadow-md pointer-events-none">N</Html>
+        <Html position={[0, 0.4, -l/2 - 0.7]} className="text-sm font-bold text-slate-100 pointer-events-none">M</Html>
+        <Html position={[0, 0.4, l/2 + 0.7]} className="text-sm font-bold text-slate-100 pointer-events-none">N</Html>
         
         {/* Dynamic Glowing Current Indicator */}
         {physicsData.I > 0.05 && (
-          <Float speed={5} rotationIntensity={0} floatIntensity={0.2} position={[0, 0, 0.3]}>
+          <Float speed={5} rotationIntensity={0} floatIntensity={0.2} position={[0, 0.3, 0]}>
             <Arrow 
-              start={new THREE.Vector3(l/3, 0, 0)} 
-              dir={new THREE.Vector3(-1, 0, 0)} 
+              start={new THREE.Vector3(0, 0, l/3)} 
+              dir={new THREE.Vector3(0, 0, -1)} 
               length={1.0 + physicsData.I * 0.2} 
               color="#fbbf24" 
-              label={`I = ${physicsData.I.toFixed(2)} A`}
-              labelOffset={[0, 0.3, 0]}
               thickness={0.04}
             />
           </Float>
@@ -228,8 +211,6 @@ function SimulationScene({ isPlaying, bMagnitude, resistance, resetTrigger }: an
           dir={pVec} 
           length={physicsData.P * forceScale} 
           color="#ef4444" 
-          label="Poids (P)"
-          labelOffset={[0, -0.4, 0]}
         />
 
         {physicsData.Fm > 0.01 && (
@@ -238,21 +219,22 @@ function SimulationScene({ isPlaying, bMagnitude, resistance, resetTrigger }: an
             dir={fmVec} 
             length={physicsData.Fm * forceScale} 
             color="#10b981" 
-            label={`Laplace (${physicsData.Fm.toFixed(2)} N)`}
-            labelOffset={[0, 0.4, 0]}
           />
         )}
       </group>
       
       {/* Floor reflection shadow */}
       <ContactShadows position={[0, -5, 0]} opacity={0.4} scale={20} blur={2} far={10} />
+
+      {/* XYZ Coordinates Indicator positioned exactly at the start of the rails */}
+      <AxisHelper position={[-4.5, 0, 0]} size={1.5} />
     </group>
   );
 }
 
 export default function LaplaceRails3DCanvas() {
   const [isPlaying, setIsPlaying] = useState(false);
-  const [bMagnitude, setBMagnitude] = useState(1.5);
+  const [bMagnitude, setBMagnitude] = useState(0.5);
   const [resistance, setResistance] = useState(2.0);
   const [resetCounter, setResetCounter] = useState(0);
 
@@ -265,8 +247,8 @@ export default function LaplaceRails3DCanvas() {
     <div className="w-full bg-slate-950 rounded-3xl border border-slate-800 shadow-[0_20px_50px_rgba(0,0,0,0.5)] overflow-hidden flex flex-col my-8 relative">
       
       {/* 3D Viewport */}
-      <div className="relative h-[280px] sm:h-[320px] w-full bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-slate-800 via-slate-900 to-black">
-        <Canvas camera={{ position: [0, 0, 16], fov: 45 }}>
+      <div className="relative h-[280px] sm:h-[350px] w-full bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-slate-800 via-slate-900 to-black">
+        <Canvas camera={{ position: [0, 8, 12], fov: 45 }}>
           <ambientLight intensity={0.4} />
           <directionalLight position={[10, 10, 5]} intensity={2} color="#ffffff" />
           <pointLight position={[-10, -10, -5]} intensity={1} color="#38bdf8" />
@@ -280,11 +262,7 @@ export default function LaplaceRails3DCanvas() {
           />
           
           <OrbitControls 
-            enablePan={false}
-            minPolarAngle={Math.PI / 4}
-            maxPolarAngle={Math.PI / 2}
-            minAzimuthAngle={-Math.PI / 4}
-            maxAzimuthAngle={Math.PI / 4}
+            enablePan={true}
           />
         </Canvas>
 
@@ -328,8 +306,8 @@ export default function LaplaceRails3DCanvas() {
             </div>
             <input
               type="range"
-              min="0.5"
-              max="3.0"
+              min="0.0"
+              max="1.0"
               step="0.1"
               value={bMagnitude}
               onChange={(e) => setBMagnitude(parseFloat(e.target.value))}
