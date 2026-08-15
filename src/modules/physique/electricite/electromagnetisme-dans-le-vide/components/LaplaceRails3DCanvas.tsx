@@ -229,10 +229,18 @@ function SimulationScene({ isPlaying, setIsPlaying, bMagnitude, resistance, rese
     // tau = m*R / (B*l)^2
     const tau = bMagnitude === 0 ? Infinity : (m * resistance) / (bMagnitude * bMagnitude * l * l);
     
-    // v is downward speed. dv/dt = g - v/tau
-    const dv_dt = tau === Infinity ? g : (g - state.current.v / tau);
+    if (tau === Infinity) {
+      // Free fall
+      state.current.v += g * dt;
+    } else {
+      // Exact analytical solution to completely eliminate numerical instability
+      const v_lim = g * tau;
+      state.current.v = v_lim + (state.current.v - v_lim) * Math.exp(-dt / tau);
+    }
     
-    state.current.v += dv_dt * dt;
+    // Prevent negative velocity due to floating point rounding
+    if (state.current.v < 0) state.current.v = 0;
+
     state.current.y -= state.current.v * dt;
 
     // Stop at the bottom (y = -3.5)
@@ -312,7 +320,7 @@ function SimulationScene({ isPlaying, setIsPlaying, bMagnitude, resistance, rese
         {physicsData.I > 0.05 && (
           <Float speed={5} rotationIntensity={0} floatIntensity={0.2} position={[0, 0, 0.3]}>
             <Arrow 
-              start={new THREE.Vector3(l/3, 0, 0)} 
+              start={new THREE.Vector3(4/3, 0, 0)} 
               dir={new THREE.Vector3(-1, 0, 0)} 
               length={1.0 + physicsData.I * 0.2} 
               color="#fbbf24" 
@@ -325,7 +333,7 @@ function SimulationScene({ isPlaying, setIsPlaying, bMagnitude, resistance, rese
         <Arrow 
           start={new THREE.Vector3(0, 0, 0)} 
           dir={pVec} 
-          length={(m * g) * forceScale} 
+          length={(0.1 * 9.81) * forceScale} 
           color="#ef4444" 
         />
 
