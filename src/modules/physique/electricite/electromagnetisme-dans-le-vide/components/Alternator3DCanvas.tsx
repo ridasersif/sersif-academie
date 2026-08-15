@@ -1,10 +1,10 @@
 "use client";
 import React, { useRef, useState, useMemo, useEffect } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { OrbitControls, Html, ContactShadows } from "@react-three/drei";
+import { OrbitControls, ContactShadows } from "@react-three/drei";
 import * as THREE from "three";
 import LatexMath from "@/components/ui/LatexMath";
-import { Play, Pause, RotateCcw, Zap, Activity, Layers } from "lucide-react";
+import { Play, Pause, RotateCcw, Zap, Activity, Gauge, BatteryCharging } from "lucide-react";
 
 // Real-time Mini Oscilloscope Waveform Component
 function LiveOscilloscope({ emf, eMax }: { emf: number; eMax: number }) {
@@ -143,38 +143,120 @@ function FieldFluxLines() {
   );
 }
 
-// Load Resistor at the front of the circuit (Seamlessly plugged into wires)
-function LoadResistor({ emf, eMax }: { emf: number; eMax: number }) {
-  const intensity = eMax > 0.05 ? Math.min(1, Math.abs(emf) / Math.max(eMax, 4.0)) : 0;
-  const isGlowing = intensity > 0.02;
+// Laplace Force Vectors on Rotor Sides (Visible in Motor Mode)
+function LaplaceForceVectors({ loopH, loopL, active }: { loopH: number; loopL: number; active: boolean }) {
+  if (!active) return null;
+
+  return (
+    <group>
+      {/* Top Wire Laplace Force (Pointing along +Y or -Y depending on torque) */}
+      <group position={[0, loopH / 2, 0]}>
+        <mesh position={[0, 0.25, 0]}>
+          <cylinderGeometry args={[0.014, 0.014, 0.5, 8]} />
+          <meshBasicMaterial color="#22c55e" />
+        </mesh>
+        <mesh position={[0, 0.55, 0]}>
+          <coneGeometry args={[0.04, 0.16, 8]} />
+          <meshBasicMaterial color="#22c55e" />
+        </mesh>
+      </group>
+
+      {/* Bottom Wire Laplace Force (Opposite direction) */}
+      <group position={[0, -loopH / 2, 0]}>
+        <mesh position={[0, -0.25, 0]} rotation={[Math.PI, 0, 0]}>
+          <cylinderGeometry args={[0.014, 0.014, 0.5, 8]} />
+          <meshBasicMaterial color="#22c55e" />
+        </mesh>
+        <mesh position={[0, -0.55, 0]} rotation={[Math.PI, 0, 0]}>
+          <coneGeometry args={[0.04, 0.16, 8]} />
+          <meshBasicMaterial color="#22c55e" />
+        </mesh>
+      </group>
+    </group>
+  );
+}
+
+// Circuit Component at Front: Load Resistor (Generator) OR DC Power Source (Motor)
+function FrontCircuitElement({
+  mode,
+  emf,
+  eMax,
+  appliedVoltage,
+}: {
+  mode: "generator" | "motor";
+  emf: number;
+  eMax: number;
+  appliedVoltage: number;
+}) {
+  const isMotor = mode === "motor";
+  const genIntensity = eMax > 0.05 ? Math.min(1, Math.abs(emf) / Math.max(eMax, 4.0)) : 0;
+  const isGenGlowing = genIntensity > 0.02;
+
+  const motorActive = Math.abs(appliedVoltage) > 0.1;
 
   return (
     <group position={[0, 0, 1.85]}>
-      {/* Resistor Body */}
-      <mesh rotation={[0, 0, Math.PI / 2]}>
-        <cylinderGeometry args={[0.07, 0.07, 0.3, 20]} />
-        <meshPhysicalMaterial
-          color="#0284c7"
-          roughness={0.3}
-          metalness={0.4}
-          emissive={isGlowing ? "#38bdf8" : "#000000"}
-          emissiveIntensity={intensity * 1.8}
-        />
-      </mesh>
-      {/* Left Silver Terminal Cap (-) */}
-      <mesh position={[-0.15, 0, 0]} rotation={[0, 0, Math.PI / 2]}>
-        <cylinderGeometry args={[0.075, 0.075, 0.03, 20]} />
-        <meshPhysicalMaterial color="#e2e8f0" metalness={0.95} roughness={0.15} />
-      </mesh>
-      {/* Right Silver Terminal Cap (+) */}
-      <mesh position={[0.15, 0, 0]} rotation={[0, 0, Math.PI / 2]}>
-        <cylinderGeometry args={[0.075, 0.075, 0.03, 20]} />
-        <meshPhysicalMaterial color="#e2e8f0" metalness={0.95} roughness={0.15} />
-      </mesh>
-
-      {/* Dynamic Glow */}
-      {isGlowing && (
-        <pointLight position={[0, 0, 0]} intensity={intensity * 2.5} distance={1.8} color="#38bdf8" />
+      {isMotor ? (
+        /* DC Power Source / Battery */
+        <group>
+          <mesh rotation={[0, 0, Math.PI / 2]}>
+            <cylinderGeometry args={[0.08, 0.08, 0.3, 20]} />
+            <meshPhysicalMaterial
+              color="#1e293b"
+              roughness={0.2}
+              metalness={0.8}
+              emissive={motorActive ? "#06b6d4" : "#000000"}
+              emissiveIntensity={motorActive ? 0.8 : 0}
+            />
+          </mesh>
+          {/* Glowing central battery band */}
+          <mesh rotation={[0, 0, Math.PI / 2]}>
+            <cylinderGeometry args={[0.082, 0.082, 0.1, 20]} />
+            <meshPhysicalMaterial
+              color="#38bdf8"
+              emissive="#38bdf8"
+              emissiveIntensity={motorActive ? 1.5 : 0.2}
+            />
+          </mesh>
+          {/* Negative Cap (-) Left */}
+          <mesh position={[-0.15, 0, 0]} rotation={[0, 0, Math.PI / 2]}>
+            <cylinderGeometry args={[0.085, 0.085, 0.03, 20]} />
+            <meshPhysicalMaterial color="#3b82f6" metalness={0.8} roughness={0.2} />
+          </mesh>
+          {/* Positive Cap (+) Right */}
+          <mesh position={[0.15, 0, 0]} rotation={[0, 0, Math.PI / 2]}>
+            <cylinderGeometry args={[0.085, 0.085, 0.03, 20]} />
+            <meshPhysicalMaterial color="#ef4444" metalness={0.8} roughness={0.2} />
+          </mesh>
+          {motorActive && (
+            <pointLight position={[0, 0, 0]} intensity={1.8} distance={1.8} color="#38bdf8" />
+          )}
+        </group>
+      ) : (
+        /* Load Resistor R (Generator Mode) */
+        <group>
+          <mesh rotation={[0, 0, Math.PI / 2]}>
+            <cylinderGeometry args={[0.07, 0.07, 0.3, 20]} />
+            <meshPhysicalMaterial
+              color="#0284c7"
+              roughness={0.3}
+              metalness={0.4}
+              emissive={isGenGlowing ? "#38bdf8" : "#000000"}
+              emissiveIntensity={genIntensity * 1.8}
+            />
+          </mesh>
+          <mesh position={[-0.15, 0, 0]} rotation={[0, 0, Math.PI / 2]}>
+            <cylinderGeometry args={[0.075, 0.075, 0.03, 20]} />
+            <meshPhysicalMaterial color="#e2e8f0" metalness={0.95} roughness={0.15} />
+          </mesh>
+          <mesh position={[0.15, 0, 0]} rotation={[0, 0, Math.PI / 2]}>
+            <cylinderGeometry args={[0.075, 0.075, 0.03, 20]} />
+            <meshPhysicalMaterial color="#e2e8f0" metalness={0.95} roughness={0.15} />
+          </mesh>
+          {isGenGlowing && (
+            <pointLight position={[0, 0, 0]} intensity={genIntensity * 2.5} distance={1.8} color="#38bdf8" />
+          )}
+        </group>
       )}
     </group>
   );
@@ -182,43 +264,49 @@ function LoadResistor({ emf, eMax }: { emf: number; eMax: number }) {
 
 // 3D Scene Controller
 const AlternatorVisualization = ({
+  mode,
   speed,
+  appliedVoltage,
   isPaused,
   onUpdateValues,
 }: {
+  mode: "generator" | "motor";
   speed: number;
+  appliedVoltage: number;
   isPaused: boolean;
-  onUpdateValues: (emf: number, eMax: number) => void;
+  onUpdateValues: (emf: number, eMax: number, effectiveSpeed: number) => void;
 }) => {
   const rotorRef = useRef<THREE.Group>(null);
   const thetaRef = useRef(0);
 
-  const loopH = 1.3; // height along Y
-  const loopL = 1.4; // length along Z
+  const loopH = 1.3;
+  const loopL = 1.4;
   const B0 = 1.0;
-  const turns = 1;   // Standard single turn loop
   const S = loopH * loopL;
 
+  // In motor mode, angular speed is driven by applied DC voltage: omega = K * U
+  const effectiveSpeed = mode === "motor" ? appliedVoltage * 0.65 : speed;
+
   useFrame((_, delta) => {
-    if (isPaused || speed === 0) {
-      const e = turns * B0 * S * speed * Math.sin(thetaRef.current);
-      const eMax = turns * B0 * S * speed;
-      onUpdateValues(e, eMax);
+    if (isPaused || effectiveSpeed === 0) {
+      const e = mode === "generator" ? B0 * S * effectiveSpeed * Math.sin(thetaRef.current) : appliedVoltage;
+      const eMax = mode === "generator" ? B0 * S * effectiveSpeed : appliedVoltage;
+      onUpdateValues(e, eMax, effectiveSpeed);
       return;
     }
 
     if (rotorRef.current) {
-      thetaRef.current += speed * delta;
+      thetaRef.current += effectiveSpeed * delta;
       rotorRef.current.rotation.z = thetaRef.current;
 
-      const e = turns * B0 * S * speed * Math.sin(thetaRef.current);
-      const eMax = turns * B0 * S * speed;
-      onUpdateValues(e, eMax);
+      const e = mode === "generator" ? B0 * S * effectiveSpeed * Math.sin(thetaRef.current) : appliedVoltage;
+      const eMax = mode === "generator" ? B0 * S * effectiveSpeed : appliedVoltage;
+      onUpdateValues(e, eMax, effectiveSpeed);
     }
   });
 
-  const currentEmf = turns * B0 * S * speed * Math.sin(thetaRef.current);
-  const currentEMax = turns * B0 * S * speed;
+  const currentEmf = mode === "generator" ? B0 * S * effectiveSpeed * Math.sin(thetaRef.current) : appliedVoltage;
+  const currentEMax = mode === "generator" ? B0 * S * effectiveSpeed : appliedVoltage;
 
   const commutatorRadius = 0.16;
   const commutatorZ = loopL / 2 + 0.35; // z = 1.05
@@ -241,22 +329,18 @@ const AlternatorVisualization = ({
       {/* 4. ROTATING ASSEMBLY (Loop + Commutator Rings) */}
       <group ref={rotorRef} position={[0, 0, 0]}>
         {/* Rectangular Copper Loop Wires */}
-        {/* Top horizontal wire */}
         <mesh position={[0, loopH / 2, 0]} rotation={[Math.PI / 2, 0, 0]}>
           <cylinderGeometry args={[0.022, 0.022, loopL, 16]} />
           <meshPhysicalMaterial color="#d97706" metalness={0.9} roughness={0.15} clearcoat={1} />
         </mesh>
-        {/* Bottom horizontal wire */}
         <mesh position={[0, -loopH / 2, 0]} rotation={[Math.PI / 2, 0, 0]}>
           <cylinderGeometry args={[0.022, 0.022, loopL, 16]} />
           <meshPhysicalMaterial color="#d97706" metalness={0.9} roughness={0.15} clearcoat={1} />
         </mesh>
-        {/* Back vertical wire */}
         <mesh position={[0, 0, -loopL / 2]}>
           <cylinderGeometry args={[0.022, 0.022, loopH, 16]} />
           <meshPhysicalMaterial color="#d97706" metalness={0.9} roughness={0.15} clearcoat={1} />
         </mesh>
-        {/* Front vertical wire */}
         <mesh position={[0, 0, loopL / 2]}>
           <cylinderGeometry args={[0.022, 0.022, loopH, 16]} />
           <meshPhysicalMaterial color="#d97706" metalness={0.9} roughness={0.15} clearcoat={1} />
@@ -272,8 +356,10 @@ const AlternatorVisualization = ({
           <meshPhysicalMaterial color="#ef4444" roughness={0.3} metalness={0.1} side={THREE.FrontSide} />
         </mesh>
 
+        {/* Laplace Force Vectors (Active in Motor Mode) */}
+        <LaplaceForceVectors loopH={loopH} loopL={loopL} active={mode === "motor" && Math.abs(appliedVoltage) > 0.2} />
+
         {/* CONTINUOUS ROTATING COPPER TERMINALS (Welded to Loop & Commutator) */}
-        {/* Top Lead */}
         <mesh position={[0, (loopH / 2 + commutatorRadius) / 2, loopL / 2]}>
           <cylinderGeometry args={[0.02, 0.02, loopH / 2 - commutatorRadius, 16]} />
           <meshPhysicalMaterial color="#d97706" metalness={0.9} roughness={0.15} clearcoat={1} />
@@ -283,7 +369,6 @@ const AlternatorVisualization = ({
           <meshPhysicalMaterial color="#d97706" metalness={0.9} roughness={0.15} clearcoat={1} />
         </mesh>
 
-        {/* Bottom Lead */}
         <mesh position={[0, -(loopH / 2 + commutatorRadius) / 2, loopL / 2]}>
           <cylinderGeometry args={[0.02, 0.02, loopH / 2 - commutatorRadius, 16]} />
           <meshPhysicalMaterial color="#d97706" metalness={0.9} roughness={0.15} clearcoat={1} />
@@ -319,23 +404,19 @@ const AlternatorVisualization = ({
       </group>
 
       {/* 5. STATIONARY CARBON BRUSHES & COLOR-CODED OUTPUT CIRCUIT */}
-      {/* Left Carbon Brush touching split-ring at x = -commutatorRadius */}
       <mesh position={[-(commutatorRadius + 0.035), 0, commutatorZ]}>
         <boxGeometry args={[0.07, 0.07, 0.12]} />
         <meshPhysicalMaterial color="#0f172a" metalness={0.8} roughness={0.5} />
       </mesh>
-      {/* Left Negative (-) Terminal Block - Blue */}
       <mesh position={[-(commutatorRadius + 0.085), 0, commutatorZ]}>
         <boxGeometry args={[0.04, 0.08, 0.1]} />
         <meshPhysicalMaterial color="#2563eb" metalness={0.6} roughness={0.2} />
       </mesh>
 
-      {/* Right Carbon Brush touching split-ring at x = +commutatorRadius */}
       <mesh position={[commutatorRadius + 0.035, 0, commutatorZ]}>
         <boxGeometry args={[0.07, 0.07, 0.12]} />
         <meshPhysicalMaterial color="#0f172a" metalness={0.8} roughness={0.5} />
       </mesh>
-      {/* Right Positive (+) Terminal Block - Red */}
       <mesh position={[commutatorRadius + 0.085, 0, commutatorZ]}>
         <boxGeometry args={[0.04, 0.08, 0.1]} />
         <meshPhysicalMaterial color="#dc2626" metalness={0.6} roughness={0.2} />
@@ -361,8 +442,13 @@ const AlternatorVisualization = ({
         <meshPhysicalMaterial color="#ef4444" metalness={0.5} roughness={0.2} />
       </mesh>
 
-      {/* 6. Circuit Load Resistor */}
-      <LoadResistor emf={currentEmf} eMax={currentEMax} />
+      {/* 6. Front Circuit Element (Resistor in Gen Mode / Battery in Motor Mode) */}
+      <FrontCircuitElement
+        mode={mode}
+        emf={currentEmf}
+        eMax={currentEMax}
+        appliedVoltage={appliedVoltage}
+      />
 
       {/* Studio Floor Shadow */}
       <ContactShadows position={[0, -1.2, 0]} opacity={0.35} scale={5} blur={2.0} far={2.5} />
@@ -371,40 +457,104 @@ const AlternatorVisualization = ({
 };
 
 export default function Alternator3DCanvas() {
-  const [speed, setSpeed] = useState(2.0); // omega (rad/s)
+  const [mode, setMode] = useState<"generator" | "motor">("generator");
+  const [speed, setSpeed] = useState(2.0);             // omega (rad/s) for Generator mode
+  const [appliedVoltage, setAppliedVoltage] = useState(6.0); // U (Volts) for Motor mode
   const [isPaused, setIsPaused] = useState(false);
-  const [emfData, setEmfData] = useState({ e: 0, eMax: 0 });
+  const [simData, setSimData] = useState({ e: 0, eMax: 0, speed: 2.0 });
 
   return (
-    <div className="w-full flex flex-col gap-2 font-sans max-w-full select-none">
+    <div className="w-full flex flex-col gap-2.5 font-sans max-w-full select-none">
+      {/* Mode Switcher Banner: Generator vs Motor */}
+      <div className="flex items-center justify-between gap-2 bg-slate-900/90 border border-slate-800 p-1.5 rounded-xl shadow-md backdrop-blur-sm">
+        <div className="grid grid-cols-2 w-full gap-1.5 sm:gap-2">
+          <button
+            onClick={() => { setMode("generator"); setIsPaused(false); }}
+            className={`flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-lg text-xs font-bold transition-all shadow-sm border ${
+              mode === "generator"
+                ? "bg-amber-500/20 text-amber-300 border-amber-500/60 shadow-amber-500/10"
+                : "bg-slate-950/40 text-slate-400 border-slate-800 hover:text-slate-200"
+            }`}
+          >
+            <Zap size={14} className={mode === "generator" ? "text-amber-400" : "text-slate-500"} />
+            <span>1. Mode Générateur (Dynamo)</span>
+          </button>
+
+          <button
+            onClick={() => { setMode("motor"); setIsPaused(false); }}
+            className={`flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-lg text-xs font-bold transition-all shadow-sm border ${
+              mode === "motor"
+                ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/60 shadow-emerald-500/10"
+                : "bg-slate-950/40 text-slate-400 border-slate-800 hover:text-slate-200"
+            }`}
+          >
+            <BatteryCharging size={14} className={mode === "motor" ? "text-emerald-400" : "text-slate-500"} />
+            <span>2. Mode Moteur Électrique (Laplace)</span>
+          </button>
+        </div>
+      </div>
+
       <div className="w-full h-[280px] sm:h-[330px] bg-gradient-to-b from-slate-900 via-slate-950 to-slate-950 rounded-2xl overflow-hidden relative shadow-[0_15px_40px_rgba(0,0,0,0.6)] border border-slate-800">
         
         {/* Top-Left Badge */}
         <div className="absolute top-2.5 left-2.5 z-10 flex items-center gap-1.5 pointer-events-none">
           <div className="px-2.5 py-1 rounded-lg bg-slate-900/90 backdrop-blur-md border border-slate-700/60 shadow-lg flex items-center gap-1.5">
-            <Zap className="w-3.5 h-3.5 text-amber-400" />
-            <span className="text-[11px] text-slate-200 font-bold">Générateur / Dynamo</span>
+            {mode === "generator" ? (
+              <>
+                <Zap className="w-3.5 h-3.5 text-amber-400" />
+                <span className="text-[10px] sm:text-xs text-slate-200 font-bold">
+                  Générateur • Mécanique ➔ Électrique
+                </span>
+              </>
+            ) : (
+              <>
+                <BatteryCharging className="w-3.5 h-3.5 text-emerald-400" />
+                <span className="text-[10px] sm:text-xs text-emerald-200 font-bold">
+                  Moteur • Électrique ➔ Mécanique (Laplace)
+                </span>
+              </>
+            )}
           </div>
         </div>
 
-        {/* Top-Right HUD: Oscilloscope & Digital Voltmeter */}
+        {/* Top-Right HUD: Oscilloscope & Digital Voltmeter / Speedometer */}
         <div className="absolute top-2.5 right-2.5 z-10 flex items-center gap-2 bg-slate-900/95 backdrop-blur-xl border border-slate-700/80 p-1.5 sm:p-2 rounded-xl shadow-xl pointer-events-none">
-          <LiveOscilloscope emf={emfData.e} eMax={emfData.eMax} />
-          
-          <div className="flex flex-col items-center min-w-[65px]">
-            <span className="text-[7px] font-bold text-slate-400 uppercase tracking-wider">Tension e(t)</span>
-            <span 
-              className={`text-xs sm:text-sm font-mono font-black transition-colors ${
-                Math.abs(emfData.e) < 0.05 ? "text-slate-300" : emfData.e > 0 ? "text-cyan-400" : "text-rose-400"
-              }`}
-              style={{ textShadow: `0 0 8px ${emfData.e >= 0 ? "rgba(6,182,212,0.6)" : "rgba(244,63,94,0.6)"}` }}
-            >
-              {emfData.e > 0 ? "+" : ""}{emfData.e.toFixed(2)} V
-            </span>
-            <span className="text-[8px] text-slate-400 font-medium">
-              e₀ = {emfData.eMax.toFixed(2)} V
-            </span>
-          </div>
+          {mode === "generator" ? (
+            <>
+              <LiveOscilloscope emf={simData.e} eMax={simData.eMax} />
+              
+              <div className="flex flex-col items-center min-w-[65px]">
+                <span className="text-[7px] font-bold text-slate-400 uppercase tracking-wider">Tension e(t)</span>
+                <span 
+                  className={`text-xs sm:text-sm font-mono font-black transition-colors ${
+                    Math.abs(simData.e) < 0.05 ? "text-slate-300" : simData.e > 0 ? "text-cyan-400" : "text-rose-400"
+                  }`}
+                  style={{ textShadow: `0 0 8px ${simData.e >= 0 ? "rgba(6,182,212,0.6)" : "rgba(244,63,94,0.6)"}` }}
+                >
+                  {simData.e > 0 ? "+" : ""}{simData.e.toFixed(2)} V
+                </span>
+                <span className="text-[8px] text-slate-400 font-medium">
+                  e₀ = {simData.eMax.toFixed(2)} V
+                </span>
+              </div>
+            </>
+          ) : (
+            <div className="flex items-center gap-2.5 px-1 py-0.5">
+              <div className="flex flex-col items-center">
+                <span className="text-[7px] font-bold text-slate-400 uppercase tracking-wider">Tension U</span>
+                <span className="text-xs sm:text-sm font-mono font-black text-emerald-400">
+                  {appliedVoltage.toFixed(1)} V
+                </span>
+              </div>
+              <div className="w-[1px] h-6 bg-slate-700/60" />
+              <div className="flex flex-col items-center">
+                <span className="text-[7px] font-bold text-slate-400 uppercase tracking-wider">Vitesse ω</span>
+                <span className="text-xs sm:text-sm font-mono font-black text-cyan-400">
+                  {simData.speed.toFixed(1)} rad/s
+                </span>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* 3D Canvas with clean, unobstructed view */}
@@ -418,14 +568,16 @@ export default function Alternator3DCanvas() {
           <OrbitControls makeDefault maxPolarAngle={Math.PI / 2 - 0.05} minDistance={2.5} maxDistance={9} />
           
           <AlternatorVisualization 
+            mode={mode}
             speed={speed} 
+            appliedVoltage={appliedVoltage}
             isPaused={isPaused} 
-            onUpdateValues={(e, eMax) => setEmfData({ e, eMax })} 
+            onUpdateValues={(e, eMax, effSpeed) => setSimData({ e, eMax, speed: effSpeed })} 
           />
         </Canvas>
       </div>
 
-      {/* Clean Single Control Toolbar: Rotation Speed (omega) */}
+      {/* Controls Toolbar tailored to active Mode */}
       <div className="w-full bg-slate-900/90 border border-slate-800 p-2.5 rounded-xl flex flex-col gap-2 shadow-md backdrop-blur-sm">
         
         {/* Play/Pause & Reset Bar */}
@@ -440,44 +592,73 @@ export default function Alternator3DCanvas() {
               }`}
             >
               {isPaused ? <Play size={12} /> : <Pause size={12} />}
-              {isPaused ? "Tourner" : "Pause"}
+              {isPaused ? "Démarrer" : "Pause"}
             </button>
             
             <button
-              onClick={() => { setSpeed(2.0); setIsPaused(false); }}
+              onClick={() => { setSpeed(2.0); setAppliedVoltage(6.0); setIsPaused(false); }}
               className="p-1 rounded-lg bg-slate-800 text-slate-300 border border-slate-700 hover:bg-slate-700 hover:text-white transition-all shadow-sm"
-              title="Réinitialiser vitesse"
+              title="Réinitialiser paramètres"
             >
               <RotateCcw size={12} />
             </button>
           </div>
 
           <div className="text-[10px] text-slate-400 font-mono">
-            e₀ = <span className="text-cyan-400 font-bold">{(1 * 1.0 * (1.3 * 1.4) * speed).toFixed(2)} V</span>
+            {mode === "generator" ? (
+              <>e₀ = <span className="text-cyan-400 font-bold">{(1 * 1.0 * (1.3 * 1.4) * speed).toFixed(2)} V</span></>
+            ) : (
+              <>Couple Laplace : <span className="text-emerald-400 font-bold">Γ = {(appliedVoltage * 0.15).toFixed(2)} N·m</span></>
+            )}
           </div>
         </div>
 
-        {/* Full-width single slider: Vitesse de rotation (omega) */}
-        <div className="flex flex-col gap-1 bg-slate-950/40 px-2.5 py-1.5 rounded-lg border border-slate-800/60">
-          <div className="flex justify-between items-center text-xs font-semibold gap-1.5">
-            <span className="text-purple-400 flex items-center gap-1 text-[11px] whitespace-nowrap">
-              <Activity size={12} className="shrink-0" />
-              Vitesse de rotation (ω)
-            </span>
-            <span className="font-mono text-purple-300 bg-purple-950/80 px-2 py-0.5 rounded text-[10px] border border-purple-800/60 shrink-0">
-              {speed === 0 ? "Arrêté" : `${speed.toFixed(1)} rad/s`}
-            </span>
+        {/* Dynamic Slider depending on mode */}
+        {mode === "generator" ? (
+          /* Slider: Mechanical Rotation Speed (omega) */
+          <div className="flex flex-col gap-1 bg-slate-950/40 px-2.5 py-1.5 rounded-lg border border-slate-800/60">
+            <div className="flex justify-between items-center text-xs font-semibold gap-1.5">
+              <span className="text-amber-400 flex items-center gap-1 text-[11px] whitespace-nowrap">
+                <Activity size={12} className="shrink-0" />
+                Vitesse mécanique imposée (<LatexMath math="\omega" />)
+              </span>
+              <span className="font-mono text-amber-300 bg-amber-950/80 px-2 py-0.5 rounded text-[10px] border border-amber-800/60 shrink-0">
+                {speed === 0 ? "Arrêté" : `${speed.toFixed(1)} rad/s`}
+              </span>
+            </div>
+            <input 
+              type="range" 
+              min="0" 
+              max="8" 
+              step="0.2"
+              value={speed} 
+              onChange={(e) => setSpeed(Number(e.target.value))}
+              className="w-full accent-amber-500 hover:accent-amber-400 h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer"
+            />
           </div>
-          <input 
-            type="range" 
-            min="0" 
-            max="8" 
-            step="0.2"
-            value={speed} 
-            onChange={(e) => setSpeed(Number(e.target.value))}
-            className="w-full accent-purple-500 hover:accent-purple-400 h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer"
-          />
-        </div>
+        ) : (
+          /* Slider: Applied DC Voltage (U) */
+          <div className="flex flex-col gap-1 bg-slate-950/40 px-2.5 py-1.5 rounded-lg border border-slate-800/60">
+            <div className="flex justify-between items-center text-xs font-semibold gap-1.5">
+              <span className="text-emerald-400 flex items-center gap-1 text-[11px] whitespace-nowrap">
+                <Gauge size={12} className="shrink-0" />
+                Tension continue d'alimentation (<LatexMath math="U" />)
+              </span>
+              <span className="font-mono text-emerald-300 bg-emerald-950/80 px-2 py-0.5 rounded text-[10px] border border-emerald-800/60 shrink-0">
+                {appliedVoltage === 0 ? "0 V (Moteur éteint)" : `${appliedVoltage.toFixed(1)} V`}
+              </span>
+            </div>
+            <input 
+              type="range" 
+              min="0" 
+              max="12" 
+              step="0.5"
+              value={appliedVoltage} 
+              onChange={(e) => setAppliedVoltage(Number(e.target.value))}
+              className="w-full accent-emerald-500 hover:accent-emerald-400 h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer"
+            />
+          </div>
+        )}
 
       </div>
     </div>

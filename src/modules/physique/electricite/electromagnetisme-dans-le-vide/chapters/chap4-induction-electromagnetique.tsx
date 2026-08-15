@@ -179,26 +179,26 @@ export default function Chap4InductionElectromagnetique() {
       <section className="bg-card/90 border border-border/80 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 shadow-sm w-full max-w-full overflow-x-hidden">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400 text-xs font-extrabold mb-3">
           <Zap className="w-3.5 h-3.5" />
-          <span>Application • Générateur Électrique</span>
+          <span>Application • Conversion Électromécanique Réversible</span>
         </div>
         
         <h2 className="text-xl sm:text-2xl font-black mb-4 text-foreground leading-tight">
-          2. Application de la loi de Faraday
+          2. Application : Générateur & Moteur Électrique
         </h2>
         
         <div className="space-y-4 mb-4">
           <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
-            La principale application de la loi de Faraday est le <strong>générateur électrique</strong> (alternateur / dynamo) convertissant l'énergie mécanique de rotation en énergie électrique induite.
+            La machine à courant continu est <strong>parfaitement réversible</strong> : en mode <strong>générateur</strong>, elle convertit l'énergie mécanique en électricité (loi de Faraday) ; en mode <strong>moteur</strong>, l'injection d'un courant génère un mouvement sous l'effet des forces de Laplace.
           </p>
           
           {/* 3 Compact Formula Cards in Responsive Grid */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5 sm:gap-3">
             <div className="bg-muted/40 p-2.5 rounded-xl border border-border/70 flex flex-col justify-between shadow-sm">
               <span className="text-[11px] font-semibold text-muted-foreground mb-1">
-                1. Flux (<LatexMath math="N" /> spires) :
+                1. Flux magnétique :
               </span>
               <div className="bg-background/90 p-1.5 rounded-lg flex justify-center border border-border/50 shadow-inner overflow-x-auto text-xs">
-                <LatexMath math="\Phi = N \cdot B \cdot S \cos(\omega t)" />
+                <LatexMath math="\Phi = B \cdot S \cos(\omega t)" />
               </div>
             </div>
 
@@ -207,28 +207,27 @@ export default function Chap4InductionElectromagnetique() {
                 2. Loi de Faraday :
               </span>
               <div className="bg-background/90 p-1.5 rounded-lg flex justify-center border border-border/50 shadow-inner overflow-x-auto text-xs">
-                <LatexMath math="e = -\frac{d\Phi}{dt} = N B S \omega \sin(\omega t)" />
+                <LatexMath math="e = -\frac{d\Phi}{dt} = B S \omega \sin(\omega t)" />
               </div>
             </div>
 
             <div className="bg-blue-500/5 p-2.5 rounded-xl border border-blue-500/30 flex flex-col justify-between shadow-sm">
               <span className="text-[11px] font-semibold text-blue-500 dark:text-blue-400 mb-1">
-                3. Tension induite :
+                3. Force de Laplace (Moteur) :
               </span>
               <div className="bg-blue-500/10 border border-blue-500/40 p-1.5 rounded-lg text-blue-500 dark:text-blue-400 font-bold flex justify-center overflow-x-auto text-xs">
-                <LatexMath math="e(t) = e_0 \sin(\omega t)" />
-                <span className="ml-2 font-mono text-[10px] self-center opacity-80">(e₀ = N·B·S·ω)</span>
+                <LatexMath math="\vec{F} = I \vec{\ell} \wedge \vec{B} \implies \Gamma = I S B" />
               </div>
             </div>
           </div>
 
-          {/* Compact Full-Width 3D Generator Simulator */}
+          {/* Compact Full-Width 3D Dual-Mode Simulator */}
           <div className="w-full flex flex-col">
-            <LazyMount height="350px" fallbackText="Chargement Simulateur Générateur...">
+            <LazyMount height="380px" fallbackText="Chargement Simulateur Réversible...">
               <Alternator3DCanvas />
             </LazyMount>
             <p className="text-[11px] text-center text-muted-foreground mt-1.5 italic">
-              Alternateur : Rotation d'un bobinage de <LatexMath math="N" /> spires à vitesse <LatexMath math="\omega" /> dans un champ <LatexMath math="\vec{B}_0" />.
+              Dispositif réversible : Basculez entre le mode <strong>Générateur</strong> (mouvement ➔ tension induite) et le mode <strong>Moteur</strong> (tension appliquée ➔ forces de Laplace et rotation).
             </p>
           </div>
         </div>
