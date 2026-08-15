@@ -233,46 +233,66 @@ function WindTurbinePropeller({ active }: { active: boolean }) {
   );
 }
 
-// Pure Fluid Dynamic Wind Simulation (Moving Air Streaks + Travelling Gust Wavefronts)
+// Cinematic Aerodynamic Wind Vortex Flow (Swirling Streamlines + Floating Wind Glints)
 function WindTunnelAerodynamics({ active, speed }: { active: boolean; speed: number }) {
-  const streaksCount = 32;
-  const ringsCount = 4;
+  const spiralsCount = 12;
+  const glintsCount = 42;
+  const timeRef = useRef(0);
+  const linesGroupRef = useRef<THREE.Group>(null);
 
-  // 1. Dynamic Wind Streaks (Tapered glowing air filaments moving towards the turbine)
-  const streakConfig = useMemo(() => {
-    return Array.from({ length: streaksCount }).map((_, i) => {
-      const angle = (i / streaksCount) * Math.PI * 2 + (i * 0.45);
-      const rad = 0.15 + (i % 6) * 0.16;
+  // 1. Aerodynamic Swirling Streamline Ribbon Geometry
+  const spiralGeometries = useMemo(() => {
+    return Array.from({ length: spiralsCount }).map((_, i) => {
+      const baseAngle = (i / spiralsCount) * Math.PI * 2;
+      const baseRadius = 0.28 + (i % 4) * 0.22;
+      const points: THREE.Vector3[] = [];
+      const numSegments = 32;
+
+      for (let j = 0; j <= numSegments; j++) {
+        const u = j / numSegments; // 0 (inlet z = -4.2) to 1 (fan z = -1.3)
+        const z = -4.2 + u * 2.9;
+        const rad = baseRadius * (1.35 - u * 0.45); // funnels as it approaches the blades
+        const twist = (1 - u) * 2.2; // vortex twist
+        const angle = baseAngle + twist;
+        points.push(new THREE.Vector3(Math.cos(angle) * rad, Math.sin(angle) * rad, z));
+      }
+
+      const curve = new THREE.CatmullRomCurve3(points);
+      return new THREE.TubeGeometry(curve, 32, 0.007, 6, false);
+    });
+  }, []);
+
+  // 2. Floating Wind Glint Particles
+  const glintsData = useMemo(() => {
+    return Array.from({ length: glintsCount }).map((_, i) => {
+      const angle = (i / glintsCount) * Math.PI * 2 + (i * 0.4);
+      const rad = 0.22 + (i % 5) * 0.18;
       return {
         angle,
-        radius: rad,
-        initZ: -4.8 + ((i * 1.4) % 3.8),
-        speedMult: 0.9 + (i % 5) * 0.15,
-        length: 0.65 + (i % 4) * 0.25,
-        thickness: 0.008 + (i % 3) * 0.003,
-        opacity: 0.4 + Math.random() * 0.45,
+        rad,
+        uInit: Math.random(),
+        speedMult: 0.8 + Math.random() * 0.4,
+        size: 0.014 + (i % 3) * 0.005,
       };
     });
   }, []);
 
-  const [streakZ, setStreakZ] = useState(() => streakConfig.map((s) => s.initZ));
-  const [ringZ, setRingZ] = useState(() => [ -4.4, -3.4, -2.4, -1.4 ]);
+  const [glintU, setGlintU] = useState(() => glintsData.map((g) => g.uInit));
 
   useFrame((_, delta) => {
     if (!active || speed === 0) return;
-    const rate = Math.max(2.2, speed * 2.5) * delta;
+    timeRef.current += delta * (speed * 0.7 + 1.2);
 
-    setStreakZ((prev) =>
-      prev.map((z, idx) => {
-        const nextZ = z + rate * streakConfig[idx].speedMult;
-        return nextZ > -0.8 ? -4.8 + (nextZ + 0.8) : nextZ;
-      })
-    );
+    // Rotate the entire vortex assembly in sync with the wind speed
+    if (linesGroupRef.current) {
+      linesGroupRef.current.rotation.z = timeRef.current;
+    }
 
-    setRingZ((prev) =>
-      prev.map((z) => {
-        const nextZ = z + rate * 0.85;
-        return nextZ > -1.2 ? -4.8 + (nextZ + 1.2) : nextZ;
+    const advance = Math.max(0.45, speed * 0.6) * delta;
+    setGlintU((prev) =>
+      prev.map((u, idx) => {
+        const nextU = u + advance * glintsData[idx].speedMult;
+        return nextU > 1.0 ? nextU - 1.0 : nextU;
       })
     );
   });
@@ -281,51 +301,41 @@ function WindTunnelAerodynamics({ active, speed }: { active: boolean; speed: num
 
   return (
     <group>
-      {/* 1. Flowing Wind Air Streaks (Moving towards the turbine) */}
-      {streakConfig.map((s, idx) => {
-        const z = streakZ[idx];
-        // Deflect slightly as air approaches blades
-        const flare = z > -1.6 ? 1.0 + (z + 1.6) * 0.5 : 1.0;
-        const x = Math.cos(s.angle) * s.radius * flare;
-        const y = Math.sin(s.angle) * s.radius * flare;
-
-        return (
-          <group key={idx} position={[x, y, z]}>
-            {/* Streamline Body */}
-            <mesh rotation={[Math.PI / 2, 0, 0]}>
-              <cylinderGeometry args={[s.thickness, s.thickness * 0.3, s.length, 8]} />
-              <meshBasicMaterial
-                color="#bae6fd"
-                transparent
-                opacity={s.opacity * Math.min(1, speed / 1.0)}
-              />
-            </mesh>
-
-            {/* Glowing Tip */}
-            <mesh position={[0, 0, s.length / 2]}>
-              <sphereGeometry args={[s.thickness * 1.6, 8, 8]} />
-              <meshBasicMaterial
-                color="#ffffff"
-                transparent
-                opacity={s.opacity * 1.3 * Math.min(1, speed / 1.0)}
-              />
-            </mesh>
-          </group>
-        );
-      })}
-
-      {/* 2. Travelling Wind Gust Wavefront Rings (Visualizing wind pressure pulse) */}
-      {ringZ.map((z, i) => {
-        const radius = 0.5 + (z + 4.8) * 0.12;
-        const fade = Math.sin(((z + 4.8) / 3.6) * Math.PI);
-
-        return (
-          <mesh key={i} position={[0, 0, z]}>
-            <torusGeometry args={[radius, 0.007, 8, 32]} />
+      {/* 1. Swirling Wind Streamline Ribbons */}
+      <group ref={linesGroupRef}>
+        {spiralGeometries.map((geom, idx) => (
+          <mesh key={idx} geometry={geom}>
             <meshBasicMaterial
               color="#38bdf8"
               transparent
-              opacity={Math.max(0, fade * 0.35 * Math.min(1, speed / 1.0))}
+              opacity={0.45 * Math.min(1, speed / 0.8)}
+              blending={THREE.AdditiveBlending}
+              depthWrite={false}
+            />
+          </mesh>
+        ))}
+      </group>
+
+      {/* 2. Floating Wind Glints / Glow Particles travelling into the fan */}
+      {glintsData.map((g, idx) => {
+        const u = glintU[idx];
+        const z = -4.2 + u * 2.9;
+        const rad = g.rad * (1.35 - u * 0.45);
+        const twist = (1 - u) * 2.2 + timeRef.current;
+        const angle = g.angle + twist;
+        const x = Math.cos(angle) * rad;
+        const y = Math.sin(angle) * rad;
+        const fade = Math.sin(u * Math.PI); // smooth fade in and fade out
+
+        return (
+          <mesh key={idx} position={[x, y, z]}>
+            <sphereGeometry args={[g.size, 8, 8]} />
+            <meshBasicMaterial
+              color="#ffffff"
+              transparent
+              opacity={fade * 0.85 * Math.min(1, speed / 0.8)}
+              blending={THREE.AdditiveBlending}
+              depthWrite={false}
             />
           </mesh>
         );
