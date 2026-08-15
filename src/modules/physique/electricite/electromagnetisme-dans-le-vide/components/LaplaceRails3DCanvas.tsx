@@ -7,7 +7,7 @@ import * as THREE from "three";
 import { Play, Pause, RotateCcw, Zap } from "lucide-react";
 
 // Premium Arrow component for physics vectors
-function Arrow({ start, dir, length, color, thickness = 0.08, label, labelOffset = [0, 0, 0] }: any) {
+function Arrow({ start, dir, length, color, thickness = 0.06 }: any) {
   if (length <= 0.001) return null;
   const normalizedDir = dir.clone().normalize();
   const up = new THREE.Vector3(0, 1, 0);
@@ -22,44 +22,88 @@ function Arrow({ start, dir, length, color, thickness = 0.08, label, labelOffset
   return (
     <group position={start} quaternion={quaternion}>
       <mesh position={[0, length / 2, 0]}>
-        <cylinderGeometry args={[thickness, thickness, length, 16]} />
-        <meshPhysicalMaterial color={color} emissive={color} emissiveIntensity={0.5} roughness={0.2} metalness={0.8} />
+        <cylinderGeometry args={[thickness, thickness, length, 32]} />
+        <meshPhysicalMaterial color={color} emissive={color} emissiveIntensity={0.6} roughness={0.1} metalness={0.9} clearcoat={1} />
       </mesh>
       <mesh position={[0, length, 0]}>
-        <coneGeometry args={[thickness * 2.5, thickness * 5, 16]} />
-        <meshPhysicalMaterial color={color} emissive={color} emissiveIntensity={0.5} roughness={0.2} metalness={0.8} />
+        <coneGeometry args={[thickness * 2.2, thickness * 6, 32]} />
+        <meshPhysicalMaterial color={color} emissive={color} emissiveIntensity={0.6} roughness={0.1} metalness={0.9} clearcoat={1} />
       </mesh>
     </group>
   );
 }
 
-// XYZ Axis Helper
-function AxisHelper({ size = 2, position = [-4, -4, 0] }: { size?: number, position?: [number, number, number] }) {
+// Modern Semi-Circle Dashboard Gauge
+function ModernGauge({ value, max, label, unit, color, glowColor }: { value: number, max: number, label: string, unit: string, color: string, glowColor: string }) {
+  const percentage = Math.min(1, Math.max(0, value / max));
+  const radius = 40;
+  const circumference = 2 * Math.PI * radius;
+  const strokeDashoffset = circumference - (percentage * circumference) / 2; // Half circle is / 2
+
+  return (
+    <div className="flex flex-col items-center bg-slate-900/80 backdrop-blur-xl p-4 rounded-2xl border border-slate-700 shadow-2xl relative overflow-hidden" style={{ width: '160px' }}>
+      {/* Background Glow */}
+      <div className="absolute inset-0 opacity-20 pointer-events-none" style={{ background: `radial-gradient(circle at bottom, ${color}, transparent)` }} />
+      
+      <div className="text-xs font-black tracking-widest text-slate-300 mb-2 z-10 pointer-events-none">{label}</div>
+      
+      {/* SVG Arc */}
+      <div className="relative w-24 h-12 overflow-hidden mb-2 z-10">
+        <svg className="w-24 h-24 absolute top-0 left-0" viewBox="0 0 100 100">
+          {/* Background Arc */}
+          <circle cx="50" cy="50" r={radius} fill="none" stroke="#334155" strokeWidth="8" strokeDasharray={`${circumference/2} ${circumference}`} strokeDashoffset={circumference} transform="rotate(180 50 50)" />
+          {/* Progress Arc */}
+          <circle cx="50" cy="50" r={radius} fill="none" stroke={color} strokeWidth="8" strokeDasharray={`${circumference/2} ${circumference}`} strokeDashoffset={strokeDashoffset} transform="rotate(180 50 50)" style={{ transition: 'stroke-dashoffset 0.1s linear', filter: `drop-shadow(0 0 6px ${glowColor})` }} strokeLinecap="round" />
+        </svg>
+        {/* Needle */}
+        <div 
+          className="absolute bottom-0 left-1/2 w-1 h-10 origin-bottom rounded-full transition-transform duration-100 z-20"
+          style={{ transform: `translate(-50%, 0) rotate(${-90 + percentage * 180}deg)`, backgroundColor: '#f8fafc', boxShadow: '0 0 5px rgba(255,255,255,0.8)' }}
+        >
+          <div className="absolute -bottom-1.5 -left-1 w-3 h-3 rounded-full bg-white shadow-md border-2 border-slate-800" />
+        </div>
+      </div>
+      
+      {/* Value Display */}
+      <div className="flex items-end gap-1 z-10 pointer-events-none">
+        <span className="text-2xl font-black text-white" style={{ textShadow: `0 0 15px ${glowColor}` }}>{value.toFixed(2)}</span>
+        <span className="text-xs font-bold text-slate-400 mb-1">{unit}</span>
+      </div>
+    </div>
+  );
+}
+
+// Axis Helper tailored for this exercise
+function AxisHelper({ position = [-2, -4, 0] }: { position?: [number, number, number] }) {
   return (
     <group position={position}>
-      {/* X Axis (Red) */}
-      <Arrow start={new THREE.Vector3(0, 0, 0)} dir={new THREE.Vector3(1, 0, 0)} length={size} color="#ef4444" thickness={0.05} label="x" labelOffset={[0.2, 0, 0]} />
-      {/* Y Axis (Green) */}
-      <Arrow start={new THREE.Vector3(0, 0, 0)} dir={new THREE.Vector3(0, 1, 0)} length={size} color="#22c55e" thickness={0.05} label="y" labelOffset={[0, 0.2, 0]} />
-      {/* Z Axis (Blue) */}
-      <Arrow start={new THREE.Vector3(0, 0, 0)} dir={new THREE.Vector3(0, 0, 1)} length={size} color="#3b82f6" thickness={0.05} label="z" labelOffset={[0, 0, 0.2]} />
+      {/* Horizontal Axis (Right) */}
+      <Arrow start={new THREE.Vector3(0, 0, 0)} dir={new THREE.Vector3(1, 0, 0)} length={5} color="#ef4444" thickness={0.03} />
+      
+      {/* Vertical Axis (UP) - Labeled 'x' because the exercise uses distance x = MA1 */}
+      <Arrow start={new THREE.Vector3(0, 0, 0)} dir={new THREE.Vector3(0, 1, 0)} length={9} color="#22c55e" thickness={0.03} />
+      <Html position={[0, 9.5, 0]} center transform sprite scale={1.0} className="text-lg font-bold text-green-500 pointer-events-none drop-shadow-md">x</Html>
+      
+      {/* Z Axis (OUT) - For B field direction */}
+      <Arrow start={new THREE.Vector3(0, 0, 0)} dir={new THREE.Vector3(0, 0, 1)} length={3} color="#3b82f6" thickness={0.03} />
+      <Html position={[0, 0, 3.5]} center transform sprite scale={1.0} className="text-lg font-bold text-blue-500 pointer-events-none drop-shadow-md">z</Html>
     </group>
   );
 }
 
-// Premium Magnetic Field (Array of Arrows instead of stars)
+// Premium Magnetic Field (Array of Arrows pointing OUT of the screen, +Z)
 function PremiumMagneticField({ bMagnitude }: { bMagnitude: number }) {
   return (
     <group position={[0, 0, 0]}>
-      {/* Visual B field arrows pointing in +Y direction (UP) */}
+      {/* Visual B field arrows pointing in +Z direction (Sortant) */}
       {[-3, -1, 1, 3].map((x) => 
-        [-2, 0, 2].map((z) => (
+        [-2, 0, 2, 4].map((y) => (
           <Arrow 
-            key={`${x}-${z}`} 
-            start={new THREE.Vector3(x, -1.5, z)} 
-            dir={new THREE.Vector3(0, 1, 0)} 
+            key={`${x}-${y}`} 
+            start={new THREE.Vector3(x, y, -1)} 
+            dir={new THREE.Vector3(0, 0, 1)} 
             length={1.0 + bMagnitude * 0.5} 
-            color="#22c55e" // Green arrows as in sketch
+            color="#22c55e" // Green arrows
             thickness={0.03}
           />
         ))
@@ -72,14 +116,24 @@ function PremiumMagneticField({ bMagnitude }: { bMagnitude: number }) {
 function PremiumResistor({ position, rotation }: { position: [number, number, number], rotation?: [number, number, number] }) {
   return (
     <group position={position} rotation={rotation}>
+      {/* Wire leads */}
+      <mesh position={[0, -1.2, 0]}>
+         <cylinderGeometry args={[0.04, 0.04, 1.6, 16]} />
+         <meshPhysicalMaterial color="#94a3b8" metalness={1} roughness={0.2} />
+      </mesh>
+      <mesh position={[0, 1.2, 0]}>
+         <cylinderGeometry args={[0.04, 0.04, 1.6, 16]} />
+         <meshPhysicalMaterial color="#94a3b8" metalness={1} roughness={0.2} />
+      </mesh>
+      {/* Ceramic Body */}
       <mesh>
-        <cylinderGeometry args={[0.12, 0.12, 4, 32]} />
-        <meshPhysicalMaterial color="#b45309" roughness={0.6} metalness={0.4} clearcoat={0.5} />
+        <cylinderGeometry args={[0.2, 0.2, 1.2, 32]} />
+        <meshPhysicalMaterial color="#e5e7eb" roughness={0.9} metalness={0.1} clearcoat={0.1} />
       </mesh>
       {/* Bands */}
-      {[-0.6, -0.2, 0.2, 0.6].map((y, i) => (
+      {[-0.3, -0.1, 0.1, 0.3].map((y, i) => (
         <mesh key={i} position={[0, y, 0]}>
-          <cylinderGeometry args={[0.13, 0.13, 0.2, 32]} />
+          <cylinderGeometry args={[0.21, 0.21, 0.1, 32]} />
           <meshStandardMaterial color={['#ef4444', '#eab308', '#000', '#fbbf24'][i]} />
         </mesh>
       ))}
@@ -87,117 +141,179 @@ function PremiumResistor({ position, rotation }: { position: [number, number, nu
   );
 }
 
-function SimulationScene({ isPlaying, bMagnitude, resistance, resetTrigger }: any) {
+// Generator Component (Lab Power Supply / Battery block)
+function PremiumGenerator({ position, isPlaying, onToggle }: { position: [number, number, number], isPlaying: boolean, onToggle: () => void }) {
+  return (
+    <group position={position}>
+      {/* Power Supply Box (Made Larger) */}
+      <mesh position={[0, 0, 0]}>
+        <boxGeometry args={[2.5, 1.5, 3.0]} />
+        <meshPhysicalMaterial color="#334155" metalness={0.6} roughness={0.4} />
+      </mesh>
+      
+      {/* Front Panel details */}
+      <mesh position={[1.26, 0.1, 0]}>
+        <boxGeometry args={[0.05, 1.0, 2.4]} />
+        <meshPhysicalMaterial color="#1e293b" metalness={0.8} roughness={0.5} />
+      </mesh>
+
+      {/* Terminals */}
+      {/* Positive Terminal (Red) */}
+      <mesh position={[1.3, -0.2, -0.8]} rotation={[0, 0, Math.PI/2]}>
+        <cylinderGeometry args={[0.15, 0.15, 0.2, 32]} />
+        <meshPhysicalMaterial color="#ef4444" metalness={0.8} roughness={0.2} />
+      </mesh>
+      
+      {/* Negative Terminal (Black) */}
+      <mesh position={[1.3, -0.2, 0.8]} rotation={[0, 0, Math.PI/2]}>
+        <cylinderGeometry args={[0.15, 0.15, 0.2, 32]} />
+        <meshPhysicalMaterial color="#0f172a" metalness={0.8} roughness={0.2} />
+      </mesh>
+
+      {/* Terminal Labels (just + and -) */}
+      <Html position={[1.5, -0.2, 0.8]} center className="pointer-events-none">
+        <span className="text-xl font-black text-white">-</span>
+      </Html>
+      <Html position={[1.5, -0.2, -0.8]} center className="pointer-events-none">
+        <span className="text-xl font-black text-red-500">+</span>
+      </Html>
+
+      {/* Interactive ON/OFF Button embedded exactly on the Generator Front */}
+      <Html 
+        position={[1.286, 0.1, 0]} 
+        transform 
+        rotation={[0, Math.PI/2, 0]} 
+        scale={0.4} 
+      >
+        <button
+          onClick={(e) => {
+            e.stopPropagation(); // prevent orbit controls from taking the click
+            onToggle();
+          }}
+          className={`w-32 h-16 rounded-xl font-black text-2xl transition-all border-b-[6px] active:border-b-0 active:translate-y-1.5 flex items-center justify-center ${
+            isPlaying 
+              ? 'bg-red-500 text-white border-red-800 shadow-[0_0_20px_rgba(239,68,68,0.8)]' 
+              : 'bg-green-500 text-white border-green-800 shadow-[0_0_20px_rgba(34,197,94,0.8)]'
+          }`}
+        >
+          {isPlaying ? 'OFF' : 'ON'}
+        </button>
+      </Html>
+    </group>
+  );
+}
+
+function SimulationScene({ isPlaying, setIsPlaying, bMagnitude, resistance, resetTrigger }: any) {
   const rodRef = useRef<THREE.Group>(null);
   
   // Physics constants
-  const g = 2.0; // Reduced "gravity" or driving force so it moves slower
+  const g = 9.81; // Real gravity
   const m = 0.05;
-  const l = 4.0; // Distance between rails (along Z)
+  const l = 4.0; // Distance between rails (along X)
   
-  const state = useRef({ x: -3.5, v: 0 }); // Moving along X
+  const state = useRef({ y: 3.5, v: 0 }); // Moving along Y (downwards)
 
   useEffect(() => {
-    state.current = { x: -3.5, v: 0 };
-    if (rodRef.current) rodRef.current.position.x = -3.5;
+    state.current = { y: 3.5, v: 0 };
+    if (rodRef.current) rodRef.current.position.y = 3.5;
   }, [resetTrigger]);
 
-  const [physicsData, setPhysicsData] = useState({ v: 0, Fm: 0, P: m * g, I: 0 });
+  const [physicsData, setPhysicsData] = useState({ v: 0, Fm: 0, I: 0 });
 
   useFrame((_, delta) => {
     if (!isPlaying) return;
 
-    const timeScale = 1.0; // Slowed down simulation
-    const dt = 0.016 * timeScale; // Fixed delta for smoother, consistent physics
+    const timeScale = 4.0; 
+    const dt = 0.016 * timeScale; 
     
-    // Avoid division by zero if B = 0
+    // tau = m*R / (B*l)^2
     const tau = bMagnitude === 0 ? Infinity : (m * resistance) / (bMagnitude * bMagnitude * l * l);
-    // Driving force is "g" (gravity equivalent pulling it along +X)
+    
+    // v is downward speed. dv/dt = g - v/tau
     const dv_dt = tau === Infinity ? g : (g - state.current.v / tau);
     
     state.current.v += dv_dt * dt;
-    state.current.x += state.current.v * dt;
+    state.current.y -= state.current.v * dt;
 
-    if (state.current.x > 3.5) {
-      state.current.x = 3.5;
+    // Stop at the bottom (y = -3.5)
+    if (state.current.y < -3.5) {
+      state.current.y = -3.5;
       state.current.v = 0;
     }
 
     if (rodRef.current) {
-      rodRef.current.position.x = state.current.x;
+      rodRef.current.position.y = state.current.y;
     }
 
+    // I = e/R = B*l*v / R
     const current_I = (bMagnitude * l * state.current.v) / resistance;
+    // Fm = I*l*B
     const Fm = current_I * l * bMagnitude;
 
     setPhysicsData({
       v: state.current.v,
       Fm: Fm,
-      P: m * g, // driving force
       I: current_I
     });
   });
 
-  const pVec = new THREE.Vector3(1, 0, 0); // Moving +X
-  const fmVec = new THREE.Vector3(-1, 0, 0); // Opposing -X
-  const forceScale = 5.0; // scale up forces for better visual
+  const pVec = new THREE.Vector3(0, -1, 0); // Gravity pushes down
+  const fmVec = new THREE.Vector3(0, 1, 0); // Laplace force opposes (up)
+  const forceScale = 5.0; 
 
   return (
     <group position={[0, 0, 0]}>
-      {/* Premium Rails (along X) */}
-      <mesh position={[0, 0, -l/2]} rotation={[0, 0, Math.PI/2]}>
+      {/* Vertical Rails */}
+      <mesh position={[-l/2, 0, 0]}>
         <cylinderGeometry args={[0.1, 0.1, 9, 32]} />
-        <meshPhysicalMaterial color="#3b82f6" metalness={1} roughness={0.15} clearcoat={1} /> {/* Blue rails like sketch */}
+        <meshPhysicalMaterial color="#3b82f6" metalness={1} roughness={0.15} clearcoat={1} />
       </mesh>
-      <mesh position={[0, 0, l/2]} rotation={[0, 0, Math.PI/2]}>
+      <mesh position={[l/2, 0, 0]}>
         <cylinderGeometry args={[0.1, 0.1, 9, 32]} />
-        <meshPhysicalMaterial color="#3b82f6" metalness={1} roughness={0.15} clearcoat={1} /> {/* Blue rails like sketch */}
-      </mesh>
-
-      {/* Left connector */}
-      <mesh position={[-4.5, 0, 0]} rotation={[Math.PI/2, 0, 0]}>
-        <cylinderGeometry args={[0.08, 0.08, l, 32]} />
-        <meshPhysicalMaterial color="#475569" metalness={0.8} roughness={0.5} />
+        <meshPhysicalMaterial color="#3b82f6" metalness={1} roughness={0.15} clearcoat={1} />
       </mesh>
 
       {/* Rail Labels */}
-      <Html position={[-4.5, 0.5, -l/2]} className="text-sm font-bold text-slate-300 pointer-events-none">A</Html>
-      <Html position={[-4.5, 0.5, l/2]} className="text-sm font-bold text-slate-300 pointer-events-none">A'</Html>
-      <Html position={[4.5, 0.5, -l/2]} className="text-sm font-bold text-slate-300 pointer-events-none">A₁</Html>
-      <Html position={[4.5, 0.5, l/2]} className="text-sm font-bold text-slate-300 pointer-events-none">A'₁</Html>
+      <Html position={[-l/2 - 0.5, 4.5, 0]} center transform sprite scale={1.0} className="text-lg font-bold text-slate-300 pointer-events-none drop-shadow-md">A</Html>
+      <Html position={[l/2 + 0.5, 4.5, 0]} center transform sprite scale={1.0} className="text-lg font-bold text-slate-300 pointer-events-none drop-shadow-md">A'</Html>
+      <Html position={[-l/2 - 0.5, -4.5, 0]} center transform sprite scale={1.0} className="text-lg font-bold text-slate-300 pointer-events-none drop-shadow-md">A₁</Html>
+      <Html position={[l/2 + 0.5, -4.5, 0]} center transform sprite scale={1.0} className="text-lg font-bold text-slate-300 pointer-events-none drop-shadow-md">A'₁</Html>
 
-      {/* Resistor at the right end (x = 4.5) spans the whole gap */}
-      <PremiumResistor position={[4.5, 0, 0]} rotation={[Math.PI/2, 0, 0]} />
+      {/* Resistor at the bottom (y = -4) connecting A1 and A'1 */}
+      <PremiumResistor position={[0, -4, 0]} rotation={[0, 0, Math.PI/2]} />
+      <Html position={[0, -4.8, 0]} center transform sprite scale={1.0} className="pointer-events-none">
+        <span className="text-lg font-bold text-white drop-shadow-md">R</span>
+      </Html>
 
       <PremiumMagneticField bMagnitude={bMagnitude} />
 
-      {/* Moving Rod MN (Pink like sketch) */}
-      <group ref={rodRef} position={[-3.5, 0.15, 0]}>
+      {/* Moving Rod MN (Horizontal, moving down Y) */}
+      <group ref={rodRef} position={[0, 3.5, 0]}>
         {/* The Rod */}
-        <mesh rotation={[Math.PI/2, 0, 0]}>
+        <mesh rotation={[0, 0, Math.PI/2]}>
           <cylinderGeometry args={[0.15, 0.15, l + 0.6, 64]} />
           <meshPhysicalMaterial color="#ec4899" emissive="#be185d" emissiveIntensity={0.2} metalness={0.8} roughness={0.2} clearcoat={1} />
         </mesh>
         
-        {/* End Caps for Premium Look */}
-        <mesh position={[0, 0, -l/2 - 0.3]} rotation={[Math.PI/2, 0, 0]}>
+        {/* End Caps */}
+        <mesh position={[-l/2 - 0.3, 0, 0]}>
           <sphereGeometry args={[0.15, 32, 32]} />
           <meshPhysicalMaterial color="#ec4899" metalness={0.8} roughness={0.2} />
         </mesh>
-        <mesh position={[0, 0, l/2 + 0.3]} rotation={[Math.PI/2, 0, 0]}>
+        <mesh position={[l/2 + 0.3, 0, 0]}>
           <sphereGeometry args={[0.15, 32, 32]} />
           <meshPhysicalMaterial color="#ec4899" metalness={0.8} roughness={0.2} />
         </mesh>
 
-        <Html position={[0, 0.4, -l/2 - 0.7]} className="text-sm font-bold text-slate-100 pointer-events-none">M</Html>
-        <Html position={[0, 0.4, l/2 + 0.7]} className="text-sm font-bold text-slate-100 pointer-events-none">N</Html>
+        <Html position={[-l/2 - 0.4, 0.4, 0]} center transform sprite scale={1.0} className="text-lg font-black text-slate-100 pointer-events-none drop-shadow-md">M</Html>
+        <Html position={[l/2 + 0.4, 0.4, 0]} center transform sprite scale={1.0} className="text-lg font-black text-slate-100 pointer-events-none drop-shadow-md">N</Html>
         
         {/* Dynamic Glowing Current Indicator */}
         {physicsData.I > 0.05 && (
-          <Float speed={5} rotationIntensity={0} floatIntensity={0.2} position={[0, 0.3, 0]}>
+          <Float speed={5} rotationIntensity={0} floatIntensity={0.2} position={[0, 0, 0.3]}>
             <Arrow 
-              start={new THREE.Vector3(0, 0, l/3)} 
-              dir={new THREE.Vector3(0, 0, -1)} 
+              start={new THREE.Vector3(l/3, 0, 0)} 
+              dir={new THREE.Vector3(-1, 0, 0)} 
               length={1.0 + physicsData.I * 0.2} 
               color="#fbbf24" 
               thickness={0.04}
@@ -209,7 +325,7 @@ function SimulationScene({ isPlaying, bMagnitude, resistance, resetTrigger }: an
         <Arrow 
           start={new THREE.Vector3(0, 0, 0)} 
           dir={pVec} 
-          length={physicsData.P * forceScale} 
+          length={(m * g) * forceScale} 
           color="#ef4444" 
         />
 
@@ -223,11 +339,25 @@ function SimulationScene({ isPlaying, bMagnitude, resistance, resetTrigger }: an
         )}
       </group>
       
-      {/* Floor reflection shadow */}
-      <ContactShadows position={[0, -5, 0]} opacity={0.4} scale={20} blur={2} far={10} />
+      {/* Gravity field vector indicator far away from the shape (Top Left) */}
+      <group position={[-5, 4, 0]}>
+        <Arrow start={new THREE.Vector3(0, 0, 0)} dir={new THREE.Vector3(0, -1, 0)} length={2.5} color="#f59e0b" thickness={0.04} />
+        <Html position={[0.4, -1.2, 0]} transform sprite scale={1.0} className="text-lg font-black text-amber-500 pointer-events-none drop-shadow-md">g</Html>
+      </group>
 
-      {/* XYZ Coordinates Indicator positioned exactly at the start of the rails */}
-      <AxisHelper position={[-4.5, 0, 0]} size={1.5} />
+      {/* Dashboards for Speed and Current (Side-by-side and ENLARGED, Moved further right) */}
+      <Html position={[9, 3.5, 0]} center transform sprite scale={1.2}>
+        <div className="flex flex-row gap-6">
+          <ModernGauge value={physicsData.v} max={15.0} label="VITESSE" unit="m/s" color="#06b6d4" glowColor="rgba(6,182,212,0.5)" />
+          <ModernGauge value={physicsData.I} max={1.5} label="COURANT" unit="A" color="#f59e0b" glowColor="rgba(245,158,11,0.5)" />
+        </div>
+      </Html>
+
+      {/* Floor reflection shadow */}
+      <ContactShadows position={[0, -5.5, 0]} opacity={0.4} scale={20} blur={2} far={10} />
+
+      {/* XYZ Coordinates Indicator positioned exactly at A1 (x=-2, y=-4) */}
+      <AxisHelper position={[-2, -4, 0]} />
     </group>
   );
 }
@@ -247,8 +377,8 @@ export default function LaplaceRails3DCanvas() {
     <div className="w-full bg-slate-950 rounded-3xl border border-slate-800 shadow-[0_20px_50px_rgba(0,0,0,0.5)] overflow-hidden flex flex-col my-8 relative">
       
       {/* 3D Viewport */}
-      <div className="relative h-[280px] sm:h-[350px] w-full bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-slate-800 via-slate-900 to-black">
-        <Canvas camera={{ position: [0, 8, 12], fov: 45 }}>
+      <div className="relative h-[250px] sm:h-[320px] w-full bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-slate-800 via-slate-900 to-black">
+        <Canvas camera={{ position: [0, 0, 18], fov: 45 }}>
           <ambientLight intensity={0.4} />
           <directionalLight position={[10, 10, 5]} intensity={2} color="#ffffff" />
           <pointLight position={[-10, -10, -5]} intensity={1} color="#38bdf8" />
@@ -256,91 +386,86 @@ export default function LaplaceRails3DCanvas() {
           
           <SimulationScene 
             isPlaying={isPlaying} 
+            setIsPlaying={setIsPlaying}
             bMagnitude={bMagnitude} 
             resistance={resistance} 
             resetTrigger={resetCounter}
           />
           
-          <OrbitControls 
-            enablePan={true}
-          />
+          <OrbitControls makeDefault maxPolarAngle={Math.PI / 2} minDistance={5} maxDistance={30} />
         </Canvas>
+      </div>
 
-        {/* Premium Control Overlay */}
-        <div className="absolute top-4 left-4 flex gap-3">
+      {/* Controls and Sliders Panel (All in one row, Sleek and Compact) */}
+      <div className="flex flex-col xl:flex-row items-center gap-4 p-4 bg-slate-900 border-t border-slate-800">
+        
+        {/* Play/Pause & Reset Buttons */}
+        <div className="flex items-center gap-2 shrink-0 w-full xl:w-auto justify-center">
           <button
             onClick={() => setIsPlaying(!isPlaying)}
-            className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm transition-all duration-300 shadow-lg backdrop-blur-md border ${
+            className={`flex items-center gap-2 px-5 py-2.5 rounded-lg font-bold text-sm transition-all duration-300 shadow-sm border ${
               isPlaying 
-                ? "bg-amber-500/10 text-amber-400 border-amber-500/50 hover:bg-amber-500/20 hover:shadow-amber-500/20"
-                : "bg-emerald-500/10 text-emerald-400 border-emerald-500/50 hover:bg-emerald-500/20 hover:shadow-emerald-500/20"
+                ? "bg-amber-500/10 text-amber-400 border-amber-500/50 hover:bg-amber-500/20"
+                : "bg-emerald-500/10 text-emerald-400 border-emerald-500/50 hover:bg-emerald-500/20"
             }`}
           >
-            {isPlaying ? <Pause size={18} /> : <Play size={18} />}
+            {isPlaying ? <Pause size={16} /> : <Play size={16} />}
             {isPlaying ? "Mettre en Pause" : "Lâcher la tige"}
           </button>
           <button
             onClick={handleReset}
-            className="flex items-center justify-center p-2.5 rounded-xl bg-white/5 text-slate-300 border border-white/10 hover:bg-white/10 hover:text-white transition-all backdrop-blur-md shadow-lg"
-            title="Réinitialiser la simulation"
+            className="flex items-center justify-center p-2.5 rounded-lg bg-slate-800 text-slate-300 border border-slate-700 hover:bg-slate-700 hover:text-white transition-all shadow-sm"
+            title="Réinitialiser l'expérience"
           >
-            <RotateCcw size={18} />
+            <RotateCcw size={16} />
           </button>
         </div>
-      </div>
 
-      {/* Premium Control Panel */}
-      <div className="bg-slate-900/80 backdrop-blur-xl border-t border-slate-800 p-6 sm:p-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        {/* Sliders Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 flex-grow w-full">
           
           {/* Champ Magnétique B Slider */}
-          <div className="space-y-4">
-            <div className="flex justify-between items-center">
-              <label className="text-sm font-bold text-sky-400 flex items-center gap-2">
-                <div className="p-1.5 bg-sky-500/20 rounded-md"><Play size={14} className="text-sky-400 rotate-90" /></div>
+          <div className="bg-slate-950/50 p-3 rounded-xl border border-slate-800/50 flex flex-col justify-center">
+            <div className="flex justify-between items-center mb-2">
+              <div className="flex items-center gap-2 text-cyan-400 font-semibold text-xs whitespace-nowrap">
+                <div className="p-1 rounded bg-cyan-500/20 border border-cyan-500/30">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 4h12M6 20h12M4 12h16M12 4v16"/></svg>
+                </div>
                 Champ Magnétique B (T)
-              </label>
-              <span className="text-sm font-black bg-sky-950 px-3 py-1 rounded-md text-sky-300 border border-sky-800 shadow-inner">
-                {bMagnitude.toFixed(1)} T
-              </span>
+              </div>
+              <span className="font-bold text-cyan-300 bg-cyan-950 px-2 py-0.5 rounded text-xs border border-cyan-800">{bMagnitude.toFixed(2)} T</span>
             </div>
             <input
               type="range"
-              min="0.0"
-              max="1.0"
-              step="0.1"
+              min="0"
+              max="1"
+              step="0.05"
               value={bMagnitude}
               onChange={(e) => setBMagnitude(parseFloat(e.target.value))}
-              className="w-full accent-sky-500 h-2 bg-slate-800 rounded-full appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-sky-500/50"
+              className="w-full accent-cyan-500 hover:accent-cyan-400 transition-all cursor-pointer h-1.5"
             />
-            <p className="text-xs text-slate-400 font-medium">
-              Contrôle l'intensité du champ magnétique (vecteurs bleus). Plus il est fort, plus la force de Laplace sera grande.
-            </p>
           </div>
 
           {/* Résistance R Slider */}
-          <div className="space-y-4">
-            <div className="flex justify-between items-center">
-              <label className="text-sm font-bold text-amber-500 flex items-center gap-2">
-                <div className="p-1.5 bg-amber-500/20 rounded-md"><Zap size={14} className="text-amber-500" /></div>
+          <div className="bg-slate-950/50 p-3 rounded-xl border border-slate-800/50 flex flex-col justify-center">
+            <div className="flex justify-between items-center mb-2">
+              <div className="flex items-center gap-2 text-amber-500 font-semibold text-xs whitespace-nowrap">
+                <div className="p-1 rounded bg-amber-500/20 border border-amber-500/30">
+                  <Zap size={12} />
+                </div>
                 Résistance R (Ω)
-              </label>
-              <span className="text-sm font-black bg-amber-950 px-3 py-1 rounded-md text-amber-400 border border-amber-800 shadow-inner">
-                {resistance.toFixed(1)} Ω
-              </span>
+              </div>
+              <span className="font-bold text-amber-400 bg-amber-950 px-2 py-0.5 rounded text-xs border border-amber-800">{resistance.toFixed(1)} Ω</span>
             </div>
             <input
               type="range"
-              min="0.5"
+              min="0.1"
               max="5.0"
               step="0.1"
               value={resistance}
               onChange={(e) => setResistance(parseFloat(e.target.value))}
-              className="w-full accent-amber-500 h-2 bg-slate-800 rounded-full appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-amber-500/50"
+              className="w-full accent-amber-500 hover:accent-amber-400 transition-all cursor-pointer h-1.5"
             />
-            <p className="text-xs text-slate-400 font-medium">
-              Contrôle la résistance du circuit. Une faible résistance génère un courant induit très puissant qui freine la tige.
-            </p>
           </div>
 
         </div>
