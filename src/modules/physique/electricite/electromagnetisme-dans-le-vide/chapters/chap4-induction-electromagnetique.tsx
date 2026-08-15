@@ -186,38 +186,49 @@ export default function Chap4InductionElectromagnetique() {
           2. Application de la loi de Faraday
         </h2>
         
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-6">
-          <div className="flex flex-col justify-center space-y-4">
-            <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
-              La principale application de la loi de Faraday est sans doute le <strong>générateur électrique</strong> ou <strong>dynamo</strong> ; il transforme de l'énergie mécanique en énergie électrique.
-            </p>
-            
-            <div className="bg-muted/50 p-4 rounded-xl border border-border">
-              <p className="text-sm font-medium mb-3">La f.é.m. induite dans un tel générateur est :</p>
-              <div className="bg-background/80 p-3 rounded-lg flex justify-center border border-border/50 shadow-inner mb-3 overflow-x-auto">
-                <LatexMath math="e = -\frac{d\Phi}{dt} = -\frac{d}{dt}(B \cdot S \cos \theta)" />
+        <div className="space-y-4 mb-4">
+          <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
+            La principale application de la loi de Faraday est le <strong>générateur électrique</strong> (alternateur / dynamo) convertissant l'énergie mécanique de rotation en énergie électrique induite.
+          </p>
+          
+          {/* 3 Compact Formula Cards in Responsive Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5 sm:gap-3">
+            <div className="bg-muted/40 p-2.5 rounded-xl border border-border/70 flex flex-col justify-between shadow-sm">
+              <span className="text-[11px] font-semibold text-muted-foreground mb-1">
+                1. Flux (<LatexMath math="N" /> spires) :
+              </span>
+              <div className="bg-background/90 p-1.5 rounded-lg flex justify-center border border-border/50 shadow-inner overflow-x-auto text-xs">
+                <LatexMath math="\Phi = N \cdot B \cdot S \cos(\omega t)" />
               </div>
-              <p className="text-sm text-muted-foreground mb-3">
-                Si le conducteur tourne avec une vitesse angulaire constante <LatexMath math="\omega" />, on a :
-              </p>
-              <div className="bg-background/80 p-3 rounded-lg flex justify-center border border-border/50 shadow-inner mb-3">
-                <LatexMath math="\omega = \frac{d\theta}{dt} \implies \theta = \omega t" />
+            </div>
+
+            <div className="bg-muted/40 p-2.5 rounded-xl border border-border/70 flex flex-col justify-between shadow-sm">
+              <span className="text-[11px] font-semibold text-muted-foreground mb-1">
+                2. Loi de Faraday :
+              </span>
+              <div className="bg-background/90 p-1.5 rounded-lg flex justify-center border border-border/50 shadow-inner overflow-x-auto text-xs">
+                <LatexMath math="e = -\frac{d\Phi}{dt} = N B S \omega \sin(\omega t)" />
               </div>
-              <p className="text-sm text-muted-foreground mb-3">
-                La f.é.m induite devient alors une tension alternative sinusoïdale :
-              </p>
-              <div className="bg-blue-500/10 border border-blue-500/30 p-3 rounded-lg text-blue-500 dark:text-blue-400 font-bold flex justify-center overflow-x-auto">
-                <LatexMath math="e = B \cdot S \cdot \omega \sin(\omega t) = e_0 \sin(\omega t)" />
+            </div>
+
+            <div className="bg-blue-500/5 p-2.5 rounded-xl border border-blue-500/30 flex flex-col justify-between shadow-sm">
+              <span className="text-[11px] font-semibold text-blue-500 dark:text-blue-400 mb-1">
+                3. Tension induite :
+              </span>
+              <div className="bg-blue-500/10 border border-blue-500/40 p-1.5 rounded-lg text-blue-500 dark:text-blue-400 font-bold flex justify-center overflow-x-auto text-xs">
+                <LatexMath math="e(t) = e_0 \sin(\omega t)" />
+                <span className="ml-2 font-mono text-[10px] self-center opacity-80">(e₀ = N·B·S·ω)</span>
               </div>
             </div>
           </div>
-          
-          <div className="flex flex-col">
-            <LazyMount height="400px" fallbackText="Chargement Simulateur Générateur...">
+
+          {/* Compact Full-Width 3D Generator Simulator */}
+          <div className="w-full flex flex-col">
+            <LazyMount height="350px" fallbackText="Chargement Simulateur Générateur...">
               <Alternator3DCanvas />
             </LazyMount>
-            <p className="text-xs text-center text-muted-foreground mt-2 italic">
-              Alternateur : Rotation d'un cadre de surface <LatexMath math="S" /> dans un champ magnétique uniforme <LatexMath math="\vec{B}" />.
+            <p className="text-[11px] text-center text-muted-foreground mt-1.5 italic">
+              Alternateur : Rotation d'un bobinage de <LatexMath math="N" /> spires à vitesse <LatexMath math="\omega" /> dans un champ <LatexMath math="\vec{B}_0" />.
             </p>
           </div>
         </div>
