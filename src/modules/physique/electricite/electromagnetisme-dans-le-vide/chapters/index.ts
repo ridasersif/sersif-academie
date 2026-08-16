@@ -2,8 +2,9 @@ import Chap1CourantsChamp from "./chap1-courants-champ";
 import Chap2LoisFondamentales from "./chap2-lois-fondamentales";
 import Chap3PotentielDipole from "./chap3-potentiel-dipole";
 import Chap4InductionElectromagnetique from "./chap4-induction-electromagnetique";
-import Chap5EnergieElectromagnetique from "./chap5-energie-electromagnetique";
+import Chap5EquationsMaxwell from "./chap5-equations-maxwell";
 import Chap6ARQS from "./chap6-arqs";
+import Chap7EnergieElectromagnetique from "./chap7-energie-electromagnetique";
 
 export const ELECTROMAGNETISME_VIDE_CHAPTERS = [
   {
@@ -31,29 +32,29 @@ export const ELECTROMAGNETISME_VIDE_CHAPTERS = [
     id: "induction-electromagnetique",
     num: "04",
     title: "Induction Électromagnétique",
-    subtitle: "Lois de Faraday, Lenz et Rail de Laplace",
+    subtitle: "Lois de Faraday, Lenz et Travail de Laplace",
     component: Chap4InductionElectromagnetique,
   },
   {
-    id: "energie-electromagnetique",
+    id: "equations-maxwell",
     num: "05",
-    title: "Énergie Électromagnétique",
-    subtitle: "Vecteur et identité de Poynting",
-    component: Chap5EnergieElectromagnetique,
+    title: "Équations de Maxwell",
+    subtitle: "Formulations locales, intégrales et courants de déplacement",
+    component: Chap5EquationsMaxwell,
   },
   {
     id: "arqs",
     num: "06",
-    title: "ARQS",
-    subtitle: "Approximation des Régimes Quasi-Stationnaires",
+    title: "ARQS — Approximation des Régimes Quasi-Stationnaires",
+    subtitle: "Conditions de validité et régimes quasi-stationnaires",
     component: Chap6ARQS,
   },
   {
-    id: "equations-maxwell",
+    id: "energie-electromagnetique",
     num: "07",
-    title: "Équations de Maxwell et Potentiels",
-    subtitle: "Formulations locales et intégrales",
-    component: null,
+    title: "Énergie Électromagnétique",
+    subtitle: "Vecteur de Poynting et Bilan d'Énergie",
+    component: Chap7EnergieElectromagnetique,
   }
 ];
 
@@ -62,6 +63,7 @@ export {
   Chap2LoisFondamentales, 
   Chap3PotentielDipole, 
   Chap4InductionElectromagnetique,
-  Chap5EnergieElectromagnetique,
-  Chap6ARQS
+  Chap5EquationsMaxwell,
+  Chap6ARQS,
+  Chap7EnergieElectromagnetique
 };

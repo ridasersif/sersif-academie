@@ -32,7 +32,7 @@ function FormulaCard({ children, label, color = "cyan" }: { children: React.Reac
   );
 }
 
-export default function Chap5EnergieElectromagnetique() {
+export default function Chap7EnergieElectromagnetique() {
   return (
     <div className="space-y-6 sm:space-y-8 w-full max-w-full overflow-x-hidden pb-12">
       
