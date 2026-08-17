@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import LatexMath from "@/components/ui/LatexMath";
 import dynamic from 'next/dynamic';
 import LazyMount from "@/components/ui/LazyMount";
@@ -9,24 +9,112 @@ const ARQSCondition3DCanvas = dynamic(() => import("../components/ARQSCondition3
 const DisplacementCurrent3DCanvas = dynamic(() => import("../components/DisplacementCurrent3DCanvas"), { ssr: false });
 const SkinEffect3DCanvas = dynamic(() => import("../components/SkinEffect3DCanvas"), { ssr: false });
 
-import { Scale, Zap, Waves, AlertTriangle } from "lucide-react";
+import { 
+  Scale, 
+  Zap, 
+  Waves, 
+  AlertTriangle, 
+  CheckCircle2, 
+  Lightbulb, 
+  HelpCircle, 
+  ChevronDown, 
+  ChevronUp, 
+  GraduationCap, 
+  BookOpen, 
+  ArrowRight,
+  ShieldCheck,
+  Flame,
+  Sparkles
+} from "lucide-react";
 
-/* ── Formula Card ── */
-function FormulaCard({ children, label, color = "cyan" }: { children: React.ReactNode; label: string; color?: string }) {
-  const borderColor = color === "cyan" ? "border-cyan-500/40" : color === "emerald" ? "border-emerald-500/40" : color === "amber" ? "border-amber-500/40" : "border-purple-500/40";
-  const shadowColor = color === "cyan" ? "rgba(6,182,212,0.1)" : color === "emerald" ? "rgba(16,185,129,0.1)" : color === "amber" ? "rgba(245,158,11,0.1)" : "rgba(168,85,247,0.1)";
-  const barColor = color === "cyan" ? "bg-cyan-500" : color === "emerald" ? "bg-emerald-500" : color === "amber" ? "bg-amber-500" : "bg-purple-500";
-  const labelColor = color === "cyan" ? "text-cyan-500/80" : color === "emerald" ? "text-emerald-500/80" : color === "amber" ? "text-amber-500/80" : "text-purple-500/80";
+/* ── Formula Card Propre & Épurée ── */
+function FormulaCard({ 
+  children, 
+  label, 
+  color = "cyan" 
+}: { 
+  children: React.ReactNode; 
+  label: string; 
+  color?: "cyan" | "emerald" | "amber" | "purple" | "sky" 
+}) {
+  const colorMap = {
+    cyan: { border: "border-cyan-500/30", text: "text-cyan-400", bar: "bg-cyan-500" },
+    emerald: { border: "border-emerald-500/30", text: "text-emerald-400", bar: "bg-emerald-500" },
+    amber: { border: "border-amber-500/30", text: "text-amber-400", bar: "bg-amber-500" },
+    purple: { border: "border-purple-500/30", text: "text-purple-400", bar: "bg-purple-500" },
+    sky: { border: "border-sky-500/30", text: "text-sky-400", bar: "bg-sky-500" },
+  };
+  const c = colorMap[color] || colorMap.cyan;
 
   return (
-    <div className={`max-w-lg mx-auto p-3 sm:p-4 rounded-xl bg-muted/50 dark:bg-slate-900/50 border ${borderColor} flex flex-col items-center justify-center relative overflow-hidden`} style={{ boxShadow: `0 0 15px ${shadowColor}` }}>
-      <div className={`absolute top-0 left-0 w-1 h-full ${barColor} rounded-l-xl`} />
-      <div className="text-center font-mono text-sm sm:text-base mb-1 py-1 overflow-visible flex items-center justify-center">
+    <div className={`p-3 sm:p-4 rounded-xl bg-card border ${c.border} flex flex-col items-center justify-center relative overflow-hidden shadow-xs`}>
+      <div className={`absolute top-0 left-0 w-1 h-full ${c.bar}`} />
+      <div className="text-center text-xs sm:text-sm font-medium text-foreground py-1 overflow-x-auto w-full">
         {children}
       </div>
-      <p className={`text-[10px] text-center ${labelColor} font-bold uppercase tracking-wider`}>
+      <p className={`text-[10px] text-center ${c.text} font-bold uppercase tracking-wider mt-1`}>
         {label}
       </p>
+    </div>
+  );
+}
+
+/* ── Accordion pour l'Exercice d'Application ── */
+function ExerciseQuestion({
+  number,
+  title,
+  question,
+  solution,
+  tip
+}: {
+  number: number;
+  title: string;
+  question: React.ReactNode;
+  solution: React.ReactNode;
+  tip?: string;
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <div className="rounded-xl border border-border/80 bg-card overflow-hidden transition-all duration-200">
+      <div className="p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-muted/20">
+        <div className="flex items-start gap-3">
+          <span className="w-6 h-6 rounded-full bg-primary/10 text-primary font-bold text-xs flex items-center justify-center shrink-0 mt-0.5 sm:mt-0">
+            Q{number}
+          </span>
+          <div>
+            <h4 className="text-xs sm:text-sm font-bold text-foreground">{title}</h4>
+            <div className="text-xs text-muted-foreground mt-1 leading-relaxed">{question}</div>
+          </div>
+        </div>
+
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all shrink-0 flex items-center gap-1.5 border ${
+            isOpen 
+              ? "bg-primary text-primary-foreground border-primary" 
+              : "bg-background hover:bg-muted text-foreground border-border"
+          }`}
+        >
+          <span>{isOpen ? "Masquer la Solution" : "Voir la Solution"}</span>
+          {isOpen ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+        </button>
+      </div>
+
+      {isOpen && (
+        <div className="p-4 bg-background/50 border-t border-border/60 space-y-3 animate-in fade-in duration-200">
+          <div className="text-xs text-foreground leading-relaxed">
+            {solution}
+          </div>
+
+          {tip && (
+            <div className="flex items-start gap-2 text-[11px] text-amber-500 dark:text-amber-400 bg-amber-500/10 p-2.5 rounded-lg border border-amber-500/20">
+              <Lightbulb className="w-4 h-4 shrink-0 mt-0.5" />
+              <span><strong>Conseil du correcteur :</strong> {tip}</span>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
@@ -36,150 +124,384 @@ export default function Chap6ARQS() {
     <div className="space-y-6 sm:space-y-8 w-full max-w-full overflow-x-hidden pb-12">
       
       {/* ═══════════════════════════════════════════ */}
-      {/* PARTIE 1: CONDITION DE L'ARQS               */}
+      {/* HEADER DU CHAPITRE                         */}
       {/* ═══════════════════════════════════════════ */}
-      <section className="bg-card/90 border border-border/80 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 shadow-sm w-full max-w-full overflow-x-hidden">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 text-xs font-extrabold mb-3">
+      <div className="rounded-2xl p-5 sm:p-6 border border-teal-500/30 bg-gradient-to-br from-teal-950/30 via-slate-900 to-slate-950 shadow-sm relative overflow-hidden">
+        <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-teal-500/10 border border-teal-500/20 text-teal-400 text-[11px] font-bold mb-2">
           <Scale className="w-3.5 h-3.5" />
-          <span>Partie 1 • La Condition Fondamentale</span>
+          <span>Chapitre 06 • Approximation Fondamentale</span>
         </div>
-        
-        <h2 className="text-xl sm:text-2xl font-black mb-4 text-foreground leading-tight">
-          1. L'Approximation des Régimes Quasi-Stationnaires (ARQS)
-        </h2>
 
-        <p className="text-sm sm:text-base text-muted-foreground leading-relaxed mb-6">
-          Dans la réalité, les effets électromagnétiques se propagent à la vitesse de la lumière <LatexMath math="c" />. Si un circuit de taille <LatexMath math="L" /> est soumis à un signal de fréquence <LatexMath math="f" />, le signal met un temps <LatexMath math="\tau = L/c" /> pour le traverser. L'ARQS consiste à négliger ce temps de propagation.
+        <h1 className="text-xl sm:text-2xl font-black text-foreground tracking-tight">
+          ARQS — Approximation des Régimes Quasi-Stationnaires
+        </h1>
+
+        <p className="text-xs sm:text-sm text-muted-foreground mt-1 max-w-3xl leading-relaxed">
+          Comprendre quand et pourquoi les lois de l&apos;électricité usuelle (Kirchhoff, loi des mailles, loi des nœuds) sont valables, et ce qui change lorsque la fréquence augmente.
+        </p>
+      </div>
+
+      {/* ═══════════════════════════════════════════ */}
+      {/* PARTIE 0 : L'INTUITION (POURQUOI L'ARQS ?)   */}
+      {/* ═══════════════════════════════════════════ */}
+      <section className="bg-card border border-border/80 rounded-2xl p-4 sm:p-6 shadow-xs space-y-4">
+        <div className="flex items-center gap-2 text-teal-500">
+          <Lightbulb className="w-4 h-4" />
+          <h2 className="text-sm sm:text-base font-bold text-foreground">
+            0. L&apos;Intuition : Pourquoi l&apos;électricité n&apos;est pas instantanée ?
+          </h2>
+        </div>
+
+        <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
+          Quand vous appuyez sur un interrupteur, la lumière s&apos;allume en apparence instantanément. Mais en réalité, l&apos;information électromagnétique voyage à une vitesse finie : la vitesse de la lumière dans le vide <LatexMath math="c \approx 300\,000\text{ km/s}" />.
         </p>
 
-        <div className="mb-6">
-          <FormulaCard label="Condition de validité de l'ARQS" color="cyan">
-            <span className="text-cyan-400">
-              <LatexMath math="L \ll \lambda = \frac{c}{f} \quad \text{ou} \quad \tau = \frac{L}{c} \ll T" />
-            </span>
-          </FormulaCard>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-6">
-          <div className="space-y-4 flex flex-col justify-center">
-            <div className="bg-background border border-border p-4 sm:p-5 rounded-xl">
-              <h3 className="font-bold text-foreground mb-2">Que signifie l'ARQS physiquement ?</h3>
-              <p className="text-sm text-muted-foreground leading-relaxed">
-                Cela signifie que l'état électromagnétique (courant, tension) est considéré comme <strong>instantanément identique</strong> en tout point du circuit. Les lois de l'électrocinétique classique (lois de Kirchhoff, loi des mailles, loi des nœuds) ne sont valables <strong>que</strong> dans l'ARQS !
-              </p>
-            </div>
-            
-            <div className="bg-orange-500/5 border border-orange-500/20 p-4 sm:p-5 rounded-xl">
-              <h3 className="font-bold text-orange-400 mb-2 flex items-center gap-2">
-                <AlertTriangle className="w-4 h-4" /> Les limites de l'ARQS
-              </h3>
-              <p className="text-sm text-muted-foreground leading-relaxed">
-                Pour le réseau EDF (50 Hz), <LatexMath math="\lambda \approx 6000 \text{ km}" />. L'ARQS est valable pour des lignes de plusieurs kilomètres. 
-                <br/><br/>
-                Mais pour un processeur d'ordinateur (3 GHz), <LatexMath math="\lambda \approx 10 \text{ cm}" />. La taille de la carte mère (<LatexMath math="L \approx 30 \text{ cm}" />) est plus grande que <LatexMath math="\lambda" /> : l'ARQS n'est plus valable, il faut utiliser la théorie des lignes de transmission ou les équations de Maxwell complètes !
-              </p>
-            </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">
+          <div className="p-3.5 rounded-xl bg-muted/40 border border-border/60 space-y-1.5">
+            <strong className="text-xs font-bold text-foreground flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-emerald-500" />
+              Si le circuit est PETIT (Basse Fréquence) :
+            </strong>
+            <p className="text-[11.5px] text-muted-foreground leading-relaxed">
+              Le temps de voyage de l&apos;onde est tellement minuscule devant les variations du signal qu&apos;on peut considérer que le courant est <strong>identique partout au même instant</strong>. C&apos;est l&apos;<strong>ARQS</strong> !
+            </p>
           </div>
 
-          <div className="flex flex-col">
-            <LazyMount height="400px" fallbackText="Chargement ARQS Visualizer...">
-              <ARQSCondition3DCanvas />
-            </LazyMount>
-            <p className="text-xs text-center text-muted-foreground mt-2 italic">
-              Comparaison entre la taille du circuit $L$ et la longueur d'onde $\lambda$ selon la fréquence.
+          <div className="p-3.5 rounded-xl bg-muted/40 border border-border/60 space-y-1.5">
+            <strong className="text-xs font-bold text-foreground flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-rose-500" />
+              Si le circuit est GRAND ou la Fréquence ÉLEVÉE :
+            </strong>
+            <p className="text-[11.5px] text-muted-foreground leading-relaxed">
+              Le signal a le temps de changer de valeur avant même d&apos;arriver au bout du fil ! Le courant n&apos;est plus le même le long du fil : on entre dans le domaine de la <strong>propagation d&apos;ondes</strong>.
             </p>
           </div>
         </div>
       </section>
 
       {/* ═══════════════════════════════════════════ */}
-      {/* PARTIE 2: COURANT DE DÉPLACEMENT            */}
+      {/* PARTIE 1: LA CONDITION FONDAMENTALE DE L'ARQS */}
       {/* ═══════════════════════════════════════════ */}
-      <section className="bg-card/90 border border-border/80 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 shadow-sm w-full max-w-full overflow-x-hidden">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 text-purple-600 dark:text-purple-400 text-xs font-extrabold mb-3">
-          <Zap className="w-3.5 h-3.5" />
-          <span>Partie 2 • L'ARQS Magnétique</span>
+      <section className="bg-card border border-border/80 rounded-2xl p-4 sm:p-6 shadow-xs space-y-4">
+        <div className="flex items-center gap-2 text-cyan-500">
+          <Scale className="w-4 h-4" />
+          <h2 className="text-sm sm:text-base font-bold text-foreground">
+            1. La Condition Fondamentale de l&apos;ARQS
+          </h2>
         </div>
-        
-        <h2 className="text-xl sm:text-2xl font-black mb-4 text-foreground leading-tight">
-          2. Le Courant de Déplacement de Maxwell
-        </h2>
 
-        <p className="text-sm sm:text-base text-muted-foreground leading-relaxed mb-6">
-          Dans l'équation de Maxwell-Ampère complète, un terme supplémentaire apparaît : le <strong>courant de déplacement</strong> <LatexMath math="\vec{j}_D" />. Dans l'ARQS dit "magnétique" (le plus courant), on néglige ce terme devant le courant de conduction <LatexMath math="\vec{j}" />... sauf à l'intérieur d'un condensateur !
+        <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
+          Soit un circuit électrique de taille maximale <LatexMath math="L" />, parcouru par un signal sinusoïdal de fréquence <LatexMath math="f" />, de période <LatexMath math="T = 1/f" /> et de longueur d&apos;onde <LatexMath math="\lambda = c/f" />.
         </p>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-6">
+        {/* Formule Clé */}
+        <FormulaCard label="Critère Mathématique de l'ARQS" color="cyan">
+          <LatexMath math="\tau = \frac{L}{c} \ll T \quad \Longleftrightarrow \quad L \ll \lambda = \frac{c}{f}" />
+        </FormulaCard>
+
+        {/* 3D Visualizer sans chevauchements */}
+        <div className="space-y-2 pt-2">
+          <h3 className="text-xs font-bold text-foreground">
+            Visualisation 3D Interactive : Taille du circuit vs Longueur d&apos;onde
+          </h3>
+          <LazyMount height="380px" fallbackText="Chargement du simulateur ARQS...">
+            <ARQSCondition3DCanvas />
+          </LazyMount>
+          <p className="text-[11px] text-muted-foreground text-center italic">
+            Faites glisser le curseur pour observer comment une fréquence élevée réduit la longueur d&apos;onde <LatexMath math="\lambda" /> jusqu&apos;à briser l&apos;ARQS.
+          </p>
+        </div>
+
+        {/* Exemples concrets du monde réel */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+          <div className="p-3.5 rounded-xl bg-emerald-500/5 border border-emerald-500/20 space-y-1">
+            <h4 className="text-xs font-bold text-emerald-400">Exemple 1 : Réseau Domestique (50 Hz)</h4>
+            <p className="text-[11px] text-muted-foreground leading-relaxed">
+              <LatexMath math="\lambda = \frac{3\cdot 10^8}{50} = 6\,000\text{ km}" />. Pour un laboratoire ou une maison (<LatexMath math="L \approx 10\text{ m}" />), <LatexMath math="L \ll \lambda" /> est vérifié à 100 %. L&apos;ARQS est parfait.
+            </p>
+          </div>
+
+          <div className="p-3.5 rounded-xl bg-rose-500/5 border border-rose-500/20 space-y-1">
+            <h4 className="text-xs font-bold text-rose-400">Exemple 2 : Processeur d&apos;ordinateur (3 GHz)</h4>
+            <p className="text-[11px] text-muted-foreground leading-relaxed">
+              <LatexMath math="\lambda = \frac{3\cdot 10^8}{3\cdot 10^9} = 10\text{ cm}" />. La carte mère fait <LatexMath math="L \approx 30\text{ cm} > \lambda" /> ! L&apos;ARQS est totalement faux : il faut concevoir les pistes comme des guides d&apos;ondes.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════ */}
+      {/* PARTIE 2: ARQS MAGNÉTIQUE vs ARQS ÉLECTRIQUE */}
+      {/* ═══════════════════════════════════════════ */}
+      <section className="bg-card border border-border/80 rounded-2xl p-4 sm:p-6 shadow-xs space-y-4">
+        <div className="flex items-center gap-2 text-purple-500">
+          <Zap className="w-4 h-4" />
+          <h2 className="text-sm sm:text-base font-bold text-foreground">
+            2. ARQS Magnétique vs ARQS Électrique
+          </h2>
+        </div>
+
+        <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
+          En physique, on distingue deux variantes de l&apos;ARQS selon le type de circuit dominant :
+        </p>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+          {/* ARQS Magnétique */}
+          <div className="p-4 rounded-xl bg-muted/30 border border-purple-500/30 space-y-2">
+            <div className="flex items-center justify-between">
+              <h3 className="text-xs sm:text-sm font-bold text-purple-400">A. ARQS Magnétique (Le plus usuel)</h3>
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-purple-500/10 text-purple-400 border border-purple-500/20">Circuits R, L</span>
+            </div>
+
+            <p className="text-[11.5px] text-muted-foreground leading-relaxed">
+              On néglige le <strong>courant de déplacement</strong> devant le courant de conduction : <LatexMath math="\vec{j}_D \ll \vec{j}" />.
+            </p>
+
+            <div className="p-2.5 rounded-lg bg-background border border-border/80 font-mono text-xs text-center text-foreground">
+              <LatexMath math="\vec{\text{rot}}\,\vec{B} \approx \mu_0 \vec{j} \quad ; \quad \text{div}\,\vec{j} \approx 0" />
+            </div>
+
+            <p className="text-[11px] text-muted-foreground">
+              ✅ <strong>Conséquence majeure :</strong> Le courant se conserve le long d&apos;une branche. La <strong>loi des nœuds</strong> (<LatexMath math="\sum I_k = 0" />) est rigoureusement valable.
+            </p>
+          </div>
+
+          {/* ARQS Électrique */}
+          <div className="p-4 rounded-xl bg-muted/30 border border-sky-500/30 space-y-2">
+            <div className="flex items-center justify-between">
+              <h3 className="text-xs sm:text-sm font-bold text-sky-400">B. ARQS Électrique (Circuits C)</h3>
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-sky-500/10 text-sky-400 border border-sky-500/20">Haute Impédance</span>
+            </div>
+
+            <p className="text-[11.5px] text-muted-foreground leading-relaxed">
+              On néglige le terme d&apos;<strong>induction temporelle</strong> dans Maxwell-Faraday : <LatexMath math="\partial \vec{B}/\partial t \approx \vec{0}" />.
+            </p>
+
+            <div className="p-2.5 rounded-lg bg-background border border-border/80 font-mono text-xs text-center text-foreground">
+              <LatexMath math="\vec{\text{rot}}\,\vec{E} \approx \vec{0} \quad \implies \quad \vec{E} \approx -\vec{\text{grad}}\,V" />
+            </div>
+
+            <p className="text-[11px] text-muted-foreground">
+              ✅ <strong>Conséquence majeure :</strong> Le champ électrique dérive d&apos;un potentiel scalaire <LatexMath math="V" />. La <strong>loi des mailles</strong> (<LatexMath math="\sum U_k = 0" />) est rigoureusement vérifiée.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════ */}
+      {/* PARTIE 3: LE COURANT DE DÉPLACEMENT          */}
+      {/* ═══════════════════════════════════════════ */}
+      <section className="bg-card border border-border/80 rounded-2xl p-4 sm:p-6 shadow-xs space-y-4">
+        <div className="flex items-center gap-2 text-amber-500">
+          <Zap className="w-4 h-4" />
+          <h2 className="text-sm sm:text-base font-bold text-foreground">
+            3. Le Paradoxe du Condensateur & Le Courant de Déplacement
+          </h2>
+        </div>
+
+        <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
+          Pourquoi Maxwell a-t-il dû modifier la loi d&apos;Ampère ? Imaginons un condensateur en train de se charger dans un circuit :
+        </p>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-center">
+          <div className="space-y-3">
+            <div className="p-3.5 rounded-xl bg-background border border-border/80 space-y-2">
+              <h3 className="text-xs font-bold text-foreground">Le Problème :</h3>
+              <p className="text-[11.5px] text-muted-foreground leading-relaxed">
+                Les électrons circulent dans le fil, mais s&apos;arrêtent sur l&apos;armature du condensateur. Entre les deux armatures, il n&apos;y a que du vide : la densité de courant de matière est nulle (<LatexMath math="\vec{j} = \vec{0}" />).
+              </p>
+            </div>
+
+            <div className="p-3.5 rounded-xl bg-amber-500/5 border border-amber-500/20 space-y-2">
+              <h3 className="text-xs font-bold text-amber-400">La Solution Géniale de Maxwell :</h3>
+              <p className="text-[11.5px] text-muted-foreground leading-relaxed">
+                Entre les armatures, le champ électrique augmente à mesure que les charges s&apos;accumulent. Cette variation <LatexMath math="\partial \vec{E}/\partial t" /> crée un <strong>courant de déplacement</strong> virtuel qui assure la continuité parfaite du courant !
+              </p>
+            </div>
+
+            <FormulaCard label="Densité de Courant de Déplacement" color="amber">
+              <LatexMath math="\vec{j}_D = \varepsilon_0 \frac{\partial \vec{E}}{\partial t} \quad \implies \quad I_D = \iint_S \vec{j}_D \cdot d\vec{S} = I_{\text{conduction}}" />
+            </FormulaCard>
+          </div>
+
           <div className="flex flex-col">
-            <LazyMount height="400px" fallbackText="Chargement Courant de Déplacement...">
+            <LazyMount height="320px" fallbackText="Chargement du condensateur 3D...">
               <DisplacementCurrent3DCanvas />
             </LazyMount>
-          </div>
-          
-          <div className="space-y-4">
-            <FormulaCard label="Équation de Maxwell-Ampère complète" color="purple">
-              <span className="text-purple-400">
-                <LatexMath math="\text{rot}(\vec{B}) = \mu_0 (\vec{j} + \varepsilon_0 \frac{\partial \vec{E}}{\partial t})" />
-              </span>
-            </FormulaCard>
-
-            <div className="bg-background border border-border p-4 sm:p-5 rounded-xl">
-              <h3 className="font-bold text-foreground mb-2">Le Paradoxe du Condensateur</h3>
-              <p className="text-sm text-muted-foreground mb-3 leading-relaxed">
-                Considérons un condensateur en train de se charger. Le courant de conduction <LatexMath math="I" /> (les électrons) circule dans les fils, mais s'arrête net sur les plaques. Entre les plaques, il y a du vide (donc <LatexMath math="\vec{j} = \vec{0}" />).
-                <br/><br/>
-                La loi des nœuds serait violée sans Maxwell ! Pour rétablir la continuité, Maxwell a introduit le courant de déplacement : la variation du champ électrique entre les plaques agit "comme un courant" <LatexMath math="\vec{j}_D = \varepsilon_0 \frac{\partial \vec{E}}{\partial t}" /> pour fermer le circuit !
-              </p>
-            </div>
+            <p className="text-[11px] text-muted-foreground text-center italic mt-1">
+              Continuité entre courant de conduction dans les fils et courant de déplacement entre les plaques.
+            </p>
           </div>
         </div>
       </section>
 
       {/* ═══════════════════════════════════════════ */}
-      {/* PARTIE 3: L'EFFET DE PEAU                   */}
+      {/* PARTIE 4: EFFET DE PEAU (SKIN EFFECT)       */}
       {/* ═══════════════════════════════════════════ */}
-      <section className="bg-card/90 border border-border/80 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 shadow-sm w-full max-w-full overflow-x-hidden">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sky-500/10 text-sky-600 dark:text-sky-400 text-xs font-extrabold mb-3">
-          <Waves className="w-3.5 h-3.5" />
-          <span>Partie 3 • Conséquences Hautes Fréquences</span>
+      <section className="bg-card border border-border/80 rounded-2xl p-4 sm:p-6 shadow-xs space-y-4">
+        <div className="flex items-center gap-2 text-sky-500">
+          <Waves className="w-4 h-4" />
+          <h2 className="text-sm sm:text-base font-bold text-foreground">
+            4. L&apos;Effet de Peau (Skin Effect) à Haute Fréquence
+          </h2>
         </div>
-        
-        <h2 className="text-xl sm:text-2xl font-black mb-4 text-foreground leading-tight">
-          3. L'Effet de Peau (Skin Effect)
-        </h2>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-6">
-          <div className="space-y-4">
-            <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
-              En courant continu, le courant se répartit uniformément dans toute la section d'un fil conducteur. Mais en courant alternatif, plus la fréquence augmente, plus le champ électromagnétique a du mal à pénétrer dans le métal.
-            </p>
-            <p className="text-sm sm:text-base text-muted-foreground leading-relaxed mb-4">
-              Conséquence : le courant est repoussé vers la surface extérieure du conducteur. C'est l'<strong>Effet Pelliculaire</strong> (ou Effet de Peau).
-            </p>
+        <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
+          En courant continu (<LatexMath math="f = 0" />), le courant est uniformément réparti sur toute la section du fil. Mais en régime alternatif (<LatexMath math="f > 0" />), des courants de Foucault internes s&apos;opposent au passage du courant au centre du câble.
+        </p>
 
-            <FormulaCard label="Épaisseur de peau" color="sky">
-              <span className="text-sky-400">
-                <LatexMath math="\delta = \sqrt{\frac{2}{\mu_0 \gamma \omega}}" />
-              </span>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-center">
+          <div className="space-y-3">
+            <FormulaCard label="Épaisseur de Peau δ" color="sky">
+              <LatexMath math="\delta = \sqrt{\frac{2}{\mu_0 \gamma \omega}} = \sqrt{\frac{1}{\pi \mu_0 \gamma f}}" />
             </FormulaCard>
 
-            <div className="bg-sky-500/5 border border-sky-500/20 p-4 sm:p-5 rounded-xl">
-              <h3 className="font-bold text-sky-400 mb-2">Implications Technologiques</h3>
-              <ul className="list-disc list-inside text-sm text-muted-foreground leading-relaxed space-y-2">
-                <li><strong>Câbles Creux :</strong> À très haute fréquence, le centre d'un câble ne sert à rien puisqu'aucun courant n'y passe. On utilise donc des tubes creux pour économiser du cuivre et du poids.</li>
-                <li><strong>Fil de Litz :</strong> Pour réduire la résistance due à l'effet de peau, on utilise plusieurs petits brins isolés les uns des autres au lieu d'un seul gros fil.</li>
-              </ul>
+            <div className="p-3.5 rounded-xl bg-muted/40 border border-border/60 text-[11.5px] text-muted-foreground space-y-1.5">
+              <p>• <LatexMath math="\gamma" /> : Conductivité électrique du métal (en <LatexMath math="\text{S}\cdot\text{m}^{-1}" />). Pour le cuivre, <LatexMath math="\gamma \approx 5{,}8\cdot 10^7\text{ S/m}" />.</p>
+              <p>• <LatexMath math="\omega = 2\pi f" /> : Pulsation du signal alternatif (en <LatexMath math="\text{rad/s}" />).</p>
+              <p>• À <LatexMath math="50\text{ Hz}" /> dans le cuivre : <LatexMath math="\delta \approx 9{,}3\text{ mm}" /> (le courant traverse tout le fil).</p>
+              <p>• À <LatexMath math="100\text{ MHz}" /> : <LatexMath math="\delta \approx 6{,}6\text{ \mu m}" /> (le courant ne circule que sur une fine pellicule superficielle !).</p>
             </div>
           </div>
-          
+
           <div className="flex flex-col">
-            <LazyMount height="400px" fallbackText="Chargement Effet de Peau 3D...">
+            <LazyMount height="320px" fallbackText="Chargement Effet de Peau 3D...">
               <SkinEffect3DCanvas />
             </LazyMount>
-            <p className="text-xs text-center text-muted-foreground mt-2 italic">
-              Augmente la fréquence pour observer le courant se concentrer sur la "peau" du cylindre.
+            <p className="text-[11px] text-muted-foreground text-center italic mt-1">
+              Le courant (en jaune) est expulsé vers la périphérie du conducteur à haute fréquence.
             </p>
           </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════ */}
+      {/* PARTIE 5: GRAND EXERCICE INTERACTIF D'APPLICATION */}
+      {/* ═══════════════════════════════════════════ */}
+      <section className="rounded-2xl border border-primary/30 bg-gradient-to-br from-primary/5 via-card to-card p-4 sm:p-6 shadow-sm space-y-4">
+        <div className="flex items-center gap-2.5 text-primary">
+          <div className="p-1.5 rounded-lg bg-primary/10 text-primary">
+            <GraduationCap className="w-5 h-5" />
+          </div>
+          <div>
+            <h2 className="text-sm sm:text-base font-bold text-foreground">
+              Exercice d&apos;Application Guidé : Validité de l&apos;ARQS & Effet de Peau
+            </h2>
+            <p className="text-[11px] text-muted-foreground">
+              Problème type Concours / Examen avec solutions étape par étape.
+            </p>
+          </div>
+        </div>
+
+        {/* Énoncé du problème */}
+        <div className="p-3.5 rounded-xl bg-background border border-border/80 text-xs leading-relaxed text-muted-foreground space-y-2">
+          <strong className="text-foreground text-xs block">Énoncé :</strong>
+          <p>
+            On s&apos;intéresse à la modélisation électromagnétique dans différents systèmes techniques. On donne la vitesse de la lumière dans le vide <LatexMath math="c = 3\cdot 10^8\text{ m/s}" /> et la perméabilité du vide <LatexMath math="\mu_0 = 4\pi\cdot 10^{-7}\text{ H/m}" />. Pour le cuivre, la conductivité vaut <LatexMath math="\gamma = 5{,}8\cdot 10^7\text{ S/m}" />.
+          </p>
+        </div>
+
+        {/* Questions avec déroulant de solution */}
+        <div className="space-y-3 pt-1">
+          <ExerciseQuestion
+            number={1}
+            title="Ligne TGV & Réseau Ferroviaire (f = 50 Hz)"
+            question={
+              <p>
+                Une motrice de TGV est alimentée par une caténaire sous une tension sinusoïdale de fréquence <LatexMath math="f = 50\text{ Hz}" />. La sous-station d&apos;alimentation est située à une distance <LatexMath math="L = 40\text{ km}" /> de la motrice. Peut-on appliquer l&apos;ARQS à cette portion de ligne ?
+              </p>
+            }
+            solution={
+              <div className="space-y-2">
+                <p>
+                  <strong>1. Calcul de la longueur d&apos;onde :</strong>
+                  <br />
+                  <LatexMath math="\lambda = \frac{c}{f} = \frac{3\cdot 10^8}{50} = 6\cdot 10^6\text{ m} = 6\,000\text{ km}" />.
+                </p>
+                <p>
+                  <strong>2. Comparaison avec la taille du circuit L :</strong>
+                  <br />
+                  Ici, <LatexMath math="L = 40\text{ km}" />. Le rapport vaut <LatexMath math="\frac{L}{\lambda} = \frac{40}{6000} \approx 6{,}7\cdot 10^{-3} \ll 1" />.
+                </p>
+                <p>
+                  <strong>3. Conclusion :</strong>
+                  <br />
+                  Puisque <LatexMath math="L \ll \lambda" />, la condition de l&apos;ARQS est <strong>parfaitement vérifiée</strong>. On peut utiliser les lois de Kirchhoff usuelles (loi d&apos;Ohm, impédance de ligne) sans tenir compte du temps de propagation de l&apos;onde.
+                </p>
+              </div>
+            }
+            tip="N'oubliez jamais de calculer d'abord lambda = c/f avant de comparer avec L !"
+          />
+
+          <ExerciseQuestion
+            number={2}
+            title="Bus de données sur Carte Mère de PC (f = 4 GHz)"
+            question={
+              <p>
+                Sur une carte mère d&apos;ordinateur portable de longueur <LatexMath math="L = 20\text{ cm}" />, un bus de données transmet un signal d&apos;horloge à la fréquence <LatexMath math="f = 4\text{ GHz}" />. L&apos;ARQS est-il encore applicable aux pistes de cuivre ?
+              </p>
+            }
+            solution={
+              <div className="space-y-2">
+                <p>
+                  <strong>1. Calcul de la longueur d&apos;onde :</strong>
+                  <br />
+                  <LatexMath math="\lambda = \frac{c}{f} = \frac{3\cdot 10^8}{4\cdot 10^9} = 0{,}075\text{ m} = 7{,}5\text{ cm}" />.
+                </p>
+                <p>
+                  <strong>2. Comparaison :</strong>
+                  <br />
+                  La longueur des pistes (<LatexMath math="L = 20\text{ cm}" />) est <strong>supérieure</strong> à la longueur d&apos;onde (<LatexMath math="\lambda = 7{,}5\text{ cm}" />) : <LatexMath math="L > \lambda" />.
+                </p>
+                <p>
+                  <strong>3. Conclusion :</strong>
+                  <br />
+                  L&apos;ARQS est <strong>totalement invalide</strong> ! La tension à un bout de la piste n&apos;a rien à voir avec la tension à l&apos;autre bout au même instant. Les concepteurs électroniques doivent traiter ces pistes comme des <em>lignes de transmission</em> avec adaptation d&apos;impédance (50 Ω).
+                </p>
+              </div>
+            }
+            tip="À l'échelle d'un microprocesseur ou carte mère moderne (GHz), les pistes se comportent comme des guides d'onde, pas comme de simples fils !"
+          />
+
+          <ExerciseQuestion
+            number={3}
+            title="Calcul de l'Épaisseur de Peau dans un Fil de Cuivre"
+            question={
+              <p>
+                Un câble cylindrique en cuivre de rayon <LatexMath math="R = 2\text{ mm}" /> est utilisé pour transporter :
+                <br />
+                a) Un courant du secteur à <LatexMath math="f_1 = 50\text{ Hz}" />.
+                <br />
+                b) Un signal haute fréquence à <LatexMath math="f_2 = 10\text{ MHz}" />.
+                <br />
+                Calculer l&apos;épaisseur de peau <LatexMath math="\delta" /> dans chaque cas et commenter l&apos;utilisation de la section du câble.
+              </p>
+            }
+            solution={
+              <div className="space-y-2">
+                <p>
+                  <strong>Formule de l&apos;épaisseur de peau :</strong>
+                  <br />
+                  <LatexMath math="\delta = \frac{1}{\sqrt{\pi \mu_0 \gamma f}}" />
+                </p>
+                <p>
+                  <strong>a) À 50 Hz :</strong>
+                  <br />
+                  <LatexMath math="\delta_1 = \frac{1}{\sqrt{\pi \times (4\pi\cdot 10^{-7}) \times (5{,}8\cdot 10^7) \times 50}} \approx 9{,}3\cdot 10^{-3}\text{ m} = 9{,}3\text{ mm}" />.
+                  <br />
+                  Comme <LatexMath math="\delta_1 > R = 2\text{ mm}" />, le courant pénètre uniformément dans toute la section du câble.
+                </p>
+                <p>
+                  <strong>b) À 10 MHz :</strong>
+                  <br />
+                  <LatexMath math="\delta_2 = \frac{1}{\sqrt{\pi \times (4\pi\cdot 10^{-7}) \times (5{,}8\cdot 10^7) \times 10^7}} \approx 2{,}1\cdot 10^{-5}\text{ m} = 21\text{ \mu m}" />.
+                  <br />
+                  Comme <LatexMath math="\delta_2 \ll R" />, le courant ne passe que sur une infime couche de 21 micromètres en périphérie. Le cœur du fil de 2 mm est inutile (résistance apparente multipliée par ~50).
+                </p>
+              </div>
+            }
+            tip="Pour contrer cet effet à haute fréquence, on utilise du 'fil de Litz' (tressage de multiples micro-fils isolés) ou des tubes creux plaqués argent."
+          />
         </div>
       </section>
 
