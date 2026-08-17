@@ -195,11 +195,40 @@ export default function Chap6ARQS() {
         </p>
 
         {/* Formule Clé */}
-        <FormulaCard label="Critère Mathématique de l'ARQS" color="cyan">
-          <LatexMath math="\tau = \frac{L}{c} \ll T \quad \Longleftrightarrow \quad L \ll \lambda = \frac{c}{f}" />
-        </FormulaCard>
+        <div className="space-y-2">
+          <FormulaCard label="Critère Mathématique de l'ARQS" color="cyan">
+            <LatexMath math="\tau = \frac{L}{c} \ll T \quad \Longleftrightarrow \quad L \ll \lambda = \frac{c}{f}" />
+          </FormulaCard>
+          
+          <p className="text-xs text-center text-muted-foreground">
+            Où <LatexMath math="\tau = L/c" /> représente le temps de propagation du signal à travers le circuit, et <LatexMath math="T" /> la période de variation du signal.
+          </p>
+        </div>
 
-        {/* 3D Visualizer sans chevauchements */}
+        {/* Critère Pratique & Remarque Vitesse */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">
+          <div className="p-3 rounded-xl bg-cyan-500/5 border border-cyan-500/20 text-xs text-muted-foreground space-y-1">
+            <strong className="text-cyan-400 font-bold block flex items-center gap-1.5">
+              <CheckCircle2 className="w-3.5 h-3.5" />
+              Ordre de Grandeur Pratique pour les Exercices
+            </strong>
+            <p className="text-[11.5px] leading-relaxed">
+              En pratique, l&apos;ARQS est considérée comme valable dès que <LatexMath math="L \le \lambda/100" /> (ou au moins <LatexMath math="L < \lambda/10" />).
+            </p>
+          </div>
+
+          <div className="p-3 rounded-xl bg-amber-500/5 border border-amber-500/20 text-xs text-muted-foreground space-y-1">
+            <strong className="text-amber-400 font-bold block flex items-center gap-1.5">
+              <Lightbulb className="w-3.5 h-3.5" />
+              Remarque sur la Vitesse de Propagation
+            </strong>
+            <p className="text-[11.5px] leading-relaxed">
+              Dans le vide <LatexMath math="c = 3\cdot 10^8\text{ m/s}" />, mais sur un circuit imprimé (PCB) avec substrat FR4, <LatexMath math="v \approx 2\cdot 10^8\text{ m/s}" />, ce qui rend <LatexMath math="\lambda" /> encore plus court !
+            </p>
+          </div>
+        </div>
+
+        {/* 3D Visualizer interactif */}
         <div className="space-y-2 pt-2">
           <h3 className="text-xs font-bold text-foreground">
             Visualisation 3D Interactive : Taille du circuit vs Longueur d&apos;onde
@@ -208,23 +237,30 @@ export default function Chap6ARQS() {
             <ARQSCondition3DCanvas />
           </LazyMount>
           <p className="text-[11px] text-muted-foreground text-center italic">
-            Faites glisser le curseur pour observer comment une fréquence élevée réduit la longueur d&apos;onde <LatexMath math="\lambda" /> jusqu&apos;à briser l&apos;ARQS.
+            Faites glisser le curseur pour observer comment la fréquence modifie la longueur d&apos;onde <LatexMath math="\lambda" /> et l&apos;état de la piste PCB.
           </p>
         </div>
 
-        {/* Exemples concrets du monde réel */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-          <div className="p-3.5 rounded-xl bg-emerald-500/5 border border-emerald-500/20 space-y-1">
+        {/* 3 Exemples concrets du monde réel */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-2">
+          <div className="p-3.5 rounded-xl bg-emerald-500/5 border border-emerald-500/20 space-y-1.5">
             <h4 className="text-xs font-bold text-emerald-400">Exemple 1 : Réseau Domestique (50 Hz)</h4>
             <p className="text-[11px] text-muted-foreground leading-relaxed">
-              <LatexMath math="\lambda = \frac{3\cdot 10^8}{50} = 6\,000\text{ km}" />. Pour un laboratoire ou une maison (<LatexMath math="L \approx 10\text{ m}" />), <LatexMath math="L \ll \lambda" /> est vérifié à 100 %. L&apos;ARQS est parfait.
+              <LatexMath math="\lambda = \frac{3\cdot 10^8}{50} = 6\,000\text{ km}" />. Pour un laboratoire ou une maison (<LatexMath math="L \approx 10\text{ m}" />), <LatexMath math="L \ll \lambda" /> est vérifié à 100 %. L&apos;ARQS est parfaite.
             </p>
           </div>
 
-          <div className="p-3.5 rounded-xl bg-rose-500/5 border border-rose-500/20 space-y-1">
-            <h4 className="text-xs font-bold text-rose-400">Exemple 2 : Processeur d&apos;ordinateur (3 GHz)</h4>
+          <div className="p-3.5 rounded-xl bg-sky-500/5 border border-sky-500/20 space-y-1.5">
+            <h4 className="text-xs font-bold text-sky-400">Exemple 2 : Radio FM (100 MHz)</h4>
             <p className="text-[11px] text-muted-foreground leading-relaxed">
-              <LatexMath math="\lambda = \frac{3\cdot 10^8}{3\cdot 10^9} = 10\text{ cm}" />. La carte mère fait <LatexMath math="L \approx 30\text{ cm} > \lambda" /> ! L&apos;ARQS est totalement faux : il faut concevoir les pistes comme des guides d&apos;ondes.
+              <LatexMath math="\lambda = \frac{3\cdot 10^8}{100\cdot 10^6} = 3\text{ m}" />. Pour un circuit imprimé de <LatexMath math="L \approx 10\text{ cm}" />, <LatexMath math="L < \lambda/10" />, l&apos;ARQS reste une approximation acceptable.
+            </p>
+          </div>
+
+          <div className="p-3.5 rounded-xl bg-rose-500/5 border border-rose-500/20 space-y-1.5">
+            <h4 className="text-xs font-bold text-rose-400">Exemple 3 : Processeur PC (3 GHz)</h4>
+            <p className="text-[11px] text-muted-foreground leading-relaxed">
+              <LatexMath math="\lambda = \frac{3\cdot 10^8}{3\cdot 10^9} = 10\text{ cm}" />. La carte mère fait <LatexMath math="L \approx 30\text{ cm} > \lambda" /> ! L&apos;ARQS est totalement invalide : les pistes sont des lignes de transmission.
             </p>
           </div>
         </div>
