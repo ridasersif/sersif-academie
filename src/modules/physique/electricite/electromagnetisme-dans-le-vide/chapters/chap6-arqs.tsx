@@ -398,7 +398,7 @@ export default function Chap6ARQS() {
       {/* PARTIE 4: EFFET DE PEAU (SKIN EFFECT)       */}
       {/* ═══════════════════════════════════════════ */}
       <section className="bg-card border border-border/80 rounded-2xl p-4 sm:p-6 shadow-xs space-y-4">
-        <div className="flex items-center gap-2 text-sky-500">
+        <div className="flex items-center gap-2 text-amber-500">
           <Waves className="w-4 h-4" />
           <h2 className="text-sm sm:text-base font-bold text-foreground">
             4. L&apos;Effet de Peau (Skin Effect) à Haute Fréquence
@@ -406,29 +406,125 @@ export default function Chap6ARQS() {
         </div>
 
         <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
-          En courant continu (<LatexMath math="f = 0" />), le courant est uniformément réparti sur toute la section du fil. Mais en régime alternatif (<LatexMath math="f > 0" />), des courants de Foucault internes s&apos;opposent au passage du courant au centre du câble.
+          En courant continu (<LatexMath math="f = 0" />), les charges se répartissent <strong>uniformément sur toute la section</strong> du conducteur. Mais dès que la fréquence augmente (<LatexMath math="f > 0" />), le courant est <strong>repoussé vers la surface extérieure</strong> (la « peau » du conducteur), laissant le cœur presque totalement inactif !
         </p>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-center">
+        {/* ── EXPLICATION PHYSIQUE INTUITIVE ── */}
+        <div className="p-3.5 rounded-xl bg-muted/40 border border-border/80 space-y-2 text-xs">
+          <h3 className="font-bold text-foreground flex items-center gap-1.5 text-xs sm:text-sm text-amber-400">
+            <Lightbulb className="w-4 h-4 text-amber-400" />
+            Pourquoi le courant fuit-il le centre du conducteur ?
+          </h3>
+          <p className="text-muted-foreground leading-relaxed">
+            Le courant alternatif crée un <strong>champ magnétique variable <LatexMath math="\vec{B}(t)" /></strong> à l&apos;intérieur même du fil. D&apos;après la loi de <em>Faraday-Lenz</em>, cette variation engendre des <strong>courants de Foucault internes</strong> qui s&apos;opposent au courant principal au centre et s&apos;y ajoutent en périphérie. Résultat : le courant est expulsé vers les bords !
+          </p>
+        </div>
+
+        {/* ── FORMULE DE L'ÉPAISSEUR DE PEAU δ ── */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 items-start">
           <div className="space-y-3">
-            <FormulaCard label="Épaisseur de Peau δ" color="sky">
+            <FormulaCard label="Épaisseur de Peau δ" color="amber">
               <LatexMath math="\delta = \sqrt{\frac{2}{\mu_0 \gamma \omega}} = \sqrt{\frac{1}{\pi \mu_0 \gamma f}}" />
             </FormulaCard>
 
-            <div className="p-3.5 rounded-xl bg-muted/40 border border-border/60 text-[11.5px] text-muted-foreground space-y-1.5">
-              <p>• <LatexMath math="\gamma" /> : Conductivité électrique du métal (en <LatexMath math="\text{S}\cdot\text{m}^{-1}" />). Pour le cuivre, <LatexMath math="\gamma \approx 5{,}8\cdot 10^7\text{ S/m}" />.</p>
-              <p>• <LatexMath math="\omega = 2\pi f" /> : Pulsation du signal alternatif (en <LatexMath math="\text{rad/s}" />).</p>
-              <p>• À <LatexMath math="50\text{ Hz}" /> dans le cuivre : <LatexMath math="\delta \approx 9{,}3\text{ mm}" /> (le courant traverse tout le fil).</p>
-              <p>• À <LatexMath math="100\text{ MHz}" /> : <LatexMath math="\delta \approx 6{,}6\text{ \mu m}" /> (le courant ne circule que sur une fine pellicule superficielle !).</p>
+            <div className="p-3 rounded-xl bg-background border border-border/80 text-[11.5px] text-muted-foreground space-y-1.5">
+              <p>• <strong className="text-foreground"><LatexMath math="\gamma" /> :</strong> Conductivité électrique du métal (<LatexMath math="\gamma \approx 5{,}8\cdot 10^7\text{ S/m}" /> pour le cuivre).</p>
+              <p>• <strong className="text-foreground"><LatexMath math="\omega = 2\pi f" /> :</strong> Pulsation du signal en <LatexMath math="\text{rad/s}" />.</p>
+              <p>• <strong className="text-foreground"><LatexMath math="\mu_0 = 4\pi \cdot 10^{-7}\text{ H/m}" /> :</strong> Perméabilité magnétique du vide.</p>
             </div>
           </div>
 
-          <div className="flex flex-col">
-            <LazyMount height="320px" fallbackText="Chargement Effet de Peau 3D...">
-              <SkinEffect3DCanvas />
-            </LazyMount>
-            <p className="text-[11px] text-muted-foreground text-center italic mt-1">
-              Le courant (en jaune) est expulsé vers la périphérie du conducteur à haute fréquence.
+          {/* Ordres de grandeur concrets */}
+          <div className="p-3.5 rounded-xl bg-amber-500/5 border border-amber-500/20 space-y-2 text-xs">
+            <h4 className="font-bold text-amber-400">Ordres de Grandeur dans le Cuivre :</h4>
+            <div className="space-y-1.5 text-[11.5px] text-muted-foreground">
+              <div className="flex justify-between border-b border-amber-500/10 pb-1">
+                <span>Réseau <LatexMath math="50\text{ Hz}" /> :</span>
+                <strong className="text-emerald-400 font-mono"><LatexMath math="\delta \approx 9{,}3\text{ mm}" /> (Total)</strong>
+              </div>
+              <div className="flex justify-between border-b border-amber-500/10 pb-1">
+                <span>Audio <LatexMath math="10\text{ kHz}" /> :</span>
+                <strong className="text-sky-400 font-mono"><LatexMath math="\delta \approx 660\,\mu\text{m}" /></strong>
+              </div>
+              <div className="flex justify-between border-b border-amber-500/10 pb-1">
+                <span>Radio <LatexMath math="1\text{ MHz}" /> :</span>
+                <strong className="text-amber-400 font-mono"><LatexMath math="\delta \approx 66\,\mu\text{m}" /></strong>
+              </div>
+              <div className="flex justify-between">
+                <span>Wi-Fi <LatexMath math="2{,}4\text{ GHz}" /> :</span>
+                <strong className="text-rose-400 font-mono"><LatexMath math="\delta \approx 1{,}3\,\mu\text{m}" /> (Pelliculaire)</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* ── VISUALISATEUR 3D COUPE CONDUCTEUR & PROFIL j(r) ── */}
+        <div className="pt-2 space-y-2">
+          <h3 className="text-xs font-bold text-foreground">
+            Simulateur 3D Interactif : Coupe du Conducteur et Profil de Densité <LatexMath math="j(r)" />
+          </h3>
+          <LazyMount height="340px" fallbackText="Chargement Effet de Peau 3D...">
+            <SkinEffect3DCanvas />
+          </LazyMount>
+        </div>
+
+        {/* ── CALCUL QUANTITATIF : SECTION EFFICACE ET RÉSISTANCE RAC vs RDC ── */}
+        <div className="p-4 rounded-xl bg-muted/30 border border-amber-500/30 space-y-3">
+          <h4 className="text-xs sm:text-sm font-bold text-amber-400 flex items-center gap-2">
+            <Zap className="w-4 h-4 text-amber-400" />
+            Calcul de la Résistance Effectif en Haute Fréquence (<LatexMath math="\delta \ll R" />)
+          </h4>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            {/* Section Efficace */}
+            <div className="p-3 rounded-lg bg-background border border-border/80 space-y-1 text-center">
+              <span className="text-[10.5px] font-bold text-muted-foreground block">Section Efficace Utile</span>
+              <div className="text-xs font-mono font-bold text-foreground py-1">
+                <LatexMath math="S_{\text{eff}} \approx 2\pi R \cdot \delta" />
+              </div>
+              <p className="text-[10px] text-muted-foreground">Au lieu de <LatexMath math="S_{\text{tot}} = \pi R^2" /> en continu.</p>
+            </div>
+
+            {/* Résistance AC vs DC */}
+            <div className="p-3 rounded-lg bg-background border border-border/80 space-y-1 text-center">
+              <span className="text-[10.5px] font-bold text-muted-foreground block">Résistance Continue & Alternative</span>
+              <div className="text-[11px] font-mono font-bold text-foreground py-0.5">
+                <LatexMath math="R_{\text{DC}} = \frac{L}{\gamma \pi R^2} \quad ; \quad R_{\text{AC}} \approx \frac{L}{\gamma (2\pi R \delta)}" />
+              </div>
+              <p className="text-[10px] text-muted-foreground">Avec <LatexMath math="L" /> la longueur et <LatexMath math="\gamma" /> la conductivité.</p>
+            </div>
+
+            {/* Ratio Rac / Rdc */}
+            <div className="p-3 rounded-lg bg-amber-500/10 border border-amber-500/30 space-y-1 text-center">
+              <span className="text-[10.5px] font-bold text-amber-400 block">Rapport des Résistances</span>
+              <div className="text-xs font-mono font-bold text-amber-300 py-1">
+                <LatexMath math="\frac{R_{\text{AC}}}{R_{\text{DC}}} \approx \frac{R}{2\delta} \propto \sqrt{f}" />
+              </div>
+              <p className="text-[10px] text-amber-200/80">La résistance augmente comme <LatexMath math="\sqrt{f}" /> !</p>
+            </div>
+          </div>
+        </div>
+
+        {/* ── 3 CONSÉQUENCES PRATIQUES ESSENTIELLES ── */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-1">
+          <div className="p-3 rounded-xl bg-card border border-border/80 space-y-1">
+            <h4 className="text-xs font-bold text-rose-400">1. Pertes Joule Multipliées</h4>
+            <p className="text-[11px] text-muted-foreground leading-relaxed">
+              Puisque <LatexMath math="R_{\text{AC}} \propto \sqrt{f}" />, les pertes thermiques par effet Joule <LatexMath math="P_J = R_{\text{AC}} I^2" /> s&apos;envolent à haute fréquence.
+            </p>
+          </div>
+
+          <div className="p-3 rounded-xl bg-card border border-border/80 space-y-1">
+            <h4 className="text-xs font-bold text-sky-400">2. Câbles Creux & Placage</h4>
+            <p className="text-[11px] text-muted-foreground leading-relaxed">
+              À très haute fréquence, mettre du cuivre au cœur ne sert à rien. On utilise des <strong>tubes creux</strong> ou des fils en aluminium plaqués d&apos;une fine couche d&apos;argent.
+            </p>
+          </div>
+
+          <div className="p-3 rounded-xl bg-card border border-border/80 space-y-1">
+            <h4 className="text-xs font-bold text-emerald-400">3. Fil de Litz (Induction)</h4>
+            <p className="text-[11px] text-muted-foreground leading-relaxed">
+              Pour contourner l&apos;effet de peau (ex: plaques à induction), on remplace le gros fil par un <strong>faisceau de multiples micro-brins isolés</strong> de rayon <LatexMath math="r < \delta" />.
             </p>
           </div>
         </div>
