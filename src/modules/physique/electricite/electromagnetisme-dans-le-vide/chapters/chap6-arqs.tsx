@@ -26,7 +26,8 @@ import {
   ArrowRight,
   ShieldCheck,
   Flame,
-  Sparkles
+  Sparkles,
+  Radio
 } from "lucide-react";
 
 /* ── Formula Card Propre & Épurée ── */
@@ -532,7 +533,7 @@ export default function Chap6ARQS() {
       </section>
 
       {/* ═══════════════════════════════════════════ */}
-      {/* PARTIE 5: GRAND EXERCICE INTERACTIF D'APPLICATION */}
+      {/* PARTIE 5: GRAND EXERCICE PRATIQUE DE LABORATOIRE */}
       {/* ═══════════════════════════════════════════ */}
       <section className="rounded-2xl border border-primary/30 bg-gradient-to-br from-primary/5 via-card to-card p-4 sm:p-6 shadow-sm space-y-4">
         <div className="flex items-center gap-2.5 text-primary">
@@ -541,168 +542,204 @@ export default function Chap6ARQS() {
           </div>
           <div>
             <h2 className="text-sm sm:text-base font-bold text-foreground">
-              Exercice d&apos;Application Guidé : Validité de l&apos;ARQS & Effet de Peau
+              Grand Exercice de Laboratoire : Ligne de Transmission & Déphasage à l&apos;Oscilloscope
             </h2>
             <p className="text-[11px] text-muted-foreground">
-              Problème type Concours (Mines / Centrale / CNC) avec simulateur 3D interactif et solutions détaillées étape par étape.
+              Étude expérimentale réelle d&apos;une ligne <LatexMath math="L = 10\text{ m}" /> avec générateur GBF, oscilloscope bi-courbe et effet de peau.
             </p>
           </div>
         </div>
 
-        {/* ── ÉNONCÉ GLOBAL DU PROBLÈME ── */}
-        <div className="p-4 rounded-xl bg-background border border-border/80 text-xs leading-relaxed text-muted-foreground space-y-2">
-          <strong className="text-foreground text-xs block font-bold text-primary">📋 Énoncé du Problème :</strong>
+        {/* ── ÉNONCÉ DU PROTOCOLE EXPÉRIMENTAL ── */}
+        <div className="p-4 rounded-xl bg-background border border-border/80 text-xs leading-relaxed text-muted-foreground space-y-2.5 shadow-xs">
+          <div className="flex items-center gap-2 text-foreground font-bold">
+            <Radio className="w-4 h-4 text-primary" />
+            <span>Protocole Expérimental de Laboratoire :</span>
+          </div>
           <p>
-            On se propose d&apos;évaluer la validité de l&apos;Approximation des Régimes Quasi-Stationnaires (ARQS) et les pertes énergétiques associées dans trois domaines techniques majeurs : le transport d&apos;énergie ferroviaire, les architectures informatiques à très haute fréquence et le dimensionnement de câbles électriques en cuivre.
+            Sur une paillasse de laboratoire de physique, un étudiant relie un <strong>générateur haute fréquence (GBF)</strong> à une charge résistive <LatexMath math="R_L" /> par l&apos;intermédiaire d&apos;une <strong>ligne de transmission bifilaire en cuivre de longueur <LatexMath math="L = 10\text{ m}" /></strong>.
           </p>
-          <div className="p-2.5 rounded-lg bg-muted/50 border border-border/60 font-mono text-[11px] text-foreground flex flex-wrap justify-between gap-2">
-            <span>• <LatexMath math="c = 3\cdot 10^8\text{ m/s}" /></span>
-            <span>• <LatexMath math="\mu_0 = 4\pi\cdot 10^{-7}\text{ H/m}" /></span>
-            <span>• <LatexMath math="\gamma_{\text{cuivre}} = 5{,}8\cdot 10^7\text{ S/m}" /></span>
+          <p>
+            Pour observer la propagation du signal, deux voies d&apos;un <strong>oscilloscope numérique</strong> sont connectées en direct :
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] font-mono">
+            <div className="p-2 rounded-lg bg-sky-500/10 border border-sky-500/30 text-sky-400">
+              🔵 <strong>Voie 1 (CH1) :</strong> Mesure à l&apos;entrée de la ligne (<LatexMath math="x = 0" />) : <LatexMath math="v_1(t) = V_0 \cos(\omega t)" />.
+            </div>
+            <div className="p-2 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-400">
+              🟡 <strong>Voie 2 (CH2) :</strong> Mesure à la sortie (<LatexMath math="x = L" />) : <LatexMath math="v_2(t) = V_0 \cos(\omega(t - \tau))" />.
+            </div>
+          </div>
+          <div className="p-2 rounded-lg bg-muted/50 border border-border/60 font-mono text-[10.5px] text-foreground flex flex-wrap justify-between gap-2">
+            <span>• Célérité : <LatexMath math="c = 3\cdot 10^8\text{ m/s}" /></span>
+            <span>• Longueur du banc : <LatexMath math="L = 10\text{ m}" /></span>
+            <span>• Cuivre : <LatexMath math="\gamma = 5{,}8\cdot 10^7\text{ S/m}" />, rayon fil <LatexMath math="r = 1\text{ mm}" /></span>
           </div>
         </div>
 
-        {/* ── SIMULATEUR 3D DÉDIÉ À L'EXERCICE ── */}
+        {/* ── SIMULATEUR 3D BANC DE LABO & OSCILLOSCOPE ── */}
         <div className="space-y-2 pt-1">
           <h3 className="text-xs font-bold text-foreground">
-            Visualisation 3D Interactive des 3 Situations Physiques
+            Banc d&apos;Essai 3D Interactif & Écran d&apos;Oscilloscope Temps Réel (CH1 vs CH2)
           </h3>
-          <LazyMount height="340px" fallbackText="Chargement du simulateur d'exercice 3D...">
+          <LazyMount height="340px" fallbackText="Chargement du banc d'essai 3D...">
             <ARQSExercise3DCanvas />
           </LazyMount>
         </div>
 
-        {/* ── QUESTIONS ET CORRECTIONS DÉTAILLÉES ── */}
+        {/* ── QUESTIONS ET CORRIGÉ DÉTAILLÉ PAS-À-PAS ── */}
         <div className="space-y-3 pt-2">
+          
+          {/* Question 1 */}
           <ExerciseQuestion
             number={1}
-            title="Question 1 : Ligne d'Alimentation TGV (f = 50 Hz, L = 40 km)"
+            title="Question 1 : Mesure en Basse Fréquence (f₁ = 100 kHz) — Validation ARQS"
             question={
               <p>
-                Une rame de TGV circule sur une voie ferrée et est alimentée par une caténaire sous tension sinusoïdale de fréquence <LatexMath math="f = 50\text{ Hz}" />. La sous-station électrique d&apos;alimentation est située à une distance <LatexMath math="L = 40\text{ km}" /> du train.
+                Le GBF délivre une tension sinusoïdale de fréquence <LatexMath math="f_1 = 100\text{ kHz}" />.
                 <br />
-                <strong>Peut-on appliquer l&apos;ARQS à cette portion de ligne électrique ferroviaire ? Justifier rigoureusement par un calcul numérique.</strong>
+                <strong>1. Calculer la longueur d&apos;onde <LatexMath math="\lambda_1" />, le temps de propagation <LatexMath math="\tau = L/c" /> et le déphasage angulaire <LatexMath math="\Delta\varphi_1" /> entre CH1 et CH2.</strong>
+                <br />
+                <strong>2. Que constate l&apos;étudiant sur l&apos;écran de l&apos;oscilloscope ? L&apos;ARQS est-elle valide ?</strong>
               </p>
             }
             solution={
               <div className="space-y-2.5 text-xs text-muted-foreground">
                 <p>
-                  <strong className="text-foreground">1. Calcul de la longueur d&apos;onde électromagnétique associée :</strong>
+                  <strong className="text-foreground">1. Calculs des grandeurs caractéristiques :</strong>
                   <br />
-                  La longueur d&apos;onde dans l&apos;air/vide vaut :
+                  • <strong>Longueur d&apos;onde :</strong> <LatexMath math="\lambda_1 = \frac{c}{f_1} = \frac{3\cdot 10^8}{10^5} = 3\,000\text{ m} = 3\text{ km}" />.
                   <br />
-                  <LatexMath math="\lambda = \frac{c}{f} = \frac{3\cdot 10^8\text{ m/s}}{50\text{ s}^{-1}} = 6\cdot 10^6\text{ m} = 6\,000\text{ km}" />.
+                  • <strong>Temps de propagation du signal :</strong> <LatexMath math="\tau = \frac{L}{c} = \frac{10\text{ m}}{3\cdot 10^8\text{ m/s}} \approx 33{,}3\text{ ns}" />.
+                  <br />
+                  • <strong>Période du signal :</strong> <LatexMath math="T_1 = \frac{1}{f_1} = 10\text{ }\mu\text{s} = 10\,000\text{ ns}" />.
+                  <br />
+                  • <strong>Déphasage angulaire :</strong> <LatexMath math="\Delta\varphi_1 = \omega_1 \tau = 2\pi \frac{L}{\lambda_1} = 2\pi \times \frac{10}{3000} \approx 0{,}021\text{ rad} \approx 1{,}2^\circ" />.
                 </p>
                 <p>
-                  <strong className="text-foreground">2. Comparaison avec la dimension caractéristique L du circuit :</strong>
+                  <strong className="text-emerald-400 font-bold">2. Observation à l&apos;oscilloscope & Conclusion :</strong>
                   <br />
-                  La dimension maximale du système est la longueur de la caténaire <LatexMath math="L = 40\text{ km}" />.
+                  Puisque <LatexMath math="\tau \ll T_1" /> (<LatexMath math="\tau / T_1 \approx 0{,}0033" />) et <LatexMath math="L \ll \lambda_1" /> (<LatexMath math="L/\lambda_1 = 1/300 \ll 1" />), les deux sinusoïdes de la voie 1 (entrée) et de la voie 2 (sortie) sont <strong>parfaitement confondues et synchrones</strong> sur l&apos;oscilloscope (<LatexMath math="v_1(t) \approx v_2(t)" />).
                   <br />
-                  Calculons le ratio caractéristique :
-                  <br />
-                  <LatexMath math="\frac{L}{\lambda} = \frac{40\text{ km}}{6\,000\text{ km}} = \frac{1}{150} \approx 6{,}67\cdot 10^{-3} \ll 1" />.
-                </p>
-                <p>
-                  <strong className="text-emerald-400 font-bold">3. Conclusion & Interprétation physique :</strong>
-                  <br />
-                  Puisque <LatexMath math="L \le \lambda / 100" />, la condition fondamentale de l&apos;ARQS est <strong>parfaitement satisfaite</strong>.
-                  Le temps de propagation du signal électrique (<LatexMath math="\tau = L/c \approx 0{,}13\text{ ms}" />) est négligeable devant la période du signal (<LatexMath math="T = 1/f = 20\text{ ms}" />). Les lois usuelles de Kirchhoff (loi des mailles et loi des nœuds) sont rigoureusement valables sur toute la ligne !
+                  ✅ <strong>L&apos;ARQS est rigoureusement vérifiée :</strong> le fil est équipotentiel et le courant est identique en tout point de la ligne à chaque instant.
                 </p>
               </div>
             }
-            tip="Règle d'or : Commencez toujours par exprimer la relation littérale lambda = c/f avant de réaliser l'application numérique et de comparer le ratio L/lambda à 1."
+            tip="À 100 kHz, le déphasage de 1.2° est imperceptible à l'œil nu sur un écran d'oscilloscope. Les lois des mailles et des nœuds s'appliquent sans aucune correction."
           />
 
+          {/* Question 2 */}
           <ExerciseQuestion
             number={2}
-            title="Question 2 : Bus d'Horloge sur Carte Mère de PC (f = 4 GHz, L = 20 cm)"
+            title="Question 2 : Transition à Moyenne Fréquence (f₂ = 5 MHz) — La Limite Pratique"
             question={
               <p>
-                Sur la carte mère d&apos;un ordinateur haute performance de dimension <LatexMath math="L = 20\text{ cm}" />, un bus de données transmet un signal d&apos;horloge à la fréquence <LatexMath math="f = 4\text{ GHz} = 4\cdot 10^9\text{ Hz}" />.
+                L&apos;étudiant monte la fréquence du générateur à <LatexMath math="f_2 = 5\text{ MHz}" />.
                 <br />
-                <strong>L&apos;ARQS est-elle encore applicable aux pistes de cuivre de cette carte ? Quelles en sont les conséquences pour les ingénieurs électroniciens ?</strong>
+                <strong>1. Déterminer la nouvelle longueur d&apos;onde <LatexMath math="\lambda_2" /> et le déphasage <LatexMath math="\Delta\varphi_2" />.</strong>
+                <br />
+                <strong>2. L&apos;approximation de potentiel uniforme <LatexMath math="v(0, t) \approx v(L, t)" /> reste-t-elle valable ?</strong>
               </p>
             }
             solution={
               <div className="space-y-2.5 text-xs text-muted-foreground">
                 <p>
-                  <strong className="text-foreground">1. Calcul de la longueur d&apos;onde du signal d&apos;horloge :</strong>
+                  <strong className="text-foreground">1. Calculs à 5 MHz :</strong>
                   <br />
-                  <LatexMath math="\lambda = \frac{c}{f} = \frac{3\cdot 10^8\text{ m/s}}{4\cdot 10^9\text{ Hz}} = 0{,}075\text{ m} = 7{,}5\text{ cm}" />.
+                  • <strong>Longueur d&apos;onde :</strong> <LatexMath math="\lambda_2 = \frac{3\cdot 10^8}{5\cdot 10^6} = 60\text{ m}" />.
+                  <br />
+                  • <strong>Rapport d&apos;échelle :</strong> <LatexMath math="\frac{L}{\lambda_2} = \frac{10\text{ m}}{60\text{ m}} = \frac{1}{6} \approx 0{,}167" />.
+                  <br />
+                  • <strong>Déphasage angulaire :</strong> <LatexMath math="\Delta\varphi_2 = 2\pi \times \frac{10}{60} = \frac{\pi}{3}\text{ rad} = 60^\circ" />.
                 </p>
                 <p>
-                  <strong className="text-foreground">2. Comparaison entre la taille L de la carte et la longueur d&apos;onde λ :</strong>
+                  <strong className="text-amber-400 font-bold">2. Interprétation :</strong>
                   <br />
-                  Ici, <LatexMath math="L = 20\text{ cm}" /> et <LatexMath math="\lambda = 7{,}5\text{ cm}" />. On constate que :
+                  Un déphasage de <LatexMath math="60^\circ" /> est <strong>clairement visible sur l&apos;oscilloscope</strong> : lorsque la tension d&apos;entrée est à son maximum (<LatexMath math="v_1 = V_0" />), la tension à la sortie ne vaut que <LatexMath math="v_2 = V_0 \cos(60^\circ) = V_0/2" /> !
                   <br />
-                  <LatexMath math="L = 20\text{ cm} > \lambda = 7{,}5\text{ cm}" /> (plus précisément <LatexMath math="L \approx 2{,}67 \lambda" />).
-                </p>
-                <p>
-                  <strong className="text-rose-400 font-bold">3. Conclusion & Conséquences pratiques :</strong>
-                  <br />
-                  L&apos;ARQS est <strong>totalement invalide</strong> ! Il y a plus de 2 ondes complètes qui oscillent le long d&apos;une même piste au même instant.
-                  <br />
-                  Le potentiel électrique n&apos;est pas uniforme : deux points d&apos;une même piste en cuivre ont des tensions complètement différentes à un instant <LatexMath math="t" /> donné.
-                  <br />
-                  <strong>Conséquence :</strong> Les pistes doivent impérativement être conçues comme des <em>lignes de transmission hyperfréquences</em> avec adaptation d&apos;impédance (50 Ω) pour éviter les réflexions d&apos;ondes et les parasites.
+                  ⚠️ <strong>On atteint la limite de rupture de l&apos;ARQS :</strong> l&apos;hypothèse d&apos;un potentiel uniforme sur l&apos;ensemble des 10 mètres de câble n&apos;est plus acceptable pour des calculs de précision.
                 </p>
               </div>
             }
-            tip="Retenez bien : à l'échelle du GHz (processeurs, Wi-Fi 5 GHz, 5G), un simple fil de quelques centimètres se comporte comme une ligne de propagation d'onde, pas comme un fil équipotentiel !"
+            tip="Rappelez-vous du critère pratique : dès que L > lambda / 100, un déphasage commence à apparaître. À L = lambda / 6, l'écart de tension instantanée atteint 50% !"
           />
 
+          {/* Question 3 */}
           <ExerciseQuestion
             number={3}
-            title="Question 3 : Dimensionnement & Effet de Peau dans un Câble en Cuivre (R = 2 mm)"
+            title="Question 3 : Haute Fréquence (f₃ = 30 MHz) — Rupture Totale de l'ARQS"
             question={
               <p>
-                Un câble cylindrique en cuivre de rayon <LatexMath math="R = 2\text{ mm}" /> est utilisé successivement pour :
+                La fréquence est réglée à <LatexMath math="f_3 = 30\text{ MHz}" />.
                 <br />
-                a) Le transport d&apos;électricité domestique à <LatexMath math="f_1 = 50\text{ Hz}" />.
+                <strong>1. Calculer <LatexMath math="\lambda_3" /> et comparer à la longueur de la ligne L.</strong>
                 <br />
-                b) Un émetteur radio haute fréquence à <LatexMath math="f_2 = 10\text{ MHz}" />.
-                <br />
-                <strong>1. Calculer l&apos;épaisseur de peau <LatexMath math="\delta" /> dans chaque cas.</strong>
-                <br />
-                <strong>2. Calculer la section efficace <LatexMath math="S_{\text{eff}}" /> et le rapport des résistances <LatexMath math="R_{\text{AC}} / R_{\text{DC}}" /> à 10 MHz. Conclure sur le choix du câble.</strong>
+                <strong>2. Que vaut le déphasage <LatexMath math="\Delta\varphi_3" /> ? Pourquoi ne peut-on plus appliquer la loi des nœuds ou la loi des mailles globale ?</strong>
               </p>
             }
             solution={
               <div className="space-y-2.5 text-xs text-muted-foreground">
                 <p>
-                  <strong className="text-foreground">1. Formule de l&apos;épaisseur de peau :</strong>
+                  <strong className="text-foreground">1. Comparaison à 30 MHz :</strong>
                   <br />
-                  <LatexMath math="\delta = \frac{1}{\sqrt{\pi \mu_0 \gamma f}}" />
+                  • <strong>Longueur d&apos;onde :</strong> <LatexMath math="\lambda_3 = \frac{3\cdot 10^8}{30\cdot 10^6} = 10\text{ m}" />.
+                  <br />
+                  • <strong>On constate que :</strong> <LatexMath math="L = \lambda_3 = 10\text{ m}" /> exactement !
                 </p>
                 <p>
-                  <strong className="text-emerald-400">a) À basse fréquence (50 Hz) :</strong>
+                  <strong className="text-rose-400 font-bold">2. Rupture totale de l&apos;ARQS :</strong>
                   <br />
-                  <LatexMath math="\delta_1 = \frac{1}{\sqrt{\pi \times (4\pi\cdot 10^{-7}) \times (5{,}8\cdot 10^7) \times 50}} \approx 9{,}34\cdot 10^{-3}\text{ m} = 9{,}34\text{ mm}" />.
+                  • Le temps de propagation <LatexMath math="\tau = 33{,}3\text{ ns}" /> est exactement égal à la période <LatexMath math="T_3 = 1/f_3 = 33{,}3\text{ ns}" />.
                   <br />
-                  Puisque <LatexMath math="\delta_1 = 9{,}34\text{ mm} > R = 2\text{ mm}" />, l&apos;effet de peau est négligeable : le courant occupe <strong>100% de la section du câble</strong> (<LatexMath math="S_{\text{eff}} = \pi R^2" />).
-                </p>
-                <p>
-                  <strong className="text-rose-400">b) À haute fréquence (10 MHz) :</strong>
+                  • Le déphasage vaut <LatexMath math="\Delta\varphi_3 = 2\pi = 360^\circ" />.
                   <br />
-                  <LatexMath math="\delta_2 = \frac{1}{\sqrt{\pi \times (4\pi\cdot 10^{-7}) \times (5{,}8\cdot 10^7) \times 10^7}} \approx 2{,}09\cdot 10^{-5}\text{ m} = 20{,}9\,\mu\text{m}" />.
+                  • À un instant <LatexMath math="t" /> donné, le long des 10 mètres de câble, le signal parcourt une onde complète avec des zones de tension positive, des nœuds à 0 V et des creux négatifs !
                   <br />
-                  Puisque <LatexMath math="\delta_2 \approx 21\,\mu\text{m} \ll R = 2\text{ mm}" />, le courant est expulsé sur une infime couche périphérique !
-                </p>
-                <p>
-                  <strong className="text-foreground">2. Section efficace et augmentation de résistance à 10 MHz :</strong>
-                  <br />
-                  <LatexMath math="S_{\text{eff}} \approx 2\pi R \cdot \delta_2 = 2\pi \times (2\cdot 10^{-3}) \times (20{,}9\cdot 10^{-6}) \approx 2{,}63\cdot 10^{-7}\text{ m}^2" />.
-                  <br />
-                  Rapport des résistances :
-                  <br />
-                  <LatexMath math="\frac{R_{\text{AC}}}{R_{\text{DC}}} \approx \frac{R}{2\delta_2} = \frac{2\text{ mm}}{2 \times 0{,}0209\text{ mm}} \approx 47{,}8" />.
-                  <br />
-                  <strong>Conclusion industrielle :</strong> À 10 MHz, la résistance du câble est multipliée par ~48 ! Le cœur en cuivre (98% de la matière) ne sert à rien. Il faut remplacer ce câble plein par un <strong>tube creux</strong> ou du <strong>fil de Litz</strong>.
+                  ❌ <strong>Conclusion :</strong> L&apos;ARQS est <strong>totalement fausse</strong>. Le câble est une <em>ligne de propagation à constantes réparties</em> (modèle télégraphiste de Kelvin) et doit être traité par les équations de d&apos;Alembert.
                 </p>
               </div>
             }
-            tip="Dans vos copies de concours, mentionnez toujours que lorsque delta << R, la résistance AC est donnée par Rac = L / (gamma * 2*pi*R*delta), et que le rapport Rac/Rdc vaut R / (2*delta)."
+            tip="Quand L >= lambda, la notion même de tension unique v(t) entre deux fils n'a plus de sens physique sans préciser la coordonnée spatiale x !"
           />
+
+          {/* Question 4 */}
+          <ExerciseQuestion
+            number={4}
+            title="Question 4 : Effet de Peau & Pertes Joules (r = 1 mm)"
+            question={
+              <p>
+                Chaque brin de cuivre a un rayon <LatexMath math="r = 1\text{ mm}" />.
+                <br />
+                <strong>1. Calculer l&apos;épaisseur de peau <LatexMath math="\delta" /> à <LatexMath math="100\text{ kHz}" /> puis à <LatexMath math="30\text{ MHz}" />.</strong>
+                <br />
+                <strong>2. Calculer le rapport des résistances <LatexMath math="R_{\text{AC}} / R_{\text{DC}}" /> à 30 MHz. Quel est l&apos;impact sur l&apos;échauffement du banc ?</strong>
+              </p>
+            }
+            solution={
+              <div className="space-y-2.5 text-xs text-muted-foreground">
+                <p>
+                  <strong className="text-foreground">1. Calcul de l&apos;épaisseur de peau :</strong>
+                  <br />
+                  Formule générale : <LatexMath math="\delta = \frac{1}{\sqrt{\pi \mu_0 \gamma f}}" />.
+                  <br />
+                  • <strong>À 100 kHz :</strong> <LatexMath math="\delta_{100\text{k}} = \frac{1}{\sqrt{\pi \times (4\pi\cdot 10^{-7}) \times (5{,}8\cdot 10^7) \times 10^5}} \approx 0{,}209\text{ mm} \approx 209\,\mu\text{m}" />.
+                  <br />
+                  • <strong>À 30 MHz :</strong> <LatexMath math="\delta_{30\text{M}} = \frac{1}{\sqrt{\pi \times (4\pi\cdot 10^{-7}) \times (5{,}8\cdot 10^7) \times (3\cdot 10^7)}} \approx 0{,}012\text{ mm} = 12\,\mu\text{m}" />.
+                </p>
+                <p>
+                  <strong className="text-foreground">2. Rapport de résistance et pertes Joule à 30 MHz :</strong>
+                  <br />
+                  Comme <LatexMath math="\delta_{30\text{M}} = 12\,\mu\text{m} \ll r = 1\text{ mm}" />, la section utile est confinée à l&apos;anneau extérieur <LatexMath math="S_{\text{eff}} \approx 2\pi r \delta" />.
+                  <br />
+                  <LatexMath math="\frac{R_{\text{AC}}}{R_{\text{DC}}} \approx \frac{r}{2\delta} = \frac{1\text{ mm}}{2 \times 0{,}012\text{ mm}} \approx 41{,}7" />.
+                  <br />
+                  🔥 <strong>Impact thermique :</strong> À 30 MHz, la résistance du câble est <strong>multipliée par ~42</strong> ! Les pertes Joule (<LatexMath math="P_J = R_{\text{AC}} I^2" />) sont 42 fois plus intenses qu&apos;en continu pour le même courant efficace, provoquant un échauffement sévère du câble.
+                </p>
+              </div>
+            }
+            tip="Formule clé concours : quand delta << r, le rapport des résistances s'exprime toujours simplement par Rac / Rdc = r / (2*delta)."
+          />
+
         </div>
       </section>
 

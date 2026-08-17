@@ -381,7 +381,7 @@ function SimulationScene({ isPlaying, setIsPlaying, bMagnitude, resistance, rese
 
   useEffect(() => {
     state.current = { y: 3.5, v: 0 };
-    if (rodRef.current) rodRef.current.position.y = 3.5;
+    if (rodRef.current?.position) rodRef.current.position.y = 3.5;
   }, [resetTrigger]);
 
   const [physicsData, setPhysicsData] = useState({ v: 0, Fm: 0, I: 0 });
@@ -415,7 +415,7 @@ function SimulationScene({ isPlaying, setIsPlaying, bMagnitude, resistance, rese
       state.current.v = 0;
     }
 
-    if (rodRef.current) {
+    if (rodRef.current?.position) {
       rodRef.current.position.y = state.current.y;
     }
 
