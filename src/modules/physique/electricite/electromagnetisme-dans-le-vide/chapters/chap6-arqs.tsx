@@ -6,6 +6,7 @@ import dynamic from 'next/dynamic';
 import LazyMount from "@/components/ui/LazyMount";
 
 const ARQSCondition3DCanvas = dynamic(() => import("../components/ARQSCondition3DCanvas"), { ssr: false });
+const ARQSTypesDual3DCanvas = dynamic(() => import("../components/ARQSTypesDual3DCanvas"), { ssr: false });
 const DisplacementCurrent3DCanvas = dynamic(() => import("../components/DisplacementCurrent3DCanvas"), { ssr: false });
 const SkinEffect3DCanvas = dynamic(() => import("../components/SkinEffect3DCanvas"), { ssr: false });
 
@@ -283,44 +284,66 @@ export default function Chap6ARQS() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
           {/* ARQS Magnétique */}
-          <div className="p-4 rounded-xl bg-muted/30 border border-purple-500/30 space-y-2">
-            <div className="flex items-center justify-between">
-              <h3 className="text-xs sm:text-sm font-bold text-purple-400">A. ARQS Magnétique (Le plus usuel)</h3>
-              <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-purple-500/10 text-purple-400 border border-purple-500/20">Circuits R, L</span>
+          <div className="p-4 rounded-xl bg-muted/30 border border-purple-500/30 space-y-2 flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between mb-1.5">
+                <h3 className="text-xs sm:text-sm font-bold text-purple-400">A. ARQS Magnétique (Le plus usuel)</h3>
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-purple-500/10 text-purple-400 border border-purple-500/20">Circuits R, L</span>
+              </div>
+
+              <p className="text-[11.5px] text-muted-foreground leading-relaxed mb-2">
+                On néglige le <strong>courant de déplacement</strong> <LatexMath math="\vec{j}_D = \varepsilon_0 \frac{\partial \vec{E}}{\partial t}" /> devant le courant de conduction : <LatexMath math="\vec{j}_D \ll \vec{j}" />.
+              </p>
+
+              <div className="p-2.5 rounded-lg bg-background border border-border/80 font-mono text-xs text-center text-foreground mb-2">
+                <LatexMath math="\vec{\text{rot}}\,\vec{B} \approx \mu_0 \vec{j} \quad ; \quad \text{div}\,\vec{j} \approx 0" />
+              </div>
             </div>
 
-            <p className="text-[11.5px] text-muted-foreground leading-relaxed">
-              On néglige le <strong>courant de déplacement</strong> devant le courant de conduction : <LatexMath math="\vec{j}_D \ll \vec{j}" />.
-            </p>
-
-            <div className="p-2.5 rounded-lg bg-background border border-border/80 font-mono text-xs text-center text-foreground">
-              <LatexMath math="\vec{\text{rot}}\,\vec{B} \approx \mu_0 \vec{j} \quad ; \quad \text{div}\,\vec{j} \approx 0" />
-            </div>
-
-            <p className="text-[11px] text-muted-foreground">
+            <p className="text-[11px] text-muted-foreground bg-purple-500/5 p-2 rounded-lg border border-purple-500/20">
               ✅ <strong>Conséquence majeure :</strong> Le courant se conserve le long d&apos;une branche. La <strong>loi des nœuds</strong> (<LatexMath math="\sum I_k = 0" />) est rigoureusement valable.
             </p>
           </div>
 
           {/* ARQS Électrique */}
-          <div className="p-4 rounded-xl bg-muted/30 border border-sky-500/30 space-y-2">
-            <div className="flex items-center justify-between">
-              <h3 className="text-xs sm:text-sm font-bold text-sky-400">B. ARQS Électrique (Circuits C)</h3>
-              <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-sky-500/10 text-sky-400 border border-sky-500/20">Haute Impédance</span>
+          <div className="p-4 rounded-xl bg-muted/30 border border-sky-500/30 space-y-2 flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between mb-1.5">
+                <h3 className="text-xs sm:text-sm font-bold text-sky-400">B. ARQS Électrique (Circuits C)</h3>
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-sky-500/10 text-sky-400 border border-sky-500/20">Haute Impédance</span>
+              </div>
+
+              <p className="text-[11.5px] text-muted-foreground leading-relaxed mb-2">
+                On néglige le terme d&apos;<strong>induction temporelle</strong> dans Maxwell-Faraday : <LatexMath math="\frac{\partial \vec{B}}{\partial t} \approx \vec{0}" />.
+              </p>
+
+              <div className="p-2.5 rounded-lg bg-background border border-border/80 font-mono text-xs text-center text-foreground mb-2">
+                <LatexMath math="\vec{\text{rot}}\,\vec{E} \approx \vec{0} \quad \implies \quad \vec{E} \approx -\vec{\text{grad}}\,V" />
+              </div>
             </div>
 
-            <p className="text-[11.5px] text-muted-foreground leading-relaxed">
-              On néglige le terme d&apos;<strong>induction temporelle</strong> dans Maxwell-Faraday : <LatexMath math="\partial \vec{B}/\partial t \approx \vec{0}" />.
-            </p>
-
-            <div className="p-2.5 rounded-lg bg-background border border-border/80 font-mono text-xs text-center text-foreground">
-              <LatexMath math="\vec{\text{rot}}\,\vec{E} \approx \vec{0} \quad \implies \quad \vec{E} \approx -\vec{\text{grad}}\,V" />
-            </div>
-
-            <p className="text-[11px] text-muted-foreground">
+            <p className="text-[11px] text-muted-foreground bg-sky-500/5 p-2 rounded-lg border border-sky-500/20">
               ✅ <strong>Conséquence majeure :</strong> Le champ électrique dérive d&apos;un potentiel scalaire <LatexMath math="V" />. La <strong>loi des mailles</strong> (<LatexMath math="\sum U_k = 0" />) est rigoureusement vérifiée.
             </p>
           </div>
+        </div>
+
+        {/* ── VISUALISATEUR 3D INTERACTIF DUAL (MAGNÉTIQUE vs ÉLECTRIQUE) ── */}
+        <div className="pt-2 space-y-2">
+          <h3 className="text-xs font-bold text-foreground">
+            Comparateur 3D Interactif : Visualisation des Deux Régimes ARQS
+          </h3>
+          <LazyMount height="340px" fallbackText="Chargement du comparateur ARQS 3D...">
+            <ARQSTypesDual3DCanvas />
+          </LazyMount>
+        </div>
+
+        {/* ── REMARQUE DE SYNTHÈSE GLOBALE ── */}
+        <div className="p-3.5 rounded-xl bg-gradient-to-r from-purple-500/10 via-background to-sky-500/10 border border-border text-xs text-foreground flex items-start gap-2.5 shadow-xs">
+          <Sparkles className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+          <p className="leading-relaxed">
+            <strong>Remarque :</strong> Dans la majorité des circuits usuels (RLC), l&apos;ARQS globale applique simultanément ces deux conditions, autorisant à la fois la <strong>loi des nœuds</strong> et la <strong>loi des mailles</strong>.
+          </p>
         </div>
       </section>
 
