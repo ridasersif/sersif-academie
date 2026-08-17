@@ -5,6 +5,7 @@ import Chap4InductionElectromagnetique from "./chap4-induction-electromagnetique
 import Chap5EquationsMaxwell from "./chap5-equations-maxwell";
 import Chap6ARQS from "./chap6-arqs";
 import Chap7EnergieElectromagnetique from "./chap7-energie-electromagnetique";
+import Chap8Formulaire from "./chap8-formulaire";
 
 export const ELECTROMAGNETISME_VIDE_CHAPTERS = [
   {
@@ -55,6 +56,13 @@ export const ELECTROMAGNETISME_VIDE_CHAPTERS = [
     title: "Énergie Électromagnétique",
     subtitle: "Vecteur de Poynting et Bilan d'Énergie",
     component: Chap7EnergieElectromagnetique,
+  },
+  {
+    id: "formulaire",
+    num: "08",
+    title: "Formulaire & Résumé",
+    subtitle: "Toutes les formules pour les exercices",
+    component: Chap8Formulaire,
   }
 ];
 
@@ -65,5 +73,6 @@ export {
   Chap4InductionElectromagnetique,
   Chap5EquationsMaxwell,
   Chap6ARQS,
-  Chap7EnergieElectromagnetique
+  Chap7EnergieElectromagnetique,
+  Chap8Formulaire
 };
