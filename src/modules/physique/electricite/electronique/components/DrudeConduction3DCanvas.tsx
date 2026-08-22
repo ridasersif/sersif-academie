@@ -4,7 +4,7 @@ import React, { Suspense, useState, useRef, useEffect, useMemo } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, Cylinder, Html, Line, Box, ContactShadows } from "@react-three/drei";
 import * as THREE from "three";
-import { ChevronRight, ChevronLeft, Zap, Target, Sparkles } from "lucide-react";
+import { ChevronRight, ChevronLeft, Target, Sparkles } from "lucide-react";
 import LatexMath from "@/components/ui/LatexMath";
 
 interface ElectronParticle {
@@ -13,7 +13,7 @@ interface ElectronParticle {
   baseThermalSpeed: number;
 }
 
-// Fixed 32 electrons initialized statically outside render
+// 32 electrons initialized statically
 const INITIAL_ELECTRONS: ElectronParticle[] = Array.from({ length: 32 }).map((_, i) => {
   const p = new THREE.Vector3(
     (Math.sin(i * 13) * 0.5 + 0.5) * 4.4 - 2.2,
@@ -36,13 +36,13 @@ function Experiment3DScene({
   temperature,
   trackSingle,
 }: {
-  phase: number; // 0: Agitation pure, 1: Application de U & E, 2: Regime permanent & Joule
+  phase: number;
   voltageV: number;
   temperature: number;
   trackSingle: boolean;
 }) {
   const isConnected = phase >= 1;
-  const eFieldMagnitude = isConnected ? (voltageV / 2.0) : 0;
+  const eFieldMagnitude = isConnected ? voltageV / 2.0 : 0;
 
   // Ordered lattice of Cu2+ ions
   const latticeIons = useMemo(() => {
@@ -71,9 +71,8 @@ function Experiment3DScene({
   }, [trackSingle, phase]);
 
   useFrame((_, delta) => {
-    // Thermal speed: 0 when T=0K (Absolute zero frozen), high-energy chaos at T > 0K
-    const thermalFactor = temperature === 0 ? 0 : Math.sqrt(temperature / 300) * 3.8;
-    const driftSpeed = eFieldMagnitude * 0.42;
+    const thermalFactor = temperature === 0 ? 0 : Math.sqrt(temperature / 300) * (2.2 + (temperature > 300 ? (temperature - 300) / 45 : 0));
+    const driftSpeed = eFieldMagnitude * 1.25;
     const cylinderRadius = 0.85;
     const halfLength = 2.3;
 
@@ -87,7 +86,7 @@ function Experiment3DScene({
       el.pos.y += el.vel.y * el.baseThermalSpeed * thermalFactor * delta;
       el.pos.z += el.vel.z * el.baseThermalSpeed * thermalFactor * delta;
 
-      // Radial collision with cylinder walls
+      // Radial collision with cylinder wall
       const rCurrent = Math.sqrt(el.pos.y * el.pos.y + el.pos.z * el.pos.z);
       if (rCurrent > cylinderRadius) {
         const normalY = el.pos.y / rCurrent;
@@ -105,28 +104,38 @@ function Experiment3DScene({
         el.pos.x = Math.sign(el.pos.x) * halfLength;
       }
 
-      // Ion collisions
+      // Elastic ion collisions
+      const collisionRadius = 0.20;
       for (let ionIdx = 0; ionIdx < latticeIons.length; ionIdx++) {
         const ionPos = latticeIons[ionIdx];
-        if (el.pos.distanceTo(ionPos) < 0.25) {
-          el.vel.set(
-            Math.sin(el.pos.x * 12 + ionIdx),
-            Math.cos(el.pos.y * 12 + ionIdx),
-            Math.sin(el.pos.z * 12 + ionIdx)
-          ).normalize();
+        const dist = el.pos.distanceTo(ionPos);
+        if (dist < collisionRadius) {
+          const normal = el.pos.clone().sub(ionPos);
+          if (normal.lengthSq() < 0.0001) {
+            normal.set(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5);
+          }
+          normal.normalize();
 
-          // Flash on collision in phase 2 (Joule effect)
+          el.vel.reflect(normal);
+          el.vel.add(new THREE.Vector3(
+            (Math.random() - 0.5) * 0.4,
+            (Math.random() - 0.5) * 0.4,
+            (Math.random() - 0.5) * 0.4
+          )).normalize();
+
+          el.pos.copy(ionPos.clone().add(normal.multiplyScalar(collisionRadius + 0.02)));
+
           if (phase === 2) {
             const ionMesh = ionMeshRefs.current[ionIdx];
             if (ionMesh && ionMesh.material) {
               const mat = ionMesh.material as THREE.MeshStandardMaterial;
-              mat.emissiveIntensity = 1.4;
+              mat.emissiveIntensity = 1.6;
             }
           }
         }
       }
 
-      // Applied Electric Drift (towards Left / + terminal)
+      // Applied Electric Field Drift (towards Left)
       if (isConnected) {
         el.pos.x -= driftSpeed * delta;
         if (el.pos.x < -halfLength) {
@@ -166,12 +175,12 @@ function Experiment3DScene({
 
   return (
     <>
-      <ambientLight intensity={0.9} />
+      <ambientLight intensity={0.95} />
       <directionalLight position={[6, 8, 5]} intensity={1.8} />
       <pointLight position={[-6, -4, -4]} intensity={0.7} color="#38bdf8" />
       <pointLight position={[6, 4, -4]} intensity={0.6} color="#f59e0b" />
 
-      {/* ── 1. REALISTIC CYLINDRICAL COPPER WIRE ── */}
+      {/* ── 1. REALISTIC CYLINDRICAL COPPER WIRE (Cutaway view) ── */}
       <group rotation={[0, 0, Math.PI / 2]}>
         <Cylinder args={[0.95, 0.95, 4.8, 32, 1, true]}>
           <meshStandardMaterial
@@ -190,7 +199,7 @@ function Experiment3DScene({
         </Cylinder>
       </group>
 
-      {/* ── 2. POLARITY TERMINALS (Connected in Phase 1 & 2) ── */}
+      {/* ── 2. POLARITY TERMINAL PLATES ── */}
       {/* Terminal + at Left */}
       <group position={[-2.45, 0, 0]}>
         <Cylinder args={[1.02, 1.02, 0.12, 32]} rotation={[0, 0, Math.PI / 2]}>
@@ -201,13 +210,6 @@ function Experiment3DScene({
             metalness={0.9}
           />
         </Cylinder>
-        {isConnected && (
-          <Html position={[0, 1.35, 0]} center>
-            <div className="bg-rose-950/90 border border-rose-500/50 text-rose-300 font-mono text-[9px] px-2 py-0.5 rounded shadow font-bold whitespace-nowrap animate-in fade-in">
-              Pôle (+) • Potentiel Élevé
-            </div>
-          </Html>
-        )}
       </group>
 
       {/* Terminal - at Right */}
@@ -220,57 +222,13 @@ function Experiment3DScene({
             metalness={0.9}
           />
         </Cylinder>
-        {isConnected && (
-          <Html position={[0, 1.35, 0]} center>
-            <div className="bg-blue-950/90 border border-blue-500/50 text-blue-300 font-mono text-[9px] px-2 py-0.5 rounded shadow font-bold whitespace-nowrap animate-in fade-in">
-              Pôle (-) • Potentiel Bas
-            </div>
-          </Html>
-        )}
       </group>
 
-      {/* ── 3. GENERATOR / BATTERY & CONNECTING WIRES (Appear in Phase 1 & 2) ── */}
-      {isConnected && (
-        <group position={[0, -2.1, 0]}>
-          {/* Battery Box */}
-          <Box args={[1.8, 0.7, 0.8]} position={[0, 0, 0]}>
-            <meshStandardMaterial color="#0f172a" metalness={0.8} roughness={0.3} />
-          </Box>
-          <Html position={[0, 0, 0.45]} center>
-            <div className="bg-slate-900 border border-amber-500/40 text-amber-400 font-mono text-[10px] px-2 py-0.5 rounded font-bold shadow flex items-center gap-1 whitespace-nowrap">
-              <Zap size={11} /> Générateur <LatexMath math={`U = ${voltageV}\\,\\text{V}`} />
-            </div>
-          </Html>
-
-          {/* Red Wire connecting Battery (+) to Left Terminal */}
-          <Line
-            points={[
-              [-0.8, 0.2, 0],
-              [-2.45, 0.2, 0],
-              [-2.45, 1.5, 0],
-            ]}
-            color="#ef4444"
-            lineWidth={3}
-          />
-
-          {/* Blue Wire connecting Battery (-) to Right Terminal */}
-          <Line
-            points={[
-              [0.8, 0.2, 0],
-              [2.45, 0.2, 0],
-              [2.45, 1.5, 0],
-            ]}
-            color="#3b82f6"
-            lineWidth={3}
-          />
-        </group>
-      )}
-
-      {/* ── 4. FIELD & CURRENT VECTOR ARROWS ── */}
+      {/* ── 3. FIELD & CURRENT VECTOR ARROWS (Only arrows, no text) ── */}
       {isConnected && (
         <>
           {/* Top Arrow: Electric Field E & Current I (Pointing Right ->) */}
-          <group position={[0, 1.6, 0]}>
+          <group position={[0, 1.35, 0]}>
             <Cylinder args={[0.03, 0.03, 3.2]} rotation={[0, 0, -Math.PI / 2]}>
               <meshStandardMaterial color="#f59e0b" emissive="#d97706" emissiveIntensity={0.9} />
             </Cylinder>
@@ -278,28 +236,145 @@ function Experiment3DScene({
               <coneGeometry args={[0.12, 0.3, 16]} />
               <meshStandardMaterial color="#f59e0b" emissive="#d97706" emissiveIntensity={1} />
             </mesh>
-            <Html position={[0, 0.2, 0]} center>
-              <div className="bg-amber-950/90 border border-amber-500/40 text-amber-300 font-mono text-[9px] px-2 py-0.5 rounded shadow font-bold whitespace-nowrap">
-                Champ <LatexMath math="\vec{E}" /> & Courant <LatexMath math="I" /> (Sens conventionnel) →
-              </div>
-            </Html>
           </group>
 
-          {/* Bottom Arrow: Electron Drift vd (Pointing Left <-) */}
-          <group position={[0, -1.5, 0]}>
-            <Cylinder args={[0.03, 0.03, 3.2]} rotation={[0, 0, Math.PI / 2]}>
+          {/* Sub-tube Arrow: Electron Drift vd (Pointing Left <-) */}
+          <group position={[0, -1.25, 0]}>
+            <Cylinder args={[0.025, 0.025, 3.0]} rotation={[0, 0, Math.PI / 2]}>
               <meshStandardMaterial color="#38bdf8" emissive="#0284c7" emissiveIntensity={0.9} />
             </Cylinder>
-            <mesh position={[-1.7, 0, 0]} rotation={[0, 0, Math.PI / 2]}>
-              <coneGeometry args={[0.12, 0.3, 16]} />
+            <mesh position={[-1.6, 0, 0]} rotation={[0, 0, Math.PI / 2]}>
+              <coneGeometry args={[0.10, 0.25, 16]} />
               <meshStandardMaterial color="#38bdf8" emissive="#0284c7" emissiveIntensity={1} />
             </mesh>
-            <Html position={[0, -0.2, 0]} center>
-              <div className="bg-sky-950/90 border border-sky-500/40 text-sky-300 font-mono text-[9px] px-2 py-0.5 rounded shadow font-bold whitespace-nowrap">
-                ← Déplacement réel des électrons <LatexMath math="\vec{v}_d = -\mu \vec{E}" />
+          </group>
+        </>
+      )}
+
+      {/* ── 4. BEAUTIFUL REALISTIC PANEL VOLTMETER (Scaled down & clean) ── */}
+      {isConnected && (
+        <>
+          <group position={[0, -2.4, 0.2]} rotation={[-0.1, 0, 0]} scale={0.65}>
+            
+            {/* Main Rectangular Casing */}
+            <Box args={[3.2, 1.8, 0.4]} position={[0, 0, 0]}>
+              <meshStandardMaterial color="#1e293b" roughness={0.4} metalness={0.6} />
+            </Box>
+            
+            {/* Chrome Bezel Frame */}
+            <Box args={[2.9, 1.5, 0.45]} position={[0, 0, 0]}>
+              <meshStandardMaterial color="#334155" roughness={0.3} metalness={0.8} />
+            </Box>
+
+            {/* White Dial Face */}
+            <Box args={[2.7, 1.3, 0.42]} position={[0, 0, 0]}>
+              <meshStandardMaterial color="#f8fafc" roughness={0.9} />
+            </Box>
+
+            {/* High-Resolution SVG Dial Face */}
+            <Html transform position={[0, 0.05, 0.215]} scale={0.25} zIndexRange={[100, 0]}>
+              <div className="w-[380px] h-[190px] flex flex-col items-center justify-end font-sans text-slate-800 select-none pb-4">
+                <svg width="340" height="160" viewBox="0 0 340 160" className="absolute top-2">
+                  <path d="M 40 150 A 130 130 0 0 1 300 150" fill="none" stroke="#cbd5e1" strokeWidth="3" />
+                  <path d="M 40 150 A 130 130 0 0 1 300 150" fill="none" stroke="url(#gradient)" strokeWidth="6" strokeLinecap="round" />
+                  <defs>
+                    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" stopColor="#10b981" />
+                      <stop offset="50%" stopColor="#f59e0b" />
+                      <stop offset="100%" stopColor="#ef4444" />
+                    </linearGradient>
+                  </defs>
+                  <g fill="#0f172a" fontSize="16" fontWeight="900" fontFamily="monospace" textAnchor="middle">
+                    <text x="35" y="170">0</text>
+                    <text x="75" y="90">2</text>
+                    <text x="170" y="55">4</text>
+                    <text x="265" y="90">6</text>
+                    <text x="305" y="170">8</text>
+                    <line x1="40" y1="150" x2="50" y2="145" stroke="#475569" strokeWidth="2" />
+                    <line x1="300" y1="150" x2="290" y2="145" stroke="#475569" strokeWidth="2" />
+                    <line x1="170" y1="20" x2="170" y2="32" stroke="#475569" strokeWidth="3" />
+                    <line x1="83" y1="62" x2="93" y2="72" stroke="#475569" strokeWidth="2" />
+                    <line x1="257" y1="62" x2="247" y2="72" stroke="#475569" strokeWidth="2" />
+                  </g>
+                </svg>
+
+                <div className="absolute bottom-4 flex flex-col items-center">
+                  <span className="text-4xl font-black font-serif leading-none tracking-tighter text-slate-900">V</span>
+                  <div className="mt-2 bg-slate-900 text-emerald-400 font-mono font-bold text-xl px-4 py-1.5 rounded-lg shadow-inner border border-slate-700">
+                    {voltageV.toFixed(2)}
+                  </div>
+                </div>
               </div>
             </Html>
+
+            {/* Pivot Hub */}
+            <group position={[0, -0.65, 0.22]}>
+              <Cylinder args={[0.2, 0.2, 0.08, 32]} rotation={[Math.PI / 2, 0, 0]}>
+                <meshStandardMaterial color="#020617" metalness={0.9} roughness={0.2} />
+              </Cylinder>
+              <Cylinder args={[0.12, 0.12, 0.1, 32]} rotation={[Math.PI / 2, 0, 0]}>
+                <meshStandardMaterial color="#334155" metalness={0.6} />
+              </Cylinder>
+
+              {/* Dynamic Red Needle */}
+              <group rotation={[0, 0, (Math.PI / 3) - (voltageV / 8.0) * (2 * Math.PI / 3)]}>
+                <Cylinder args={[0.015, 0.035, 1.4, 16]} position={[0, 0.7, 0.02]}>
+                  <meshStandardMaterial color="#ef4444" emissive="#b91c1c" emissiveIntensity={0.6} />
+                </Cylinder>
+                <mesh position={[0, 1.4, 0.02]}>
+                  <coneGeometry args={[0.025, 0.1, 16]} />
+                  <meshStandardMaterial color="#ef4444" emissive="#b91c1c" emissiveIntensity={0.6} />
+                </mesh>
+              </group>
+            </group>
+
+            {/* Left Red (+) Terminal Post */}
+            <group position={[-1.1, -1.0, 0.2]}>
+              <Cylinder args={[0.15, 0.15, 0.25, 32]} rotation={[Math.PI / 2, 0, 0]}>
+                <meshStandardMaterial color="#ef4444" metalness={0.4} roughness={0.5} />
+              </Cylinder>
+              <Cylinder args={[0.08, 0.08, 0.35, 16]} rotation={[Math.PI / 2, 0, 0]}>
+                <meshStandardMaterial color="#b91c1c" metalness={0.8} />
+              </Cylinder>
+            </group>
+
+            {/* Right Blue (-) Terminal Post */}
+            <group position={[1.1, -1.0, 0.2]}>
+              <Cylinder args={[0.15, 0.15, 0.25, 32]} rotation={[Math.PI / 2, 0, 0]}>
+                <meshStandardMaterial color="#3b82f6" metalness={0.4} roughness={0.5} />
+              </Cylinder>
+              <Cylinder args={[0.08, 0.08, 0.35, 16]} rotation={[Math.PI / 2, 0, 0]}>
+                <meshStandardMaterial color="#1d4ed8" metalness={0.8} />
+              </Cylinder>
+            </group>
           </group>
+
+          {/* Curved Realistic Cables (Rendered in GLOBAL space to connect cleanly to plates) */}
+          <Line
+            points={[
+              [-0.715, -3.05, 0.33], // Start at left terminal (scaled & rotated pos)
+              [-1.8, -3.2, 0.1],     // Slack down
+              [-2.6, -2.0, 0],       // Curve up
+              [-2.45, -0.95, 0],     // End at bottom of left plate
+            ]}
+            color="#ef4444"
+            lineWidth={3.5}
+            curveType="catmullrom"
+            tension={0.5}
+          />
+
+          <Line
+            points={[
+              [0.715, -3.05, 0.33],  // Start at right terminal
+              [1.8, -3.2, 0.1],      // Slack down
+              [2.6, -2.0, 0],        // Curve up
+              [2.45, -0.95, 0],      // End at bottom of right plate
+            ]}
+            color="#3b82f6"
+            lineWidth={3.5}
+            curveType="catmullrom"
+            tension={0.5}
+          />
         </>
       )}
 
@@ -351,7 +426,7 @@ function Experiment3DScene({
         </mesh>
       ))}
 
-      <ContactShadows position={[0, -2.5, 0]} opacity={0.6} scale={10} blur={2} />
+      <ContactShadows position={[0, -2.8, 0]} opacity={0.5} scale={10} blur={2} />
       <OrbitControls enableZoom={true} maxDistance={12} minDistance={4} />
     </>
   );
@@ -359,7 +434,7 @@ function Experiment3DScene({
 
 /* ── MAIN COMPONENT WITH STEPPER INTERFACE ── */
 export default function DrudeConduction3DCanvas() {
-  const [phase, setPhase] = useState<number>(0); // 0: E=0, 1: U connected, 2: Steady state & Joule
+  const [phase, setPhase] = useState<number>(0);
   const [voltageV, setVoltageV] = useState<number>(3.0);
   const [temperature, setTemperature] = useState<number>(300);
   const [trackSingle, setTrackSingle] = useState<boolean>(false);
@@ -466,8 +541,8 @@ export default function DrudeConduction3DCanvas() {
         </div>
 
         {/* RIGHT PANEL: 3D VIEWPORT */}
-        <div className="w-full lg:w-[60%] h-[290px] sm:h-[340px] relative bg-[#020510]">
-          <Canvas dpr={[1, 1.5]} camera={{ position: [0, 1.2, 6.0], fov: 45 }}>
+        <div className="w-full lg:w-[60%] h-[300px] sm:h-[360px] relative bg-[#020510]">
+          <Canvas dpr={[1, 1.5]} camera={{ position: [0, 0.8, 6.4], fov: 46 }}>
             <Suspense fallback={null}>
               <Experiment3DScene
                 phase={phase}
