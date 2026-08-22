@@ -54,7 +54,7 @@ export default function CoursePage({ params }: { params: Promise<{ moduleId: str
         </header>
 
         {/* Main Content Area */}
-        <main className="flex-1 p-4 sm:p-8 md:p-12 max-w-5xl mx-auto w-full z-10">
+        <main className={`flex-1 p-4 sm:p-8 md:p-12 ${courseModule.subModules.length > 2 ? "max-w-7xl" : "max-w-5xl"} mx-auto w-full z-10`}>
           
           {/* Header Title */}
           <div className="mb-10 text-center md:text-left">
@@ -72,8 +72,8 @@ export default function CoursePage({ params }: { params: Promise<{ moduleId: str
             </p>
           </div>
 
-          {/* 2 Clean Cards: Mécanique du Point & Mécanique du Solide */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {/* Sub-Module Cards */}
+          <div className={`grid grid-cols-1 ${courseModule.subModules.length > 2 ? "md:grid-cols-2 lg:grid-cols-3 gap-6" : "md:grid-cols-2 gap-8"}`}>
             {courseModule.subModules.map((sub) => (
               <Link 
                 key={sub.id} 
@@ -177,7 +177,7 @@ export default function CoursePage({ params }: { params: Promise<{ moduleId: str
           </div>
           <h2 className="text-2xl font-bold mb-3 text-foreground">{formattedTitle}</h2>
           <p className="text-xs sm:text-sm text-muted-foreground mb-8 leading-relaxed font-medium">
-            Nous préparons les fiches de cours, séries d'exercices et corrigés d'examens pour ce module.
+            Nous préparons les fiches de cours, séries d&apos;exercices et corrigés d&apos;examens pour ce module.
           </p>
           
           <Link 

@@ -8,7 +8,12 @@ import { MECANIQUE_DU_POINT_CHAPTERS } from "@/modules/physique/mecanique-du-poi
 import { ELECTROSTATIQUE_CHAPTERS } from "@/modules/physique/electricite/electrostatique/chapters";
 import { ELECTROMAGNETISME_VIDE_CHAPTERS } from "@/modules/physique/electricite/electromagnetisme-dans-le-vide/chapters";
 import { ELECTROMAGNETISME_MATIERE_CHAPTERS } from "@/modules/physique/electricite/electromagnetisme-dans-la-matiere/chapters";
-import { ELECTRONIQUE_CHAPTERS } from "@/modules/physique/electricite/electronique/chapters";
+import { 
+  ELECTRONIQUE_CHAPTERS,
+  COURANTS_DIPOLES_CHAPTERS,
+  RESEAUX_ARQS_CHAPTERS,
+  ELECTRONIQUE_ANALOGIQUE_CHAPTERS
+} from "@/modules/physique/electricite/electronique/chapters";
 import { 
   ArrowLeft, 
   BookOpen, 
@@ -55,7 +60,7 @@ export default function EtudePage({ params }: { params: Promise<{ moduleId: stri
   const parentModule = COURSES_DATA[moduleId];
   const subModule = parentModule?.subModules?.find((s) => s.id === subModuleId);
 
-  let chapters: any[] = [];
+  let chapters: { id: string; num: string; title: string; subtitle?: string; component?: React.ComponentType | null }[] = [];
   if (subModuleId === "mecanique-du-point") {
     chapters = MECANIQUE_DU_POINT_CHAPTERS;
   } else if (subModuleId === "electrostatique") {
@@ -64,13 +69,18 @@ export default function EtudePage({ params }: { params: Promise<{ moduleId: stri
     chapters = ELECTROMAGNETISME_VIDE_CHAPTERS;
   } else if (subModuleId === "electromagnetisme-dans-la-matiere") {
     chapters = ELECTROMAGNETISME_MATIERE_CHAPTERS;
+  } else if (subModuleId === "courants-et-dipoles-electriques") {
+    chapters = COURANTS_DIPOLES_CHAPTERS;
+  } else if (subModuleId === "reseaux-electriques-dans-arqs") {
+    chapters = RESEAUX_ARQS_CHAPTERS;
+  } else if (subModuleId === "electronique-analogique") {
+    chapters = ELECTRONIQUE_ANALOGIQUE_CHAPTERS;
   } else if (subModuleId === "electronique") {
     chapters = ELECTRONIQUE_CHAPTERS;
   }
 
   // Always initialize to 0 for SSR to avoid hydration mismatch
   const [activeChapterIndex, setActiveChapterIndex] = useState<number>(0);
-  const [isMounted, setIsMounted] = useState(false);
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
@@ -92,10 +102,9 @@ export default function EtudePage({ params }: { params: Promise<{ moduleId: stri
 
   // Read from localStorage/URL after mount to avoid hydration errors
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setIsMounted(true);
     const initial = getInitialChapterIndex(subModuleId, chapters.length);
     if (initial !== 0) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setActiveChapterIndex(initial);
     }
   }, [subModuleId, chapters.length]);

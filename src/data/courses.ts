@@ -175,18 +175,85 @@ export const COURSES_DATA: Record<string, CourseModule> = {
         ]
       },
       {
-        id: "electronique",
+        id: "courants-et-dipoles-electriques",
         code: "Partie 4",
-        title: "Électronique",
-        subtitle: "Circuits et composants analogiques",
-        image: "/modules/electronique.png",
+        title: "Courants et dipôles électriques",
+        subtitle: "Densité de courant, Conductivité & Modèles R, L, C",
+        image: "/modules/courants_dipoles.jpg",
         badge: "Partie 4",
-        description: "Analyse de réseaux, régimes variables, et composants de l'électronique analogique.",
+        description: "Densité de courant électrique, conductivité, loi d'Ohm, dipôles linéaires et non linéaires, puissance électrocinétique et association des dipôles.",
         elements: [
           {
-            id: "circuits",
-            title: "Réseaux électriques et Analogique",
-            details: "Lois de Kirchhoff, quadripôles, diodes et amplificateurs opérationnels."
+            id: "densite-conductivite",
+            title: "Densité de courant & Conductivité",
+            details: "Densité de courant électrique. Conductivité. Mobilité et résistivité d'un conducteur. Résistance électrique."
+          },
+          {
+            id: "loi-ohm-dipoles",
+            title: "Loi d'Ohm & Dipôles électriques",
+            details: "Loi d'Ohm (microscopique et macroscopique). Dipôles électriques linéaire, non linéaire, passif, actif."
+          },
+          {
+            id: "puissance-recepteur",
+            title: "Puissance électrocinétique & Caractère",
+            details: "Puissance électrocinétique reçue par un dipôle. Caractère générateur et récepteur."
+          },
+          {
+            id: "generateurs-rlc",
+            title: "Générateurs & Modèles R, L, C",
+            details: "Générateurs de courant et de tension. Dipôles linéaires modèles R, L, C. Association des dipôles."
+          }
+        ]
+      },
+      {
+        id: "reseaux-electriques-dans-arqs",
+        code: "Partie 5",
+        title: "Réseaux électriques dans l'ARQS",
+        subtitle: "Kirchhoff, Théorèmes & Régime Sinusoïdal Forcé",
+        image: "/modules/reseaux_arqs.jpg",
+        badge: "Partie 5",
+        description: "Lois de Kirchhoff, théorèmes de Thévenin et Norton, impédances complexes, étude du circuit RLC série et résonances.",
+        elements: [
+          {
+            id: "kirchhoff-theoremes",
+            title: "Lois de Kirchhoff & Théorèmes",
+            details: "Lois de Kirchhoff. Loi des nœuds. Théorème de superposition. Théorème de Thévenin. Théorème de Norton. Transformation Thévenin-Norton."
+          },
+          {
+            id: "regime-sinusoidal-impedance",
+            title: "Régime sinusoïdal forcé & Impédance",
+            details: "Circuits linéaires en régime sinusoïdal forcé : admittance et impédance complexes. Cas des dipôles linéaires modèles R, L et C."
+          },
+          {
+            id: "circuit-rlc-resonances",
+            title: "Circuit RLC série & Résonances",
+            details: "Étude du circuit RLC série. Résonances. Puissance moyenne en régime sinusoïdal forcé."
+          }
+        ]
+      },
+      {
+        id: "electronique-analogique",
+        code: "Partie 6",
+        title: "Électronique analogique",
+        subtitle: "Systèmes linéaires, Diodes, Transistors & AO",
+        image: "/modules/electronique_analogique.jpg",
+        badge: "Partie 6",
+        description: "Analyse de Fourier, diagrammes de Bode, quadripôles, diodes Zener, transistors bipolaires et amplificateurs opérationnels.",
+        elements: [
+          {
+            id: "systemes-quadripoles-bode",
+            title: "Systèmes linéaires & Quadripôles",
+            details: "Systèmes linéaires. Analyse et synthèse de Fourier. Représentation complexe. Quadripôles. Caractérisation d'un quadripôle linéaire (impédance d'entrée, représentation de Thévenin ou Norton en sortie). Fonction de transfert. Diagramme de Bode. Modèle de quadripôle parfait."
+          },
+          {
+            id: "diodes-transistors",
+            title: "Diodes & Transistors bipolaires",
+            details: "Diode à jonction et diode Zener, caractéristiques et applications. Redressement et filtrage. Transistor bipolaire. Réseau de caractéristiques. Différents régimes de fonctionnement. Effet transistor. Régime statique et régime dynamique. Schéma équivalent en basse fréquence. Montage amplificateur à émetteur commun. Notions simples sur la contre-réaction."
+          },
+          {
+            id: "amplificateur-operationnel",
+            title: "Amplificateur opérationnel (AO)",
+            details: "Amplificateur opérationnel (AO) : Caractéristiques, fonctionnement et modèle idéal. Limitations au fonctionnement linéaire de l'AO. Défauts statiques et dynamiques d'un amplificateur opérationnel réel. Exemples de montages à amplificateur opérationnel en fonctionnement linéaire. Comparateur simple."
           }
         ]
       }
