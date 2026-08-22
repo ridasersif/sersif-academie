@@ -83,26 +83,76 @@ export default function Chap2LoiOhmDipoles() {
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-          <div className="bg-rose-500/5 border border-rose-500/20 p-4 sm:p-5 rounded-xl sm:rounded-2xl shadow-sm">
-            <h3 className="font-bold text-rose-600 dark:text-rose-400 mb-2 flex items-center gap-2">
-              <Lightbulb className="w-4 h-4" /> Convention Récepteur
-            </h3>
-            <p className="text-sm text-muted-foreground mb-3 leading-relaxed">
-              On l'utilise pour les composants qui <strong>consomment</strong> de l'énergie (ex: Lampe, Résistance). Dans cette convention, on dessine la flèche de la tension <LatexMath math="U" /> <strong>dans le sens opposé</strong> de la flèche du courant <LatexMath math="I" />.
-            </p>
-            <div className="bg-background/80 p-3 rounded-lg flex justify-center border border-border/50 text-sm">
+          <div className="bg-rose-500/5 border border-rose-500/20 p-4 sm:p-5 rounded-xl sm:rounded-2xl shadow-sm flex flex-col justify-between">
+            <div>
+              <h3 className="font-bold text-rose-600 dark:text-rose-400 mb-2 flex items-center gap-2">
+                <Lightbulb className="w-4 h-4" /> Convention Récepteur
+              </h3>
+              <p className="text-sm text-muted-foreground mb-3 leading-relaxed">
+                On l'utilise pour les composants qui <strong>consomment</strong> de l'énergie (ex: Lampe, Résistance). Dans cette convention, on dessine la flèche de la tension <LatexMath math="U" /> <strong>dans le sens opposé</strong> de la flèche du courant <LatexMath math="I" />.
+              </p>
+            </div>
+            
+            <div className="flex justify-center my-4 py-4 bg-background/60 rounded-xl border border-border/40 shadow-inner">
+              <svg viewBox="0 0 240 100" className="w-full max-w-[220px] h-auto">
+                <line x1="20" y1="50" x2="220" y2="50" stroke="currentColor" strokeWidth="2.5" className="text-slate-500" />
+                <circle cx="20" cy="50" r="4" fill="currentColor" className="text-slate-400" />
+                <text x="20" y="35" fill="currentColor" fontSize="12" className="text-slate-400" textAnchor="middle">A</text>
+                <circle cx="220" cy="50" r="4" fill="currentColor" className="text-slate-400" />
+                <text x="220" y="35" fill="currentColor" fontSize="12" className="text-slate-400" textAnchor="middle">B</text>
+                
+                <rect x="80" y="30" width="80" height="40" fill="currentColor" stroke="none" className="text-slate-800" rx="4" />
+                <rect x="80" y="30" width="80" height="40" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-slate-400" rx="4" />
+                <text x="120" y="55" fill="currentColor" fontSize="14" fontWeight="bold" className="text-slate-300" textAnchor="middle">R</text>
+                
+                <path d="M 35 50 L 60 50" fill="none" stroke="#ef4444" strokeWidth="2.5" strokeLinecap="round" />
+                <polygon points="60,45 70,50 60,55" fill="#ef4444" />
+                <text x="50" y="38" fill="#ef4444" fontSize="14" fontWeight="bold" textAnchor="middle">I</text>
+                
+                <path d="M 180 80 L 60 80" fill="none" stroke="#3b82f6" strokeWidth="2.5" strokeLinecap="round" />
+                <polygon points="60,75 50,80 60,85" fill="#3b82f6" />
+                <text x="120" y="95" fill="#3b82f6" fontSize="14" fontWeight="bold" textAnchor="middle">U</text>
+              </svg>
+            </div>
+
+            <div className="bg-background/80 p-3 rounded-lg flex justify-center border border-border/50 text-sm mt-auto">
               <span className="italic text-muted-foreground">Puissance reçue :</span> &nbsp; <LatexMath math="P = U \cdot I > 0" />
             </div>
           </div>
 
-          <div className="bg-emerald-500/5 border border-emerald-500/20 p-4 sm:p-5 rounded-xl sm:rounded-2xl shadow-sm">
-            <h3 className="font-bold text-emerald-600 dark:text-emerald-400 mb-2 flex items-center gap-2">
-              <Battery className="w-4 h-4" /> Convention Générateur
-            </h3>
-            <p className="text-sm text-muted-foreground mb-3 leading-relaxed">
-              On l'utilise pour les composants qui <strong>fournissent</strong> de l'énergie (ex: Pile). Dans cette convention, on dessine la flèche de la tension <LatexMath math="U" /> <strong>dans le même sens</strong> que la flèche du courant <LatexMath math="I" />.
-            </p>
-            <div className="bg-background/80 p-3 rounded-lg flex justify-center border border-border/50 text-sm">
+          <div className="bg-emerald-500/5 border border-emerald-500/20 p-4 sm:p-5 rounded-xl sm:rounded-2xl shadow-sm flex flex-col justify-between">
+            <div>
+              <h3 className="font-bold text-emerald-600 dark:text-emerald-400 mb-2 flex items-center gap-2">
+                <Battery className="w-4 h-4" /> Convention Générateur
+              </h3>
+              <p className="text-sm text-muted-foreground mb-3 leading-relaxed">
+                On l'utilise pour les composants qui <strong>fournissent</strong> de l'énergie (ex: Pile). Dans cette convention, on dessine la flèche de la tension <LatexMath math="U" /> <strong>dans le même sens</strong> que la flèche du courant <LatexMath math="I" />.
+              </p>
+            </div>
+
+            <div className="flex justify-center my-4 py-4 bg-background/60 rounded-xl border border-border/40 shadow-inner">
+              <svg viewBox="0 0 240 100" className="w-full max-w-[220px] h-auto">
+                <line x1="20" y1="50" x2="220" y2="50" stroke="currentColor" strokeWidth="2.5" className="text-slate-500" />
+                <circle cx="20" cy="50" r="4" fill="currentColor" className="text-slate-400" />
+                <text x="20" y="35" fill="currentColor" fontSize="12" className="text-slate-400" textAnchor="middle">A</text>
+                <circle cx="220" cy="50" r="4" fill="currentColor" className="text-slate-400" />
+                <text x="220" y="35" fill="currentColor" fontSize="12" className="text-slate-400" textAnchor="middle">B</text>
+                
+                <circle cx="120" cy="50" r="22" fill="currentColor" stroke="none" className="text-slate-800" />
+                <circle cx="120" cy="50" r="22" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-slate-400" />
+                <text x="120" y="55" fill="currentColor" fontSize="14" fontWeight="bold" className="text-slate-300" textAnchor="middle">G</text>
+                
+                <path d="M 35 50 L 60 50" fill="none" stroke="#ef4444" strokeWidth="2.5" strokeLinecap="round" />
+                <polygon points="60,45 70,50 60,55" fill="#ef4444" />
+                <text x="50" y="38" fill="#ef4444" fontSize="14" fontWeight="bold" textAnchor="middle">I</text>
+                
+                <path d="M 60 80 L 180 80" fill="none" stroke="#3b82f6" strokeWidth="2.5" strokeLinecap="round" />
+                <polygon points="180,75 190,80 180,85" fill="#3b82f6" />
+                <text x="120" y="95" fill="#3b82f6" fontSize="14" fontWeight="bold" textAnchor="middle">U</text>
+              </svg>
+            </div>
+
+            <div className="bg-background/80 p-3 rounded-lg flex justify-center border border-border/50 text-sm mt-auto">
               <span className="italic text-muted-foreground">Puissance fournie :</span> &nbsp; <LatexMath math="P = U \cdot I > 0" />
             </div>
           </div>
