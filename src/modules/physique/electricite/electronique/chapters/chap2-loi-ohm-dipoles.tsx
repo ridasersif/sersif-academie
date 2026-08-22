@@ -175,23 +175,40 @@ export default function Chap2LoiOhmDipoles() {
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-          <div className="bg-muted/40 p-5 rounded-2xl border border-border/70 shadow-sm">
-            <h4 className="font-bold text-foreground mb-2 flex items-center gap-2">
-              <Shield className="w-4 h-4 text-indigo-500" /> Passif vs Actif
+          <div className="bg-muted/40 p-5 rounded-2xl border border-border/70 shadow-sm flex flex-col">
+            <h4 className="font-bold text-foreground mb-3 flex items-center gap-2">
+              <Shield className="w-4 h-4 text-indigo-500" /> Passif vs Actif (L'Énergie)
             </h4>
-            <ul className="text-sm text-muted-foreground space-y-3 leading-relaxed">
-              <li><strong>Dipôle Passif :</strong> Sans tension, il n'y a pas de courant (<LatexMath math="U=0 \implies I=0" />). La courbe <strong>passe par l'origine</strong> (le centre du graphe). <em>Exemple : Résistance.</em></li>
-              <li><strong>Dipôle Actif :</strong> Il possède sa propre énergie. La courbe <strong>ne passe pas</strong> par l'origine. <em>Exemple : Batterie.</em></li>
-            </ul>
+            <div className="space-y-4 text-sm text-muted-foreground leading-relaxed">
+              <div>
+                <strong className="text-indigo-400">Dipôle Passif :</strong> C'est un composant "mort" ou "paresseux". S'il n'y a pas de pression de l'extérieur (Tension <LatexMath math="U=0" />), il ne crée aucun courant (<LatexMath math="I=0" />). 
+                <br/><em>Visuellement :</em> La courbe <strong>passe exactement par le point (0,0)</strong> (le centre du graphe).
+                <br/><em>Exemple :</em> Une résistance, un fil, une lampe.
+              </div>
+              <div>
+                <strong className="text-rose-400">Dipôle Actif :</strong> C'est un composant "vivant" qui possède sa propre source d'énergie à l'intérieur. Même débranché, il maintient une tension !
+                <br/><em>Visuellement :</em> La courbe <strong>ne passe pas par (0,0)</strong>. Elle coupe les axes ailleurs.
+                <br/><em>Exemple :</em> Une pile, une batterie, un panneau solaire.
+              </div>
+            </div>
           </div>
-          <div className="bg-muted/40 p-5 rounded-2xl border border-border/70 shadow-sm">
-            <h4 className="font-bold text-foreground mb-2 flex items-center gap-2">
-              <Zap className="w-4 h-4 text-amber-500" /> Linéaire vs Non-Linéaire
+          
+          <div className="bg-muted/40 p-5 rounded-2xl border border-border/70 shadow-sm flex flex-col">
+            <h4 className="font-bold text-foreground mb-3 flex items-center gap-2">
+              <Zap className="w-4 h-4 text-amber-500" /> Linéaire vs Non-Linéaire (Le Comportement)
             </h4>
-            <ul className="text-sm text-muted-foreground space-y-3 leading-relaxed">
-              <li><strong>Linéaire :</strong> Le courant augmente proportionnellement à la tension. La courbe est une <strong>ligne droite</strong> parfaite. <em>Exemple : Résistance (Loi d'Ohm).</em></li>
-              <li><strong>Non-Linéaire :</strong> La relation est complexe. La courbe <strong>n'est pas droite</strong> (ex: exponentielle). <em>Exemple : Diode (elle s'ouvre comme une porte à une certaine pression).</em></li>
-            </ul>
+            <div className="space-y-4 text-sm text-muted-foreground leading-relaxed">
+              <div>
+                <strong className="text-amber-400">Dipôle Linéaire :</strong> Son comportement est simple et prévisible. Si vous doublez la pression (Tension), le débit (Courant) double aussi.
+                <br/><em>Visuellement :</em> La courbe est une <strong>ligne droite parfaite</strong> (comme une règle).
+                <br/><em>Exemple :</em> Une résistance (qui suit parfaitement la loi d'Ohm).
+              </div>
+              <div>
+                <strong className="text-emerald-400">Dipôle Non-Linéaire :</strong> Son comportement est complexe. Il peut bloquer le courant, puis soudainement le laisser passer si la pression devient assez forte.
+                <br/><em>Visuellement :</em> La courbe <strong>n'est pas une ligne droite</strong> (elle peut être courbée, brisée, exponentielle).
+                <br/><em>Exemple :</em> Une diode (qui agit comme une porte à sens unique).
+              </div>
+            </div>
           </div>
         </div>
 

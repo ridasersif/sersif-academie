@@ -7,54 +7,37 @@ import * as THREE from "three";
 import LatexMath from "@/components/ui/LatexMath";
 
 /* ── COMPONENT TYPES ── */
-type DipoleType = "resistor" | "diode" | "battery";
+type DipoleType = "resistor" | "diode" | "battery" | "wire" | "switch" | "zener" | "current_source";
 
 /* ── 3D COMPONENT RENDERING ── */
 function Resistor3D() {
   return (
     <group rotation={[0, 0, Math.PI / 2]} scale={1.5}>
-      {/* Main Body */}
       <mesh>
         <cylinderGeometry args={[0.3, 0.3, 1.2, 32]} />
         <meshStandardMaterial color="#d4b483" roughness={0.8} />
       </mesh>
-      {/* Bands */}
-      <mesh position={[0, 0.3, 0]}>
-        <cylinderGeometry args={[0.31, 0.31, 0.1, 32]} />
-        <meshStandardMaterial color="#b91c1c" />
-      </mesh>
-      <mesh position={[0, 0.1, 0]}>
-        <cylinderGeometry args={[0.31, 0.31, 0.1, 32]} />
-        <meshStandardMaterial color="#000000" />
-      </mesh>
-      <mesh position={[0, -0.1, 0]}>
-        <cylinderGeometry args={[0.31, 0.31, 0.1, 32]} />
-        <meshStandardMaterial color="#ea580c" />
-      </mesh>
-      <mesh position={[0, -0.4, 0]}>
-        <cylinderGeometry args={[0.31, 0.31, 0.05, 32]} />
-        <meshStandardMaterial color="#eab308" metalness={0.8} />
-      </mesh>
+      <mesh position={[0, 0.3, 0]}><cylinderGeometry args={[0.31, 0.31, 0.1, 32]} /><meshStandardMaterial color="#b91c1c" /></mesh>
+      <mesh position={[0, 0.1, 0]}><cylinderGeometry args={[0.31, 0.31, 0.1, 32]} /><meshStandardMaterial color="#000000" /></mesh>
+      <mesh position={[0, -0.1, 0]}><cylinderGeometry args={[0.31, 0.31, 0.1, 32]} /><meshStandardMaterial color="#ea580c" /></mesh>
+      <mesh position={[0, -0.4, 0]}><cylinderGeometry args={[0.31, 0.31, 0.05, 32]} /><meshStandardMaterial color="#eab308" metalness={0.8} /></mesh>
     </group>
   );
 }
 
-function Diode3D() {
+function Diode3D({ color = "#1f2937", bandColor = "#d1d5db", label = "1N4148" }) {
   return (
     <group rotation={[0, 0, Math.PI / 2]} scale={1.5}>
-      {/* Main Body */}
       <mesh>
         <cylinderGeometry args={[0.25, 0.25, 1.0, 32]} />
-        <meshStandardMaterial color="#1f2937" roughness={0.2} metalness={0.5} />
+        <meshStandardMaterial color={color} roughness={0.2} metalness={0.5} />
       </mesh>
-      {/* Cathode Band */}
       <mesh position={[0, -0.3, 0]}>
         <cylinderGeometry args={[0.26, 0.26, 0.15, 32]} />
-        <meshStandardMaterial color="#d1d5db" metalness={0.8} />
+        <meshStandardMaterial color={bandColor} metalness={0.8} />
       </mesh>
-      {/* Label */}
       <Text position={[0, 0, 0.3]} rotation={[0, 0, -Math.PI/2]} fontSize={0.2} color="white">
-        1N4148
+        {label}
       </Text>
     </group>
   );
@@ -63,27 +46,61 @@ function Diode3D() {
 function Battery3D() {
   return (
     <group rotation={[0, 0, Math.PI / 2]} scale={1.5}>
-      {/* Main Body */}
       <mesh>
         <cylinderGeometry args={[0.4, 0.4, 1.2, 32]} />
         <meshStandardMaterial color="#0284c7" roughness={0.4} metalness={0.2} />
       </mesh>
-      {/* Positive Terminal (Bump) */}
       <mesh position={[0, 0.65, 0]}>
         <cylinderGeometry args={[0.15, 0.15, 0.1, 32]} />
         <meshStandardMaterial color="#d1d5db" metalness={0.9} roughness={0.1} />
       </mesh>
-      {/* Negative Terminal Base */}
       <mesh position={[0, -0.6, 0]}>
         <cylinderGeometry args={[0.4, 0.4, 0.05, 32]} />
         <meshStandardMaterial color="#d1d5db" metalness={0.9} roughness={0.1} />
       </mesh>
-      <Text position={[0, 0.3, 0.42]} rotation={[0, 0, -Math.PI/2]} fontSize={0.3} color="white">
-        +
+      <Text position={[0, 0.3, 0.42]} rotation={[0, 0, -Math.PI/2]} fontSize={0.3} color="white">+</Text>
+      <Text position={[0, -0.3, 0.42]} rotation={[0, 0, -Math.PI/2]} fontSize={0.3} color="white">-</Text>
+    </group>
+  );
+}
+
+function CurrentSource3D() {
+  return (
+    <group rotation={[0, 0, Math.PI / 2]} scale={1.5}>
+      <mesh>
+        <cylinderGeometry args={[0.4, 0.4, 1.2, 32]} />
+        <meshStandardMaterial color="#10b981" roughness={0.4} metalness={0.2} />
+      </mesh>
+      <mesh position={[0, 0, 0.41]}>
+        {/* Arrow on surface */}
+        <planeGeometry args={[0.4, 0.8]} />
+        <meshStandardMaterial color="#ffffff" transparent opacity={0.8} side={THREE.DoubleSide} />
+      </mesh>
+      <Text position={[0, 0, 0.45]} rotation={[0, 0, -Math.PI/2]} fontSize={0.3} color="white">
+        ↑ I0
       </Text>
-      <Text position={[0, -0.3, 0.42]} rotation={[0, 0, -Math.PI/2]} fontSize={0.3} color="white">
-        -
-      </Text>
+    </group>
+  );
+}
+
+function OpenSwitch3D() {
+  return (
+    <group scale={1.5}>
+      {/* Left terminal */}
+      <mesh position={[-0.4, 0, 0]} rotation={[0, 0, Math.PI/2]}>
+        <cylinderGeometry args={[0.1, 0.1, 0.2, 32]} />
+        <meshStandardMaterial color="#94a3b8" metalness={0.8} />
+      </mesh>
+      {/* Right terminal */}
+      <mesh position={[0.4, 0, 0]} rotation={[0, 0, Math.PI/2]}>
+        <cylinderGeometry args={[0.1, 0.1, 0.2, 32]} />
+        <meshStandardMaterial color="#94a3b8" metalness={0.8} />
+      </mesh>
+      {/* Switch lever (open) */}
+      <mesh position={[-0.3, 0.3, 0]} rotation={[0, 0, -Math.PI/4]}>
+        <cylinderGeometry args={[0.05, 0.05, 0.8, 16]} />
+        <meshStandardMaterial color="#ef4444" metalness={0.5} />
+      </mesh>
     </group>
   );
 }
@@ -92,27 +109,18 @@ function Battery3D() {
 function CircuitScene({ dipoleType, voltage, current }: { dipoleType: DipoleType, voltage: number, current: number }) {
   const electronRefs = useRef<THREE.Mesh[]>([]);
 
-  // Electron animation
   useFrame((state, delta) => {
-    // Current defines speed and direction.
-    // If current is 0, they jitter slightly due to thermal agitation.
-    electronRefs.current.forEach((el, i) => {
+    electronRefs.current.forEach((el, idx) => {
       if (!el) return;
       if (Math.abs(current) > 0.01) {
-        // Drift velocity proportional to current
         const drift = current * delta * 2.0;
         el.position.x += drift;
-        
-        // Loop back
         if (el.position.x > 4) el.position.x -= 8;
         if (el.position.x < -4) el.position.x += 8;
       } else {
-        // Random thermal jitter when current is 0
         el.position.x += (Math.random() - 0.5) * 0.01;
         el.position.y += (Math.random() - 0.5) * 0.01;
         el.position.z += (Math.random() - 0.5) * 0.01;
-        
-        // Return to center line
         el.position.y += (0 - el.position.y) * 0.1;
         el.position.z += (0 - el.position.z) * 0.1;
       }
@@ -125,14 +133,15 @@ function CircuitScene({ dipoleType, voltage, current }: { dipoleType: DipoleType
       <directionalLight position={[10, 10, 5]} intensity={1} />
       <Environment preset="city" />
 
-      {/* The Central Component */}
       <Float speed={2} rotationIntensity={0.2} floatIntensity={0.5}>
         <group position={[0, 0, 0]}>
           {dipoleType === "resistor" && <Resistor3D />}
           {dipoleType === "diode" && <Diode3D />}
+          {dipoleType === "zener" && <Diode3D color="#ea580c" bandColor="#000000" label="Zener" />}
           {dipoleType === "battery" && <Battery3D />}
+          {dipoleType === "current_source" && <CurrentSource3D />}
+          {dipoleType === "switch" && <OpenSwitch3D />}
           
-          {/* Voltage & Current Labels floating above */}
           <Html position={[0, 1.5, 0]} center className="pointer-events-none">
             <div className="flex flex-col items-center gap-1 bg-slate-900/80 p-2 rounded-lg border border-slate-700 whitespace-nowrap">
               <span className="text-rose-400 font-bold text-xs"><LatexMath math={`U = ${voltage.toFixed(1)}\\text{ V}`} /></span>
@@ -175,17 +184,22 @@ export default function DipoleCharacteristics3DCanvas() {
   const current = useMemo(() => {
     switch (dipole) {
       case "resistor":
-        // I = U / R (Linear, Passif)
-        return voltage / 5; // R = 5 Ohms
+        return voltage / 5;
       case "diode":
-        // I = I_s * (exp(U/V_t) - 1). Non-linear, Passif
-        // Simplified: 0 if U < 0.6, then steep linear/exponential
         if (voltage < 0.6) return 0;
         return Math.pow(voltage - 0.6, 2) * 0.5;
+      case "zener":
+        if (voltage < -5) return (voltage + 5) * 2;
+        if (voltage > 0.6) return Math.pow(voltage - 0.6, 2) * 0.5;
+        return 0;
       case "battery":
-        // U = E - rI => I = (E - U)/r (Linear, Actif)
-        // Let's say E = 5V, r = 2 Ohms. (Generator convention, so if U < E, I > 0 out of positive terminal)
         return (5 - voltage) / 2;
+      case "current_source":
+        return 2;
+      case "wire":
+        return voltage * 10; // Steeper slope for wire
+      case "switch":
+        return 0;
       default:
         return 0;
     }
@@ -198,16 +212,22 @@ export default function DipoleCharacteristics3DCanvas() {
       let i = 0;
       if (dipole === "resistor") i = u / 5;
       if (dipole === "diode") i = u < 0.6 ? 0 : Math.pow(u - 0.6, 2) * 0.5;
+      if (dipole === "zener") {
+        if (u < -5) i = (u + 5) * 2;
+        else if (u > 0.6) i = Math.pow(u - 0.6, 2) * 0.5;
+        else i = 0;
+      }
       if (dipole === "battery") i = (5 - u) / 2;
+      if (dipole === "current_source") i = 2;
+      if (dipole === "wire") i = u * 10;
+      if (dipole === "switch") i = 0;
+      
       points.push({ u, i });
     }
     return points;
   }, [dipole]);
 
   // Map (U, I) to SVG coordinates
-  // SVG viewBox: 0 0 200 200. Center is (100, 100)
-  // U domain: [-10, 10] => X domain: [0, 200]
-  // I domain: [-5, 5] => Y domain: [200, 0] (Y inverted)
   const mapToSVG = (u: number, i: number) => {
     const x = ((u + 10) / 20) * 200;
     const y = 200 - ((i + 5) / 10) * 200;
@@ -218,7 +238,6 @@ export default function DipoleCharacteristics3DCanvas() {
     return graphPoints
       .map((p, idx) => {
         const { x, y } = mapToSVG(p.u, p.i);
-        // Clamp Y to prevent drawing wildly out of bounds
         const clampedY = Math.max(-50, Math.min(250, y));
         return `${idx === 0 ? "M" : "L"} ${x} ${clampedY}`;
       })
@@ -231,20 +250,31 @@ export default function DipoleCharacteristics3DCanvas() {
     <div className="flex flex-col gap-4">
       {/* Controls */}
       <div className="flex flex-wrap items-center justify-between gap-4 p-4 rounded-xl bg-slate-900/60 border border-slate-800">
-        <div className="flex gap-2">
-          {(["resistor", "diode", "battery"] as DipoleType[]).map((type) => (
-            <button
-              key={type}
-              onClick={() => { setDipole(type); setVoltage(0); }}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold capitalize transition-all ${
-                dipole === type 
-                  ? "bg-indigo-500/20 text-indigo-400 border border-indigo-500/50" 
-                  : "bg-slate-950 text-slate-400 border border-slate-800 hover:bg-slate-800"
-              }`}
-            >
-              {type === "resistor" ? "Résistance" : type === "diode" ? "Diode" : "Batterie"}
-            </button>
-          ))}
+        <div className="flex flex-wrap gap-2">
+          {(["resistor", "diode", "zener", "battery", "current_source", "wire", "switch"] as DipoleType[]).map((type) => {
+            const labels = {
+              resistor: "Résistance",
+              diode: "Diode",
+              zener: "Zener",
+              battery: "Pile",
+              current_source: "Gén. Courant",
+              wire: "Fil idéal",
+              switch: "Interrupteur"
+            };
+            return (
+              <button
+                key={type}
+                onClick={() => { setDipole(type); setVoltage(0); }}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                  dipole === type 
+                    ? "bg-indigo-500/20 text-indigo-400 border border-indigo-500/50" 
+                    : "bg-slate-950 text-slate-400 border border-slate-800 hover:bg-slate-800"
+                }`}
+              >
+                {labels[type]}
+              </button>
+            );
+          })}
         </div>
 
         <div className="flex items-center gap-3 flex-1 max-w-xs">
@@ -274,9 +304,13 @@ export default function DipoleCharacteristics3DCanvas() {
           </Canvas>
           
           <div className="absolute top-3 left-3 bg-slate-950/80 px-2 py-1 rounded text-[10px] text-slate-400 border border-slate-800 backdrop-blur-sm pointer-events-none">
-            {dipole === "resistor" && "Dipôle Passif Linéaire"}
-            {dipole === "diode" && "Dipôle Passif Non-Linéaire"}
-            {dipole === "battery" && "Dipôle Actif Linéaire (E=5V, r=2Ω)"}
+            {dipole === "resistor" && "Dipôle Passif • Linéaire"}
+            {dipole === "diode" && "Dipôle Passif • Non-Linéaire"}
+            {dipole === "zener" && "Dipôle Passif • Non-Linéaire (Effet d'avalanche)"}
+            {dipole === "battery" && "Dipôle Actif • Linéaire (E=5V, r=2Ω)"}
+            {dipole === "current_source" && "Dipôle Actif • Linéaire (I₀=2A)"}
+            {dipole === "wire" && "Dipôle Passif • Linéaire (Court-circuit, R≈0)"}
+            {dipole === "switch" && "Dipôle Passif • Linéaire (Circuit ouvert, R=∞)"}
           </div>
         </div>
 
