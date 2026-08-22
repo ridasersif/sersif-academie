@@ -66,6 +66,22 @@ function Experiment3DScene({
   const trailPointsRef = useRef<THREE.Vector3[]>([]);
   const [trailLinePoints, setTrailLinePoints] = useState<[number, number, number][]>([[0, 0, 0], [0, 0, 0]]);
 
+  // Sparks for Joule effect (Heat/Energy release)
+  interface Spark {
+    pos: THREE.Vector3;
+    vel: THREE.Vector3;
+    life: number;
+    colorIndex: number;
+  }
+  const sparksRef = useRef<Spark[]>(Array.from({length: 40}).map(() => ({
+    pos: new THREE.Vector3(0, -100, 0),
+    vel: new THREE.Vector3(0,0,0),
+    life: 0,
+    colorIndex: 0
+  })));
+  const sparkMeshRefs = useRef<(THREE.Mesh | null)[]>([]);
+  const nextSparkIdx = useRef(0);
+
   useEffect(() => {
     trailPointsRef.current = [];
   }, [trackSingle, phase]);
@@ -125,11 +141,12 @@ function Experiment3DScene({
 
           el.pos.copy(ionPos.clone().add(normal.multiplyScalar(collisionRadius + 0.02)));
 
+          // Joule Effect (Phase 2 & 3: Field is on)
           if (phase === 2) {
             const ionMesh = ionMeshRefs.current[ionIdx];
             if (ionMesh && ionMesh.material) {
               const mat = ionMesh.material as THREE.MeshStandardMaterial;
-              mat.emissiveIntensity = 1.6;
+              mat.emissiveIntensity = 2.0; // Stronger glow on impact
             }
           }
         }
@@ -157,14 +174,61 @@ function Experiment3DScene({
       }
     }
 
-    // Decay ion glow
-    latticeIons.forEach((_, ionIdx) => {
+    // Continuous radial spark emission in Phase 2
+    if (phase === 2 && Math.random() < 0.6) {
+      const spark = sparksRef.current[nextSparkIdx.current];
+      const angle = Math.random() * Math.PI * 2;
+      const x = (Math.random() - 0.5) * 4.4;
+      const r = 0.95; // Surface of cylinder
+      spark.pos.set(x, Math.sin(angle) * r, Math.cos(angle) * r);
+      
+      const speed = Math.random() * 3 + 2;
+      spark.vel.set((Math.random()-0.5)*0.5, Math.sin(angle) * speed, Math.cos(angle) * speed);
+      spark.life = 1.0;
+      
+      const mesh = sparkMeshRefs.current[nextSparkIdx.current];
+      if (mesh) {
+        mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), spark.vel.clone().normalize());
+      }
+      nextSparkIdx.current = (nextSparkIdx.current + 1) % 40;
+    }
+
+    // Decay ion glow & Vibrate them (Heat)
+    latticeIons.forEach((pos, ionIdx) => {
       const ionMesh = ionMeshRefs.current[ionIdx];
       if (ionMesh && ionMesh.material) {
         const mat = ionMesh.material as THREE.MeshStandardMaterial;
         if (mat.emissiveIntensity > 0.35) {
           mat.emissiveIntensity -= delta * 2.5;
         }
+        
+        // Vibrate ions based on heat/glow (Joule effect)
+        if (phase === 2 && mat.emissiveIntensity > 0.5) {
+          const shake = (mat.emissiveIntensity - 0.5) * 0.08;
+          ionMesh.position.set(
+            pos.x + (Math.random()-0.5)*shake,
+            pos.y + (Math.random()-0.5)*shake,
+            pos.z + (Math.random()-0.5)*shake
+          );
+        } else {
+          ionMesh.position.copy(pos); // Return to stable
+        }
+      }
+    });
+
+    // Update Sparks
+    sparksRef.current.forEach((spark, idx) => {
+      const mesh = sparkMeshRefs.current[idx];
+      if (spark.life > 0) {
+        spark.pos.add(spark.vel.clone().multiplyScalar(delta));
+        spark.life -= delta * 1.5;
+        if (mesh) {
+          mesh.position.copy(spark.pos);
+          mesh.scale.set(1, Math.max(0.01, spark.life), 1);
+          mesh.visible = true;
+        }
+      } else {
+        if (mesh) mesh.visible = false;
       }
     });
 
@@ -380,22 +444,22 @@ function Experiment3DScene({
 
       {/* ── 5. FIXED LATTICE CATIONS Cu2+ ── */}
       {latticeIons.map((pos, idx) => (
-        <group key={idx} position={pos}>
-          <mesh
-            ref={(el) => {
-              ionMeshRefs.current[idx] = el;
-            }}
-          >
-            <sphereGeometry args={[0.15, 14, 14]} />
-            <meshStandardMaterial
-              color="#ea580c"
-              emissive="#9a3412"
-              emissiveIntensity={0.35}
-              metalness={0.8}
-              roughness={0.25}
-            />
-          </mesh>
-        </group>
+        <mesh
+          key={idx}
+          position={pos}
+          ref={(el) => {
+            ionMeshRefs.current[idx] = el;
+          }}
+        >
+          <sphereGeometry args={[0.15, 14, 14]} />
+          <meshStandardMaterial
+            color="#ea580c"
+            emissive="#9a3412"
+            emissiveIntensity={0.35}
+            metalness={0.8}
+            roughness={0.25}
+          />
+        </mesh>
       ))}
 
       {/* ── 6. GOLDEN TRAIL LINE FOR TRACKED ELECTRON ── */}
@@ -426,6 +490,27 @@ function Experiment3DScene({
         </mesh>
       ))}
 
+      {/* ── 8. HEAT SPARKS / LIGHTNING (JOULE EFFECT) ── */}
+      {Array.from({ length: 40 }).map((_, idx) => (
+        <mesh
+          key={`spark-${idx}`}
+          ref={(el) => {
+            sparkMeshRefs.current[idx] = el;
+          }}
+          visible={false}
+        >
+          {/* Thin, long streak to look like a fast spark or lightning */}
+          <cylinderGeometry args={[0.012, 0.012, 0.45, 8]} />
+          <meshStandardMaterial
+            color={idx % 2 === 0 ? "#facc15" : "#f59e0b"}
+            emissive={idx % 2 === 0 ? "#eab308" : "#d97706"}
+            emissiveIntensity={4.0}
+            transparent
+            opacity={0.8}
+          />
+        </mesh>
+      ))}
+
       <ContactShadows position={[0, -2.8, 0]} opacity={0.5} scale={10} blur={2} />
       <OrbitControls enableZoom={true} maxDistance={12} minDistance={4} />
     </>
@@ -438,6 +523,24 @@ export default function DrudeConduction3DCanvas() {
   const [voltageV, setVoltageV] = useState<number>(3.0);
   const [temperature, setTemperature] = useState<number>(300);
   const [trackSingle, setTrackSingle] = useState<boolean>(false);
+
+  // Auto-heating (Joule Effect) in Phase 3
+  useEffect(() => {
+    if (phase === 2) {
+      // The maximum temperature depends on the voltage squared (P = V^2 / R)
+      // We approximate it linearly here for visual effect, up to ~650K
+      const maxTemp = Math.floor(300 + (voltageV * voltageV) * 6);
+      
+      const interval = setInterval(() => {
+        setTemperature(prev => {
+          if (prev < maxTemp) return Math.min(maxTemp, prev + 4);
+          if (prev > maxTemp) return Math.max(maxTemp, prev - 4);
+          return prev;
+        });
+      }, 50);
+      return () => clearInterval(interval);
+    }
+  }, [phase, voltageV]);
 
   const nextPhase = () => setPhase((p) => Math.min(2, p + 1));
   const prevPhase = () => setPhase((p) => Math.max(0, p - 1));
@@ -553,6 +656,21 @@ export default function DrudeConduction3DCanvas() {
             </Suspense>
           </Canvas>
 
+          {/* Overlay Thermometer Gauge */}
+          <div className="absolute left-4 top-1/2 -translate-y-1/2 bg-slate-900/80 backdrop-blur-md border border-slate-800 p-2 pt-3 rounded-full flex flex-col items-center gap-1 shadow-lg pointer-events-none">
+            <div className="text-[9px] text-slate-400 font-bold mb-0.5">°K</div>
+            <div className="w-2.5 h-32 bg-slate-800 rounded-full overflow-hidden flex flex-col justify-end relative shadow-inner">
+              <div 
+                className="w-full bg-gradient-to-t from-orange-500 to-rose-600 rounded-full transition-all duration-100 ease-linear"
+                style={{ height: `${Math.min(100, Math.max(0, (temperature / 700) * 100))}%` }}
+              ></div>
+            </div>
+            <div className={`w-5 h-5 rounded-full ${temperature > 350 ? 'bg-rose-500 shadow-[0_0_10px_rgba(244,63,94,0.8)]' : 'bg-orange-500 shadow-[0_0_8px_rgba(249,115,22,0.4)]'} border-2 border-slate-900 -mt-2.5 z-10 transition-colors duration-300`}></div>
+            <div className={`text-[10px] font-mono font-bold mt-1 ${temperature > 350 ? 'text-rose-400' : 'text-orange-400'} transition-colors duration-300`}>
+              {temperature}
+            </div>
+          </div>
+
           {/* Overlay Legend */}
           <div className="absolute top-2.5 right-2.5 bg-slate-900/85 backdrop-blur-md border border-slate-800 px-2.5 py-1.5 rounded-lg text-[10px] space-y-1 text-slate-300 pointer-events-none">
             <div className="flex items-center gap-1.5">
@@ -631,11 +749,12 @@ export default function DrudeConduction3DCanvas() {
             <input
               type="range"
               min={0}
-              max={500}
+              max={700}
               step={25}
               value={temperature}
               onChange={(e) => setTemperature(parseInt(e.target.value, 10))}
-              className="w-20 sm:w-24 h-1 bg-slate-800 rounded appearance-none accent-rose-500 cursor-pointer"
+              disabled={phase === 2}
+              className={`w-20 sm:w-24 h-1 bg-slate-800 rounded appearance-none accent-rose-500 ${phase === 2 ? "opacity-40 cursor-not-allowed" : "cursor-pointer"}`}
             />
             <span className="text-rose-400 font-mono font-bold text-[11px] min-w-[40px]">
               {temperature}K

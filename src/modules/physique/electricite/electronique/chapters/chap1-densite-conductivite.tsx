@@ -90,7 +90,6 @@ function CollapsibleProof({
 
 export default function Chap1DensiteConductivite() {
   const [showEx1Solution, setShowEx1Solution] = useState(false);
-  const [showEx2Solution, setShowEx2Solution] = useState(false);
 
   return (
     <div className="space-y-6 sm:space-y-8 w-full max-w-full overflow-x-hidden pb-12">
@@ -337,6 +336,22 @@ export default function Chap1DensiteConductivite() {
             </div>
           </div>
         </div>
+
+        <div className="p-4 sm:p-5 rounded-2xl bg-slate-900/40 border border-slate-800 space-y-3 relative overflow-hidden">
+          <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-rose-500 to-amber-500 rounded-l-2xl"></div>
+          <h3 className="text-sm font-extrabold text-white flex items-center gap-2">
+             <Lightbulb className="w-4 h-4 text-rose-400" />
+             Explication Physique : L&apos;Effet Joule
+          </h3>
+          <p className="text-slate-300 text-sm leading-relaxed mb-2">
+            L&apos;effet Joule est la manifestation thermique de la résistance électrique. D&apos;un point de vue microscopique, le champ électrique <LatexMath math="\vec{E}" /> accélère les électrons libres. 
+          </p>
+          <ul className="list-disc pl-5 space-y-2 text-slate-400 text-xs">
+            <li><strong>Chocs inélastiques :</strong> Les électrons percutent les ions fixes du réseau cristallin du métal.</li>
+            <li><strong>Transfert d&apos;énergie :</strong> Lors de ces collisions, l&apos;énergie cinétique acquise par les électrons est cédée au réseau cristallin sous forme d&apos;agitation thermique.</li>
+            <li><strong>Dégagement de chaleur :</strong> Le métal s&apos;échauffe. La puissance <LatexMath math="p_J" /> représente cette chaleur dissipée par chaque petit volume <LatexMath math="d\tau" /> du conducteur.</li>
+          </ul>
+        </div>
       </section>
 
       {/* ── PARTIE 5: EXERCICES D'APPLICATION CORRIGÉS ── */}
@@ -350,81 +365,86 @@ export default function Chap1DensiteConductivite() {
           5. Exercices d&apos;Entraînement Corrigés
         </h2>
 
-        {/* Exercice 1 */}
-        <div className="bg-slate-900/80 border border-slate-800 rounded-xl p-4 space-y-3 text-xs">
+        {/* Exercice de Synthèse */}
+        <div className="bg-slate-900/80 border border-slate-800 rounded-xl p-4 sm:p-5 space-y-4 text-xs">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-              Exercice 1 • Ordre de grandeur
+            <span className="text-[10px] sm:text-xs font-bold px-3 py-1 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 shadow-[0_0_10px_rgba(99,102,241,0.2)]">
+              Problème de Synthèse • Chapitre Complet
             </span>
-            <span className="text-[11px] text-slate-500 font-mono">Facile</span>
+            <span className="text-[11px] text-slate-500 font-mono">Expert</span>
           </div>
 
-          <h3 className="font-bold text-slate-200 text-xs sm:text-sm">
-            Quelle est la vitesse réelle des électrons dans un fil de cuivre ?
+          <h3 className="font-bold text-slate-100 text-sm sm:text-base">
+            Modélisation Complète d&apos;un Faisceau Conducteur
           </h3>
 
-          <p className="text-slate-400 leading-relaxed text-[11px] sm:text-xs">
-            Un fil de cuivre de section <LatexMath math="S = 1.0\,\text{mm}^2" /> conduit un courant <LatexMath math="I = 1.0\,\text{A}" />. Sachant que la densité d&apos;électrons libres est <LatexMath math="n \approx 8.5 \times 10^{28}\,\text{m}^{-3}" />, calculez la vitesse de dérive <LatexMath math="v_d" />.
-          </p>
+          <div className="text-slate-400 leading-relaxed text-xs sm:text-sm space-y-2">
+            <p>
+              On considère un fil cylindrique de cuivre de rayon <LatexMath math="a = 1\,\text{mm}" />, de longueur <LatexMath math="L = 50\,\text{m}" />, et de conductivité <LatexMath math="\gamma = 6.0 \times 10^7\,\text{S}\cdot\text{m}^{-1}" />. Ce fil est soumis à une différence de potentiel constante <LatexMath math="U = 12\,\text{V}" />. La densité des porteurs de charge est <LatexMath math="n = 8.5 \times 10^{28}\,\text{m}^{-3}" />.
+            </p>
+            <p>Déterminer :</p>
+            <ol className="list-decimal pl-5 space-y-1">
+              <li>Le champ électrique <LatexMath math="\vec{E}" /> supposé uniforme à l&apos;intérieur du fil.</li>
+              <li>La densité de courant <LatexMath math="\vec{j}" /> puis l&apos;intensité totale <LatexMath math="I" />.</li>
+              <li>La vitesse de dérive <LatexMath math="v_d" /> des électrons.</li>
+              <li>La résistance <LatexMath math="R" /> du fil et la puissance totale dissipée par effet Joule <LatexMath math="P_J" />, par deux méthodes différentes (locale puis globale).</li>
+            </ol>
+          </div>
 
           <button
             onClick={() => setShowEx1Solution(!showEx1Solution)}
-            className="px-3 py-1.5 bg-emerald-600/20 border border-emerald-500/30 text-emerald-300 text-[11px] font-bold rounded-lg hover:bg-emerald-600/30 transition-all flex items-center gap-1.5"
+            className="px-4 py-2 bg-indigo-600/20 border border-indigo-500/30 text-indigo-300 text-xs font-bold rounded-lg hover:bg-indigo-600/30 transition-all flex items-center gap-2 mt-2"
           >
-            <CheckCircle2 size={13} /> {showEx1Solution ? "Masquer la Solution" : "Voir la Solution"}
+            <CheckCircle2 size={16} /> {showEx1Solution ? "Masquer la Correction Détaillée" : "Voir la Correction Détaillée"}
           </button>
 
           {showEx1Solution && (
-            <div className="p-3 bg-slate-950 border border-emerald-900/50 rounded-lg text-slate-300 space-y-2 text-[11px] sm:text-xs animate-in fade-in duration-200">
-              <p>
-                1. Densité de courant : <LatexMath math="j = \frac{I}{S} = \frac{1.0}{10^{-6}} = 10^6\,\text{A/m}^2" />.
-              </p>
-              <p>
-                2. Vitesse de dérive :
-                <LatexMath block math="v_d = \frac{j}{n e} = \frac{10^6}{(8.5 \times 10^{28}) \times (1.6 \times 10^{-19})} \approx 0.074\,\text{mm/s} \approx 27\,\text{cm/heure} !" />
-              </p>
-              <div className="p-2 rounded bg-emerald-950/40 text-emerald-300 text-[10px]">
-                💡 <strong>Conclusion :</strong> Les électrons avancent à la vitesse d&apos;un escargot ! Mais le courant se propage à la vitesse de la lumière <LatexMath math="c" /> grâce à l&apos;onde électromagnétique.
+            <div className="p-4 bg-[#030008] border border-indigo-900/50 rounded-xl text-slate-300 space-y-4 text-xs sm:text-sm animate-in fade-in duration-300 shadow-inner">
+              
+              <div className="space-y-1.5 border-l-2 border-indigo-500/50 pl-3">
+                <h4 className="text-indigo-400 font-bold">1. Champ Électrique <LatexMath math="\vec{E}" /></h4>
+                <p>
+                  Puisque <LatexMath math="U" /> est uniforme, <LatexMath math="E = \frac{U}{L} = \frac{12}{50} = 0.24\,\text{V/m}" />.
+                </p>
               </div>
-            </div>
-          )}
-        </div>
 
-        {/* Exercice 2 */}
-        <div className="bg-slate-900/80 border border-slate-800 rounded-xl p-4 space-y-3 text-xs">
-          <div className="flex items-center justify-between">
-            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20">
-              Exercice 2 • Ligne de transport
-            </span>
-            <span className="text-[11px] text-slate-500 font-mono">Moyen</span>
-          </div>
+              <div className="space-y-1.5 border-l-2 border-emerald-500/50 pl-3">
+                <h4 className="text-emerald-400 font-bold">2. Densité de courant <LatexMath math="\vec{j}" /> et Intensité <LatexMath math="I" /></h4>
+                <p>
+                  Par la loi d&apos;Ohm locale : <LatexMath math="j = \gamma E = (6.0 \times 10^7) \times 0.24 = 1.44 \times 10^7\,\text{A/m}^2" />.
+                </p>
+                <p>
+                  L&apos;intensité <LatexMath math="I" /> est le flux de <LatexMath math="\vec{j}" /> à travers la section <LatexMath math="S = \pi a^2" /> :
+                </p>
+                <p className="font-mono text-emerald-300">
+                  <LatexMath math="I = j \cdot (\pi a^2) = 1.44 \times 10^7 \times \pi \times (10^{-3})^2 \approx 45.2\,\text{A}" />.
+                </p>
+              </div>
 
-          <h3 className="font-bold text-slate-200 text-xs sm:text-sm">
-            Chute de tension et pertes par effet Joule
-          </h3>
+              <div className="space-y-1.5 border-l-2 border-amber-500/50 pl-3">
+                <h4 className="text-amber-400 font-bold">3. Vitesse de dérive <LatexMath math="v_d" /></h4>
+                <p>
+                  Sachant que <LatexMath math="\vec{j} = n e \vec{v_d}" /> :
+                </p>
+                <p className="font-mono text-amber-300">
+                  <LatexMath math="v_d = \frac{j}{n e} = \frac{1.44 \times 10^7}{8.5 \times 10^{28} \times 1.6 \times 10^{-19}} \approx 1.06 \times 10^{-3}\,\text{m/s} = 1.06\,\text{mm/s}" />.
+                </p>
+              </div>
 
-          <p className="text-slate-400 leading-relaxed text-[11px] sm:text-xs">
-            Une ligne électrique en cuivre (<LatexMath math="\rho = 1.7 \times 10^{-8}\,\Omega\cdot\text{m}" />) de longueur <LatexMath math="L = 10\,\text{km}" /> et de section <LatexMath math="S = 50\,\text{mm}^2" /> transporte un courant <LatexMath math="I = 80\,\text{A}" />. Calculez <LatexMath math="R" />, <LatexMath math="\Delta U" /> et la puissance perdue <LatexMath math="P_J" />.
-          </p>
+              <div className="space-y-1.5 border-l-2 border-rose-500/50 pl-3">
+                <h4 className="text-rose-400 font-bold">4. Résistance <LatexMath math="R" /> et Puissance <LatexMath math="P_J" /></h4>
+                <p>
+                  Méthode Globale : <LatexMath math="R = \frac{U}{I} = \frac{12}{45.2} \approx 0.265\,\Omega" />.
+                  <br/>Puissance : <LatexMath math="P_J = U \cdot I = 12 \times 45.2 = 542.4\,\text{W}" />.
+                </p>
+                <p className="mt-2 text-slate-400">
+                  Méthode Locale (Vérification) : 
+                  <br/>Puissance volumique : <LatexMath math="p_J = \gamma E^2 = (6.0 \times 10^7) \times (0.24)^2 = 3.456 \times 10^6\,\text{W/m}^3" />.
+                  <br/>Volume <LatexMath math="\mathcal{V} = S \cdot L = \pi \times 10^{-6} \times 50 \approx 1.57 \times 10^{-4}\,\text{m}^3" />.
+                  <br/><LatexMath math="P_J = \iiint p_J d\tau = p_J \cdot \mathcal{V} \approx 542.4\,\text{W}" />. (Les deux approches coïncident !)
+                </p>
+              </div>
 
-          <button
-            onClick={() => setShowEx2Solution(!showEx2Solution)}
-            className="px-3 py-1.5 bg-blue-600/20 border border-blue-500/30 text-blue-300 text-[11px] font-bold rounded-lg hover:bg-blue-600/30 transition-all flex items-center gap-1.5"
-          >
-            <CheckCircle2 size={13} /> {showEx2Solution ? "Masquer la Solution" : "Voir la Solution"}
-          </button>
-
-          {showEx2Solution && (
-            <div className="p-3 bg-slate-950 border border-blue-900/50 rounded-lg text-slate-300 space-y-2 text-[11px] sm:text-xs animate-in fade-in duration-200">
-              <p>
-                1. Résistance : <LatexMath math="R = \rho \frac{L}{S} = (1.7 \times 10^{-8}) \times \frac{10^4}{50 \times 10^{-6}} = 3.4\,\Omega" />.
-              </p>
-              <p>
-                2. Chute de tension : <LatexMath math="\Delta U = R \cdot I = 3.4 \times 80 = 272\,\text{V}" />.
-              </p>
-              <p>
-                3. Pertes Joule : <LatexMath math="P_J = R \cdot I^2 = 3.4 \times 80^2 = 21\,760\,\text{W} \approx 21.8\,\text{kW}" />.
-              </p>
             </div>
           )}
         </div>
