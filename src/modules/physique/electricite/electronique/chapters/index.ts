@@ -1,4 +1,5 @@
 import Chap1DensiteConductivite from "./chap1-densite-conductivite";
+import Chap2LoiOhmDipoles from "./chap2-loi-ohm-dipoles";
 
 export const COURANTS_DIPOLES_CHAPTERS = [
   {
@@ -13,7 +14,7 @@ export const COURANTS_DIPOLES_CHAPTERS = [
     num: "02",
     title: "Loi d'Ohm & Dipôles Électriques",
     subtitle: "Loi d'Ohm microscopique, macroscopique et dipôles",
-    component: null,
+    component: Chap2LoiOhmDipoles,
   },
   {
     id: "puissance-electrocinetique",
@@ -85,4 +86,4 @@ export const ELECTRONIQUE_CHAPTERS = [
   ...ELECTRONIQUE_ANALOGIQUE_CHAPTERS
 ];
 
-export { Chap1DensiteConductivite };
+export { Chap1DensiteConductivite, Chap2LoiOhmDipoles };
