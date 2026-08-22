@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { Suspense, useState, useRef, useEffect } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, Line, Html, Sphere, Environment, ContactShadows, Cylinder } from "@react-three/drei";
 import * as THREE from "three";
@@ -21,7 +21,7 @@ function FlowDots({ currentI }: { currentI: number }) {
     <group ref={groupRef}>
       {Array.from({ length: 20 }).map((_, i) => (
         <mesh key={i} position={[0, -10 + i, 0]}>
-          <sphereGeometry args={[0.07, 16, 16]} />
+          <sphereGeometry args={[0.07, 8, 8]} />
           <meshBasicMaterial color="#60a5fa" />
         </mesh>
       ))}
@@ -96,7 +96,8 @@ export default function BiotSavart3DCanvas() {
            </div>
         </div>
 
-        <Canvas frameloop={inView ? "always" : "demand"} camera={{ position: [5, 4, 8], fov: 45 }} className="w-full flex-1 cursor-grab active:cursor-grabbing">
+        <Canvas frameloop={inView ? "always" : "demand"} camera={{ position: [5, 4, 8], fov: 45 }} className="w-full flex-1 cursor-grab active:cursor-grabbing" dpr={[1, 1.5]}>
+            <Suspense fallback={null}>
           <color attach="background" args={["#020617"]} />
           <ambientLight intensity={0.5} />
           <spotLight position={[5, 15, 5]} angle={0.3} penumbra={1} intensity={1.5} castShadow />
@@ -198,7 +199,8 @@ export default function BiotSavart3DCanvas() {
           </group>
 
           <ContactShadows resolution={1024} scale={20} blur={2.5} opacity={0.4} far={10} color="#0f172a" position={[0, -2.4, 0]} />
-        </Canvas>
+                    </Suspense>
+          </Canvas>
       </div>
 
       {/* Control Panel */}

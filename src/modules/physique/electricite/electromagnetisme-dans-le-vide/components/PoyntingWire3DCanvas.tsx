@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useState, useEffect, useMemo } from "react";
+import React, { Suspense, useRef, useState, useEffect, useMemo } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, Line, Html, ContactShadows, Cylinder, Environment } from "@react-three/drei";
 import * as THREE from "three";
@@ -150,7 +150,8 @@ export default function PoyntingWire3DCanvas() {
           </div>
         </div>
 
-        <Canvas frameloop={inView ? "always" : "demand"} camera={{ position: [5, 3, 5], fov: 45 }} className="w-full h-full">
+        <Canvas frameloop={inView ? "always" : "demand"} camera={{ position: [5, 3, 5], fov: 45 }} className="w-full h-full" dpr={[1, 1.5]}>
+            <Suspense fallback={null}>
           <color attach="background" args={["#020617"]} />
           <ambientLight intensity={0.5} />
           <spotLight position={[5, 10, 5]} intensity={2} />
@@ -167,7 +168,8 @@ export default function PoyntingWire3DCanvas() {
           </group>
           
           <ContactShadows resolution={256} scale={15} blur={2} opacity={0.4} far={5} color="#0f172a" position={[0, -2.5, 0]} />
-        </Canvas>
+                    </Suspense>
+          </Canvas>
       </div>
 
       <div className="w-full max-w-[800px] mx-auto bg-slate-900/40 border border-slate-800/50 p-3 rounded-xl flex items-center justify-center gap-4 flex-wrap">

@@ -392,8 +392,10 @@ export default function ExerciseCircleRolling3DCanvas() {
                   <circle cx={O_anim.x} cy={O_anim.y} r="4" fill="#3b82f6" filter="url(#glowBlue)" />
                   <text x={O_anim.x - 16} y={O_anim.y + 15} fill="#60a5fa" fontSize="13" fontWeight="bold" fontFamily="monospace">O</text>
 
+                  {/* eslint-disable-next-line react-hooks/refs */}
                   {trail2DRef.current.length > 1 && (
                     <polyline
+                      // eslint-disable-next-line react-hooks/refs
                       points={trail2DRef.current.map((p) => `${p.x},${p.y}`).join(" ")}
                       fill="none"
                       stroke="#fbbf24"

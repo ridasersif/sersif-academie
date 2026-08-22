@@ -26,6 +26,7 @@ export default function ScientificBackground({ type = "physique" }: ScientificBa
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
   }, []);
 

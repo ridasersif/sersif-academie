@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { Suspense, useState, useRef, useEffect } from "react";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls, Line, Html, Environment, ContactShadows, Cylinder } from "@react-three/drei";
 import * as THREE from "three";
@@ -73,7 +73,8 @@ export default function AmpereTheorem3DCanvas() {
            </div>
         </div>
 
-        <Canvas frameloop={inView ? "always" : "demand"} camera={{ position: [7, 5, 7], fov: 45 }} className="w-full flex-1 cursor-grab active:cursor-grabbing">
+        <Canvas frameloop={inView ? "always" : "demand"} camera={{ position: [7, 5, 7], fov: 45 }} className="w-full flex-1 cursor-grab active:cursor-grabbing" dpr={[1, 1.5]}>
+            <Suspense fallback={null}>
           <color attach="background" args={["#050b14"]} />
           <ambientLight intensity={0.6} />
           <spotLight position={[5, 15, 5]} angle={0.4} penumbra={1} intensity={2} color="#e2e8f0" />
@@ -152,7 +153,8 @@ export default function AmpereTheorem3DCanvas() {
           </group>
 
           <ContactShadows resolution={512} scale={20} blur={2} opacity={0.5} far={10} color="#000000" position={[0, -2.9, 0]} />
-        </Canvas>
+                    </Suspense>
+          </Canvas>
       </div>
 
       {/* Compact Control Panel */}

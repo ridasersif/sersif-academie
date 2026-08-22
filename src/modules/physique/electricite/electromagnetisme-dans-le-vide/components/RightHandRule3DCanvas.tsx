@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef, useEffect, useMemo } from "react";
+import React, { Suspense, useState, useRef, useEffect, useMemo } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, Line, Html, Sphere, Environment, ContactShadows, Box } from "@react-three/drei";
 import * as THREE from "three";
@@ -166,7 +166,8 @@ export default function RightHandRule3DCanvas() {
         </div>
 
         {/* Caméra plongeante zoomée */}
-        <Canvas frameloop={inView ? "always" : "demand"} camera={{ position: [3, 5, 7], fov: 45 }} className="w-full flex-1 cursor-grab active:cursor-grabbing">
+        <Canvas frameloop={inView ? "always" : "demand"} camera={{ position: [3, 5, 7], fov: 45 }} className="w-full flex-1 cursor-grab active:cursor-grabbing" dpr={[1, 1.5]}>
+            <Suspense fallback={null}>
           <color attach="background" args={["#020617"]} />
           <ambientLight intensity={0.5} />
           <spotLight position={[5, 15, 5]} angle={0.3} penumbra={1} intensity={1.5} castShadow />
@@ -186,7 +187,8 @@ export default function RightHandRule3DCanvas() {
           />
 
           <ContactShadows resolution={1024} scale={20} blur={2.5} opacity={0.4} far={5} color="#0f172a" />
-        </Canvas>
+                    </Suspense>
+          </Canvas>
       </div>
 
       {/* Control Panel: All in ONE line horizontally */}

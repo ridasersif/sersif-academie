@@ -1,5 +1,5 @@
 "use client";
-import React, { useRef, useState, useMemo } from "react";
+import React, { Suspense, useRef, useState, useMemo } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, Html, ContactShadows, Environment, Line } from "@react-three/drei";
 import * as THREE from "three";
@@ -81,7 +81,7 @@ const FluxVisualization = ({ angle }: { angle: number }) => {
 
       {/* Surface S (Disque 3D) */}
       <mesh ref={surfaceRef} receiveShadow castShadow>
-        <cylinderGeometry args={[1.5, 1.5, 0.04, 64]} />
+        <cylinderGeometry args={[1.5, 1.5, 0.04, 12]} />
         <meshPhysicalMaterial 
           color="#f59e0b" 
           transparent 
@@ -147,7 +147,8 @@ export default function MagneticFlux3DCanvas() {
           </div>
         </div>
 
-        <Canvas camera={{ position: [3.5, 2.5, 4.5], fov: 45 }} className="w-full h-full cursor-grab active:cursor-grabbing">
+        <Canvas camera={{ position: [3.5, 2.5, 4.5], fov: 45 }} className="w-full h-full cursor-grab active:cursor-grabbing" dpr={[1, 1.5]}>
+            <Suspense fallback={null}>
           <color attach="background" args={["#020617"]} />
           <ambientLight intensity={0.7} />
           <spotLight position={[5, 8, 5]} intensity={1.5} penumbra={1} castShadow />
@@ -161,7 +162,8 @@ export default function MagneticFlux3DCanvas() {
           </group>
 
           <ContactShadows resolution={256} scale={10} blur={2} opacity={0.5} far={5} color="#000000" position={[0, -3, 0]} />
-        </Canvas>
+                    </Suspense>
+          </Canvas>
       </div>
 
       {/* Controls */}

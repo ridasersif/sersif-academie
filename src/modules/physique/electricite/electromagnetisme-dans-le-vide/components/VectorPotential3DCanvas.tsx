@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useState, useEffect, useMemo } from "react";
+import React, { Suspense, useRef, useState, useEffect, useMemo } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, Line, ContactShadows, Cylinder, Environment, Torus, Sphere, Cone } from "@react-three/drei";
 import * as THREE from "three";
@@ -586,7 +586,8 @@ export default function VectorPotential3DCanvas() {
           </div>
         </div>
 
-        <Canvas frameloop={inView ? "always" : "demand"} camera={{ position: [6, 5, 6], fov: 45 }} className="w-full h-full cursor-move">
+        <Canvas frameloop={inView ? "always" : "demand"} camera={{ position: [6, 5, 6], fov: 45 }} className="w-full h-full cursor-move" dpr={[1, 1.5]}>
+            <Suspense fallback={null}>
           <color attach="background" args={["#050b14"]} />
           <ambientLight intensity={0.6} />
           <spotLight position={[5, 10, 5]} intensity={2.5} color="#e2e8f0" />
@@ -602,7 +603,8 @@ export default function VectorPotential3DCanvas() {
               {(!['fil_infini', 'cylindre', 'plan'].includes(shape)) && <AxisymmetricPhysics direction={direction} showA={showA} showB={showB} radius={radius} shape={shape} />}
             </group>
           </AnimatedGroup>
-        </Canvas>
+                    </Suspense>
+          </Canvas>
       </div>
 
       {/* Controls */}

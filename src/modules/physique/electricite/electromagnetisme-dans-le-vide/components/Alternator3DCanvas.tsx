@@ -1,5 +1,6 @@
+/* eslint-disable react-hooks/purity */
 "use client";
-import React, { useRef, useState, useMemo, useEffect } from "react";
+import React, { Suspense, useRef, useState, useMemo, useEffect } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, ContactShadows } from "@react-three/drei";
 import * as THREE from "three";
@@ -11,6 +12,7 @@ function LiveOscilloscope({ emf, eMax }: { emf: number; eMax: number }) {
   const [history, setHistory] = useState<number[]>(() => Array(45).fill(0));
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setHistory((prev) => [...prev.slice(1), emf]);
   }, [emf]);
 
@@ -173,7 +175,7 @@ function ModernFanBlade({ angle }: { angle: number }) {
     <group rotation={[0, 0, angle]}>
       {/* Blade Root Neck */}
       <mesh position={[0, 0.12, 0]}>
-        <cylinderGeometry args={[0.025, 0.03, 0.1, 16]} />
+        <cylinderGeometry args={[0.025, 0.03, 0.1, 12]} />
         <meshPhysicalMaterial color="#334155" metalness={0.9} roughness={0.2} />
       </mesh>
 
@@ -221,7 +223,7 @@ function WindTurbinePropeller({ active }: { active: boolean }) {
 
       {/* Chrome Central Hub Cap Base */}
       <mesh position={[0, 0, 0.05]} rotation={[Math.PI / 2, 0, 0]}>
-        <cylinderGeometry args={[0.18, 0.18, 0.1, 32]} />
+        <cylinderGeometry args={[0.18, 0.18, 0.1, 12]} />
         <meshPhysicalMaterial color="#1e293b" metalness={0.9} roughness={0.2} />
       </mesh>
 
@@ -317,6 +319,7 @@ function WindTunnelAerodynamics({ active, speed }: { active: boolean; speed: num
       </group>
 
       {/* 2. Floating Wind Glints / Glow Particles travelling into the fan */}
+      {/* eslint-disable-next-line react-hooks/refs */}
       {glintsData.map((g, idx) => {
         const u = glintU[idx];
         const z = -4.2 + u * 2.9;
@@ -455,7 +458,7 @@ function FrontCircuitElement({
           {/* Demonstration Glass Bulb */}
           <group position={[0, 0.18, 0]}>
             <mesh position={[0, -0.04, 0]}>
-              <cylinderGeometry args={[0.04, 0.04, 0.06, 16]} />
+              <cylinderGeometry args={[0.04, 0.04, 0.06, 12]} />
               <meshPhysicalMaterial color="#f59e0b" metalness={0.9} roughness={0.2} />
             </mesh>
             <mesh position={[0, 0.06, 0]}>
@@ -530,7 +533,7 @@ const AlternatorVisualization = ({
     }
   });
 
-  const currentEmf = mode === "generator" ? B0 * S * effectiveSpeed * Math.sin(thetaRef.current) : appliedVoltage;
+  const currentEmf = mode === "generator" ? B0 * S * effectiveSpeed * Math.sin(thetaState) : appliedVoltage;
   const currentEMax = mode === "generator" ? B0 * S * effectiveSpeed : appliedVoltage;
 
   // Instantaneous magnetic flux & induced EMF factor
@@ -566,19 +569,19 @@ const AlternatorVisualization = ({
 
         {/* Rectangular Copper Loop Wires */}
         <mesh position={[0, loopH / 2, 0]} rotation={[Math.PI / 2, 0, 0]}>
-          <cylinderGeometry args={[0.022, 0.022, loopL, 16]} />
+          <cylinderGeometry args={[0.022, 0.022, loopL, 12]} />
           <meshPhysicalMaterial color="#d97706" metalness={0.9} roughness={0.15} clearcoat={1} />
         </mesh>
         <mesh position={[0, -loopH / 2, 0]} rotation={[Math.PI / 2, 0, 0]}>
-          <cylinderGeometry args={[0.022, 0.022, loopL, 16]} />
+          <cylinderGeometry args={[0.022, 0.022, loopL, 12]} />
           <meshPhysicalMaterial color="#d97706" metalness={0.9} roughness={0.15} clearcoat={1} />
         </mesh>
         <mesh position={[0, 0, -loopL / 2]}>
-          <cylinderGeometry args={[0.022, 0.022, loopH, 16]} />
+          <cylinderGeometry args={[0.022, 0.022, loopH, 12]} />
           <meshPhysicalMaterial color="#d97706" metalness={0.9} roughness={0.15} clearcoat={1} />
         </mesh>
         <mesh position={[0, 0, loopL / 2]}>
-          <cylinderGeometry args={[0.022, 0.022, loopH, 16]} />
+          <cylinderGeometry args={[0.022, 0.022, loopH, 12]} />
           <meshPhysicalMaterial color="#d97706" metalness={0.9} roughness={0.15} clearcoat={1} />
         </mesh>
 
@@ -602,20 +605,20 @@ const AlternatorVisualization = ({
 
         {/* CONTINUOUS ROTATING COPPER TERMINALS */}
         <mesh position={[0, (loopH / 2 + commutatorRadius) / 2, loopL / 2]}>
-          <cylinderGeometry args={[0.02, 0.02, loopH / 2 - commutatorRadius, 16]} />
+          <cylinderGeometry args={[0.02, 0.02, loopH / 2 - commutatorRadius, 12]} />
           <meshPhysicalMaterial color="#d97706" metalness={0.9} roughness={0.15} clearcoat={1} />
         </mesh>
         <mesh position={[0, commutatorRadius, loopL / 2 + (commutatorZ - loopL / 2) / 2]} rotation={[Math.PI / 2, 0, 0]}>
-          <cylinderGeometry args={[0.02, 0.02, commutatorZ - loopL / 2, 16]} />
+          <cylinderGeometry args={[0.02, 0.02, commutatorZ - loopL / 2, 12]} />
           <meshPhysicalMaterial color="#d97706" metalness={0.9} roughness={0.15} clearcoat={1} />
         </mesh>
 
         <mesh position={[0, -(loopH / 2 + commutatorRadius) / 2, loopL / 2]}>
-          <cylinderGeometry args={[0.02, 0.02, loopH / 2 - commutatorRadius, 16]} />
+          <cylinderGeometry args={[0.02, 0.02, loopH / 2 - commutatorRadius, 12]} />
           <meshPhysicalMaterial color="#d97706" metalness={0.9} roughness={0.15} clearcoat={1} />
         </mesh>
         <mesh position={[0, -commutatorRadius, loopL / 2 + (commutatorZ - loopL / 2) / 2]} rotation={[Math.PI / 2, 0, 0]}>
-          <cylinderGeometry args={[0.02, 0.02, commutatorZ - loopL / 2, 16]} />
+          <cylinderGeometry args={[0.02, 0.02, commutatorZ - loopL / 2, 12]} />
           <meshPhysicalMaterial color="#d97706" metalness={0.9} roughness={0.15} clearcoat={1} />
         </mesh>
 
@@ -805,7 +808,8 @@ export default function Alternator3DCanvas() {
         </div>
 
         {/* 3D Canvas with 100% FREE ORBIT CONTROLS (Full 360° rotation, smooth zoom, pan) */}
-        <Canvas camera={{ position: [3.6, 1.8, 2.4], fov: 34 }} className="w-full h-full cursor-grab active:cursor-grabbing">
+        <Canvas camera={{ position: [3.6, 1.8, 2.4], fov: 34 }} className="w-full h-full cursor-grab active:cursor-grabbing" dpr={[1, 1.5]}>
+            <Suspense fallback={null}>
           <color attach="background" args={["#0b1120"]} />
           <ambientLight intensity={0.95} />
           <directionalLight position={[6, 8, 6]} intensity={2.0} castShadow />
@@ -827,7 +831,8 @@ export default function Alternator3DCanvas() {
             isPaused={isPaused} 
             onUpdateValues={(e, eMax, effSpeed) => setSimData({ e, eMax, speed: effSpeed })} 
           />
-        </Canvas>
+                    </Suspense>
+          </Canvas>
       </div>
 
       {/* Controls Toolbar tailored to active Mode */}

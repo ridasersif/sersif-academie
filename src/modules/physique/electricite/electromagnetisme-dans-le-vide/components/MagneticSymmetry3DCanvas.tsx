@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo, useRef, useEffect } from "react";
+import React, { Suspense, useState, useMemo, useRef, useEffect } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, Line, Html, Cylinder, Sphere, Cone, Torus, Environment, ContactShadows } from "@react-three/drei";
 import * as THREE from "three";
@@ -295,7 +295,8 @@ export default function MagneticSymmetry3DCanvas() {
         </div>
 
         {/* 3D Scene */}
-        <Canvas frameloop={inView ? "always" : "demand"} camera={{ position: [8, 6, 8], fov: 45 }} className="w-full flex-1 cursor-grab active:cursor-grabbing">
+        <Canvas frameloop={inView ? "always" : "demand"} camera={{ position: [8, 6, 8], fov: 45 }} className="w-full flex-1 cursor-grab active:cursor-grabbing" dpr={[1, 1.5]}>
+            <Suspense fallback={null}>
           <color attach="background" args={["#020617"]} />
           <ambientLight intensity={0.5} />
           <spotLight position={[10, 15, 5]} angle={0.3} penumbra={1} intensity={2} castShadow />
@@ -602,7 +603,8 @@ export default function MagneticSymmetry3DCanvas() {
           </group>
 
           <ContactShadows resolution={1024} scale={25} blur={2.5} opacity={0.5} far={15} color="#0f172a" />
-        </Canvas>
+                    </Suspense>
+          </Canvas>
       </div>
 
       {/* Dashboard - Control Panel */}

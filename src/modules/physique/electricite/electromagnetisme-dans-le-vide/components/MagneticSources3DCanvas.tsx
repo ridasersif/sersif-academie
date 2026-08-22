@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { Suspense, useState, useRef, useEffect } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { OrbitControls, Line, Html, Sphere, Cylinder, Box, Environment, ContactShadows } from "@react-three/drei";
 import * as THREE from "three";
@@ -54,7 +54,7 @@ function CameraController({ targetZ }: { targetZ: number }) {
   const { camera } = useThree();
 
   useFrame(() => {
-    camera.position.z += (targetZ - camera.position.z) * 0.05;
+    camera.position.setZ(camera.position.z + (targetZ - camera.position.z) * 0.05);
   });
 
   return null;
@@ -288,6 +288,7 @@ export default function MagneticSources3DCanvas() {
     <div className="w-full max-w-full mx-auto flex flex-col rounded-2xl overflow-hidden border border-slate-800 shadow-xl">
       <div ref={canvasContainerRef} className="w-full h-[260px] sm:h-[340px] md:h-[380px] bg-slate-950 relative">
         <Canvas frameloop={inView ? "always" : "demand"} camera={{ position: [0, 1, 9], fov: 40 }} className="w-full flex-1 cursor-grab active:cursor-grabbing" dpr={[1, 2]}>
+            <Suspense fallback={null}>
           <color attach="background" args={["#020617"]} />
           <ambientLight intensity={0.5} />
           <spotLight position={[4, 10, 5]} angle={0.5} penumbra={1} intensity={1} />
@@ -316,7 +317,8 @@ export default function MagneticSources3DCanvas() {
           </group>
 
           <ContactShadows resolution={512} scale={20} blur={2} opacity={0.3} far={4} color="#0f172a" position={[0, -1.19, 0]} />
-        </Canvas>
+                    </Suspense>
+          </Canvas>
       </div>
 
       {/* Filter bar */}

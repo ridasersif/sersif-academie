@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo, useRef, useEffect } from "react";
+import React, { Suspense, useState, useMemo, useRef, useEffect } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, Line, Html, Environment, ContactShadows, Cylinder, Sphere } from "@react-three/drei";
 import * as THREE from "three";
@@ -296,7 +296,8 @@ export default function CoaxialCable3DCanvas() {
           </div>
         </div>
 
-        <Canvas frameloop={inView ? "always" : "demand"} camera={{ position: [8, 8, 8], fov: 45 }}>
+        <Canvas frameloop={inView ? "always" : "demand"} camera={{ position: [8, 8, 8], fov: 45 }} dpr={[1, 1.5]}>
+            <Suspense fallback={null}>
           <color attach="background" args={["#020617"]} />
           <ambientLight intensity={0.5} />
           <spotLight position={[10, 20, 10]} angle={0.4} penumbra={1} intensity={2} color="#e2e8f0" />
@@ -309,7 +310,8 @@ export default function CoaxialCable3DCanvas() {
           <CoaxialScene rho={rho} R1={R1} R2={R2} planeMode={planeMode} />
 
           <ContactShadows resolution={512} scale={20} blur={2} opacity={0.5} far={10} color="#000000" position={[0, -3.9, 0]} />
-        </Canvas>
+                    </Suspense>
+          </Canvas>
       </div>
 
       {/* Controls Panel */}

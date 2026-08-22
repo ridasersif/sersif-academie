@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo, useRef, useEffect } from "react";
+import React, { Suspense, useState, useMemo, useRef, useEffect } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, Line, Html, Sphere, Cylinder } from "@react-three/drei";
 import * as THREE from "three";
@@ -156,6 +156,7 @@ export default function BiotSavartSegment3DCanvas() {
         </div>
 
         <Canvas frameloop={inView ? "always" : "demand"} camera={{ position: [5, 2, 5], fov: 50 }} dpr={[1, 1.5]} className="w-full flex-1 cursor-grab active:cursor-grabbing">
+            <Suspense fallback={null}>
           <color attach="background" args={["#020617"]} />
           <ambientLight intensity={0.3} />
           <directionalLight position={[5, 5, 5]} intensity={0.8} />
@@ -263,7 +264,8 @@ export default function BiotSavartSegment3DCanvas() {
           </group>
 
           <OrbitControls enablePan={false} minDistance={3} maxDistance={15} />
-        </Canvas>
+                    </Suspense>
+          </Canvas>
       </div>
 
       {/* Controls Panel */}

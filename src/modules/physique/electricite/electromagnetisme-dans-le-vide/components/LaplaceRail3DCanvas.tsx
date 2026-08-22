@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useState, useEffect, useMemo } from "react";
+import React, { Suspense, useRef, useState, useEffect, useMemo } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, Line, Html, ContactShadows, Box, Cylinder, Environment } from "@react-three/drei";
 import * as THREE from "three";
@@ -83,10 +83,11 @@ export default function LaplaceRail3DCanvas() {
   // Relancer si on change v0 manuellement quand à l'arrêt
   useEffect(() => {
     if (!isPlaying && Math.abs(vel) < 0.1) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setVel(v0);
       setPosZ(3);
     }
-  }, [v0]);
+  }, [isPlaying, v0, vel]);
 
   // Physique du freinage par induction
   useEffect(() => {
@@ -170,7 +171,8 @@ export default function LaplaceRail3DCanvas() {
           </div>
         </div>
 
-        <Canvas frameloop={inView ? "always" : "demand"} camera={{ position: [0, 6, 8], fov: 45 }} className="w-full h-full">
+        <Canvas frameloop={inView ? "always" : "demand"} camera={{ position: [0, 6, 8], fov: 45 }} className="w-full h-full" dpr={[1, 1.5]}>
+            <Suspense fallback={null}>
           <color attach="background" args={["#020617"]} />
           <ambientLight intensity={0.6} />
           <spotLight position={[0, 10, 0]} intensity={1.5} penumbra={1} />
@@ -218,7 +220,8 @@ export default function LaplaceRail3DCanvas() {
           </group>
           
           <ContactShadows resolution={256} scale={15} blur={2} opacity={0.4} far={5} color="#0f172a" position={[0, -0.6, 0]} />
-        </Canvas>
+                    </Suspense>
+          </Canvas>
       </div>
 
       <div className="w-full max-w-[800px] mx-auto bg-slate-900/40 border border-slate-800/50 p-3 rounded-xl flex flex-col sm:flex-row items-center gap-4">

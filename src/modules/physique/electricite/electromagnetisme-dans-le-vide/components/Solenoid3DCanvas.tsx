@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo, useRef, useEffect } from "react";
+import React, { Suspense, useState, useMemo, useRef, useEffect } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, Line, Html, Environment, ContactShadows, Cylinder } from "@react-three/drei";
 import * as THREE from "three";
@@ -58,7 +58,7 @@ function AnimatedCurrentRing({ position, radius, color, dirI }: { position: [num
         {[0, Math.PI/2, Math.PI, 3*Math.PI/2].map((angle, idx) => (
           <group key={idx} rotation={[0, 0, angle]}>
             <mesh position={[radius, 0, 0]}>
-              <sphereGeometry args={[0.08, 16, 16]} />
+              <sphereGeometry args={[0.08, 8, 8]} />
               <meshBasicMaterial color={color} />
             </mesh>
             <mesh position={[radius, 0.15 * dirI, 0]} rotation={[0, 0, dirI === 1 ? Math.PI/2 : -Math.PI/2]}>
@@ -265,7 +265,8 @@ export default function Solenoid3DCanvas() {
     <div className="w-full max-w-[1000px] mx-auto flex flex-col font-sans mb-8">
       
       <div ref={canvasContainerRef} className="w-full h-[200px] sm:h-[280px] bg-slate-950 rounded-t-2xl overflow-hidden relative border border-slate-800 border-b-0 shadow-inner">
-        <Canvas frameloop={inView ? "always" : "demand"} camera={{ position: [0, 0, 16], fov: 35 }}>
+        <Canvas frameloop={inView ? "always" : "demand"} camera={{ position: [0, 0, 16], fov: 35 }} dpr={[1, 1.5]}>
+            <Suspense fallback={null}>
           <color attach="background" args={["#020617"]} />
           <ambientLight intensity={0.5} />
           <spotLight position={[10, 20, 10]} angle={0.4} penumbra={1} intensity={2} color="#e2e8f0" />
@@ -277,7 +278,8 @@ export default function Solenoid3DCanvas() {
           <SolenoidScene contourMode={contourMode} planeMode={planeMode} R={R} L={L} dirI={dirI} />
 
           <ContactShadows resolution={512} scale={30} blur={2} opacity={0.5} far={15} color="#000000" position={[0, -5.9, 0]} />
-        </Canvas>
+                    </Suspense>
+          </Canvas>
       </div>
 
       {/* Controls Panel */}

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useState, useEffect } from "react";
+import React, { Suspense, useRef, useState, useEffect } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, Html, ContactShadows, Box, Cylinder, Environment } from "@react-three/drei";
 import * as THREE from "three";
@@ -11,6 +11,16 @@ const Capacitor = ({ voltage }: { voltage: number }) => {
   const eFieldColor = "#a855f7";
   const numLines = Math.floor(voltage * 10); // Lignes de champ E proportionnelles à U
   
+  // Generate max lines once to avoid flicker
+  const eFieldLines = React.useMemo(() => {
+    return Array.from({ length: 200 }).map(() => ({
+      // eslint-disable-next-line react-hooks/purity
+      x: (Math.random() - 0.5) * 1.2,
+      // eslint-disable-next-line react-hooks/purity
+      z: (Math.random() - 0.5) * 1.2,
+    }));
+  }, []);
+
   return (
     <group position={[-2, 0, 0]}>
       {/* Plaque Supérieure */}
@@ -30,11 +40,9 @@ const Capacitor = ({ voltage }: { voltage: number }) => {
       </Html>
 
       {/* Lignes de champ E */}
-      {voltage > 0 && Array.from({ length: numLines }).map((_, i) => {
-        const x = (Math.random() - 0.5) * 1.2;
-        const z = (Math.random() - 0.5) * 1.2;
+      {voltage > 0 && eFieldLines.slice(0, numLines).map((pos, i) => {
         return (
-          <group key={i} position={[x, 0, z]}>
+          <group key={i} position={[pos.x, 0, pos.z]}>
             <mesh position={[0, 0, 0]}>
               <cylinderGeometry args={[0.015, 0.015, 1.1, 8]} />
               <meshBasicMaterial color={eFieldColor} transparent opacity={0.6} />
@@ -64,11 +72,25 @@ const Inductor = ({ current }: { current: number }) => {
   const bFieldColor = "#10b981";
   const numLines = Math.floor(current * 10); // Lignes de champ B proportionnelles à I
 
+  // Generate max lines once to avoid flicker
+  const bFieldLines = React.useMemo(() => {
+    return Array.from({ length: 200 }).map(() => {
+      // eslint-disable-next-line react-hooks/purity
+      const r = Math.sqrt(Math.random()) * 0.5;
+      // eslint-disable-next-line react-hooks/purity
+      const theta = Math.random() * Math.PI * 2;
+      return {
+        x: r * Math.cos(theta),
+        z: r * Math.sin(theta)
+      };
+    });
+  }, []);
+
   return (
     <group position={[2, 0, 0]}>
       {/* Bobine Solénoïde (Torseurs pour faire le fil) */}
       <mesh rotation={[Math.PI/2, 0, 0]}>
-        <cylinderGeometry args={[0.6, 0.6, 1.5, 32]} />
+        <cylinderGeometry args={[0.6, 0.6, 1.5, 12]} />
         <meshPhysicalMaterial color="#334155" transmission={0.9} roughness={0.2} transparent opacity={0.3} />
       </mesh>
       
@@ -81,14 +103,9 @@ const Inductor = ({ current }: { current: number }) => {
       ))}
 
       {/* Lignes de champ B à l'intérieur */}
-      {current > 0 && Array.from({ length: numLines }).map((_, i) => {
-        // Points à l'intérieur du cylindre
-        const r = Math.sqrt(Math.random()) * 0.5;
-        const theta = Math.random() * Math.PI * 2;
-        const x = r * Math.cos(theta);
-        const z = r * Math.sin(theta);
+      {current > 0 && bFieldLines.slice(0, numLines).map((pos, i) => {
         return (
-          <group key={i} position={[x, 0, z]}>
+          <group key={i} position={[pos.x, 0, pos.z]}>
             <mesh>
               <cylinderGeometry args={[0.015, 0.015, 2, 8]} />
               <meshBasicMaterial color={bFieldColor} transparent opacity={0.6} />
@@ -140,7 +157,8 @@ export default function EMEnergyDensity3DCanvas() {
           </div>
         </div>
 
-        <Canvas frameloop={inView ? "always" : "demand"} camera={{ position: [0, 2, 7], fov: 45 }} className="w-full h-full">
+        <Canvas frameloop={inView ? "always" : "demand"} camera={{ position: [0, 2, 7], fov: 45 }} className="w-full h-full" dpr={[1, 1.5]}>
+            <Suspense fallback={null}>
           <color attach="background" args={["#020617"]} />
           <ambientLight intensity={0.6} />
           <spotLight position={[0, 10, 0]} intensity={2} penumbra={1} />
@@ -153,7 +171,8 @@ export default function EMEnergyDensity3DCanvas() {
           </group>
           
           <ContactShadows resolution={256} scale={15} blur={2} opacity={0.4} far={5} color="#0f172a" position={[0, -1.5, 0]} />
-        </Canvas>
+                    </Suspense>
+          </Canvas>
       </div>
 
       <div className="w-full max-w-[800px] mx-auto bg-slate-900/40 border border-slate-800/50 p-3 rounded-xl flex items-center justify-between gap-4 flex-wrap">

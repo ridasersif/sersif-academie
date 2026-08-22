@@ -43,23 +43,23 @@ describe("3D Canvas Components — Smoke Tests (avec mocks WebGL)", () => {
     }).not.toThrow();
   });
 
-  it("LaplaceRail3DCanvas doit se rendre sans erreur", () => {
+  it("LaplaceRail3DCanvas doit se rendre sans erreur", async () => {
+    const { default: LaplaceRail } = await import("@/modules/physique/electricite/electromagnetisme-dans-le-vide/components/LaplaceRail3DCanvas");
     expect(() => {
-      const LaplaceRail = require("@/modules/physique/electricite/electromagnetisme-dans-le-vide/components/LaplaceRail3DCanvas").default;
       render(React.createElement(LaplaceRail));
     }).not.toThrow();
   });
 
-  it("LaplaceRails3DCanvas doit se rendre sans erreur", () => {
+  it("LaplaceRails3DCanvas doit se rendre sans erreur", async () => {
+    const { default: LaplaceRails } = await import("@/modules/physique/electricite/electromagnetisme-dans-le-vide/components/LaplaceRails3DCanvas");
     expect(() => {
-      const LaplaceRails = require("@/modules/physique/electricite/electromagnetisme-dans-le-vide/components/LaplaceRails3DCanvas").default;
       render(React.createElement(LaplaceRails));
     }).not.toThrow();
   });
 
-  it("MagneticFlux3DCanvas doit se rendre sans erreur", () => {
+  it("MagneticFlux3DCanvas doit se rendre sans erreur", async () => {
+    const { default: MagneticFlux } = await import("@/modules/physique/electricite/electromagnetisme-dans-le-vide/components/MagneticFlux3DCanvas");
     expect(() => {
-      const MagneticFlux = require("@/modules/physique/electricite/electromagnetisme-dans-le-vide/components/MagneticFlux3DCanvas").default;
       render(React.createElement(MagneticFlux));
     }).not.toThrow();
   });
@@ -70,33 +70,33 @@ describe("3D Canvas Components — Smoke Tests (avec mocks WebGL)", () => {
     }).not.toThrow();
   });
 
-  it("HallEffect3DCanvas doit se rendre sans erreur", () => {
+  it("HallEffect3DCanvas doit se rendre sans erreur", async () => {
+    // Must use dynamic import to avoid hoisting issues with mocks if not top-level
+    const { default: HallEffect } = await import("@/modules/physique/electricite/electromagnetisme-dans-le-vide/components/HallEffect3DCanvas");
     expect(() => {
-      // Must use require to avoid hoisting issues with mocks if not top-level
-      const HallEffect = require("@/modules/physique/electricite/electromagnetisme-dans-le-vide/components/HallEffect3DCanvas").default;
       render(React.createElement(HallEffect));
     }).not.toThrow();
   });
 
-  it("RightHandRule3DCanvas doit se rendre sans erreur", () => {
+  it("RightHandRule3DCanvas doit se rendre sans erreur", async () => {
+    const { default: RightHandRule } = await import("@/modules/physique/electricite/electromagnetisme-dans-le-vide/components/RightHandRule3DCanvas");
     expect(() => {
-      const RightHandRule = require("@/modules/physique/electricite/electromagnetisme-dans-le-vide/components/RightHandRule3DCanvas").default;
       render(React.createElement(RightHandRule));
     }).not.toThrow();
   });
 
-  it("SolenoidPotentialExercise3DCanvas doit se rendre sans erreur", () => {
+  it("SolenoidPotentialExercise3DCanvas doit se rendre sans erreur", async () => {
+    const { default: Solenoid } = await import("@/modules/physique/electricite/electromagnetisme-dans-le-vide/components/SolenoidPotentialExercise3DCanvas");
     expect(() => {
-      const Solenoid = require("@/modules/physique/electricite/electromagnetisme-dans-le-vide/components/SolenoidPotentialExercise3DCanvas").default;
       render(React.createElement(Solenoid));
     }).not.toThrow();
   });
 });
 
 describe("Chapitre 1 — Smoke Test du composant entier", () => {
-  it("Chap1CourantsChamp doit se rendre sans exception fatale", () => {
+  it("Chap1CourantsChamp doit se rendre sans exception fatale", async () => {
     // We import dynamically if needed, or directly
-    const Chap1 = require("@/modules/physique/electricite/electromagnetisme-dans-le-vide/chapters/chap1-courants-champ").default;
+    const { default: Chap1 } = await import("@/modules/physique/electricite/electromagnetisme-dans-le-vide/chapters/chap1-courants-champ");
     expect(() => {
       render(React.createElement(Chap1));
     }).not.toThrow();

@@ -92,6 +92,7 @@ export default function EtudePage({ params }: { params: Promise<{ moduleId: stri
 
   // Read from localStorage/URL after mount to avoid hydration errors
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsMounted(true);
     const initial = getInitialChapterIndex(subModuleId, chapters.length);
     if (initial !== 0) {

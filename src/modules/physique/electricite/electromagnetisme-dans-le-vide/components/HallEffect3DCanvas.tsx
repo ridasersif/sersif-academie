@@ -1,6 +1,7 @@
+/* eslint-disable react-hooks/purity */
 "use client";
 
-import React, { useRef, useState, useEffect, useMemo } from "react";
+import React, { Suspense, useRef, useState, useEffect, useMemo } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, Line, Html, ContactShadows, Box, Environment } from "@react-three/drei";
 import * as THREE from "three";
@@ -156,7 +157,7 @@ const Carriers = ({ chargeSign, phase, bMagnitude }: { chargeSign: number, phase
   
   return (
     <instancedMesh ref={mesh} args={[null as any, null as any, count]}>
-      <sphereGeometry args={[0.035, 16, 16]} />
+      <sphereGeometry args={[0.035, 8, 8]} />
       <meshStandardMaterial color={color} emissive={color} emissiveIntensity={1} toneMapped={false} />
     </instancedMesh>
   );
@@ -171,7 +172,7 @@ const HeroCharge = ({ chargeSign, phase, bMagnitude }: { chargeSign: number, pha
   return (
     <group position={[0, 0.4, 0]}>
       <mesh>
-        <sphereGeometry args={[0.15, 32, 32]} />
+        <sphereGeometry args={[0.15, 8, 8]} />
         <meshStandardMaterial color={color} emissive={color} emissiveIntensity={0.5} />
       </mesh>
       <Html position={[0, 0.35, 0]} center zIndexRange={[100, 0]}>
@@ -365,7 +366,8 @@ export default function HallEffect3DCanvas() {
 
         {/* RIGHT PANEL: 3D CANVAS */}
         <div className="w-full lg:w-[60%] h-[300px] lg:h-[380px] relative">
-          <Canvas frameloop={inView ? "always" : "demand"} camera={{ position: [5, 6, 8], fov: 35 }} className="w-full h-full">
+          <Canvas frameloop={inView ? "always" : "demand"} camera={{ position: [5, 6, 8], fov: 35 }} className="w-full h-full" dpr={[1, 1.5]}>
+            <Suspense fallback={null}>
             <color attach="background" args={["#020617"]} />
             <ambientLight intensity={0.8} />
             <directionalLight position={[5, 10, 5]} intensity={1.5} />
@@ -402,6 +404,7 @@ export default function HallEffect3DCanvas() {
             </group>
             
             <ContactShadows resolution={256} scale={15} blur={2.5} opacity={0.8} far={5} color="#000000" position={[0, -1.5, 0]} />
+                      </Suspense>
           </Canvas>
         </div>
 

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useState, useEffect, useMemo } from "react";
+import React, { Suspense, useRef, useState, useEffect, useMemo } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, Html, ContactShadows, Environment, Line } from "@react-three/drei";
 import * as THREE from "three";
@@ -46,7 +46,7 @@ const RadiatingWaves = ({ isPlaying, speed }: { isPlaying: boolean; speed: numbe
       {/* Ondes sphériques */}
       {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
       <instancedMesh ref={meshRef} args={[null, null, numSpheres] as any}>
-        <sphereGeometry args={[1, 32, 32]} />
+        <sphereGeometry args={[1, 8, 8]} />
         <meshBasicMaterial color="#a855f7" transparent opacity={0.1} wireframe={true} />
       </instancedMesh>
     </group>
@@ -85,7 +85,8 @@ export default function PoyntingDipoleRadiation3DCanvas() {
           </div>
         </div>
 
-        <Canvas frameloop={inView ? "always" : "demand"} camera={{ position: [10, 5, 10], fov: 45 }} className="w-full h-full">
+        <Canvas frameloop={inView ? "always" : "demand"} camera={{ position: [10, 5, 10], fov: 45 }} className="w-full h-full" dpr={[1, 1.5]}>
+            <Suspense fallback={null}>
           <color attach="background" args={["#020617"]} />
           <ambientLight intensity={0.5} />
           <spotLight position={[5, 10, 5]} intensity={2} />
@@ -96,7 +97,8 @@ export default function PoyntingDipoleRadiation3DCanvas() {
             <RadiatingWaves isPlaying={isPlaying} speed={speed} />
           </group>
           
-        </Canvas>
+                    </Suspense>
+          </Canvas>
       </div>
 
       <div className="w-full max-w-[800px] mx-auto bg-slate-900/40 border border-slate-800/50 p-3 rounded-xl flex items-center justify-between gap-4 flex-wrap">

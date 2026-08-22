@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo, useRef, useEffect } from "react";
+import React, { Suspense, useState, useMemo, useRef, useEffect } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, Line, Html, Cylinder, Sphere, Cone, Torus, Environment, ContactShadows } from "@react-three/drei";
 import * as THREE from "three";
@@ -164,6 +164,7 @@ export default function Invariance3DCanvas() {
   const isValid = mode === "translation" ? supportsTranslation : mode === "rotation" ? supportsRotation : true;
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (shape === "plan" && mode === "rotation") setMode("translation");
     else if (!supportsTranslation && mode === "translation") setMode("rotation");
   }, [shape, supportsTranslation, mode]);
@@ -223,7 +224,8 @@ export default function Invariance3DCanvas() {
           ))}
         </div>
 
-        <Canvas frameloop={inView ? "always" : "demand"} camera={{ position: [8, 6, 8], fov: 45 }} className="w-full h-full cursor-grab active:cursor-grabbing">
+        <Canvas frameloop={inView ? "always" : "demand"} camera={{ position: [8, 6, 8], fov: 45 }} className="w-full h-full cursor-grab active:cursor-grabbing" dpr={[1, 1.5]}>
+            <Suspense fallback={null}>
           <color attach="background" args={["#020617"]} />
           <ambientLight intensity={0.5} />
           <spotLight position={[10, 15, 10]} angle={0.3} penumbra={1} intensity={2} />
@@ -379,7 +381,8 @@ export default function Invariance3DCanvas() {
           </group>
 
           <ContactShadows resolution={1024} scale={25} blur={2.5} opacity={0.5} far={15} color="#0f172a" position={[0, -3.9, 0]} />
-        </Canvas>
+                    </Suspense>
+          </Canvas>
       </div>
 
       {/* Dashboard - Control Panel */}

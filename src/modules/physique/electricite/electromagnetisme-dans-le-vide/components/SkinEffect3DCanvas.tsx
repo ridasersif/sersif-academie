@@ -1,6 +1,7 @@
+/* eslint-disable react-hooks/purity */
 "use client";
 
-import React, { useRef, useState, useEffect, useMemo } from "react";
+import React, { Suspense, useRef, useState, useEffect, useMemo } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, ContactShadows, Cylinder, Environment, Sphere, Line } from "@react-three/drei";
 import * as THREE from "three";
@@ -62,7 +63,7 @@ const SkinEffectWire3D = ({
       });
     }
     return pts;
-  }, [deltaRatio, isTotal, innerR, R, wireLength]);
+  }, [isTotal, innerR, R, wireLength]);
 
   return (
     <group position={[0, 0, 0]}>
@@ -342,7 +343,8 @@ export default function SkinEffect3DCanvas() {
               </div>
             </div>
 
-            <Canvas frameloop={inView ? "always" : "demand"} camera={{ position: [0, 2.2, 4.2], fov: 38 }} className="w-full h-full">
+            <Canvas frameloop={inView ? "always" : "demand"} camera={{ position: [0, 2.2, 4.2], fov: 38 }} className="w-full h-full" dpr={[1, 1.5]}>
+            <Suspense fallback={null}>
               <color attach="background" args={["#020617"]} />
               <ambientLight intensity={0.8} />
               <spotLight position={[0, 8, 4]} intensity={1.8} />
@@ -356,7 +358,8 @@ export default function SkinEffect3DCanvas() {
               />
               
               <ContactShadows resolution={256} scale={8} blur={2} opacity={0.4} far={4} color="#0f172a" position={[0, -1.5, 0]} />
-            </Canvas>
+                        </Suspense>
+          </Canvas>
           </>
         ) : (
           <CrossSection2DView 

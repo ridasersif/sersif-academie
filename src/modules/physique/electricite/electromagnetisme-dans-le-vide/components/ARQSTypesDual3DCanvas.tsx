@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useState, useEffect, useMemo } from "react";
+import React, { Suspense, useRef, useState, useEffect, useMemo } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, Line, ContactShadows, Box, Cylinder, Environment, Sphere, Cone } from "@react-three/drei";
 import * as THREE from "three";
@@ -8,6 +8,9 @@ import { Play, Pause, Zap, Magnet, CheckCircle2, RotateCw } from "lucide-react";
 import LatexMath from "@/components/ui/LatexMath";
 
 // ── 1. SCÈNE ARQS MAGNÉTIQUE : FIL, DENSITÉ j & LIGNES B CONCENTRIQUES ──
+const bRings = [0.65, 1.15, 1.65];
+const numRingsPoints = 48;
+
 const MagneticARQSScene = ({ isPlaying }: { isPlaying: boolean }) => {
   const [time, setTime] = useState(0);
 
@@ -19,9 +22,6 @@ const MagneticARQSScene = ({ isPlaying }: { isPlaying: boolean }) => {
   const radius = 0.22;
 
   // Lignes de champ B circulaires concentriques
-  const bRings = [0.65, 1.15, 1.65];
-  const numRingsPoints = 48;
-
   const ringsData = useMemo(() => {
     return bRings.map((r, ringIdx) => {
       const pts: THREE.Vector3[] = [];
@@ -308,7 +308,8 @@ export default function ARQSTypesDual3DCanvas() {
           </div>
         </div>
 
-        <Canvas frameloop={inView ? "always" : "demand"} camera={{ position: [0, 1.8, 6.0], fov: 38 }} className="w-full h-full">
+        <Canvas frameloop={inView ? "always" : "demand"} camera={{ position: [0, 1.8, 6.0], fov: 38 }} className="w-full h-full" dpr={[1, 1.5]}>
+            <Suspense fallback={null}>
           <color attach="background" args={["#020617"]} />
           <ambientLight intensity={0.7} />
           <spotLight position={[0, 8, 5]} intensity={1.6} />
@@ -322,7 +323,8 @@ export default function ARQSTypesDual3DCanvas() {
           )}
           
           <ContactShadows resolution={256} scale={10} blur={2} opacity={0.35} far={4} color="#0f172a" position={[0, -1.1, 0]} />
-        </Canvas>
+                    </Suspense>
+          </Canvas>
       </div>
 
       {/* ── LÉGENDE DU VISUEL SOUS LE CANVAS ── */}

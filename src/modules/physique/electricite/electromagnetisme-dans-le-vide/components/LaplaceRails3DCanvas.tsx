@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef, useEffect, useMemo } from "react";
+import React, { Suspense, useState, useRef, useEffect, useMemo } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, Html, ContactShadows, Environment, Float, Sparkles, Line, Trail } from "@react-three/drei";
 import * as THREE from "three";
@@ -22,7 +22,7 @@ function Arrow({ start, dir, length, color, thickness = 0.06 }: any) {
   return (
     <group position={start} quaternion={quaternion}>
       <mesh position={[0, length / 2, 0]}>
-        <cylinderGeometry args={[thickness, thickness, length, 32]} />
+        <cylinderGeometry args={[thickness, thickness, length, 12]} />
         <meshPhysicalMaterial color={color} emissive={color} emissiveIntensity={0.6} roughness={0.1} metalness={0.9} clearcoat={1} />
       </mesh>
       <mesh position={[0, length, 0]}>
@@ -284,22 +284,22 @@ function PremiumResistor({ position, rotation }: { position: [number, number, nu
     <group position={position} rotation={rotation}>
       {/* Wire leads */}
       <mesh position={[0, -1.2, 0]}>
-         <cylinderGeometry args={[0.04, 0.04, 1.6, 16]} />
+         <cylinderGeometry args={[0.04, 0.04, 1.6, 12]} />
          <meshPhysicalMaterial color="#94a3b8" metalness={1} roughness={0.2} />
       </mesh>
       <mesh position={[0, 1.2, 0]}>
-         <cylinderGeometry args={[0.04, 0.04, 1.6, 16]} />
+         <cylinderGeometry args={[0.04, 0.04, 1.6, 12]} />
          <meshPhysicalMaterial color="#94a3b8" metalness={1} roughness={0.2} />
       </mesh>
       {/* Ceramic Body */}
       <mesh>
-        <cylinderGeometry args={[0.2, 0.2, 1.2, 32]} />
+        <cylinderGeometry args={[0.2, 0.2, 1.2, 12]} />
         <meshPhysicalMaterial color="#e5e7eb" roughness={0.9} metalness={0.1} clearcoat={0.1} />
       </mesh>
       {/* Bands */}
       {[-0.3, -0.1, 0.1, 0.3].map((y, i) => (
         <mesh key={i} position={[0, y, 0]}>
-          <cylinderGeometry args={[0.21, 0.21, 0.1, 32]} />
+          <cylinderGeometry args={[0.21, 0.21, 0.1, 12]} />
           <meshStandardMaterial color={['#ef4444', '#eab308', '#000', '#fbbf24'][i]} />
         </mesh>
       ))}
@@ -326,13 +326,13 @@ function PremiumGenerator({ position, isPlaying, onToggle }: { position: [number
       {/* Terminals */}
       {/* Positive Terminal (Red) */}
       <mesh position={[1.3, -0.2, -0.8]} rotation={[0, 0, Math.PI/2]}>
-        <cylinderGeometry args={[0.15, 0.15, 0.2, 32]} />
+        <cylinderGeometry args={[0.15, 0.15, 0.2, 12]} />
         <meshPhysicalMaterial color="#ef4444" metalness={0.8} roughness={0.2} />
       </mesh>
       
       {/* Negative Terminal (Black) */}
       <mesh position={[1.3, -0.2, 0.8]} rotation={[0, 0, Math.PI/2]}>
-        <cylinderGeometry args={[0.15, 0.15, 0.2, 32]} />
+        <cylinderGeometry args={[0.15, 0.15, 0.2, 12]} />
         <meshPhysicalMaterial color="#0f172a" metalness={0.8} roughness={0.2} />
       </mesh>
 
@@ -439,11 +439,11 @@ function SimulationScene({ isPlaying, setIsPlaying, bMagnitude, resistance, rese
     <group position={[0, 0, 0]}>
       {/* Vertical Rails */}
       <mesh position={[-l/2, 0, 0]}>
-        <cylinderGeometry args={[0.1, 0.1, 9, 32]} />
+        <cylinderGeometry args={[0.1, 0.1, 9, 12]} />
         <meshPhysicalMaterial color="#3b82f6" metalness={1} roughness={0.15} clearcoat={1} />
       </mesh>
       <mesh position={[l/2, 0, 0]}>
-        <cylinderGeometry args={[0.1, 0.1, 9, 32]} />
+        <cylinderGeometry args={[0.1, 0.1, 9, 12]} />
         <meshPhysicalMaterial color="#3b82f6" metalness={1} roughness={0.15} clearcoat={1} />
       </mesh>
 
@@ -465,17 +465,17 @@ function SimulationScene({ isPlaying, setIsPlaying, bMagnitude, resistance, rese
       <group ref={rodRef} position={[0, 3.5, 0]}>
         {/* The Rod */}
         <mesh rotation={[0, 0, Math.PI/2]}>
-          <cylinderGeometry args={[0.15, 0.15, l + 0.6, 64]} />
+          <cylinderGeometry args={[0.15, 0.15, l + 0.6, 12]} />
           <meshPhysicalMaterial color="#ec4899" emissive="#be185d" emissiveIntensity={0.2} metalness={0.8} roughness={0.2} clearcoat={1} />
         </mesh>
         
         {/* End Caps */}
         <mesh position={[-l/2 - 0.3, 0, 0]}>
-          <sphereGeometry args={[0.15, 32, 32]} />
+          <sphereGeometry args={[0.15, 8, 8]} />
           <meshPhysicalMaterial color="#ec4899" metalness={0.8} roughness={0.2} />
         </mesh>
         <mesh position={[l/2 + 0.3, 0, 0]}>
-          <sphereGeometry args={[0.15, 32, 32]} />
+          <sphereGeometry args={[0.15, 8, 8]} />
           <meshPhysicalMaterial color="#ec4899" metalness={0.8} roughness={0.2} />
         </mesh>
 
@@ -552,7 +552,8 @@ export default function LaplaceRails3DCanvas() {
       
       {/* 3D Viewport */}
       <div className="relative h-[250px] sm:h-[320px] w-full bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-slate-800 via-slate-900 to-black">
-        <Canvas camera={{ position: [0, 0, 18], fov: 45 }}>
+        <Canvas camera={{ position: [0, 0, 18], fov: 45 }} dpr={[1, 1.5]}>
+            <Suspense fallback={null}>
           <ambientLight intensity={0.4} />
           <directionalLight position={[10, 10, 5]} intensity={2} color="#ffffff" />
           <pointLight position={[-10, -10, -5]} intensity={1} color="#38bdf8" />
@@ -567,7 +568,8 @@ export default function LaplaceRails3DCanvas() {
           />
           
           <OrbitControls makeDefault maxPolarAngle={Math.PI / 2} minDistance={5} maxDistance={30} />
-        </Canvas>
+                    </Suspense>
+          </Canvas>
       </div>
 
       {/* Controls and Sliders Panel (All in one row, Sleek and Compact) */}

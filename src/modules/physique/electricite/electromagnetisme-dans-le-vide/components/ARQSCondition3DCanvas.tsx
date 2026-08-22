@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useState, useEffect, useMemo } from "react";
+import React, { Suspense, useRef, useState, useEffect, useMemo } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, Line, ContactShadows, Box, Cylinder, Environment, Sphere } from "@react-three/drei";
 import * as THREE from "three";
@@ -103,7 +103,7 @@ const WaveConductorSystem = ({
     }
 
     return { wavePoints: wavePts, cableSegments: cableSegs, particles: parts };
-  }, [freqLevel, time, k, isARQS, startX, wireLength]);
+  }, [time, k, isARQS, startX, wireLength]);
 
   // Calcul de la distance entre deux crêtes lambda
   const lambdaVisual = (2 * Math.PI) / k;
@@ -401,7 +401,8 @@ export default function ARQSCondition3DCanvas() {
               </div>
             </div>
 
-            <Canvas frameloop={inView ? "always" : "demand"} camera={{ position: [0, 1.4, 6.2], fov: 36 }} className="w-full h-full">
+            <Canvas frameloop={inView ? "always" : "demand"} camera={{ position: [0, 1.4, 6.2], fov: 36 }} className="w-full h-full" dpr={[1, 1.5]}>
+            <Suspense fallback={null}>
               <color attach="background" args={["#020617"]} />
               <ambientLight intensity={0.7} />
               <spotLight position={[0, 8, 4]} intensity={1.6} />
@@ -415,7 +416,8 @@ export default function ARQSCondition3DCanvas() {
               />
               
               <ContactShadows resolution={256} scale={10} blur={2} opacity={0.35} far={4} color="#0f172a" position={[0, -0.7, 0]} />
-            </Canvas>
+                        </Suspense>
+          </Canvas>
           </>
         ) : (
           <VoltageMultiProbeGraph isARQS={isARQS} freqLevel={freqLevel} />

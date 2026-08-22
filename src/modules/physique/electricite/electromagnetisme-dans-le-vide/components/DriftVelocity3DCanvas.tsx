@@ -1,7 +1,7 @@
 "use client";
 /* eslint-disable react-hooks/exhaustive-deps, react-hooks/purity */
 
-import React, { useRef, useMemo, useState, useEffect } from "react";
+import React, { Suspense, useRef, useMemo, useState, useEffect } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, Line, Html, ContactShadows, Environment } from "@react-three/drei";
 import { EffectComposer, Bloom } from "@react-three/postprocessing";
@@ -43,7 +43,7 @@ const Lattice = () => {
   return (
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     <instancedMesh ref={mesh} args={[null, null, count] as any}>
-      <sphereGeometry args={[0.12, 16, 16]} />
+      <sphereGeometry args={[0.12, 8, 8]} />
       <meshPhysicalMaterial color="#334155" metalness={0.5} roughness={0.5} transparent opacity={0.6} />
     </instancedMesh>
   );
@@ -100,7 +100,7 @@ const Electrons = ({ hasField = false, isPlaying = true }) => {
   return (
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     <instancedMesh ref={mesh} args={[null, null, count] as any}>
-      <sphereGeometry args={[0.05, 16, 16]} />
+      <sphereGeometry args={[0.05, 8, 8]} />
       <meshPhysicalMaterial color="#3b82f6" emissive="#2563eb" emissiveIntensity={2} toneMapped={false} />
     </instancedMesh>
   );
@@ -164,7 +164,8 @@ export default function DriftVelocity3DCanvas() {
           </div>
         </div>
 
-        <Canvas frameloop={inView ? "always" : "demand"} camera={{ position: [8, 6, 8], fov: 40 }} className="w-full h-full cursor-grab active:cursor-grabbing">
+        <Canvas frameloop={inView ? "always" : "demand"} camera={{ position: [8, 6, 8], fov: 40 }} className="w-full h-full cursor-grab active:cursor-grabbing" dpr={[1, 1.5]}>
+            <Suspense fallback={null}>
           <color attach="background" args={["#020617"]} />
           <ambientLight intensity={0.4} />
           <spotLight position={[10, 10, 10]} intensity={1.5} penumbra={1} />
@@ -215,7 +216,8 @@ export default function DriftVelocity3DCanvas() {
           </group>
 
           <ContactShadows resolution={256} scale={20} blur={2.5} opacity={0.4} far={5} color="#0f172a" />
-        </Canvas>
+                    </Suspense>
+          </Canvas>
       </div>
 
       {/* Boutons (Contrôle externe) */}

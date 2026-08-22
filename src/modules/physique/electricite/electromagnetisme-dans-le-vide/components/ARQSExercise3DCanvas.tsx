@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useState, useEffect, useMemo } from "react";
+import React, { Suspense, useRef, useState, useEffect, useMemo } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, ContactShadows, Cylinder, Environment, Sphere, Box, Line } from "@react-three/drei";
 import * as THREE from "three";
@@ -380,7 +380,8 @@ export default function ARQSExercise3DCanvas() {
               </div>
             </div>
 
-            <Canvas frameloop={inView ? "always" : "demand"} camera={{ position: [0, 2.0, 5.2], fov: 38 }} className="w-full h-full">
+            <Canvas frameloop={inView ? "always" : "demand"} camera={{ position: [0, 2.0, 5.2], fov: 38 }} className="w-full h-full" dpr={[1, 1.5]}>
+            <Suspense fallback={null}>
               <color attach="background" args={["#020617"]} />
               <ambientLight intensity={0.8} />
               <spotLight position={[0, 8, 4]} intensity={1.8} />
@@ -390,7 +391,8 @@ export default function ARQSExercise3DCanvas() {
               <LabBench3D exp={currentExp} isPlaying={isPlaying} />
               
               <ContactShadows resolution={256} scale={8} blur={2} opacity={0.4} far={4} color="#0f172a" position={[0, -0.9, 0]} />
-            </Canvas>
+                        </Suspense>
+          </Canvas>
           </>
         ) : (
           <LiveOscilloscopeScreen exp={currentExp} />

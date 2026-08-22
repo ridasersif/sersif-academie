@@ -1,5 +1,5 @@
 "use client";
-/* eslint-disable react-hooks/exhaustive-deps, react-hooks/purity */
+/* eslint-disable react-hooks/purity */
 
 import React, { useRef, useMemo, useState, useEffect } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
@@ -144,7 +144,7 @@ export default function CurrentFlux3DCanvas() {
             
             {/* Tube transparent (Le fil conducteur) */}
             <mesh rotation={[Math.PI / 2, 0, 0]}>
-              <cylinderGeometry args={[2.0, 2.0, 8, 32, 1, true]} />
+              <cylinderGeometry args={[2.0, 2.0, 8, 12, 1, true]} />
               <meshPhysicalMaterial color="#cbd5e1" transparent opacity={0.05} side={THREE.DoubleSide} depthWrite={false} roughness={0.1} transmission={0.5} thickness={0.5} />
             </mesh>
 

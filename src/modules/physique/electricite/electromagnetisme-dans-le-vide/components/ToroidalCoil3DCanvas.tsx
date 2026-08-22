@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo, useRef, useEffect } from "react";
+import React, { Suspense, useState, useMemo, useRef, useEffect } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, Line, Html, Environment, ContactShadows, Ring } from "@react-three/drei";
 import * as THREE from "three";
@@ -68,7 +68,7 @@ function ToroidalSpire({ angle, R1, R2, h, color, dirI }: { angle: number, R1: n
       {/* Animated Current Particle */}
       <group ref={groupRef}>
         <mesh>
-          <sphereGeometry args={[0.08, 16, 16]} />
+          <sphereGeometry args={[0.08, 8, 8]} />
           <meshBasicMaterial color={color} />
         </mesh>
         {/* Arrow head pointing in local +Z direction */}
@@ -119,7 +119,7 @@ function CylindricalBasis({ radius }: { radius: number }) {
     <group position={[pos.x, pos.y, pos.z]}>
       {/* Point M */}
       <mesh>
-        <sphereGeometry args={[0.1, 16, 16]} />
+        <sphereGeometry args={[0.1, 8, 8]} />
         <meshBasicMaterial color="#ffffff" />
       </mesh>
       <Html position={[0.2, 0.2, 0]} center>
@@ -196,12 +196,12 @@ function ToroidalScene({ rho, R1, R2, h, planeMode, dirI }: { rho: number, R1: n
       <group rotation={[Math.PI/2, 0, 0]}>
         {/* Inner Wall */}
         <mesh>
-          <cylinderGeometry args={[R1, R1, h, 64, 1, true]} />
+          <cylinderGeometry args={[R1, R1, h, 12, 1, true]} />
           <meshPhysicalMaterial color="#64748b" metalness={0.2} roughness={0.1} transparent opacity={0.4} side={THREE.DoubleSide} />
         </mesh>
         {/* Outer Wall */}
         <mesh>
-          <cylinderGeometry args={[R2, R2, h, 64, 1, true]} />
+          <cylinderGeometry args={[R2, R2, h, 12, 1, true]} />
           <meshPhysicalMaterial color="#64748b" metalness={0.2} roughness={0.1} transparent opacity={0.4} side={THREE.DoubleSide} />
         </mesh>
         {/* Top Lid */}
@@ -328,7 +328,8 @@ export default function ToroidalCoil3DCanvas() {
     <div className="w-full max-w-[1000px] mx-auto flex flex-col font-sans mb-8">
       
       <div ref={canvasContainerRef} className="w-full h-[300px] sm:h-[400px] bg-slate-950 rounded-t-2xl overflow-hidden relative border border-slate-800 border-b-0 shadow-inner">
-        <Canvas frameloop={inView ? "always" : "demand"} camera={{ position: [0, 6, 12], fov: 40 }}>
+        <Canvas frameloop={inView ? "always" : "demand"} camera={{ position: [0, 6, 12], fov: 40 }} dpr={[1, 1.5]}>
+            <Suspense fallback={null}>
           <color attach="background" args={["#020617"]} />
           <ambientLight intensity={0.5} />
           <spotLight position={[10, 20, 10]} angle={0.4} penumbra={1} intensity={2} color="#e2e8f0" />
@@ -339,7 +340,8 @@ export default function ToroidalCoil3DCanvas() {
           <ToroidalScene rho={rho} R1={R1} R2={R2} h={h} planeMode={planeMode} dirI={dirI} />
 
           <ContactShadows resolution={512} scale={30} blur={2} opacity={0.5} far={15} color="#000000" position={[0, -5.9, 0]} />
-        </Canvas>
+                    </Suspense>
+          </Canvas>
       </div>
 
       {/* Controls Panel */}

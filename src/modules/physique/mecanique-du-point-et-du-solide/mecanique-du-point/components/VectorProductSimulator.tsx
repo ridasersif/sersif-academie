@@ -192,7 +192,7 @@ export default function VectorProductSimulator() {
       if (container) container.innerHTML = "";
       renderer.dispose();
     };
-  }, []);
+  }, [normU, normV]);
 
   // Update 3D Vector Geometries
   useEffect(() => {

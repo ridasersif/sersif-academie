@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useState, useMemo, useEffect } from "react";
+import React, { Suspense, useRef, useState, useMemo, useEffect } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, Line, Sphere, Cone, Tube, Html } from "@react-three/drei";
 import * as THREE from "three";
@@ -470,7 +470,8 @@ export default function BiotSavartSpire3DCanvas() {
 
       <div ref={canvasContainerRef} className="w-full h-[300px] sm:h-[400px] bg-slate-950 rounded-t-2xl overflow-hidden relative border border-slate-800 border-b-0 shadow-inner">
         
-        <Canvas frameloop={inView ? "always" : "demand"} camera={{ position: [5, 4, 6], fov: 45 }}>
+        <Canvas frameloop={inView ? "always" : "demand"} camera={{ position: [5, 4, 6], fov: 45 }} dpr={[1, 1.5]}>
+            <Suspense fallback={null}>
           <color attach="background" args={["#020617"]} />
           <ambientLight intensity={0.5} />
           <directionalLight position={[10, 10, 10]} intensity={1} />
@@ -484,7 +485,8 @@ export default function BiotSavartSpire3DCanvas() {
           />
           
           <SpireScene radius={radius} distance={distance} currentDirection={currentDirection} planeMode={planeMode} circuitShape={circuitShape} />
-        </Canvas>
+                    </Suspense>
+          </Canvas>
       </div>
 
       {/* Controls Panel */}

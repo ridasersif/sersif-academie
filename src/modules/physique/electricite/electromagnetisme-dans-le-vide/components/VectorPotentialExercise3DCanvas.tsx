@@ -1,6 +1,7 @@
+/* eslint-disable react-hooks/purity */
 "use client";
 
-import React, { useRef, useState, useEffect, useMemo } from "react";
+import React, { Suspense, useRef, useState, useEffect, useMemo } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, Html, Environment, Line } from "@react-three/drei";
 import * as THREE from "three";
@@ -145,7 +146,7 @@ function PointM({ rM, jDirection, jMagnitude, R, showB, showA }: { rM: number, j
   return (
     <group>
       <mesh position={mPos}>
-        <sphereGeometry args={[0.08, 32, 32]} />
+        <sphereGeometry args={[0.08, 8, 8]} />
         <meshBasicMaterial color="#ffffff" />
       </mesh>
       
@@ -226,7 +227,8 @@ export default function VectorPotentialExercise3DCanvas() {
       {/* 3D Canvas Area */}
       <div className="w-full h-[300px] sm:h-[350px] relative">
         {inView && (
-          <Canvas camera={{ position: [8, 6, 12], fov: 45 }}>
+          <Canvas camera={{ position: [8, 6, 12], fov: 45 }} dpr={[1, 1.5]}>
+            <Suspense fallback={null}>
             <color attach="background" args={["#020617"]} />
             <ambientLight intensity={0.5} />
             <directionalLight position={[10, 10, 10]} intensity={1} />
@@ -268,6 +270,7 @@ export default function VectorPotentialExercise3DCanvas() {
             </group>
             
             <Environment preset="city" />
+                      </Suspense>
           </Canvas>
         )}
       </div>

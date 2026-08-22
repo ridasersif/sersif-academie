@@ -59,7 +59,7 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
       audio.pause();
       audio.src = "";
     };
-  }, []);
+  }, [currentTrack.src]);
 
   // Handle track change smoothly without stopping if currently playing
   useEffect(() => {
@@ -73,7 +73,7 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
     if (wasPlaying) {
       audioRef.current.play().then(() => setIsPlaying(true)).catch(console.error);
     }
-  }, [currentIndex]);
+  }, [currentIndex, currentTrack.src, isPlaying]);
 
   const togglePlay = async () => {
     if (!audioRef.current) return;

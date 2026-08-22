@@ -1,5 +1,5 @@
 "use client";
-/* eslint-disable react-hooks/exhaustive-deps, react-hooks/purity, react-hooks/immutability */
+/* eslint-disable react-hooks/purity, react-hooks/immutability */
 
 import React, { useRef, useMemo, useState, useEffect } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
@@ -88,7 +88,7 @@ const Particles = ({ density = 200, speed = 4, chargeSign = -1, isPlaying = true
     <group>
       {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
       <instancedMesh ref={mesh} args={[null, null, 300] as any}>
-        <sphereGeometry args={[0.04, 16, 16]} />
+        <sphereGeometry args={[0.04, 8, 8]} />
         <meshPhysicalMaterial 
           color={particleColor} 
           emissive={particleEmissive} 
@@ -186,7 +186,7 @@ export default function CurrentDensity3DCanvas() {
             
             {/* Fil Conducteur (Verre/Cristal) orienté le long de Z */}
             <mesh rotation={[Math.PI / 2, 0, 0]}>
-              <cylinderGeometry args={[0.8, 0.8, 6, 64]} />
+              <cylinderGeometry args={[0.8, 0.8, 6, 12]} />
               <meshPhysicalMaterial 
                 color="#e2e8f0" 
                 transparent 

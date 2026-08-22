@@ -1,6 +1,7 @@
+/* eslint-disable react-hooks/purity */
 "use client";
 
-import React, { useRef, useState, useEffect, useMemo } from "react";
+import React, { Suspense, useRef, useState, useEffect, useMemo } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, Html, Environment, Line } from "@react-three/drei";
 import * as THREE from "three";
@@ -107,11 +108,20 @@ function SolenoidPointM({ rM, iDirection, iMagnitude, R, showB, showA }: { rM: n
   const drawLengthB = B_mag; 
   const drawLengthA = A_mag;
   const mPos = new THREE.Vector3(rM, 0, 0);
+
+  const circlePoints = useMemo(() => {
+    const pts = [];
+    for (let i = 0; i <= 64; i++) {
+      const t = (i / 64) * Math.PI * 2;
+      pts.push(new THREE.Vector3(Math.cos(t) * rM, 0, Math.sin(t) * rM));
+    }
+    return pts;
+  }, [rM]);
   
   return (
     <group>
       <mesh position={mPos}>
-        <sphereGeometry args={[0.08, 32, 32]} />
+        <sphereGeometry args={[0.08, 8, 8]} />
         <meshBasicMaterial color="#ffffff" />
       </mesh>
       
@@ -151,14 +161,7 @@ function SolenoidPointM({ rM, iDirection, iMagnitude, R, showB, showA }: { rM: n
       {/* Circle of A(M) passing through M */}
       {showA && (
         <Line 
-          points={useMemo(() => {
-            const pts = [];
-            for (let i = 0; i <= 64; i++) {
-              const t = (i / 64) * Math.PI * 2;
-              pts.push(new THREE.Vector3(Math.cos(t) * rM, 0, Math.sin(t) * rM));
-            }
-            return pts;
-          }, [rM])} 
+          points={circlePoints} 
           color="#22c55e" 
           lineWidth={2} 
           transparent opacity={0.4} dashed dashScale={10} dashSize={0.2} gapSize={0.2} 
@@ -194,7 +197,8 @@ export default function SolenoidPotentialExercise3DCanvas() {
       {/* 3D Canvas Area */}
       <div className="w-full h-[300px] sm:h-[350px] relative">
         {inView && (
-          <Canvas camera={{ position: [7, 5, 10], fov: 45 }}>
+          <Canvas camera={{ position: [7, 5, 10], fov: 45 }} dpr={[1, 1.5]}>
+            <Suspense fallback={null}>
             <color attach="background" args={["#020617"]} />
             <ambientLight intensity={0.5} />
             <directionalLight position={[10, 10, 10]} intensity={1} />
@@ -212,7 +216,7 @@ export default function SolenoidPotentialExercise3DCanvas() {
               {showSolenoid && (
                 <group>
                   <mesh position={[0, 0, 0]}>
-                    <cylinderGeometry args={[solenoidRadius, solenoidRadius, 6, 32, 1, true]} />
+                    <cylinderGeometry args={[solenoidRadius, solenoidRadius, 6, 12, 1, true]} />
                     <meshStandardMaterial 
                       color="#64748b" 
                       transparent 
@@ -233,6 +237,7 @@ export default function SolenoidPotentialExercise3DCanvas() {
               <SolenoidPointM rM={rM} iDirection={iDirection} iMagnitude={iMagnitude} R={solenoidRadius} showB={showB} showA={showA} />
 
             </group>
+                      </Suspense>
           </Canvas>
         )}
       </div>

@@ -158,7 +158,7 @@ export default function DifferentialOperators3DSimulator() {
       if (container) container.innerHTML = "";
       renderer.dispose();
     };
-  }, []);
+  }, [amplitude]);
 
   // Dynamically build 3D geometry based on operatorType, amplitude, spread
   useEffect(() => {

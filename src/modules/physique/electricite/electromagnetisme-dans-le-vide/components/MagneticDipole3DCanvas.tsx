@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useState, useEffect, useMemo } from "react";
+import React, { Suspense, useRef, useState, useEffect, useMemo } from "react";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls, Html, ContactShadows, Environment, Line } from "@react-three/drei";
 import * as THREE from "three";
@@ -122,7 +122,8 @@ export default function MagneticDipole3DCanvas() {
           </div>
         </div>
 
-        <Canvas frameloop={inView ? "always" : "demand"} camera={{ position: [7, 4.5, 7], fov: 45 }} className="w-full h-full">
+        <Canvas frameloop={inView ? "always" : "demand"} camera={{ position: [7, 4.5, 7], fov: 45 }} className="w-full h-full" dpr={[1, 1.5]}>
+            <Suspense fallback={null}>
           <color attach="background" args={["#020617"]} />
           <ambientLight intensity={0.6} />
           <spotLight position={[5, 10, 5]} intensity={2} />
@@ -184,7 +185,8 @@ export default function MagneticDipole3DCanvas() {
             )}
             
           </group>
-        </Canvas>
+                    </Suspense>
+          </Canvas>
       </div>
 
       {/* External Controls */}
