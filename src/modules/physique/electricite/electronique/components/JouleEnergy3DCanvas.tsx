@@ -5,7 +5,7 @@ import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, Cylinder, Html, ContactShadows } from "@react-three/drei";
 import * as THREE from "three";
 import LatexMath from "@/components/ui/LatexMath";
-import { Flame, Sparkles, Sliders, Activity } from "lucide-react";
+import { Flame, Sparkles, Sliders, Activity, ThermometerSun } from "lucide-react";
 
 // Electron definitions
 interface Electron {
@@ -16,8 +16,10 @@ interface Electron {
 
 function InternalLatticeScene({ isGlobal, eField, voltageV }: { isGlobal: boolean; eField: number; voltageV: number }) {
   const wireRef = useRef<THREE.Mesh>(null);
+  const glowLightRef = useRef<THREE.PointLight>(null);
   const ionsGroupRef = useRef<THREE.Group>(null);
   const electronsGroupRef = useRef<THREE.Group>(null);
+  const macroGroupRef = useRef<THREE.Group>(null);
   
   // Create lattice ions (compact, well-spaced)
   const latticeIons = useMemo(() => {
@@ -25,7 +27,7 @@ function InternalLatticeScene({ isGlobal, eField, voltageV }: { isGlobal: boolea
     const layersX = [-1.5, -0.75, 0, 0.75, 1.5];
     const ringRadius = 0.32;
     layersX.forEach((x) => {
-      ions.push(new THREE.Vector3(x, 0, 0)); // Center axis
+      ions.push(new THREE.Vector3(x, 0, 0));
       for (let k = 0; k < 4; k++) {
         const ang = (k * Math.PI) / 2;
         ions.push(new THREE.Vector3(x, Math.sin(ang) * ringRadius, Math.cos(ang) * ringRadius));
@@ -45,40 +47,113 @@ function InternalLatticeScene({ isGlobal, eField, voltageV }: { isGlobal: boolea
     }));
   }, []);
 
-  // Sparks for collisions
+  // Sparks / Micro collisions
   const sparkRefs = useRef<(THREE.Mesh | null)[]>([]);
   const sparkData = useMemo(() => {
     return Array.from({ length: 25 }).map(() => ({ pos: new THREE.Vector3(), life: 0 }));
   }, []);
   const nextSpark = useRef(0);
 
+  // Convection heat particles for macroscopic view
+  const heatParticleRefs = useRef<(THREE.Mesh | null)[]>([]);
+  const heatParticleData = useMemo(() => {
+    return Array.from({ length: 20 }).map(() => ({
+      pos: new THREE.Vector3((Math.random() - 0.5) * 3.2, 0.3, (Math.random() - 0.5) * 0.6),
+      life: Math.random(),
+      speed: 0.8 + Math.random() * 0.8,
+    }));
+  }, []);
+
   useFrame((_, delta) => {
     const driftVelocity = eField * 1.8;
     const thermalSpeed = 1.8;
 
+    // Macro Incandescence calculation based on Voltage U (0 to 10 V)
+    const uNorm = Math.min(Math.max(voltageV / 10.0, 0), 1.0);
+    const powerRatio = uNorm * uNorm; // P = U^2 / R
+
     // Transition wire appearance
-    if (ionsGroupRef.current && electronsGroupRef.current && wireRef.current) {
+    if (wireRef.current && glowLightRef.current) {
       const wireMat = wireRef.current.material as THREE.MeshStandardMaterial;
-      const wireTargetOp = isGlobal ? 0.88 : 0.12;
-      const wireTargetEmissive = isGlobal ? (voltageV / 5.5) : 0.0;
-      
-      wireMat.opacity += (wireTargetOp - wireMat.opacity) * delta * 4.0;
-      wireMat.emissiveIntensity += (wireTargetEmissive - wireMat.emissiveIntensity) * delta * 4.0;
-      
+
       if (isGlobal) {
-        wireMat.color.lerp(new THREE.Color("#f97316"), delta * 3.0);
-        ionsGroupRef.current.visible = false;
-        electronsGroupRef.current.visible = false;
+        // Cold slate -> Dull red -> Radiant orange -> Blazing incandescent yellow
+        const targetColor = new THREE.Color();
+        const targetEmissive = new THREE.Color();
+
+        if (voltageV < 0.5) {
+          targetColor.set("#334155"); // Cold metallic slate
+          targetEmissive.set("#000000");
+          wireMat.emissiveIntensity = 0.0;
+        } else if (voltageV < 3.5) {
+          // Warm up (Dark red)
+          targetColor.lerpColors(new THREE.Color("#334155"), new THREE.Color("#991b1b"), voltageV / 3.5);
+          targetEmissive.set("#7f1d1d");
+          wireMat.emissiveIntensity = THREE.MathUtils.lerp(0.1, 0.6, voltageV / 3.5);
+        } else if (voltageV < 7.0) {
+          // Bright Orange
+          targetColor.lerpColors(new THREE.Color("#991b1b"), new THREE.Color("#ea580c"), (voltageV - 3.5) / 3.5);
+          targetEmissive.set("#f97316");
+          wireMat.emissiveIntensity = THREE.MathUtils.lerp(0.6, 1.8, (voltageV - 3.5) / 3.5);
+        } else {
+          // Blazing Incandescent White/Yellow
+          targetColor.lerpColors(new THREE.Color("#ea580c"), new THREE.Color("#fef08a"), (voltageV - 7.0) / 3.0);
+          targetEmissive.set("#fde047");
+          wireMat.emissiveIntensity = THREE.MathUtils.lerp(1.8, 3.2, (voltageV - 7.0) / 3.0);
+        }
+
+        wireMat.color.lerp(targetColor, delta * 4.0);
+        wireMat.emissive.lerp(targetEmissive, delta * 4.0);
+        wireMat.opacity = 0.95;
+
+        // Glow light in scene
+        glowLightRef.current.color.copy(targetEmissive);
+        glowLightRef.current.intensity = powerRatio * 3.5;
+
+        if (ionsGroupRef.current) ionsGroupRef.current.visible = false;
+        if (electronsGroupRef.current) electronsGroupRef.current.visible = false;
+        if (macroGroupRef.current) macroGroupRef.current.visible = true;
+
+        // Animate rising heat particles in macro mode
+        heatParticleData.forEach((p, i) => {
+          const mesh = heatParticleRefs.current[i];
+          if (!mesh) return;
+
+          if (voltageV > 1.5) {
+            p.life -= delta * (0.8 + powerRatio);
+            p.pos.y += delta * p.speed * (0.5 + powerRatio * 0.8);
+
+            if (p.life <= 0) {
+              p.life = 1.0;
+              p.pos.set((Math.random() - 0.5) * 3.2, 0.25, (Math.random() - 0.5) * 0.6);
+            }
+
+            mesh.position.copy(p.pos);
+            mesh.scale.setScalar(p.life * (0.04 + powerRatio * 0.05));
+            mesh.visible = true;
+            (mesh.material as THREE.MeshBasicMaterial).color.set(powerRatio > 0.6 ? "#fef08a" : "#f97316");
+          } else {
+            mesh.visible = false;
+          }
+        });
+
       } else {
-        wireMat.color.lerp(new THREE.Color("#9a3412"), delta * 3.0);
-        ionsGroupRef.current.visible = true;
-        electronsGroupRef.current.visible = true;
+        // Microscopic mode (transparent glass conductor)
+        wireMat.color.lerp(new THREE.Color("#b45309"), delta * 4.0);
+        wireMat.emissive.set("#000000");
+        wireMat.emissiveIntensity = 0.0;
+        wireMat.opacity = 0.12;
+        glowLightRef.current.intensity = 0.0;
+
+        if (ionsGroupRef.current) ionsGroupRef.current.visible = true;
+        if (electronsGroupRef.current) electronsGroupRef.current.visible = true;
+        if (macroGroupRef.current) macroGroupRef.current.visible = false;
       }
     }
 
     if (isGlobal) return;
 
-    // Simulate electrons
+    // Simulate electrons in microscopic mode
     electrons.forEach((el) => {
       el.vel.x += driftVelocity * delta;
       el.vel.x += (Math.random() - 0.5) * thermalSpeed * delta;
@@ -88,7 +163,6 @@ function InternalLatticeScene({ isGlobal, eField, voltageV }: { isGlobal: boolea
       
       el.pos.add(el.vel.clone().multiplyScalar(delta));
 
-      // Cylinder radius 0.45, length 3.6
       if (el.pos.y * el.pos.y + el.pos.z * el.pos.z > 0.2) {
         el.vel.y *= -1;
         el.vel.z *= -1;
@@ -155,14 +229,17 @@ function InternalLatticeScene({ isGlobal, eField, voltageV }: { isGlobal: boolea
       <directionalLight position={[5, 6, 5]} intensity={1.8} />
       <directionalLight position={[-4, -3, -4]} intensity={0.6} />
 
-      {/* Wire Cylinder (Compact: Radius 0.48, Length 3.8) */}
+      {/* Dynamic Thermal Glow Light for Macroscopic view */}
+      <pointLight ref={glowLightRef} position={[0, 0, 0]} distance={7} intensity={0} />
+
+      {/* Main Cylinder Conductor */}
       <group rotation={[0, 0, Math.PI / 2]}>
         <mesh ref={wireRef}>
           <cylinderGeometry args={[0.48, 0.48, 3.8, 32]} />
           <meshStandardMaterial
-            color="#b45309"
+            color="#334155"
             metalness={0.7}
-            roughness={0.2}
+            roughness={0.25}
             transparent
             opacity={0.12}
             depthWrite={false}
@@ -171,7 +248,70 @@ function InternalLatticeScene({ isGlobal, eField, voltageV }: { isGlobal: boolea
         </mesh>
       </group>
 
-      {/* Internal Ions */}
+      {/* ── MACROSCOPIC ACCESSORIES (Terminals, Heat Aura, Voltage Vector) ── */}
+      <group ref={macroGroupRef} visible={false}>
+        {/* Silver Terminal Caps */}
+        <mesh position={[-1.9, 0, 0]} rotation={[0, 0, Math.PI / 2]}>
+          <cylinderGeometry args={[0.5, 0.5, 0.18, 32]} />
+          <meshStandardMaterial color="#94a3b8" metalness={0.9} roughness={0.1} />
+        </mesh>
+        <mesh position={[1.9, 0, 0]} rotation={[0, 0, Math.PI / 2]}>
+          <cylinderGeometry args={[0.5, 0.5, 0.18, 32]} />
+          <meshStandardMaterial color="#94a3b8" metalness={0.9} roughness={0.1} />
+        </mesh>
+
+        {/* Lead Wires */}
+        <mesh position={[-2.3, 0, 0]} rotation={[0, 0, Math.PI / 2]}>
+          <cylinderGeometry args={[0.08, 0.08, 0.8, 16]} />
+          <meshStandardMaterial color="#cbd5e1" metalness={0.8} roughness={0.2} />
+        </mesh>
+        <mesh position={[2.3, 0, 0]} rotation={[0, 0, Math.PI / 2]}>
+          <cylinderGeometry args={[0.08, 0.08, 0.8, 16]} />
+          <meshStandardMaterial color="#cbd5e1" metalness={0.8} roughness={0.2} />
+        </mesh>
+
+        {/* Terminal Labels */}
+        <Html position={[-2.4, 0.4, 0]} center className="pointer-events-none">
+          <div className="px-1.5 py-0.5 rounded bg-slate-900/90 border border-slate-700 text-rose-400 font-mono font-bold text-[11px] shadow">
+            A (+)
+          </div>
+        </Html>
+        <Html position={[2.4, 0.4, 0]} center className="pointer-events-none">
+          <div className="px-1.5 py-0.5 rounded bg-slate-900/90 border border-slate-700 text-cyan-400 font-mono font-bold text-[11px] shadow">
+            B (-)
+          </div>
+        </Html>
+
+        {/* Macroscopic Voltage Arrow U = V_A - V_B */}
+        {voltageV > 0 && (
+          <group position={[0, 1.1, 0]}>
+            <Cylinder args={[0.015, 0.015, 2.6]} rotation={[0, 0, -Math.PI / 2]} position={[0, 0, 0]}>
+              <meshStandardMaterial color="#f43f5e" emissive="#e11d48" emissiveIntensity={1} />
+            </Cylinder>
+            <mesh position={[1.35, 0, 0]} rotation={[0, 0, -Math.PI / 2]}>
+              <coneGeometry args={[0.06, 0.2, 16]} />
+              <meshStandardMaterial color="#f43f5e" emissive="#e11d48" emissiveIntensity={1} />
+            </mesh>
+            <Html position={[0, 0.25, 0]} center className="pointer-events-none">
+              <span className="px-2 py-0.5 rounded-full bg-slate-950/90 border border-rose-500/50 text-rose-400 font-mono font-bold text-xs shadow-lg whitespace-nowrap">
+                <LatexMath math={`U = ${voltageV.toFixed(1)}\\text{ V}`} />
+              </span>
+            </Html>
+          </group>
+        )}
+
+        {/* Convection Heat Particles */}
+        <group>
+          {heatParticleData.map((_, i) => (
+            <mesh key={`heat-${i}`} ref={(el) => { heatParticleRefs.current[i] = el; }} visible={false}>
+              <sphereGeometry args={[0.06, 8, 8]} />
+              <meshBasicMaterial color="#f97316" transparent opacity={0.6} />
+            </mesh>
+          ))}
+        </group>
+      </group>
+
+      {/* ── MICROSCOPIC VIEW (Ions, Electrons, Sparks) ── */}
       <group ref={ionsGroupRef}>
         {latticeIons.map((pos, i) => (
           <mesh key={`ion-${i}`} position={pos} ref={(el) => { ionMeshRefs.current[i] = el; }}>
@@ -181,7 +321,6 @@ function InternalLatticeScene({ isGlobal, eField, voltageV }: { isGlobal: boolea
         ))}
       </group>
 
-      {/* Electrons */}
       <group ref={electronsGroupRef}>
         {electrons.map((el, i) => (
           <mesh key={`el-${i}`} ref={el.meshRef}>
@@ -191,7 +330,7 @@ function InternalLatticeScene({ isGlobal, eField, voltageV }: { isGlobal: boolea
         ))}
       </group>
 
-      {/* Sparks */}
+      {/* Micro Sparks */}
       <group>
         {sparkData.map((_, i) => (
           <mesh key={`spark-${i}`} ref={(el) => { sparkRefs.current[i] = el; }} visible={false}>
@@ -201,7 +340,7 @@ function InternalLatticeScene({ isGlobal, eField, voltageV }: { isGlobal: boolea
         ))}
       </group>
       
-      {/* HUD Field Vectors */}
+      {/* Micro HUD E-field Vector */}
       {!isGlobal && eField > 0 && (
         <group position={[0, 0.8, 0]}>
           <group position={[0, 0, 0]}>
@@ -220,7 +359,7 @@ function InternalLatticeScene({ isGlobal, eField, voltageV }: { isGlobal: boolea
       )}
 
       <ContactShadows position={[0, -1.0, 0]} opacity={0.5} scale={7} blur={1.8} />
-      <OrbitControls enableZoom={true} maxDistance={8.5} minDistance={3.2} autoRotate={isGlobal} autoRotateSpeed={1.5} />
+      <OrbitControls enableZoom={true} maxDistance={8.5} minDistance={3.2} autoRotate={isGlobal} autoRotateSpeed={1.2} />
     </>
   );
 }
@@ -238,6 +377,14 @@ export default function JouleEnergy3DCanvas() {
   const R = 2.0;
   const currentI = (voltageV / R).toFixed(2);
   const PJ = ((voltageV * voltageV) / R).toFixed(1);
+
+  // Incandescence stage description
+  const getThermalStateText = () => {
+    if (voltageV === 0) return "Froid (Température ambiante, 0 W)";
+    if (voltageV < 3.5) return "Échauffement modéré (Rouge sombre)";
+    if (voltageV < 7.0) return "Forte incandescence (Orange vif)";
+    return "Incandescence maximale (Jaune / Blanc éclatant)";
+  };
 
   return (
     <div className="w-full bg-slate-950/90 border border-slate-800 rounded-2xl sm:rounded-3xl overflow-hidden shadow-xl flex flex-col md:grid md:grid-cols-12 min-h-[320px]">
@@ -319,7 +466,7 @@ export default function JouleEnergy3DCanvas() {
           ) : (
             <div className="space-y-2 animate-in fade-in duration-200">
               <div className="flex justify-between items-center text-[11px] text-slate-400">
-                <span>Résistance <LatexMath math="R" /> & Courant <LatexMath math="I" /></span>
+                <span>Résistance & Courant</span>
                 <span className="font-mono text-slate-200 font-bold">{R.toFixed(1)} <LatexMath math="\Omega" /> • {currentI} A</span>
               </div>
               <div className="p-2.5 rounded-lg bg-rose-500/10 border border-rose-500/30 text-center">
@@ -328,9 +475,10 @@ export default function JouleEnergy3DCanvas() {
                   <LatexMath math={`P_J = ${PJ} \\text{ W}`} />
                 </div>
               </div>
-              <p className="text-[10px] text-slate-400 leading-tight text-center">
-                Somme macroscopique <LatexMath math="P_J = R I^2 = U I" />.
-              </p>
+              <div className="flex items-center gap-1.5 justify-center text-[10px] text-slate-300 bg-slate-950 p-1 rounded border border-slate-800">
+                <ThermometerSun className="w-3 h-3 text-rose-400 shrink-0" />
+                <span className="truncate">{getThermalStateText()}</span>
+              </div>
             </div>
           )}
         </div>

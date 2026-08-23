@@ -668,9 +668,42 @@ export default function Chap1FondementsElectrocinetique() {
           6. Modèles Linéaires R, L, C & Énergies Stockées
         </h2>
 
-        <p className="text-sm sm:text-base text-muted-foreground leading-relaxed mb-6">
-          Le condensateur (<LatexMath math="C" />) et la bobine (<LatexMath math="L" />) sont des <strong>réservoirs conservatifs d&apos;énergie</strong> réactive.
+        <p className="text-sm sm:text-base text-muted-foreground leading-relaxed mb-4">
+          Contrairement à la résistance qui dissipe irréversiblement l&apos;énergie sous forme thermique (<LatexMath math="p_R(t) \ge 0" />), le condensateur (<LatexMath math="C" />) et la bobine (<LatexMath math="L" />) sont des <strong>réservoirs d&apos;énergie réactive conservatifs</strong> : ils emmagasinent l&apos;énergie pendant une phase et la restituent intégralement au circuit sans aucune perte.
         </p>
+
+        {/* ── Analogie Mécanique Intuitive ── */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 my-4">
+          <div className="p-3.5 rounded-xl bg-slate-900/80 border border-slate-800 space-y-1.5">
+            <div className="flex items-center gap-1.5 text-xs font-bold text-indigo-400">
+              <span>🚗 Résistance</span>
+              <span className="text-[10px] text-slate-500 font-normal">Frottement / Frein</span>
+            </div>
+            <p className="text-[11px] text-slate-300 leading-relaxed">
+              Transforme l&apos;énergie électrique en chaleur irréversible (<LatexMath math="P_J = R i^2" />). Ne stocke rien.
+            </p>
+          </div>
+
+          <div className="p-3.5 rounded-xl bg-slate-900/80 border border-cyan-500/20 space-y-1.5">
+            <div className="flex items-center gap-1.5 text-xs font-bold text-cyan-400">
+              <span>🌀 Condensateur</span>
+              <span className="text-[10px] text-slate-500 font-normal">Ressort Élastique</span>
+            </div>
+            <p className="text-[11px] text-slate-300 leading-relaxed">
+              Comprime les charges et stocke une énergie potentielle <LatexMath math="\mathcal{E}_e = \frac{1}{2} C u_C^2" /> dans son champ <LatexMath math="\vec{E}" />.
+            </p>
+          </div>
+
+          <div className="p-3.5 rounded-xl bg-slate-900/80 border border-amber-500/20 space-y-1.5">
+            <div className="flex items-center gap-1.5 text-xs font-bold text-amber-400">
+              <span>⚙️ Bobine</span>
+              <span className="text-[10px] text-slate-500 font-normal">Volant d&apos;Inertie</span>
+            </div>
+            <p className="text-[11px] text-slate-300 leading-relaxed">
+              S&apos;oppose à toute variation de courant et stocke une énergie cinétique <LatexMath math="\mathcal{E}_m = \frac{1}{2} L i_L^2" /> dans son champ <LatexMath math="\vec{B}" />.
+            </p>
+          </div>
+        </div>
 
         {/* 3D RLC Storage Canvas */}
         <div className="mb-6 sm:mb-8 rounded-2xl overflow-hidden border border-slate-800 relative ring-1 ring-slate-800 shadow-xl">
@@ -717,17 +750,71 @@ export default function Chap1FondementsElectrocinetique() {
           </table>
         </div>
 
+        {/* Démonstrations Dépliables Pas-à-Pas des Énergies */}
+        <div className="space-y-3 my-4">
+          <CollapsibleProof
+            title="Démonstration : Énergie Électrostatique d'un Condensateur (Ee = 1/2 C u²)"
+            subtitle="Calcul de la puissance électrique reçue en convention récepteur"
+            color="cyan"
+          >
+            <div className="space-y-2 font-mono text-xs text-slate-300">
+              <p className="font-sans text-slate-300">
+                1. En convention récepteur, la puissance instantanée absorbée par le condensateur est :
+              </p>
+              <div className="p-2 rounded bg-black/40 text-center text-slate-200">
+                <LatexMath math="p_C(t) = u_C(t) \cdot i_C(t)" />
+              </div>
+              <p className="font-sans text-slate-300">
+                2. Or la relation constitutive du condensateur donne <LatexMath math="i_C(t) = C \frac{\mathrm{d}u_C}{\mathrm{d}t}" /> :
+              </p>
+              <div className="p-2 rounded bg-black/40 text-center text-cyan-300">
+                <LatexMath math="\implies p_C(t) = u_C(t) \cdot \left(C \frac{\mathrm{d}u_C}{\mathrm{d}t}\right) = \frac{\mathrm{d}}{\mathrm{d}t}\left(\frac{1}{2} C u_C(t)^2\right)" />
+              </div>
+              <p className="font-sans text-slate-300">
+                3. La puissance étant la dérivée temporelle de l&apos;énergie emmagasinée (<LatexMath math="p_C(t) = \frac{\mathrm{d}\mathcal{E}_e}{\mathrm{d}t}" />) :
+              </p>
+              <div className="p-2 rounded bg-cyan-500/10 border border-cyan-500/30 text-center text-cyan-300 font-bold">
+                <LatexMath math="\text{D'où :} \quad \mathcal{E}_e = \frac{1}{2} C u_C^2 = \frac{Q^2}{2C}" />
+              </div>
+            </div>
+          </CollapsibleProof>
+
+          <CollapsibleProof
+            title="Démonstration : Énergie Magnétique d'une Bobine (Em = 1/2 L i²)"
+            subtitle="Calcul de la puissance absorbée lors de l'établissement du courant"
+            color="amber"
+          >
+            <div className="space-y-2 font-mono text-xs text-slate-300">
+              <p className="font-sans text-slate-300">
+                1. En convention récepteur, la tension aux bornes de la bobine d&apos;inductance <LatexMath math="L" /> est <LatexMath math="u_L(t) = L \frac{\mathrm{d}i_L}{\mathrm{d}t}" /> :
+              </p>
+              <div className="p-2 rounded bg-black/40 text-center text-slate-200">
+                <LatexMath math="p_L(t) = u_L(t) \cdot i_L(t) = \left(L \frac{\mathrm{d}i_L}{\mathrm{d}t}\right) \cdot i_L(t)" />
+              </div>
+              <p className="font-sans text-slate-300">
+                2. On reconnaît la dérivée d&apos;une forme quadratique :
+              </p>
+              <div className="p-2 rounded bg-black/40 text-center text-amber-300">
+                <LatexMath math="\implies p_L(t) = \frac{\mathrm{d}}{\mathrm{d}t}\left(\frac{1}{2} L i_L(t)^2\right) = \frac{\mathrm{d}\mathcal{E}_m}{\mathrm{d}t}" />
+              </div>
+              <div className="p-2 rounded bg-amber-500/10 border border-amber-500/30 text-center text-amber-300 font-bold">
+                <LatexMath math="\text{D'où :} \quad \mathcal{E}_m = \frac{1}{2} L i_L^2" />
+              </div>
+            </div>
+          </CollapsibleProof>
+        </div>
+
         {/* Continuity Rules */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-4">
           <div className="p-4 rounded-xl bg-cyan-500/10 border border-cyan-500/20 space-y-1.5">
             <h4 className="text-xs font-bold uppercase text-cyan-400 flex items-center gap-1.5">
               <ShieldAlert className="w-4 h-4" /> Propriété de Continuité : Condensateur
             </h4>
             <p className="text-xs text-muted-foreground leading-relaxed">
-              L&apos;énergie <LatexMath math="\mathcal{E}_e = \frac{1}{2} C u_C^2" /> étant une fonction continue, la tension <strong><LatexMath math="u_C(t)" /> ne subit aucune discontinuité</strong> :
+              Une discontinuité de <LatexMath math="u_C(t)" /> exigerait une dérivée <LatexMath math="\frac{\mathrm{d}u_C}{\mathrm{d}t} \to \infty" />, donc un courant <LatexMath math="i_C \to \infty" /> (puissance infinie physiquement impossible).
             </p>
             <div className="p-2 rounded bg-background/60 text-center font-mono text-cyan-300 font-bold text-xs">
-              <LatexMath math="u_C(t^+) = u_C(t^-)" />
+              <LatexMath math="u_C(t^+) = u_C(t^-) \quad \text{(Tension continue)}" />
             </div>
           </div>
 
@@ -736,10 +823,10 @@ export default function Chap1FondementsElectrocinetique() {
               <ShieldAlert className="w-4 h-4" /> Propriété de Continuité : Bobine
             </h4>
             <p className="text-xs text-muted-foreground leading-relaxed">
-              L&apos;énergie <LatexMath math="\mathcal{E}_m = \frac{1}{2} L i_L^2" /> étant une fonction continue, le courant <strong><LatexMath math="i_L(t)" /> ne subit aucune discontinuité</strong> :
+              Une discontinuité de <LatexMath math="i_L(t)" /> exigerait une dérivée <LatexMath math="\frac{\mathrm{d}i_L}{\mathrm{d}t} \to \infty" />, donc une surtension <LatexMath math="u_L \to \infty" /> (étincelle de rupture).
             </p>
             <div className="p-2 rounded bg-background/60 text-center font-mono text-amber-300 font-bold text-xs">
-              <LatexMath math="i_L(t^+) = i_L(t^-)" />
+              <LatexMath math="i_L(t^+) = i_L(t^-) \quad \text{(Courant continu)}" />
             </div>
           </div>
         </div>
