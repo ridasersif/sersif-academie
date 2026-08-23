@@ -142,7 +142,7 @@ function CircuitScene({ dipoleType, voltage, current }: { dipoleType: DipoleType
           {dipoleType === "current_source" && <CurrentSource3D />}
           {dipoleType === "switch" && <OpenSwitch3D />}
           
-          <Html position={[0, 1.5, 0]} center className="pointer-events-none">
+          <Html position={[0, 1.5, 0]} center className="pointer-events-none hidden sm:block">
             <div className="flex flex-col items-center gap-1 bg-slate-900/80 p-2 rounded-lg border border-slate-700 whitespace-nowrap">
               <span className="text-rose-400 font-bold text-xs"><LatexMath math={`U = ${voltage.toFixed(1)}\\text{ V}`} /></span>
               <span className="text-emerald-400 font-bold text-xs"><LatexMath math={`I = ${current.toFixed(2)}\\text{ A}`} /></span>
@@ -294,16 +294,17 @@ export default function DipoleCharacteristics3DCanvas() {
         </div>
       </div>
 
-      <div className="flex flex-col md:flex-row gap-4 h-[400px] md:h-[350px]">
+      <div className="flex flex-col md:flex-row gap-4">
         {/* 3D Canvas */}
-        <div className="flex-1 relative rounded-xl overflow-hidden bg-[#030008] border border-slate-800">
+        <div className="w-full h-[250px] md:h-[350px] md:flex-1 relative rounded-xl overflow-hidden bg-[#030008] border border-slate-800">
           <Canvas camera={{ position: [0, 2, 6], fov: 45 }}>
             <Suspense fallback={null}>
               <CircuitScene dipoleType={dipole} voltage={voltage} current={current} />
             </Suspense>
           </Canvas>
           
-          <div className="absolute top-3 left-3 bg-slate-950/80 px-2 py-1 rounded text-[10px] text-slate-400 border border-slate-800 backdrop-blur-sm pointer-events-none">
+          {/* Tag describing the dipole type */}
+          <div className="absolute bottom-3 left-3 bg-slate-950/80 px-2 py-1 rounded text-[10px] sm:text-xs text-slate-400 border border-slate-800 backdrop-blur-sm pointer-events-none">
             {dipole === "resistor" && "Dipôle Passif • Linéaire"}
             {dipole === "diode" && "Dipôle Passif • Non-Linéaire"}
             {dipole === "zener" && "Dipôle Passif • Non-Linéaire (Effet d'avalanche)"}
@@ -312,11 +313,17 @@ export default function DipoleCharacteristics3DCanvas() {
             {dipole === "wire" && "Dipôle Passif • Linéaire (Court-circuit, R≈0)"}
             {dipole === "switch" && "Dipôle Passif • Linéaire (Circuit ouvert, R=∞)"}
           </div>
+
+          {/* U/I Overlay for mobile (so it doesn't overlap the 3D model) */}
+          <div className="absolute top-3 right-3 sm:hidden flex flex-col items-center gap-1 bg-slate-900/90 p-2 rounded-lg border border-slate-700 shadow-lg pointer-events-none">
+            <span className="text-rose-400 font-bold text-xs"><LatexMath math={`U = ${voltage.toFixed(1)}\\text{ V}`} /></span>
+            <span className="text-emerald-400 font-bold text-xs"><LatexMath math={`I = ${current.toFixed(2)}\\text{ A}`} /></span>
+          </div>
         </div>
 
         {/* 2D Graph Overlay */}
-        <div className="w-full md:w-64 relative rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-center overflow-hidden">
-          <h4 className="absolute top-2 left-2 text-xs font-bold text-slate-300">Courbe I = f(U)</h4>
+        <div className="w-full h-[250px] md:h-[350px] md:w-64 relative rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-center overflow-hidden">
+          <h4 className="absolute top-2 left-2 text-xs font-bold text-slate-300 z-10">Courbe I = f(U)</h4>
           <svg viewBox="0 0 200 200" className="w-full h-full p-4">
             {/* Grid & Axes */}
             <line x1="0" y1="100" x2="200" y2="100" stroke="#334155" strokeWidth="1" /> {/* X Axis */}
