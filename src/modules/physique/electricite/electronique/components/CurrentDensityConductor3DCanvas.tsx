@@ -139,7 +139,7 @@ function ConductorFluxScene({
             <meshStandardMaterial color="#ef4444" emissive="#dc2626" emissiveIntensity={1} />
           </mesh>
 
-          <Html position={[1.8, 0.25, 0]} center>
+          <Html position={[1.8, 0.25, 0]} center className="hidden sm:block">
             <div className="bg-rose-950/90 border border-rose-500/50 text-rose-300 font-mono text-[10px] px-1.5 py-0.5 rounded shadow backdrop-blur-md whitespace-nowrap font-bold">
               Vecteur Normal <LatexMath math="\vec{n}" />
             </div>
@@ -177,18 +177,20 @@ export default function CurrentDensityConductor3DCanvas() {
   return (
     <div className="w-full bg-slate-950/90 border border-slate-800 rounded-2xl overflow-hidden shadow-2xl flex flex-col">
       {/* Top Controls Header */}
-      <div className="px-5 py-3.5 bg-slate-900/90 border-b border-slate-800 flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded-full bg-blue-400 animate-pulse"></div>
-          <h4 className="text-sm font-bold text-white tracking-wide flex items-center gap-2">
-            <Activity size={16} className="text-blue-400" /> Flux de <LatexMath math="\vec{j}" /> & Intensité <LatexMath math="I = \iint \vec{j} \cdot d\vec{S}" />
+      <div className="px-4 py-3 sm:px-5 sm:py-3.5 bg-slate-900/90 border-b border-slate-800 flex flex-col sm:flex-row flex-wrap items-start sm:items-center justify-between gap-3">
+        <div className="flex items-center gap-2 w-full sm:w-auto">
+          <div className="w-3 h-3 rounded-full bg-blue-400 animate-pulse shrink-0"></div>
+          <h4 className="text-sm font-bold text-white tracking-wide flex flex-wrap items-center gap-2 leading-snug">
+            <Activity size={16} className="text-blue-400 shrink-0" /> 
+            <span>Flux de <LatexMath math="\vec{j}" /> & Intensité</span>
+            <LatexMath math="I = \iint \vec{j} \cdot d\vec{S}" />
           </h4>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
           <button
             onClick={() => setIsPlaying(!isPlaying)}
-            className="p-1.5 rounded-lg bg-slate-800 text-slate-300 hover:text-white transition-all"
+            className="p-1.5 rounded-lg bg-slate-800 text-slate-300 hover:text-white transition-all shrink-0"
             title={isPlaying ? "Pause" : "Lecture"}
           >
             {isPlaying ? <Pause size={16} /> : <Play size={16} />}
@@ -196,10 +198,21 @@ export default function CurrentDensityConductor3DCanvas() {
 
           <button
             onClick={() => setSurfaceAngleDeg(surfaceAngleDeg === 0 ? 45 : surfaceAngleDeg === 45 ? 90 : 0)}
-            className="px-3 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5"
+            className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 flex-1 sm:flex-none justify-center whitespace-nowrap"
           >
-            <RotateCw size={14} /> Angle Rapide ({surfaceAngleDeg}°)
+            <RotateCw size={14} className="shrink-0" /> Angle Rapide ({surfaceAngleDeg}°)
           </button>
+        </div>
+      </div>
+
+      {/* Real-time Math Formula (Mobile: Static, Desktop: Overlay) */}
+      <div className="block sm:hidden bg-slate-900/90 border-b border-slate-800 p-4 text-xs space-y-2">
+        <div className="text-slate-300 font-bold flex flex-wrap items-center gap-2 justify-center">
+          <LatexMath math="I = \iint_S \vec{j} \cdot d\vec{S} = j \cdot S \cdot \cos(\theta)" />
+        </div>
+        <div className="text-[11px] text-slate-400 font-mono text-center">
+          <LatexMath math={`I = ${densityJ} \\times ${areaMm2.toFixed(1)} \\times ${cosTheta} = `} />
+          <span className="text-emerald-400 font-bold text-sm ml-1">{currentIntensityA} A</span>
         </div>
       </div>
 
@@ -216,8 +229,8 @@ export default function CurrentDensityConductor3DCanvas() {
           </Suspense>
         </Canvas>
 
-        {/* Real-time Math Formula Overlay */}
-        <div className="absolute top-3 left-3 bg-slate-900/90 backdrop-blur-md border border-slate-800 p-3 rounded-xl text-xs space-y-1.5 shadow-xl">
+        {/* Real-time Math Formula Overlay (Desktop only) */}
+        <div className="hidden sm:block absolute top-3 left-3 bg-slate-900/90 backdrop-blur-md border border-slate-800 p-3 rounded-xl text-xs space-y-1.5 shadow-xl">
           <div className="text-slate-300 font-bold flex items-center gap-2">
             <LatexMath math="I = \iint_S \vec{j} \cdot d\vec{S} = j \cdot S \cdot \cos(\theta)" />
           </div>
@@ -227,8 +240,8 @@ export default function CurrentDensityConductor3DCanvas() {
           </div>
         </div>
 
-        {/* Legend */}
-        <div className="absolute bottom-3 right-3 bg-slate-900/90 backdrop-blur-md border border-slate-800 p-2.5 rounded-xl text-xs space-y-1 text-slate-300 shadow-xl pointer-events-none">
+        {/* Legend (Desktop only) */}
+        <div className="hidden sm:block absolute bottom-3 right-3 bg-slate-900/90 backdrop-blur-md border border-slate-800 p-2.5 rounded-xl text-xs space-y-1 text-slate-300 shadow-xl pointer-events-none">
           <div className="flex items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-full bg-blue-500 shadow-sm shadow-blue-500"></span>
             <span>Densité de courant <LatexMath math="\vec{j}" /></span>
@@ -240,6 +253,24 @@ export default function CurrentDensityConductor3DCanvas() {
           <div className="flex items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-full bg-amber-500 shadow-sm shadow-amber-500"></span>
             <span>Surface de coupe <LatexMath math="S" /></span>
+          </div>
+        </div>
+      </div>
+
+      {/* Legend (Mobile: Static below canvas) */}
+      <div className="block sm:hidden bg-[#040817] border-t border-slate-800 p-3 text-[11px] text-slate-300 space-y-2">
+        <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
+          <div className="flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-blue-500 shadow-sm shadow-blue-500"></span>
+            <span>Densité <LatexMath math="\vec{j}" /></span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-rose-500 shadow-sm shadow-rose-500"></span>
+            <span>Normale <LatexMath math="\vec{n}" /></span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-amber-500 shadow-sm shadow-amber-500"></span>
+            <span>Surface <LatexMath math="S" /></span>
           </div>
         </div>
       </div>

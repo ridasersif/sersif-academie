@@ -169,22 +169,24 @@ export default function OhmLawMacroscopic3DCanvas() {
   return (
     <div className="w-full bg-slate-950/90 border border-slate-800 rounded-2xl overflow-hidden shadow-2xl flex flex-col">
       {/* Header */}
-      <div className="px-5 py-3.5 bg-slate-900/90 border-b border-slate-800 flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded-full bg-amber-400 animate-pulse"></div>
-          <h4 className="text-sm font-bold text-white tracking-wide flex items-center gap-2">
-            <Zap size={16} className="text-amber-400" /> Loi d&apos;Ohm Macroscopique & Résistance <LatexMath math="R = \rho \frac{L}{S}" />
+      <div className="px-4 py-3 sm:px-5 sm:py-3.5 bg-slate-900/90 border-b border-slate-800 flex flex-col sm:flex-row flex-wrap items-start sm:items-center justify-between gap-3">
+        <div className="flex items-center gap-2 w-full sm:w-auto">
+          <div className="w-3 h-3 rounded-full bg-amber-400 animate-pulse shrink-0"></div>
+          <h4 className="text-sm font-bold text-white tracking-wide flex flex-wrap items-center gap-2 leading-snug">
+            <Zap size={16} className="text-amber-400 shrink-0" /> 
+            <span>Loi d&apos;Ohm Macroscopique & Résistance</span>
+            <LatexMath math="R = \rho \frac{L}{S}" />
           </h4>
         </div>
 
         {/* Material Dropdown / Selector */}
-        <div className="flex items-center gap-1.5 bg-slate-950 p-1 rounded-xl border border-slate-800">
-          <span className="text-slate-400 text-xs font-bold px-2">Matériau :</span>
+        <div className="flex flex-wrap items-center gap-1.5 bg-slate-950 p-1 rounded-xl border border-slate-800 w-full sm:w-auto">
+          <span className="text-slate-400 text-xs font-bold px-2 whitespace-nowrap">Matériau :</span>
           {Object.keys(MATERIALS).map((key) => (
             <button
               key={key}
               onClick={() => setMaterialKey(key)}
-              className={`px-2.5 py-1 text-xs font-bold rounded-lg transition-all ${
+              className={`px-2.5 py-1 text-xs font-bold rounded-lg transition-all flex-1 sm:flex-none text-center ${
                 materialKey === key
                   ? "bg-amber-500 text-slate-950 shadow"
                   : "text-slate-400 hover:text-white"
@@ -193,6 +195,45 @@ export default function OhmLawMacroscopic3DCanvas() {
               {MATERIALS[key].name.split(" ")[0]}
             </button>
           ))}
+        </div>
+      </div>
+
+      {/* Metrics Live Dashboard Card (Mobile: Static below header, Desktop: Absolute overlay) */}
+      <div className="block sm:hidden bg-slate-900/90 border-b border-slate-800 p-4 text-xs space-y-2">
+        <div className="flex justify-between items-center text-slate-400 pb-1 border-b border-slate-800">
+          <span>Résistance <LatexMath math="R" /> :</span>
+          <strong className="text-amber-400 font-mono text-sm">
+            {resistanceOhm < 0.01
+              ? `${(resistanceOhm * 1000).toFixed(2)} mΩ`
+              : resistanceOhm > 1000
+              ? `${(resistanceOhm / 1000).toFixed(2)} kΩ`
+              : `${resistanceOhm.toFixed(3)} Ω`}
+          </strong>
+        </div>
+
+        <div className="flex justify-between items-center text-slate-400">
+          <span>Courant <LatexMath math="I = \frac{U}{R}" /> :</span>
+          <strong className="text-cyan-400 font-mono text-sm">
+            {currentA > 1000
+              ? `${(currentA / 1000).toFixed(1)} kA`
+              : `${currentA.toFixed(2)} A`}
+          </strong>
+        </div>
+
+        <div className="flex justify-between items-center text-slate-400">
+          <span>Puissance Joule <LatexMath math="P_J" /> :</span>
+          <strong className="text-rose-400 font-mono text-sm">
+            {powerW > 1e6
+              ? `${(powerW / 1e6).toFixed(2)} MW`
+              : powerW > 1000
+              ? `${(powerW / 1000).toFixed(2)} kW`
+              : `${powerW.toFixed(1)} W`}
+          </strong>
+        </div>
+
+        <div className="flex justify-between items-center text-slate-400 pt-1 border-t border-slate-800 text-[11px]">
+          <span>Champ interne <LatexMath math="E" /> :</span>
+          <span className="font-mono text-slate-300">{eFieldVm} V/m</span>
         </div>
       </div>
 
@@ -209,8 +250,8 @@ export default function OhmLawMacroscopic3DCanvas() {
           </Suspense>
         </Canvas>
 
-        {/* Metrics Live Dashboard Card */}
-        <div className="absolute top-3 right-3 bg-slate-900/90 backdrop-blur-md border border-slate-800 p-4 rounded-xl text-xs space-y-2 shadow-2xl min-w-[210px]">
+        {/* Metrics Live Dashboard Card (Desktop only) */}
+        <div className="hidden sm:block absolute top-3 right-3 bg-slate-900/90 backdrop-blur-md border border-slate-800 p-4 rounded-xl text-xs space-y-2 shadow-2xl min-w-[210px]">
           <div className="flex justify-between items-center text-slate-400 pb-1 border-b border-slate-800">
             <span>Résistance <LatexMath math="R" /> :</span>
             <strong className="text-amber-400 font-mono text-sm">
@@ -228,8 +269,8 @@ export default function OhmLawMacroscopic3DCanvas() {
               {currentA > 1000
                 ? `${(currentA / 1000).toFixed(1)} kA`
                 : `${currentA.toFixed(2)} A`}
-            </strong>
-          </div>
+          </strong>
+        </div>
 
           <div className="flex justify-between items-center text-slate-400">
             <span>Puissance Joule <LatexMath math="P_J" /> :</span>
