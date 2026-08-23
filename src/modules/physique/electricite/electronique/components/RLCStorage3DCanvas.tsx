@@ -272,11 +272,11 @@ function DynamicResponseGraph({
   inductance: number;
   current: number;
 }) {
-  const width = 280;
-  const height = 180;
-  const padL = 38;
-  const padR = 15;
-  const padT = 20;
+  const width = 300;
+  const height = 185;
+  const padL = 34;
+  const padR = 26;
+  const padT = 18;
   const padB = 28;
   const plotW = width - padL - padR;
   const plotH = height - padT - padB;
@@ -286,162 +286,222 @@ function DynamicResponseGraph({
 
   let curve1Points = "";
   let curve2Points = "";
-  let legend1 = "";
-  let legend2 = "";
+  let area1Points = "";
   let color1 = "#06b6d4";
   let color2 = "#f43f5e";
-  let regimeText = "";
 
+  // Dynamic calculations based on slider parameters
   if (tab === "capacitor") {
-    // Charging: u_C(t) = U (1 - e^-t) & i_C(t) = (U/R) e^-t
-    legend1 = `u_C(t) → ${voltage} V`;
-    legend2 = "i_C(t) → 0 A";
     color1 = "#06b6d4";
     color2 = "#f43f5e";
-    regimeText = "Régime Continu (t → ∞) : i_C = 0 (Interrupteur ouvert)";
 
-    const pts1: string[] = [];
-    const pts2: string[] = [];
-    for (let i = 0; i <= pointsCount; i++) {
-      const tNorm = (i / pointsCount) * 5; // 0 to 5 tau
-      const uVal = 1 - Math.exp(-tNorm); // 0 to 1
-      const iVal = Math.exp(-tNorm); // 1 to 0
-      const x = padL + (i / pointsCount) * plotW;
-      const y1 = padT + (1 - uVal) * plotH;
-      const y2 = padT + (1 - iVal) * plotH;
-      pts1.push(`${x.toFixed(1)},${y1.toFixed(1)}`);
-      pts2.push(`${x.toFixed(1)},${y2.toFixed(1)}`);
-    }
-    curve1Points = pts1.join(" ");
-    curve2Points = pts2.join(" ");
-
-  } else if (tab === "inductor") {
-    // Current establishment: i_L(t) = I (1 - e^-t) & u_L(t) = U e^-t
-    legend1 = `i_L(t) → ${current.toFixed(1)} A`;
-    legend2 = "u_L(t) → 0 V";
-    color1 = "#f59e0b";
-    color2 = "#f43f5e";
-    regimeText = "Régime Continu (t → ∞) : u_L = 0 (Fil / Court-circuit)";
+    // Voltage scale: 0 to 24 V, Capacitance scale: 0.5 to 10 uF (affects charging speed tau)
+    const voltScale = Math.max(voltage / 24, 0.02);
+    const tauFactor = 0.6 + (capacitance / 10) * 1.4; // higher C = slower charging curve
 
     const pts1: string[] = [];
     const pts2: string[] = [];
     for (let i = 0; i <= pointsCount; i++) {
       const tNorm = (i / pointsCount) * 5;
-      const iVal = 1 - Math.exp(-tNorm);
-      const uVal = Math.exp(-tNorm);
+      const uFrac = voltScale * (1 - Math.exp(-tNorm / tauFactor)); // Scaled directly with Voltage & C
+      const iFrac = voltScale * Math.exp(-tNorm / tauFactor);
       const x = padL + (i / pointsCount) * plotW;
-      const y1 = padT + (1 - iVal) * plotH;
-      const y2 = padT + (1 - uVal) * plotH;
+      const y1 = padT + (1 - Math.min(uFrac, 1.0)) * plotH;
+      const y2 = padT + (1 - Math.min(iFrac, 1.0)) * plotH;
       pts1.push(`${x.toFixed(1)},${y1.toFixed(1)}`);
       pts2.push(`${x.toFixed(1)},${y2.toFixed(1)}`);
     }
     curve1Points = pts1.join(" ");
     curve2Points = pts2.join(" ");
+    area1Points = `${padL},${padT + plotH} ${curve1Points} ${padL + plotW},${padT + plotH}`;
+
+  } else if (tab === "inductor") {
+    color1 = "#f59e0b";
+    color2 = "#f43f5e";
+
+    // Current scale: 0 to 10 A, Inductance scale: 5 to 50 mH (affects establishment speed tau)
+    const currScale = Math.max(current / 10, 0.02);
+    const tauFactor = 0.6 + (inductance / 50) * 1.4; // higher L = slower current rise
+
+    const pts1: string[] = [];
+    const pts2: string[] = [];
+    for (let i = 0; i <= pointsCount; i++) {
+      const tNorm = (i / pointsCount) * 5;
+      const iFrac = currScale * (1 - Math.exp(-tNorm / tauFactor)); // Scaled directly with Current & L
+      const uFrac = currScale * Math.exp(-tNorm / tauFactor);
+      const x = padL + (i / pointsCount) * plotW;
+      const y1 = padT + (1 - Math.min(iFrac, 1.0)) * plotH;
+      const y2 = padT + (1 - Math.min(uFrac, 1.0)) * plotH;
+      pts1.push(`${x.toFixed(1)},${y1.toFixed(1)}`);
+      pts2.push(`${x.toFixed(1)},${y2.toFixed(1)}`);
+    }
+    curve1Points = pts1.join(" ");
+    curve2Points = pts2.join(" ");
+    area1Points = `${padL},${padT + plotH} ${curve1Points} ${padL + plotW},${padT + plotH}`;
 
   } else {
-    // Resistor Characteristic: U = R * I (Linear)
-    legend1 = `U = ${resistance.toFixed(1)} · I (Pente R)`;
-    legend2 = `Point : (${(voltage/resistance).toFixed(2)}A, ${voltage}V)`;
     color1 = "#f43f5e";
     color2 = "#fbbf24";
-    regimeText = `Régime Continu : U = R·I (P_J = ${((voltage*voltage)/resistance).toFixed(1)} W)`;
+
+    // Resistor Characteristic: U = R * I (Slope R dynamically changes the angle!)
+    // Max I on axis = 4.0 A, Max U on axis = 20 V
+    const maxI_axis = 4.0;
+    const maxU_axis = 20.0;
 
     const pts1: string[] = [];
     for (let i = 0; i <= pointsCount; i++) {
-      const frac = i / pointsCount;
-      const x = padL + frac * plotW;
-      const y = padT + (1 - frac) * plotH;
+      const currentVal = (i / pointsCount) * maxI_axis;
+      const voltageVal = resistance * currentVal; // U = R * I
+      const yFrac = Math.min(voltageVal / maxU_axis, 1.0);
+      const x = padL + (i / pointsCount) * plotW;
+      const y = padT + (1 - yFrac) * plotH;
       pts1.push(`${x.toFixed(1)},${y.toFixed(1)}`);
     }
     curve1Points = pts1.join(" ");
+    area1Points = `${padL},${padT + plotH} ${curve1Points} ${padL + plotW},${padT + plotH}`;
   }
 
+  // Operating point for Resistor
+  const resOperI = Math.min((voltage / resistance) / 4.0, 1.0);
+  const resOperU = Math.min(voltage / 20.0, 1.0);
+  const operPtX = padL + resOperI * plotW;
+  const operPtY = padT + (1 - resOperU) * plotH;
+
   return (
-    <div className="w-full h-full flex flex-col justify-between p-3 bg-slate-950/80 rounded-xl border border-slate-800">
-      <div className="flex items-center justify-between border-b border-slate-800 pb-1.5">
-        <span className="text-[10px] font-bold text-slate-300 flex items-center gap-1.5 uppercase">
-          <LineChart className="w-3.5 h-3.5 text-cyan-400" />
-          {tab === "resistor" ? "Caractéristique U = f(I)" : "Réponse Transitoire & Régime Continu"}
+    <div className="w-full h-full flex flex-col justify-between p-2.5 sm:p-3 bg-slate-950/80 rounded-2xl border border-slate-800 shadow-inner">
+      {/* Header (single-line, non-wrapping) */}
+      <div className="flex items-center justify-between border-b border-slate-800/80 pb-1 gap-1">
+        <span className="text-[10px] sm:text-[10.5px] font-bold text-slate-200 flex items-center gap-1 uppercase tracking-tight whitespace-nowrap">
+          <LineChart className="w-3 h-3 text-cyan-400 shrink-0" />
+          <span>{tab === "resistor" ? "Caractéristique U = f(I)" : "Réponse Transitoire"}</span>
         </span>
-        <span className="text-[9px] font-mono text-slate-400">
-          {tab === "resistor" ? "τ = 0 (Instantané)" : "5τ (Permanent)"}
+        <span className="text-[8.5px] sm:text-[9px] font-mono px-1.5 py-0.5 rounded bg-slate-900 border border-slate-800 text-slate-300 whitespace-nowrap">
+          {tab === "resistor" ? "τ = 0 (Instantané)" : "5τ • Permanent"}
         </span>
       </div>
 
       {/* SVG Plot */}
       <div className="w-full flex-1 flex items-center justify-center py-1">
-        <svg viewBox={`0 0 ${width} ${height}`} className="w-full max-w-[280px] h-auto overflow-visible">
+        <svg viewBox={`0 0 ${width} ${height}`} className="w-full max-w-[300px] h-auto overflow-visible font-sans">
+          <defs>
+            <linearGradient id="curveFillGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor={color1} stopOpacity="0.22" />
+              <stop offset="100%" stopColor={color1} stopOpacity="0.0" />
+            </linearGradient>
+          </defs>
+
           {/* Background Grid */}
-          <line x1={padL} y1={padT} x2={padL + plotW} y2={padT} stroke="#334155" strokeDasharray="2 2" strokeWidth="0.8" />
-          <line x1={padL} y1={padT + plotH / 2} x2={padL + plotW} y2={padT + plotH / 2} stroke="#334155" strokeDasharray="2 2" strokeWidth="0.8" />
-          <line x1={padL + plotW / 2} y1={padT} x2={padL + plotW / 2} y2={padT + plotH} stroke="#334155" strokeDasharray="2 2" strokeWidth="0.8" />
-
-          {/* Axes */}
-          <line x1={padL} y1={padT + plotH} x2={padL + plotW + 10} y2={padT + plotH} stroke="#94a3b8" strokeWidth="1.2" />
-          <line x1={padL} y1={padT + plotH} x2={padL} y2={padT - 8} stroke="#94a3b8" strokeWidth="1.2" />
-
-          {/* Axis Labels */}
-          <text x={padL + plotW + 6} y={padT + plotH + 3} fill="#94a3b8" fontSize="9" fontWeight="bold">
-            {tab === "resistor" ? "I" : "t"}
-          </text>
-          <text x={padL - 10} y={padT - 2} fill="#94a3b8" fontSize="9" fontWeight="bold">
-            {tab === "resistor" ? "U" : "u, i"}
-          </text>
-          <text x={padL - 12} y={padT + plotH + 10} fill="#64748b" fontSize="8">0</text>
-          <text x={padL + plotW - 8} y={padT + plotH + 12} fill="#64748b" fontSize="8 font-mono">
-            {tab === "resistor" ? "I_max" : "5τ"}
-          </text>
-
-          {/* Curve 1 */}
-          <polyline fill="none" stroke={color1} strokeWidth="2.2" points={curve1Points} strokeLinecap="round" />
-
-          {/* Curve 2 (if transient) */}
-          {curve2Points && (
-            <polyline fill="none" stroke={color2} strokeWidth="1.6" strokeDasharray="3 2" points={curve2Points} strokeLinecap="round" />
-          )}
-
-          {/* Operating Point on Resistor */}
-          {tab === "resistor" && (
-            <circle
-              cx={padL + (Math.min(voltage / 20, 1.0)) * plotW}
-              cy={padT + (1 - Math.min(voltage / 20, 1.0)) * plotH}
-              r="4.5"
-              fill="#fbbf24"
-              stroke="#000"
-              strokeWidth="1.5"
-            />
-          )}
+          <line x1={padL} y1={padT} x2={padL + plotW} y2={padT} stroke="#1e293b" strokeDasharray="3 3" strokeWidth="0.8" />
+          <line x1={padL} y1={padT + plotH / 2} x2={padL + plotW} y2={padT + plotH / 2} stroke="#1e293b" strokeDasharray="3 3" strokeWidth="0.8" />
+          <line x1={padL + plotW / 2} y1={padT} x2={padL + plotW / 2} y2={padT + plotH} stroke="#1e293b" strokeDasharray="3 3" strokeWidth="0.8" />
 
           {/* Permanent Regime Zone Highlight */}
           {tab !== "resistor" && (
             <rect
-              x={padL + plotW * 0.7}
+              x={padL + plotW * 0.72}
               y={padT}
-              width={plotW * 0.3}
+              width={plotW * 0.28}
               height={plotH}
               fill="#10b981"
               opacity="0.08"
+              rx="4"
             />
+          )}
+
+          {/* Filled area under primary curve */}
+          <polygon fill="url(#curveFillGrad)" points={area1Points} />
+
+          {/* Axes */}
+          <line x1={padL} y1={padT + plotH} x2={padL + plotW + 12} y2={padT + plotH} stroke="#64748b" strokeWidth="1.4" />
+          <line x1={padL} y1={padT + plotH} x2={padL} y2={padT - 10} stroke="#64748b" strokeWidth="1.4" />
+
+          {/* Axis End Arrows */}
+          <polygon points={`${padL + plotW + 14},${padT + plotH} ${padL + plotW + 8},${padT + plotH - 3} ${padL + plotW + 8},${padT + plotH + 3}`} fill="#64748b" />
+          <polygon points={`${padL},${padT - 12} ${padL - 3},${padT - 6} ${padL + 3},${padT - 6}`} fill="#64748b" />
+
+          {/* Axis Labels */}
+          <text x={padL + plotW + 16} y={padT + plotH + 4} fill="#cbd5e1" fontSize="10" fontWeight="bold">
+            {tab === "resistor" ? "I" : "t"}
+          </text>
+          <text x={padL - 6} y={padT - 6} fill="#cbd5e1" fontSize="10" fontWeight="bold" textAnchor="end">
+            {tab === "resistor" ? "U" : "u, i"}
+          </text>
+
+          {/* Axis Ticks */}
+          <text x={padL - 8} y={padT + plotH + 12} fill="#64748b" fontSize="8.5" textAnchor="middle">0</text>
+          {tab !== "resistor" ? (
+            <text x={padL + plotW * 0.85} y={padT + plotH + 14} fill="#10b981" fontSize="9.5" fontWeight="bold" textAnchor="middle">
+              5τ
+            </text>
+          ) : (
+            <text x={padL + plotW - 4} y={padT + plotH + 14} fill="#f59e0b" fontSize="9.5" fontWeight="bold" textAnchor="middle">
+              4 A
+            </text>
+          )}
+
+          {/* Primary Curve */}
+          <polyline fill="none" stroke={color1} strokeWidth="2.4" points={curve1Points} strokeLinecap="round" strokeLinejoin="round" />
+
+          {/* Secondary Curve (decaying) */}
+          {curve2Points && (
+            <polyline fill="none" stroke={color2} strokeWidth="1.8" strokeDasharray="4 3" points={curve2Points} strokeLinecap="round" strokeLinejoin="round" />
+          )}
+
+          {/* Operating Point on Resistor + Dotted Projections */}
+          {tab === "resistor" && (
+            <g>
+              <line x1={operPtX} y1={padT + plotH} x2={operPtX} y2={operPtY} stroke="#fbbf24" strokeDasharray="2 2" strokeWidth="1" />
+              <line x1={padL} y1={operPtY} x2={operPtX} y2={operPtY} stroke="#fbbf24" strokeDasharray="2 2" strokeWidth="1" />
+              <circle
+                cx={operPtX}
+                cy={operPtY}
+                r="4.5"
+                fill="#fbbf24"
+                stroke="#0f172a"
+                strokeWidth="2"
+              />
+            </g>
           )}
         </svg>
       </div>
 
-      {/* Legend & Regime Status */}
+      {/* Legend & Regime Status (Rendered with Clean, single-line LaTeX) */}
       <div className="space-y-1 pt-1 border-t border-slate-800/80">
-        <div className="flex items-center justify-between text-[10px] font-mono">
-          <span className="flex items-center gap-1" style={{ color: color1 }}>
-            <span className="w-2 h-0.5 rounded" style={{ backgroundColor: color1 }}></span>
-            {legend1}
-          </span>
-          {legend2 && (
-            <span className="flex items-center gap-1" style={{ color: color2 }}>
-              <span className="w-2 h-0.5 rounded border-b border-dashed" style={{ borderColor: color2 }}></span>
-              {legend2}
-            </span>
-          )}
+        <div className="flex items-center justify-between text-[10px] font-mono px-0.5 whitespace-nowrap gap-1">
+          <div className="flex items-center gap-1 whitespace-nowrap" style={{ color: color1 }}>
+            <span className="w-2 h-0.5 rounded-full shrink-0" style={{ backgroundColor: color1 }}></span>
+            {tab === "capacitor" ? (
+              <LatexMath math={`u_C(t) \\to ${voltage}\\text{ V}`} />
+            ) : tab === "inductor" ? (
+              <LatexMath math={`i_L(t) \\to ${current.toFixed(1)}\\text{ A}`} />
+            ) : (
+              <LatexMath math={`U = ${resistance.toFixed(1)}\\cdot I`} />
+            )}
+          </div>
+
+          <div className="flex items-center gap-1 whitespace-nowrap" style={{ color: color2 }}>
+            <span className="w-2 h-0.5 rounded-full border-b border-dashed shrink-0" style={{ borderColor: color2 }}></span>
+            {tab === "capacitor" ? (
+              <LatexMath math={"i_C(t) \\to 0\\text{ A}"} />
+            ) : tab === "inductor" ? (
+              <LatexMath math={"u_L(t) \\to 0\\text{ V}"} />
+            ) : (
+              <LatexMath math={`(${ (voltage / resistance).toFixed(2) }\\text{A}, ${voltage}\\text{V})`} />
+            )}
+          </div>
         </div>
-        <div className="text-[9.5px] text-emerald-400 font-sans text-center bg-slate-900/90 py-0.5 px-1.5 rounded border border-slate-800">
-          {regimeText}
+
+        {/* Permanent Regime Status Pill (Single Line) */}
+        <div className="text-[9px] sm:text-[9.5px] text-emerald-300 font-mono text-center bg-slate-900/90 py-0.5 px-1.5 rounded-xl border border-emerald-500/20 shadow-sm whitespace-nowrap overflow-x-auto">
+          {tab === "capacitor" && (
+            <LatexMath math={"\\text{Régime continu } : i_C(\\infty) = 0\\text{ A } \\iff \\text{Interrupteur Ouvert}"} />
+          )}
+          {tab === "inductor" && (
+            <LatexMath math={"\\text{Régime continu } : u_L(\\infty) = 0\\text{ V } \\iff \\text{Court-Circuit (Fil)}"} />
+          )}
+          {tab === "resistor" && (
+            <LatexMath math={`\\text{Régime continu } : U = R\\cdot I \\implies P_J = ${((voltage * voltage) / resistance).toFixed(1)}\\text{ W}`} />
+          )}
         </div>
       </div>
     </div>

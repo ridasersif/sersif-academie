@@ -141,99 +141,216 @@ function CollapsibleProof({
   );
 }
 
-/* ── Interactive Quiz Component ── */
+/* ── Interactive Quiz & Questions de Cours Component ── */
+/* ── Interactive QCM Quiz Component with Pure LaTeX Formatting ── */
 function QuickQuiz() {
   const [selectedAnswers, setSelectedAnswers] = useState<Record<number, number>>({});
   const [showResults, setShowResults] = useState(false);
 
   const questions = [
     {
-      q: "Quelle est la relation entre le vecteur densité de courant j et la vitesse de dérive vd des électrons ?",
-      options: [
-        "j = n · e · vd",
-        "j = -n · e · vd",
-        "j = vd / (n · e)",
-        "j = e · vd"
+      q: "Quelle est la relation vectorielle entre le vecteur densité volumique de courant et la vitesse de dérive des électrons ?",
+      qMath: "\\vec{j} \\text{ et } \\vec{v}_d \\quad (q = -e)",
+      optionsMath: [
+        "\\vec{j} = n e \\vec{v}_d",
+        "\\vec{j} = -n e \\vec{v}_d",
+        "\\vec{j} = \\frac{\\vec{v}_d}{n e}",
+        "\\vec{j} = \\frac{e \\vec{v}_d}{m}",
       ],
       correct: 1,
-      explanation: "Puisque les électrons portent une charge négative q = -e, la densité volumique de charge mobile est ρ_mob = -n·e, d'où j = ρ_mob · vd = -n·e·vd."
+      explanation: "Puisque les électrons portent une charge négative q = -e, la densité volumique de charge mobile est ρ_mob = -n·e, d'où :",
+      expMath: "\\vec{j} = \\rho_{\\text{mob}} \\vec{v}_d = -n e \\vec{v}_d",
     },
     {
-      q: "Dans la convention récepteur, que signifie une puissance instantanée p(t) = u(t)·i(t) > 0 ?",
-      options: [
-        "Le dipôle fournit de l'énergie au circuit",
-        "Le dipôle consomme / absorbe de la puissance électrique",
-        "Le dipôle est en court-circuit",
-        "Le dipôle est une source idéale de tension"
+      q: "D'après le modèle microscopique de Drude, quelle est l'expression de la conductivité électrique d'un métal ?",
+      qMath: "\\gamma \\text{ en fonction de } n, e, m, \\tau",
+      optionsMath: [
+        "\\gamma = \\frac{n e \\tau}{m}",
+        "\\gamma = \\frac{n e^2 \\tau}{m}",
+        "\\gamma = \\frac{m \\tau}{n e^2}",
+        "\\gamma = \\frac{n e^2}{m \\tau}",
       ],
       correct: 1,
-      explanation: "En convention récepteur, p(t) = u(t)·i(t) > 0 correspond à une puissance effectivement reçue et consommée (dissipée ou emmagasinée) par le dipôle."
+      explanation: "L'application du principe fondamental de la dynamique avec frottement visqueux conduit à la formule de Drude :",
+      expMath: "\\gamma = \\frac{n e^2 \\tau}{m}",
     },
     {
-      q: "Quelle grandeur physique ne peut subir aucune discontinuité temporelle aux bornes d'un condensateur ?",
-      options: [
-        "Le courant i(t)",
-        "La tension u_C(t)",
-        "La charge q(t) uniquement",
-        "La puissance instantanée p(t)"
+      q: "Quelle est l'expression de la puissance volumique dissipée par effet Joule en tout point d'un conducteur ?",
+      qMath: "p_J \\text{ (puissance volumique locale)}",
+      optionsMath: [
+        "p_J = \\vec{j} \\cdot \\vec{E} = \\gamma E^2 = \\rho j^2",
+        "p_J = \\frac{j}{E} = \\frac{E^2}{\\gamma}",
+        "p_J = \\vec{j} \\cdot \\vec{v}_d",
+        "p_J = \\frac{1}{2} \\gamma E^2",
+      ],
+      correct: 0,
+      explanation: "La puissance volumique reçue localement s'écrit :",
+      expMath: "p_J = \\frac{\\mathrm{d}P}{\\mathrm{d}\\tau} = \\vec{j} \\cdot \\vec{E} = (\\gamma \\vec{E}) \\cdot \\vec{E} = \\gamma E^2",
+    },
+    {
+      q: "En convention récepteur, que signifie physiquement une puissance instantanée positive ?",
+      qMath: "p(t) = u(t) \\cdot i(t) > 0",
+      optionsText: [
+        "Le dipôle fournit de la puissance au circuit extérieur",
+        "Le dipôle absorbe et consomme de la puissance électrique",
+        "Le dipôle est obligatoirement un court-circuit (u = 0)",
+        "Le dipôle est une source idéale de tension",
       ],
       correct: 1,
-      explanation: "L'énergie électrostatique stockée E = (1/2)·C·u_C² étant continue, la tension u_C(t) aux bornes d'un condensateur ne peut jamais subir de discontinuité temporelle (u_C(t⁺) = u_C(t⁻))."
-    }
+      explanation: "En convention récepteur, p(t) > 0 traduit une puissance effectivement reçue et absorbée par le dipôle (dissipée par effet Joule ou emmagasinée).",
+    },
+    {
+      q: "Quelle grandeur physique ne peut subir aucune discontinuité temporelle aux bornes d'un condensateur parfait ?",
+      qMath: "\\text{Continuité énergétique aux bornes de } C",
+      optionsMath: [
+        "i_C(t) \\quad \\text{(Courant)}",
+        "u_C(t) \\quad \\text{(Tension)}",
+        "\\frac{\\mathrm{d}i_C}{\\mathrm{d}t} \\quad \\text{(Dérivée)}",
+        "p_C(t) \\quad \\text{(Puissance)}",
+      ],
+      correct: 1,
+      explanation: "Par continuité de l'énergie électrostatique emmagasinée, la tension ne peut pas faire de saut brusque :",
+      expMath: "\\mathcal{E}_e = \\frac{1}{2} C u_C^2 \\implies u_C(t^+) = u_C(t^-)",
+    },
+    {
+      q: "En régime permanent continu permanent, à quel composant équivaut rigoureusement une bobine idéale ?",
+      qMath: "t \\to \\infty \\quad (\\text{Régime continu pour } L)",
+      optionsText: [
+        "À un interrupteur ouvert (i = 0 A)",
+        "À un court-circuit / fil parfait (u = 0 V)",
+        "À une résistance infinie",
+        "À un générateur idéal de tension",
+      ],
+      correct: 1,
+      explanation: "En régime continu, le courant est stationnaire (di/dt = 0), donc la tension induite s'annule :",
+      expMath: "u_L = L \\frac{\\mathrm{d}i_L}{\\mathrm{d}t} = L \\times 0 = 0\\text{ V} \\iff \\text{Court-Circuit (Fil)}",
+    },
   ];
 
+  const score = Object.entries(selectedAnswers).filter(
+    ([qIdx, ans]) => questions[Number(qIdx)].correct === ans
+  ).length;
+
+  const optionLabels = ["A", "B", "C", "D"];
+
   return (
-    <div className="p-4 sm:p-6 rounded-2xl bg-card/80 border border-border/80 space-y-4">
-      <div className="flex items-center gap-2 text-indigo-400 font-bold text-sm">
-        <HelpCircle className="w-4 h-4" />
-        <span>Quiz Rapide de Validation des Fondements</span>
+    <div className="p-4 sm:p-6 rounded-2xl bg-card/80 border border-border/80 space-y-5 shadow-sm">
+      {/* Header with Score */}
+      <div className="flex items-center justify-between flex-wrap gap-2 border-b border-border/60 pb-3">
+        <div className="flex items-center gap-2 text-indigo-400 font-bold text-sm">
+          <HelpCircle className="w-4 h-4" />
+          <span>QCM d&apos;Auto-Évaluation • Validation des Fondements (6 Questions)</span>
+        </div>
+        {showResults && (
+          <span
+            className={`text-xs font-mono font-bold px-3 py-1 rounded-full border shadow-sm ${
+              score >= 5
+                ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/30"
+                : score >= 3
+                ? "bg-amber-500/10 text-amber-400 border-amber-500/30"
+                : "bg-rose-500/10 text-rose-400 border-rose-500/30"
+            }`}
+          >
+            Score final : {score} / {questions.length}
+          </span>
+        )}
       </div>
 
+      {/* Questions List */}
       <div className="space-y-4">
         {questions.map((item, qIdx) => (
-          <div key={qIdx} className="p-3.5 rounded-xl bg-slate-950/40 border border-border/50 space-y-2">
-            <p className="text-xs sm:text-sm font-semibold text-foreground">
-              {qIdx + 1}. {item.q}
-            </p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-              {item.options.map((opt, optIdx) => {
+          <div
+            key={qIdx}
+            className="p-4 rounded-xl bg-slate-950/50 border border-border/60 space-y-3 shadow-inner"
+          >
+            {/* Question Title & Math Formula */}
+            <div className="space-y-1">
+              <p className="text-xs sm:text-sm font-semibold text-foreground leading-snug flex items-start gap-2">
+                <span className="px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 font-mono font-bold text-xs shrink-0">
+                  Q{qIdx + 1}
+                </span>
+                <span>{item.q}</span>
+              </p>
+              {item.qMath && (
+                <div className="pl-8 text-xs text-cyan-400 font-mono">
+                  <LatexMath math={item.qMath} />
+                </div>
+              )}
+            </div>
+
+            {/* Options Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
+              {(item.optionsMath || item.optionsText || []).map((opt, optIdx) => {
                 const isSelected = selectedAnswers[qIdx] === optIdx;
                 const isCorrect = item.correct === optIdx;
-                let btnStyle = "bg-card/50 border-border/60 text-slate-300 hover:bg-white/[0.03]";
+
+                let btnStyle = "bg-slate-900/80 border-slate-800 text-slate-300 hover:bg-slate-800/80 hover:border-slate-700";
+                let badgeStyle = "bg-slate-800 text-slate-400 border-slate-700";
+
                 if (showResults) {
-                  if (isCorrect) btnStyle = "bg-emerald-500/20 border-emerald-500/50 text-emerald-300 font-bold";
-                  else if (isSelected) btnStyle = "bg-rose-500/20 border-rose-500/50 text-rose-300";
+                  if (isCorrect) {
+                    btnStyle = "bg-emerald-500/15 border-emerald-500/50 text-emerald-300 font-bold shadow-sm";
+                    badgeStyle = "bg-emerald-500/30 text-emerald-300 border-emerald-500/40";
+                  } else if (isSelected) {
+                    btnStyle = "bg-rose-500/15 border-rose-500/50 text-rose-300";
+                    badgeStyle = "bg-rose-500/30 text-rose-300 border-rose-500/40";
+                  }
                 } else if (isSelected) {
-                  btnStyle = "bg-indigo-500/20 border-indigo-500/50 text-indigo-300 font-semibold";
+                  btnStyle = "bg-indigo-500/20 border-indigo-500/50 text-indigo-300 font-semibold shadow-sm";
+                  badgeStyle = "bg-indigo-500/40 text-indigo-200 border-indigo-500/50";
                 }
 
                 return (
                   <button
                     key={optIdx}
-                    onClick={() => setSelectedAnswers(prev => ({ ...prev, [qIdx]: optIdx }))}
-                    className={`p-2.5 rounded-lg border text-left text-xs transition-all flex items-center justify-between ${btnStyle}`}
+                    onClick={() => setSelectedAnswers((prev) => ({ ...prev, [qIdx]: optIdx }))}
+                    className={`p-3 rounded-xl border text-left text-xs transition-all flex items-center justify-between cursor-pointer gap-2 ${btnStyle}`}
                   >
-                    <span>{opt}</span>
-                    {showResults && isCorrect && <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />}
+                    <div className="flex items-center gap-2.5">
+                      <span className={`w-5 h-5 rounded-md border text-[10px] font-bold flex items-center justify-center shrink-0 ${badgeStyle}`}>
+                        {optionLabels[optIdx]}
+                      </span>
+                      <span className="leading-snug font-sans">
+                        {item.optionsMath ? (
+                          <LatexMath math={opt} />
+                        ) : (
+                          <span>{opt}</span>
+                        )}
+                      </span>
+                    </div>
+                    {showResults && isCorrect && (
+                      <Check className="w-4 h-4 text-emerald-400 shrink-0" />
+                    )}
                   </button>
                 );
               })}
             </div>
+
+            {/* Explanation box after validation */}
             {showResults && (
-              <p className="text-[11px] text-muted-foreground pt-1 bg-slate-900/60 p-2 rounded-lg border border-slate-800">
-                💡 <strong>Explication :</strong> {item.explanation}
-              </p>
+              <div className="text-[11.5px] text-muted-foreground pt-2 bg-slate-900/80 p-3 rounded-xl border border-slate-800 space-y-1.5 leading-relaxed animate-in fade-in duration-200">
+                <p>
+                  💡 <strong>Explication :</strong> {item.explanation}
+                </p>
+                {item.expMath && (
+                  <div className="p-2 rounded-lg bg-black/50 text-center text-cyan-300 font-mono border border-slate-800">
+                    <LatexMath math={item.expMath} />
+                  </div>
+                )}
+              </div>
             )}
           </div>
         ))}
       </div>
 
+      {/* Validation Button */}
       <div className="flex justify-end pt-2">
         <button
           onClick={() => setShowResults(!showResults)}
-          className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition-all shadow-md shadow-indigo-600/20"
+          className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition-all shadow-md shadow-indigo-600/25 cursor-pointer flex items-center gap-2"
         >
-          {showResults ? "Réinitialiser les Réponses" : "Vérifier mes Réponses"}
+          <CheckCircle2 className="w-4 h-4" />
+          {showResults ? "Réinitialiser les Réponses" : "Valider & Corriger mes Réponses"}
         </button>
       </div>
     </div>
@@ -242,7 +359,6 @@ function QuickQuiz() {
 
 export default function Chap1FondementsElectrocinetique() {
   const [showEx1Solution, setShowEx1Solution] = useState(false);
-  const [showSynthesisSolution, setShowSynthesisSolution] = useState(false);
   const [activeJouleProof, setActiveJouleProof] = useState<"micro" | "macro" | null>(null);
   const [activeRLCProof, setActiveRLCProof] = useState<"cap" | "ind" | null>(null);
 
@@ -1016,6 +1132,7 @@ export default function Chap1FondementsElectrocinetique() {
           </div>
         </div>
 
+
         {/* Continuity Rules */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-4">
           <div className="p-4 rounded-xl bg-cyan-500/10 border border-cyan-500/20 space-y-1.5">
@@ -1044,18 +1161,22 @@ export default function Chap1FondementsElectrocinetique() {
         </div>
       </section>
 
-      {/* ── PARTIE 7: AUTO-ÉVALUATION & QUIZ ── */}
+      {/* ── PARTIE 7: AUTO-ÉVALUATION & QUESTIONS DE COURS ── */}
       <section className="bg-card/90 border border-border/80 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 shadow-sm w-full max-w-full overflow-x-hidden space-y-6">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-extrabold mb-1">
           <BookOpen className="w-3.5 h-3.5" />
-          <span>Partie 7 • Validation & Auto-Évaluation</span>
+          <span>Partie 7 • Validation & Questions de Cours</span>
         </div>
 
         <h2 className="text-xl sm:text-2xl font-black text-foreground leading-tight">
-          7. Auto-Évaluation des Fondements
+          7. Auto-Évaluation & Questions de Cours Essentielles
         </h2>
 
-        {/* Quick Quiz */}
+        <p className="text-sm text-muted-foreground leading-relaxed">
+          Testez votre maîtrise des concepts fondamentaux de l&apos;électrocinétique (modèle microscopique de Drude, lois locales et macroscopiques, bilans de puissance, et régimes aux limites des dipôles R, L, C).
+        </p>
+
+        {/* Quick Quiz & Questions de Cours */}
         <QuickQuiz />
       </section>
     </div>
