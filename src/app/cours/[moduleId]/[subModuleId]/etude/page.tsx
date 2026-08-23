@@ -10,6 +10,7 @@ import { ELECTROMAGNETISME_VIDE_CHAPTERS } from "@/modules/physique/electricite/
 import { ELECTROMAGNETISME_MATIERE_CHAPTERS } from "@/modules/physique/electricite/electromagnetisme-dans-la-matiere/chapters";
 import { 
   ELECTRONIQUE_CHAPTERS,
+  ELECTRONIQUE_DE_BASE_CHAPTERS,
   COURANTS_DIPOLES_CHAPTERS,
   RESEAUX_ARQS_CHAPTERS,
   ELECTRONIQUE_ANALOGIQUE_CHAPTERS
@@ -69,6 +70,8 @@ export default function EtudePage({ params }: { params: Promise<{ moduleId: stri
     chapters = ELECTROMAGNETISME_VIDE_CHAPTERS;
   } else if (subModuleId === "electromagnetisme-dans-la-matiere") {
     chapters = ELECTROMAGNETISME_MATIERE_CHAPTERS;
+  } else if (subModuleId === "electronique-de-base") {
+    chapters = ELECTRONIQUE_DE_BASE_CHAPTERS;
   } else if (subModuleId === "courants-et-dipoles-electriques") {
     chapters = COURANTS_DIPOLES_CHAPTERS;
   } else if (subModuleId === "reseaux-electriques-dans-arqs") {

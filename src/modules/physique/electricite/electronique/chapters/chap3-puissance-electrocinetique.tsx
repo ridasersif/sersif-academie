@@ -390,14 +390,14 @@ export default function Chap3PuissanceElectrocinetique() {
       {/* ── HEADER ── */}
       <header className="space-y-2 sm:space-y-4">
         <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 text-xs font-bold mb-2">
-          <Flame size={14} />
-          <span>Chapitre 3 & 4 (Complet)</span>
+          <Zap size={14} />
+          <span>Chapitre 3</span>
         </div>
         <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-foreground tracking-tight">
-          Puissance Électrocinétique, Générateurs & Dipôles R, L, C
+          Puissance & Dipôles R, L, C
         </h1>
         <p className="text-muted-foreground text-sm sm:text-base leading-relaxed max-w-3xl">
-          Maîtrisez les bilans énergétiques locaux et macroscopiques, la loi de Joule microscopique, les modèles réels de Thévenin et Norton, le théorème d&apos;adaptation de puissance maximale ainsi que le comportement temporel et énergétique des dipôles réactifs (<LatexMath math="C" /> et <LatexMath math="L" />).
+          Bilan énergétique, loi de Joule microscopique, générateurs réels (Thévenin/Norton), adaptation de puissance maximale et comportement temporel des dipôles réactifs (<LatexMath math="C" /> et <LatexMath math="L" />).
         </p>
       </header>
 
@@ -496,8 +496,8 @@ export default function Chap3PuissanceElectrocinetique() {
         </p>
 
         {/* 3D Joule Canvas */}
-        <div className="my-6">
-          <LazyMount>
+        <div className="mb-6 sm:mb-8 rounded-2xl overflow-hidden border border-slate-800 relative ring-1 ring-slate-800 shadow-xl">
+          <LazyMount fallbackText="Chargement du laboratoire Effet Joule 3D...">
             <JouleEnergy3DCanvas />
           </LazyMount>
         </div>
@@ -601,8 +601,8 @@ export default function Chap3PuissanceElectrocinetique() {
         </div>
 
         {/* Max Power Transfer Interactive Simulator */}
-        <div className="my-6">
-          <LazyMount>
+        <div className="mb-6 sm:mb-8 rounded-2xl overflow-hidden border border-slate-800 relative ring-1 ring-slate-800 shadow-xl">
+          <LazyMount fallbackText="Chargement du simulateur d'adaptation d'impédance...">
             <MaxPowerTransferCanvas />
           </LazyMount>
         </div>
@@ -663,8 +663,8 @@ export default function Chap3PuissanceElectrocinetique() {
         </p>
 
         {/* 3D RLC Storage Canvas */}
-        <div className="my-6">
-          <LazyMount>
+        <div className="mb-6 sm:mb-8 rounded-2xl overflow-hidden border border-slate-800 relative ring-1 ring-slate-800 shadow-xl">
+          <LazyMount fallbackText="Chargement du laboratoire 3D Stockage RLC...">
             <RLCStorage3DCanvas />
           </LazyMount>
         </div>

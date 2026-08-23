@@ -1,37 +1,40 @@
+import Chap1FondementsElectrocinetique from "./chap1-fondements-electrocinetique";
 import Chap1DensiteConductivite from "./chap1-densite-conductivite";
 import Chap2LoiOhmDipoles from "./chap2-loi-ohm-dipoles";
 import Chap3PuissanceElectrocinetique from "./chap3-puissance-electrocinetique";
 
-export const COURANTS_DIPOLES_CHAPTERS = [
+export const ELECTRONIQUE_DE_BASE_CHAPTERS = [
   {
-    id: "densite-conductivite",
+    id: "fondements-electrocinetique-dipoles",
     num: "01",
-    title: "Densité de courant & Conductivité",
-    subtitle: "Mobilité, résistivité et résistance électrique",
-    component: Chap1DensiteConductivite,
+    title: "Fondements de l'Électrocinétique, Dipôles & Puissance",
+    subtitle: "Densité de courant, loi d'Ohm, effet Joule et modèles réactifs R, L, C",
+    component: Chap1FondementsElectrocinetique,
   },
   {
-    id: "loi-ohm-dipoles",
+    id: "generateurs-kirchhoff-theoremes",
     num: "02",
-    title: "Loi d'Ohm & Dipôles Électriques",
-    subtitle: "Loi d'Ohm microscopique, macroscopique et dipôles",
-    component: Chap2LoiOhmDipoles,
+    title: "Générateurs Réels, Lois de Kirchhoff & Théorèmes des Réseaux",
+    subtitle: "Thévenin, Norton, transfert maximal de puissance, ARQS et Kirchhoff",
+    component: null,
   },
   {
-    id: "puissance-electrocinetique",
+    id: "regime-sinusoidal-impedances",
     num: "03",
-    title: "Puissance Électrocinétique, Générateurs & Dipôles R, L, C",
-    subtitle: "Bilan énergétique, Thévenin/Norton, transfert maximal et modèles R, L, C",
-    component: Chap3PuissanceElectrocinetique,
+    title: "Régime Sinusoïdal Forcé & Impédances Complexes",
+    subtitle: "Grandeurs complexes, impédances de R, L, C et puissances",
+    component: null,
   },
   {
-    id: "generateurs-dipoles-rlc",
+    id: "circuit-rlc-resonances",
     num: "04",
-    title: "Générateurs & Modèles R, L, C",
-    subtitle: "Association des dipôles et modèles linéaires (Inclus dans le Chapitre 03)",
-    component: Chap3PuissanceElectrocinetique,
+    title: "Circuit RLC Série, Résonances & Réponses Fréquentielles",
+    subtitle: "Étude différentielle, résonances en I et U, et facteur de qualité Q",
+    component: null,
   }
 ];
+
+export const COURANTS_DIPOLES_CHAPTERS = ELECTRONIQUE_DE_BASE_CHAPTERS;
 
 export const RESEAUX_ARQS_CHAPTERS = [
   {
@@ -82,9 +85,13 @@ export const ELECTRONIQUE_ANALOGIQUE_CHAPTERS = [
 ];
 
 export const ELECTRONIQUE_CHAPTERS = [
-  ...COURANTS_DIPOLES_CHAPTERS,
-  ...RESEAUX_ARQS_CHAPTERS,
+  ...ELECTRONIQUE_DE_BASE_CHAPTERS,
   ...ELECTRONIQUE_ANALOGIQUE_CHAPTERS
 ];
 
-export { Chap1DensiteConductivite, Chap2LoiOhmDipoles, Chap3PuissanceElectrocinetique };
+export { 
+  Chap1FondementsElectrocinetique, 
+  Chap1DensiteConductivite, 
+  Chap2LoiOhmDipoles, 
+  Chap3PuissanceElectrocinetique 
+};

@@ -175,69 +175,43 @@ export const COURSES_DATA: Record<string, CourseModule> = {
         ]
       },
       {
-        id: "courants-et-dipoles-electriques",
+        id: "electronique-de-base",
         code: "Partie 4",
-        title: "Courants et dipôles électriques",
-        subtitle: "Densité de courant, Conductivité & Modèles R, L, C",
-        image: "/modules/courants_dipoles.jpg",
+        title: "Électronique de base",
+        subtitle: "Électrocinétique, Lois de Kirchhoff, Théorèmes & Régimes ARQS",
+        image: "/modules/electronique_de_base.jpg",
         badge: "Partie 4",
-        description: "Densité de courant électrique, conductivité, loi d'Ohm, dipôles linéaires et non linéaires, puissance électrocinétique et association des dipôles.",
+        description: "Fondements de l'électrocinétique, dipôles R, L, C, théorèmes fondamentaux de Kirchhoff, Thévenin, Norton, impédances complexes et étude complète des résonances RLC.",
         elements: [
           {
-            id: "densite-conductivite",
-            title: "Densité de courant & Conductivité",
-            details: "Densité de courant électrique. Conductivité. Mobilité et résistivité d'un conducteur. Résistance électrique."
+            id: "fondements-electrocinetique-dipoles",
+            title: "Fondements de l'Électrocinétique, Dipôles & Puissance",
+            details: "Densité de courant électrique. Conductivité et résistivité. Loi d'Ohm locale et macroscopique. Dipôles linéaires et non-linéaires. Puissance électrocinétique, loi de Joule et modèles réactifs R, L, C."
           },
           {
-            id: "loi-ohm-dipoles",
-            title: "Loi d'Ohm & Dipôles électriques",
-            details: "Loi d'Ohm (microscopique et macroscopique). Dipôles électriques linéaire, non linéaire, passif, actif."
+            id: "generateurs-kirchhoff-theoremes",
+            title: "Générateurs Réels, Lois de Kirchhoff & Théorèmes des Réseaux",
+            details: "Modèles de Thévenin et Norton, équivalence et transfert maximal de puissance. Conditions de l'ARQS, lois de Kirchhoff (nœuds et mailles), ponts diviseurs, théorèmes de superposition, Thévenin et Norton."
           },
           {
-            id: "puissance-recepteur",
-            title: "Puissance électrocinétique & Caractère",
-            details: "Puissance électrocinétique reçue par un dipôle. Caractère générateur et récepteur."
-          },
-          {
-            id: "generateurs-rlc",
-            title: "Générateurs & Modèles R, L, C",
-            details: "Générateurs de courant et de tension. Dipôles linéaires modèles R, L, C. Association des dipôles."
-          }
-        ]
-      },
-      {
-        id: "reseaux-electriques-dans-arqs",
-        code: "Partie 5",
-        title: "Réseaux électriques dans l'ARQS",
-        subtitle: "Kirchhoff, Théorèmes & Régime Sinusoïdal Forcé",
-        image: "/modules/reseaux_arqs.jpg",
-        badge: "Partie 5",
-        description: "Lois de Kirchhoff, théorèmes de Thévenin et Norton, impédances complexes, étude du circuit RLC série et résonances.",
-        elements: [
-          {
-            id: "kirchhoff-theoremes",
-            title: "Lois de Kirchhoff & Théorèmes",
-            details: "Lois de Kirchhoff. Loi des nœuds. Théorème de superposition. Théorème de Thévenin. Théorème de Norton. Transformation Thévenin-Norton."
-          },
-          {
-            id: "regime-sinusoidal-impedance",
-            title: "Régime sinusoïdal forcé & Impédance",
-            details: "Circuits linéaires en régime sinusoïdal forcé : admittance et impédance complexes. Cas des dipôles linéaires modèles R, L et C."
+            id: "regime-sinusoidal-impedances",
+            title: "Régime Sinusoïdal Forcé & Impédances Complexes",
+            details: "Représentation complexe des signaux sinusoïdaux. Impédances et admittances complexes des dipôles R, L, C. Lois des circuits en notation complexe. Puissances instantanée, active, réactive et facteur de puissance."
           },
           {
             id: "circuit-rlc-resonances",
-            title: "Circuit RLC série & Résonances",
-            details: "Étude du circuit RLC série. Résonances. Puissance moyenne en régime sinusoïdal forcé."
+            title: "Circuit RLC Série, Résonances & Réponses Fréquentielles",
+            details: "Équation différentielle du circuit RLC série. Étude de la résonance en intensité et en tension (surtension). Bande passante, facteur de qualité Q et bilan énergétique à la résonance."
           }
         ]
       },
       {
         id: "electronique-analogique",
-        code: "Partie 6",
+        code: "Partie 5",
         title: "Électronique analogique",
         subtitle: "Systèmes linéaires, Diodes, Transistors & AO",
         image: "/modules/electronique_analogique.jpg",
-        badge: "Partie 6",
+        badge: "Partie 5",
         description: "Analyse de Fourier, diagrammes de Bode, quadripôles, diodes Zener, transistors bipolaires et amplificateurs opérationnels.",
         elements: [
           {
