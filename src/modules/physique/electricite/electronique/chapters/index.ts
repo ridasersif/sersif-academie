@@ -1,5 +1,6 @@
 import Chap1DensiteConductivite from "./chap1-densite-conductivite";
 import Chap2LoiOhmDipoles from "./chap2-loi-ohm-dipoles";
+import Chap3PuissanceElectrocinetique from "./chap3-puissance-electrocinetique";
 
 export const COURANTS_DIPOLES_CHAPTERS = [
   {
@@ -19,16 +20,16 @@ export const COURANTS_DIPOLES_CHAPTERS = [
   {
     id: "puissance-electrocinetique",
     num: "03",
-    title: "Puissance Électrocinétique & Bilan",
-    subtitle: "Caractère générateur et récepteur",
-    component: null,
+    title: "Puissance Électrocinétique, Générateurs & Dipôles R, L, C",
+    subtitle: "Bilan énergétique, Thévenin/Norton, transfert maximal et modèles R, L, C",
+    component: Chap3PuissanceElectrocinetique,
   },
   {
     id: "generateurs-dipoles-rlc",
     num: "04",
     title: "Générateurs & Modèles R, L, C",
-    subtitle: "Association des dipôles et modèles linéaires",
-    component: null,
+    subtitle: "Association des dipôles et modèles linéaires (Inclus dans le Chapitre 03)",
+    component: Chap3PuissanceElectrocinetique,
   }
 ];
 
@@ -86,4 +87,4 @@ export const ELECTRONIQUE_CHAPTERS = [
   ...ELECTRONIQUE_ANALOGIQUE_CHAPTERS
 ];
 
-export { Chap1DensiteConductivite, Chap2LoiOhmDipoles };
+export { Chap1DensiteConductivite, Chap2LoiOhmDipoles, Chap3PuissanceElectrocinetique };

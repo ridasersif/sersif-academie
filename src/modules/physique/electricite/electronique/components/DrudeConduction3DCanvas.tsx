@@ -423,8 +423,6 @@ function Experiment3DScene({
             ]}
             color="#ef4444"
             lineWidth={3.5}
-            curveType="catmullrom"
-            tension={0.5}
           />
 
           <Line
@@ -436,8 +434,6 @@ function Experiment3DScene({
             ]}
             color="#3b82f6"
             lineWidth={3.5}
-            curveType="catmullrom"
-            tension={0.5}
           />
         </>
       )}
