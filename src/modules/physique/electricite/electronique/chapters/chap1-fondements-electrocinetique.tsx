@@ -22,6 +22,7 @@ import {
   Activity,
   Cpu,
   ShieldAlert,
+  Magnet,
   Check
 } from "lucide-react";
 
@@ -243,6 +244,7 @@ export default function Chap1FondementsElectrocinetique() {
   const [showEx1Solution, setShowEx1Solution] = useState(false);
   const [showSynthesisSolution, setShowSynthesisSolution] = useState(false);
   const [activeJouleProof, setActiveJouleProof] = useState<"micro" | "macro" | null>(null);
+  const [activeRLCProof, setActiveRLCProof] = useState<"cap" | "ind" | null>(null);
 
   return (
     <div className="space-y-6 sm:space-y-8 w-full max-w-full overflow-x-hidden pb-12">
@@ -713,95 +715,305 @@ export default function Chap1FondementsElectrocinetique() {
         </div>
 
         {/* Summary Table of R, L, C */}
-        <div className="overflow-x-auto rounded-2xl border border-border/70 my-6 shadow-inner">
-          <table className="w-full text-xs sm:text-sm text-left border-collapse">
+        <div className="overflow-x-auto rounded-2xl border border-slate-800 bg-slate-950/60 my-6 shadow-xl">
+          <table className="w-full text-xs sm:text-sm text-left border-collapse min-w-[700px]">
             <thead>
-              <tr className="bg-slate-900/80 border-b border-border/60 text-foreground font-bold">
-                <th className="p-3">Dipôle</th>
-                <th className="p-3">Relation Caractéristique</th>
-                <th className="p-3">Puissance Reçue <LatexMath math="p(t)" /></th>
-                <th className="p-3">Énergie Emmagasinée</th>
-                <th className="p-3">Comportement en Régime Continu (<LatexMath math="t\to\infty" />)</th>
+              <tr className="bg-slate-900/90 border-b border-slate-800 text-slate-300 font-medium text-[11px] sm:text-xs">
+                <th className="p-3 sm:p-3.5 whitespace-nowrap font-bold text-slate-200">Dipôle</th>
+                <th className="p-3 sm:p-3.5 whitespace-nowrap">Relation constitutive</th>
+                <th className="p-3 sm:p-3.5 whitespace-nowrap">Puissance reçue <LatexMath math="p(t)" /></th>
+                <th className="p-3 sm:p-3.5 whitespace-nowrap">Énergie emmagasinée</th>
+                <th className="p-3 sm:p-3.5 whitespace-nowrap">Régime continu (<LatexMath math="t \to \infty" />)</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-border/40 text-muted-foreground font-mono">
+            <tbody className="divide-y divide-slate-800/60 font-mono text-xs">
+              {/* Résistance */}
               <tr className="hover:bg-white/[0.02] transition-colors">
-                <td className="p-3 font-sans font-bold text-indigo-400">Résistance (<LatexMath math="R" />)</td>
-                <td className="p-3"><LatexMath math="u_R(t) = R \cdot i(t)" /></td>
-                <td className="p-3 text-rose-400"><LatexMath math="p_R(t) = R i^2 \ge 0" /> (Purement dissipatif)</td>
-                <td className="p-3">0 (Aucun stockage)</td>
-                <td className="p-3 font-sans">Résistance <LatexMath math="R" /></td>
+                <td className="p-3.5 sm:p-4 font-sans font-extrabold text-rose-400 whitespace-nowrap">
+                  <div className="flex items-center gap-2">
+                    <span className="p-1 rounded-md bg-rose-500/10 text-rose-400 border border-rose-500/20">
+                      <Flame className="w-3.5 h-3.5" />
+                    </span>
+                    <span>Résistance (<LatexMath math="R" />)</span>
+                  </div>
+                </td>
+                <td className="p-3.5 sm:p-4 text-slate-200 whitespace-nowrap font-bold">
+                  <LatexMath math="u_R(t) = R \cdot i(t)" />
+                </td>
+                <td className="p-3.5 sm:p-4 whitespace-nowrap">
+                  <div className="text-rose-300 font-bold">
+                    <LatexMath math="p_R(t) = R i^2 \ge 0" />
+                  </div>
+                  <span className="text-[10px] text-rose-400/80 font-sans block">Purement dissipatif (Joule)</span>
+                </td>
+                <td className="p-3.5 sm:p-4 whitespace-nowrap">
+                  <span className="text-slate-400 font-sans font-medium">0 (Aucun stockage)</span>
+                </td>
+                <td className="p-3.5 sm:p-4 whitespace-nowrap">
+                  <span className="inline-flex items-center px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-700 text-slate-300 font-sans font-semibold text-[11px]">
+                    Résistance <LatexMath math="R" />
+                  </span>
+                </td>
               </tr>
+
+              {/* Condensateur */}
               <tr className="hover:bg-white/[0.02] transition-colors">
-                <td className="p-3 font-sans font-bold text-cyan-400">Condensateur (<LatexMath math="C" />)</td>
-                <td className="p-3"><LatexMath math="i_C(t) = C \frac{\mathrm{d}u_C}{\mathrm{d}t}" /></td>
-                <td className="p-3 text-cyan-300"><LatexMath math="p_C(t) = \frac{\mathrm{d}}{\mathrm{d}t}\left(\frac{1}{2}Cu_C^2\right)" /></td>
-                <td className="p-3 text-cyan-400 font-bold"><LatexMath math="\mathcal{E}_e = \frac{1}{2} C u_C^2" /> (Électrostatique)</td>
-                <td className="p-3 font-sans text-amber-300 font-bold">Interrupteur Ouvert (<LatexMath math="i_C = 0" />)</td>
+                <td className="p-3.5 sm:p-4 font-sans font-extrabold text-cyan-400 whitespace-nowrap">
+                  <div className="flex items-center gap-2">
+                    <span className="p-1 rounded-md bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
+                      <Zap className="w-3.5 h-3.5" />
+                    </span>
+                    <span>Condensateur (<LatexMath math="C" />)</span>
+                  </div>
+                </td>
+                <td className="p-3.5 sm:p-4 text-slate-200 whitespace-nowrap font-bold">
+                  <LatexMath math="i_C(t) = C \frac{\mathrm{d}u_C}{\mathrm{d}t}" />
+                </td>
+                <td className="p-3.5 sm:p-4 whitespace-nowrap">
+                  <div className="text-cyan-300 font-bold">
+                    <LatexMath math="p_C(t) = \frac{\mathrm{d}}{\mathrm{d}t}\left(\frac{1}{2} C u_C^2\right)" />
+                  </div>
+                  <span className="text-[10px] text-cyan-400/80 font-sans block">Échange réactif conservatif</span>
+                </td>
+                <td className="p-3.5 sm:p-4 whitespace-nowrap">
+                  <div className="text-cyan-300 font-bold">
+                    <LatexMath math="\mathcal{E}_e = \frac{1}{2} C u_C^2" />
+                  </div>
+                  <span className="text-[10px] text-slate-400 font-sans block">Champ électrique <LatexMath math="\vec{E}" /></span>
+                </td>
+                <td className="p-3.5 sm:p-4 whitespace-nowrap">
+                  <span className="inline-flex items-center px-2.5 py-1 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-300 font-sans font-bold text-[11px]">
+                    Interrupteur Ouvert (<LatexMath math="i_C = 0" />)
+                  </span>
+                </td>
               </tr>
+
+              {/* Bobine */}
               <tr className="hover:bg-white/[0.02] transition-colors">
-                <td className="p-3 font-sans font-bold text-amber-400">Bobine / Inductance (<LatexMath math="L" />)</td>
-                <td className="p-3"><LatexMath math="u_L(t) = L \frac{\mathrm{d}i_L}{\mathrm{d}t}" /></td>
-                <td className="p-3 text-amber-300"><LatexMath math="p_L(t) = \frac{\mathrm{d}}{\mathrm{d}t}\left(\frac{1}{2}Li_L^2\right)" /></td>
-                <td className="p-3 text-amber-400 font-bold"><LatexMath math="\mathcal{E}_m = \frac{1}{2} L i_L^2" /> (Magnétique)</td>
-                <td className="p-3 font-sans text-emerald-300 font-bold">Court-Circuit / Fil (<LatexMath math="u_L = 0" />)</td>
+                <td className="p-3.5 sm:p-4 font-sans font-extrabold text-amber-400 whitespace-nowrap">
+                  <div className="flex items-center gap-2">
+                    <span className="p-1 rounded-md bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                      <Magnet className="w-3.5 h-3.5" />
+                    </span>
+                    <span>Bobine (<LatexMath math="L" />)</span>
+                  </div>
+                </td>
+                <td className="p-3.5 sm:p-4 text-slate-200 whitespace-nowrap font-bold">
+                  <LatexMath math="u_L(t) = L \frac{\mathrm{d}i_L}{\mathrm{d}t}" />
+                </td>
+                <td className="p-3.5 sm:p-4 whitespace-nowrap">
+                  <div className="text-amber-300 font-bold">
+                    <LatexMath math="p_L(t) = \frac{\mathrm{d}}{\mathrm{d}t}\left(\frac{1}{2} L i_L^2\right)" />
+                  </div>
+                  <span className="text-[10px] text-amber-400/80 font-sans block">Échange réactif conservatif</span>
+                </td>
+                <td className="p-3.5 sm:p-4 whitespace-nowrap">
+                  <div className="text-amber-300 font-bold">
+                    <LatexMath math="\mathcal{E}_m = \frac{1}{2} L i_L^2" />
+                  </div>
+                  <span className="text-[10px] text-slate-400 font-sans block">Champ magnétique <LatexMath math="\vec{B}" /></span>
+                </td>
+                <td className="p-3.5 sm:p-4 whitespace-nowrap">
+                  <span className="inline-flex items-center px-2.5 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 font-sans font-bold text-[11px]">
+                    Court-Circuit / Fil (<LatexMath math="u_L = 0" />)
+                  </span>
+                </td>
               </tr>
             </tbody>
           </table>
         </div>
 
-        {/* Démonstrations Dépliables Pas-à-Pas des Énergies */}
-        <div className="space-y-3 my-4">
-          <CollapsibleProof
-            title="Démonstration : Énergie Électrostatique d'un Condensateur (Ee = 1/2 C u²)"
-            subtitle="Calcul de la puissance électrique reçue en convention récepteur"
-            color="cyan"
-          >
-            <div className="space-y-2 font-mono text-xs text-slate-300">
-              <p className="font-sans text-slate-300">
-                1. En convention récepteur, la puissance instantanée absorbée par le condensateur est :
-              </p>
-              <div className="p-2 rounded bg-black/40 text-center text-slate-200">
-                <LatexMath math="p_C(t) = u_C(t) \cdot i_C(t)" />
-              </div>
-              <p className="font-sans text-slate-300">
-                2. Or la relation constitutive du condensateur donne <LatexMath math="i_C(t) = C \frac{\mathrm{d}u_C}{\mathrm{d}t}" /> :
-              </p>
-              <div className="p-2 rounded bg-black/40 text-center text-cyan-300">
-                <LatexMath math="\implies p_C(t) = u_C(t) \cdot \left(C \frac{\mathrm{d}u_C}{\mathrm{d}t}\right) = \frac{\mathrm{d}}{\mathrm{d}t}\left(\frac{1}{2} C u_C(t)^2\right)" />
-              </div>
-              <p className="font-sans text-slate-300">
-                3. La puissance étant la dérivée temporelle de l&apos;énergie emmagasinée (<LatexMath math="p_C(t) = \frac{\mathrm{d}\mathcal{E}_e}{\mathrm{d}t}" />) :
-              </p>
-              <div className="p-2 rounded bg-cyan-500/10 border border-cyan-500/30 text-center text-cyan-300 font-bold">
-                <LatexMath math="\text{D'où :} \quad \mathcal{E}_e = \frac{1}{2} C u_C^2 = \frac{Q^2}{2C}" />
-              </div>
+        {/* ── Démonstrations Dépliables Pas-à-Pas des Énergies (Accordéon Exclusif) ── */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 my-4">
+          {/* Proof 1: Condensateur */}
+          <div className="rounded-xl sm:rounded-2xl border border-cyan-500/25 bg-cyan-950/10 backdrop-blur-sm p-3.5 sm:p-4 space-y-2.5 transition-all">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
+                Énergie Condensateur
+              </span>
+              <button
+                onClick={() => setActiveRLCProof(activeRLCProof === "cap" ? null : "cap")}
+                className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-bold bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 border border-cyan-500/20 transition-all cursor-pointer"
+              >
+                <span>Démonstration</span>
+                <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${activeRLCProof === "cap" ? "rotate-180" : ""}`} />
+              </button>
             </div>
-          </CollapsibleProof>
 
-          <CollapsibleProof
-            title="Démonstration : Énergie Magnétique d'une Bobine (Em = 1/2 L i²)"
-            subtitle="Calcul de la puissance absorbée lors de l'établissement du courant"
-            color="amber"
-          >
-            <div className="space-y-2 font-mono text-xs text-slate-300">
-              <p className="font-sans text-slate-300">
-                1. En convention récepteur, la tension aux bornes de la bobine d&apos;inductance <LatexMath math="L" /> est <LatexMath math="u_L(t) = L \frac{\mathrm{d}i_L}{\mathrm{d}t}" /> :
-              </p>
-              <div className="p-2 rounded bg-black/40 text-center text-slate-200">
-                <LatexMath math="p_L(t) = u_L(t) \cdot i_L(t) = \left(L \frac{\mathrm{d}i_L}{\mathrm{d}t}\right) \cdot i_L(t)" />
+            <div className="bg-slate-950/80 p-2.5 rounded-lg border border-cyan-500/30 text-center font-mono font-bold text-cyan-300 text-xs sm:text-sm shadow-inner">
+              <LatexMath math="\mathcal{E}_e = \frac{1}{2} C u_C^2 = \frac{Q^2}{2C}" />
+            </div>
+
+            {activeRLCProof === "cap" && (
+              <div className="pt-2 border-t border-cyan-500/20 space-y-2 text-xs text-slate-300 animate-in fade-in duration-200 font-mono text-[11px] sm:text-xs">
+                <div className="p-2.5 rounded-lg bg-slate-950/95 border border-slate-800 space-y-1.5">
+                  <div className="text-slate-300">
+                    <LatexMath math="\text{En convention récepteur : } p_C(t) = u_C(t) \cdot i_C(t)" />
+                  </div>
+                  <div className="text-cyan-300 pl-2 border-l-2 border-cyan-500/40">
+                    <LatexMath math="\text{Or } i_C(t) = C \frac{\mathrm{d}u_C}{\mathrm{d}t} \implies p_C(t) = u_C \cdot \left(C \frac{\mathrm{d}u_C}{\mathrm{d}t}\right)" />
+                  </div>
+                  <div className="text-cyan-300 pl-2 border-l-2 border-cyan-500/40">
+                    <LatexMath math="\implies p_C(t) = \frac{\mathrm{d}}{\mathrm{d}t}\left(\frac{1}{2} C u_C(t)^2\right) = \frac{\mathrm{d}\mathcal{E}_e}{\mathrm{d}t}" />
+                  </div>
+                  <div className="p-1.5 rounded bg-cyan-500/10 border border-cyan-500/40 text-center text-cyan-300 font-bold">
+                    <LatexMath math="\text{Donc :} \quad \mathcal{E}_e = \frac{1}{2} C u_C^2" />
+                  </div>
+                </div>
               </div>
-              <p className="font-sans text-slate-300">
-                2. On reconnaît la dérivée d&apos;une forme quadratique :
-              </p>
-              <div className="p-2 rounded bg-black/40 text-center text-amber-300">
-                <LatexMath math="\implies p_L(t) = \frac{\mathrm{d}}{\mathrm{d}t}\left(\frac{1}{2} L i_L(t)^2\right) = \frac{\mathrm{d}\mathcal{E}_m}{\mathrm{d}t}" />
+            )}
+          </div>
+
+          {/* Proof 2: Bobine */}
+          <div className="rounded-xl sm:rounded-2xl border border-amber-500/25 bg-amber-950/10 backdrop-blur-sm p-3.5 sm:p-4 space-y-2.5 transition-all">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                Énergie Bobine
+              </span>
+              <button
+                onClick={() => setActiveRLCProof(activeRLCProof === "ind" ? null : "ind")}
+                className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-bold bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/20 transition-all cursor-pointer"
+              >
+                <span>Démonstration</span>
+                <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${activeRLCProof === "ind" ? "rotate-180" : ""}`} />
+              </button>
+            </div>
+
+            <div className="bg-slate-950/80 p-2.5 rounded-lg border border-amber-500/30 text-center font-mono font-bold text-amber-300 text-xs sm:text-sm shadow-inner">
+              <LatexMath math="\mathcal{E}_m = \frac{1}{2} L i_L^2" />
+            </div>
+
+            {activeRLCProof === "ind" && (
+              <div className="pt-2 border-t border-amber-500/20 space-y-2 text-xs text-slate-300 animate-in fade-in duration-200 font-mono text-[11px] sm:text-xs">
+                <div className="p-2.5 rounded-lg bg-slate-950/95 border border-slate-800 space-y-1.5">
+                  <div className="text-slate-300">
+                    <LatexMath math="\text{En convention récepteur : } p_L(t) = u_L(t) \cdot i_L(t)" />
+                  </div>
+                  <div className="text-amber-300 pl-2 border-l-2 border-amber-500/40">
+                    <LatexMath math="\text{Or } u_L(t) = L \frac{\mathrm{d}i_L}{\mathrm{d}t} \implies p_L(t) = \left(L \frac{\mathrm{d}i_L}{\mathrm{d}t}\right) \cdot i_L" />
+                  </div>
+                  <div className="text-amber-300 pl-2 border-l-2 border-amber-500/40">
+                    <LatexMath math="\implies p_L(t) = \frac{\mathrm{d}}{\mathrm{d}t}\left(\frac{1}{2} L i_L(t)^2\right) = \frac{\mathrm{d}\mathcal{E}_m}{\mathrm{d}t}" />
+                  </div>
+                  <div className="p-1.5 rounded bg-amber-500/10 border border-amber-500/40 text-center text-amber-300 font-bold">
+                    <LatexMath math="\text{Donc :} \quad \mathcal{E}_m = \frac{1}{2} L i_L^2" />
+                  </div>
+                </div>
               </div>
-              <div className="p-2 rounded bg-amber-500/10 border border-amber-500/30 text-center text-amber-300 font-bold">
-                <LatexMath math="\text{D'où :} \quad \mathcal{E}_m = \frac{1}{2} L i_L^2" />
+            )}
+          </div>
+        </div>
+
+        {/* ── FOCUS CPGE : DÉMONSTRATION DU RÉGIME CONTINU (t -> ∞) & SCHÉMAS ÉQUIVALENTS ── */}
+        <div className="rounded-2xl border border-indigo-500/30 bg-gradient-to-b from-indigo-950/20 via-slate-950/80 to-slate-950 p-4 sm:p-6 space-y-4 my-6 shadow-2xl">
+          <div className="flex items-center gap-2 border-b border-indigo-500/20 pb-3">
+            <span className="p-1.5 rounded-lg bg-indigo-500/20 text-indigo-400">
+              <ShieldAlert className="w-5 h-5" />
+            </span>
+            <div>
+              <h3 className="text-sm sm:text-base font-extrabold text-white">
+                Comprendre & Démontrer le Régime Continu (<LatexMath math="t \to \infty" />)
+              </h3>
+              <p className="text-[11px] sm:text-xs text-indigo-300/80">
+                Pourquoi le condensateur s&apos;ouvre et la bobine devient un fil ? (Piège classique des concours)
+              </p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+            {/* Case 1: Condensateur */}
+            <div className="p-4 rounded-xl bg-slate-900/90 border border-cyan-500/30 space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-extrabold text-cyan-400 flex items-center gap-1.5">
+                  <Zap className="w-4 h-4" /> 1. Condensateur en Continu
+                </span>
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-cyan-500/10 text-cyan-300 border border-cyan-500/20">
+                  Interrupteur Ouvert
+                </span>
+              </div>
+
+              {/* SVG Schematic C */}
+              <div className="py-2 px-3 rounded-lg bg-slate-950 border border-slate-800 flex items-center justify-center">
+                <svg viewBox="0 0 280 60" className="w-full max-w-[260px] h-auto">
+                  {/* Left Circuit: Capacitor */}
+                  <line x1="10" y1="30" x2="45" y2="30" stroke="#94a3b8" strokeWidth="2" />
+                  <line x1="45" y1="12" x2="45" y2="48" stroke="#38bdf8" strokeWidth="3" />
+                  <line x1="55" y1="12" x2="55" y2="48" stroke="#38bdf8" strokeWidth="3" />
+                  <line x1="55" y1="30" x2="90" y2="30" stroke="#94a3b8" strokeWidth="2" />
+                  <text x="50" y="58" fill="#38bdf8" fontSize="9" textAnchor="middle" fontWeight="bold">C</text>
+
+                  {/* Equivalence Arrow */}
+                  <text x="135" y="34" fill="#a855f7" fontSize="16" textAnchor="middle" fontWeight="bold">⟺</text>
+                  <text x="135" y="48" fill="#64748b" fontSize="8" textAnchor="middle" className="font-mono">t → ∞</text>
+
+                  {/* Right Circuit: Open Switch */}
+                  <line x1="180" y1="30" x2="205" y2="30" stroke="#94a3b8" strokeWidth="2" />
+                  <circle cx="205" cy="30" r="2.5" fill="#f59e0b" />
+                  <line x1="205" y1="30" x2="225" y2="16" stroke="#f59e0b" strokeWidth="2.5" />
+                  <circle cx="230" cy="30" r="2.5" fill="#f59e0b" />
+                  <line x1="230" y1="30" x2="265" y2="30" stroke="#94a3b8" strokeWidth="2" />
+                  <text x="220" y="58" fill="#f59e0b" fontSize="9" textAnchor="middle" fontWeight="bold">i = 0 A</text>
+                </svg>
+              </div>
+
+              {/* Mathematical Proof */}
+              <div className="space-y-1.5 text-xs text-slate-300 font-mono text-[11px]">
+                <p className="font-sans text-slate-300 text-[11px] leading-relaxed">
+                  En régime permanent continu, la tension est stationnaire (<LatexMath math="\frac{\mathrm{d}u_C}{\mathrm{d}t} = 0" />) :
+                </p>
+                <div className="p-2 rounded bg-black/50 text-center text-cyan-300 border border-cyan-500/20">
+                  <LatexMath math="i_C = C \frac{\mathrm{d}u_C}{\mathrm{d}t} = C \times 0 \implies i_C = 0 \text{ A}" />
+                </div>
+                <div className="p-2 rounded bg-rose-500/10 border border-rose-500/20 text-[10.5px] font-sans text-rose-300 leading-snug">
+                  ⚠️ <strong>Piège fréquent :</strong> Le courant est nul (<LatexMath math="i_C = 0" />), mais la tension est <strong>maximale</strong> (<LatexMath math="u_C = E \ne 0" />).
+                </div>
               </div>
             </div>
-          </CollapsibleProof>
+
+            {/* Case 2: Bobine */}
+            <div className="p-4 rounded-xl bg-slate-900/90 border border-amber-500/30 space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-extrabold text-amber-400 flex items-center gap-1.5">
+                  <Magnet className="w-4 h-4" /> 2. Bobine en Continu
+                </span>
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-300 border border-emerald-500/20">
+                  Court-Circuit / Fil
+                </span>
+              </div>
+
+              {/* SVG Schematic L */}
+              <div className="py-2 px-3 rounded-lg bg-slate-950 border border-slate-800 flex items-center justify-center">
+                <svg viewBox="0 0 280 60" className="w-full max-w-[260px] h-auto">
+                  {/* Left Circuit: Inductor Coil */}
+                  <line x1="10" y1="30" x2="35" y2="30" stroke="#94a3b8" strokeWidth="2" />
+                  <path d="M 35 30 Q 42 12 50 30 Q 58 12 66 30 Q 74 12 82 30" fill="none" stroke="#f59e0b" strokeWidth="2.5" />
+                  <line x1="82" y1="30" x2="105" y2="30" stroke="#94a3b8" strokeWidth="2" />
+                  <text x="58" y="58" fill="#f59e0b" fontSize="9" textAnchor="middle" fontWeight="bold">L</text>
+
+                  {/* Equivalence Arrow */}
+                  <text x="135" y="34" fill="#a855f7" fontSize="16" textAnchor="middle" fontWeight="bold">⟺</text>
+                  <text x="135" y="48" fill="#64748b" fontSize="8" textAnchor="middle" className="font-mono">t → ∞</text>
+
+                  {/* Right Circuit: Continuous Ideal Wire */}
+                  <line x1="175" y1="30" x2="270" y2="30" stroke="#10b981" strokeWidth="3" />
+                  <text x="222" y="58" fill="#10b981" fontSize="9" textAnchor="middle" fontWeight="bold">u = 0 V (Fil)</text>
+                </svg>
+              </div>
+
+              {/* Mathematical Proof */}
+              <div className="space-y-1.5 text-xs text-slate-300 font-mono text-[11px]">
+                <p className="font-sans text-slate-300 text-[11px] leading-relaxed">
+                  En régime permanent continu, le courant est stationnaire (<LatexMath math="\frac{\mathrm{d}i_L}{\mathrm{d}t} = 0" />) :
+                </p>
+                <div className="p-2 rounded bg-black/50 text-center text-amber-300 border border-amber-500/20">
+                  <LatexMath math="u_L = L \frac{\mathrm{d}i_L}{\mathrm{d}t} = L \times 0 \implies u_L = 0 \text{ V}" />
+                </div>
+                <div className="p-2 rounded bg-rose-500/10 border border-rose-500/20 text-[10.5px] font-sans text-rose-300 leading-snug">
+                  ⚠️ <strong>Piège fréquent :</strong> La tension est nulle (<LatexMath math="u_L = 0" />), mais le courant est <strong>maximal</strong> (<LatexMath math="i_L = \frac{E}{R} \ne 0" />).
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Continuity Rules */}
