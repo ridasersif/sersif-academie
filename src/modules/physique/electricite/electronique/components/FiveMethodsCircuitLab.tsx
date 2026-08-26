@@ -228,7 +228,7 @@ export function FiveMethodsCircuitLab() {
       // Particles in Center Branch (A -> B through R)
       drawParticles({ x: xMid, y: yTop }, { x: xMid, y: yBottom }, calculations.I, '#f43f5e');
 
-      // 4. Draw Circuit Components
+      // 4. Draw Circuit Components & Measurements
 
       // ── Source E1 (Left vertical wire, centered) ──
       const yE1 = (yTop + yBottom) / 2;
@@ -255,72 +255,65 @@ export function FiveMethodsCircuitLab() {
       ctx.fillStyle = '#facc15';
       ctx.font = 'bold 11px sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText('+', xLeft - 18, yE1 - 10);
-      ctx.fillText('−', xLeft - 18, yE1 + 14);
+      ctx.fillText('+', xLeft - 14, yE1 - 10);
+      ctx.fillText('−', xLeft - 14, yE1 + 14);
 
-      // Label E1 (placed cleanly to the left)
-      drawMath('E', '1', xLeft - 26, yE1 + 2, '#facc15', 13, 'right');
-
-      // Voltage Arrow E1 (pointing up, on the right of the wire)
+      // Long Voltage Arrow E1 (Running all the way from C to D on the left)
       ctx.strokeStyle = '#facc15';
-      ctx.lineWidth = 1.4;
+      ctx.lineWidth = 1.6;
       ctx.beginPath();
-      ctx.moveTo(xLeft + 18, yE1 + 18);
-      ctx.lineTo(xLeft + 18, yE1 - 18);
+      ctx.moveTo(xLeft - 24, yBottom - 8);
+      ctx.lineTo(xLeft - 24, yTop + 8);
       ctx.stroke();
       ctx.fillStyle = '#facc15';
       ctx.beginPath();
-      ctx.moveTo(xLeft + 15, yE1 - 14);
-      ctx.lineTo(xLeft + 21, yE1 - 14);
-      ctx.lineTo(xLeft + 18, yE1 - 21);
+      ctx.moveTo(xLeft - 28, yTop + 14);
+      ctx.lineTo(xLeft - 20, yTop + 14);
+      ctx.lineTo(xLeft - 24, yTop + 5);
       ctx.closePath();
       ctx.fill();
+      drawMath('E', '1', xLeft - 32, yE1, '#facc15', 13, 'right');
 
       // ── Resistor R1 (Top left wire) ──
-      const xR1 = (xLeft + xMid) / 2;
+      const xR1 = (xLeft + xMid) / 2 + 10;
       ctx.fillStyle = '#020617';
       ctx.fillRect(xR1 - 20, yTop - 7, 40, 14);
       ctx.strokeStyle = '#38bdf8';
       ctx.lineWidth = 1.6;
       ctx.strokeRect(xR1 - 20, yTop - 7, 40, 14);
 
-      // Resistor R1 Label (cleanly positioned above the box)
-      drawMath('R', '1', xR1, yTop - 16, '#38bdf8', 12, 'center');
+      // Resistor R1 Label (cleanly inside/above the box)
+      drawMath('R', '1', xR1, yTop - 14, '#38bdf8', 12, 'center');
 
-      // Voltage Arrow U1 (pointing left, positioned well above R1)
-      ctx.strokeStyle = '#22c55e';
-      ctx.lineWidth = 1.2;
+      // Current I1 Arrow (Directly ON the wire between D and R1)
+      const xWireI1 = (xLeft + xR1 - 20) / 2;
+      ctx.fillStyle = '#f43f5e';
       ctx.beginPath();
-      ctx.moveTo(xR1 + 18, yTop - 28);
-      ctx.lineTo(xR1 - 18, yTop - 28);
+      ctx.moveTo(xWireI1 - 3, yTop - 4);
+      ctx.lineTo(xWireI1 - 3, yTop + 4);
+      ctx.lineTo(xWireI1 + 5, yTop);
+      ctx.closePath();
+      ctx.fill();
+      drawMath('I', '1', xWireI1, yTop - 11, '#f43f5e', 11, 'center');
+
+      // Long Voltage Arrow U1 (Across the entire branch from A to D)
+      ctx.strokeStyle = '#22c55e';
+      ctx.lineWidth = 1.4;
+      ctx.beginPath();
+      ctx.moveTo(xMid - 10, yTop - 26);
+      ctx.lineTo(xLeft + 10, yTop - 26);
       ctx.stroke();
       ctx.fillStyle = '#22c55e';
       ctx.beginPath();
-      ctx.moveTo(xR1 - 14, yTop - 31);
-      ctx.lineTo(xR1 - 14, yTop - 25);
-      ctx.lineTo(xR1 - 21, yTop - 28);
+      ctx.moveTo(xLeft + 16, yTop - 30);
+      ctx.lineTo(xLeft + 16, yTop - 22);
+      ctx.lineTo(xLeft + 7, yTop - 26);
       ctx.closePath();
       ctx.fill();
-      drawMath('U', '1', xR1, yTop - 36, '#22c55e', 10.5, 'center');
-
-      // Current I1 Arrow (Red, below the wire)
-      ctx.fillStyle = '#f43f5e';
-      ctx.strokeStyle = '#f43f5e';
-      ctx.lineWidth = 1.4;
-      ctx.beginPath();
-      ctx.moveTo(xR1 - 12, yTop + 14);
-      ctx.lineTo(xR1 + 12, yTop + 14);
-      ctx.stroke();
-      ctx.beginPath();
-      ctx.moveTo(xR1 + 8, yTop + 11.5);
-      ctx.lineTo(xR1 + 8, yTop + 16.5);
-      ctx.lineTo(xR1 + 14, yTop + 14);
-      ctx.closePath();
-      ctx.fill();
-      drawMath('I', '1', xR1, yTop + 24, '#f43f5e', 10.5, 'center');
+      drawMath('U', '1', (xLeft + xMid) / 2, yTop - 34, '#22c55e', 11, 'center');
 
       // ── Resistor R (Central vertical branch) ──
-      const yR = (yTop + yBottom) / 2;
+      const yR = (yTop + yBottom) / 2 + 10;
       ctx.fillStyle = '#020617';
       ctx.fillRect(xMid - 7, yR - 20, 14, 40);
       ctx.strokeStyle = '#a855f7';
@@ -329,80 +322,70 @@ export function FiveMethodsCircuitLab() {
 
       drawMath('R', '', xMid + 16, yR, '#c084fc', 13, 'left');
 
-      // Voltage Arrow U (pointing up, on the left of R)
-      ctx.strokeStyle = '#22c55e';
-      ctx.lineWidth = 1.2;
+      // Current I Arrow (Directly ON the central wire between A and R)
+      const yWireI = (yTop + yR - 20) / 2;
+      ctx.fillStyle = '#f43f5e';
       ctx.beginPath();
-      ctx.moveTo(xMid - 16, yR + 16);
-      ctx.lineTo(xMid - 16, yR - 16);
+      ctx.moveTo(xMid - 4, yWireI - 3);
+      ctx.lineTo(xMid + 4, yWireI - 3);
+      ctx.lineTo(xMid, yWireI + 5);
+      ctx.closePath();
+      ctx.fill();
+      drawMath('I', '', xMid + 12, yWireI, '#f43f5e', 11.5, 'left');
+
+      // Long Voltage Arrow U (Running all the way from B to A on the left of the central wire)
+      ctx.strokeStyle = '#22c55e';
+      ctx.lineWidth = 1.4;
+      ctx.beginPath();
+      ctx.moveTo(xMid - 20, yBottom - 10);
+      ctx.lineTo(xMid - 20, yTop + 10);
       ctx.stroke();
       ctx.fillStyle = '#22c55e';
       ctx.beginPath();
-      ctx.moveTo(xMid - 19, yR - 12);
-      ctx.lineTo(xMid - 13, yR - 12);
-      ctx.lineTo(xMid - 16, yR - 18);
+      ctx.moveTo(xMid - 24, yTop + 16);
+      ctx.lineTo(xMid - 16, yTop + 16);
+      ctx.lineTo(xMid - 20, yTop + 7);
       ctx.closePath();
       ctx.fill();
-      drawMath('U', '', xMid - 25, yR, '#22c55e', 11, 'right');
-
-      // Current I Arrow (Central, pointing down)
-      ctx.fillStyle = '#f43f5e';
-      ctx.strokeStyle = '#f43f5e';
-      ctx.lineWidth = 1.6;
-      ctx.beginPath();
-      ctx.moveTo(xMid + 8, yTop + 6);
-      ctx.lineTo(xMid + 8, yTop + 20);
-      ctx.stroke();
-      ctx.beginPath();
-      ctx.moveTo(xMid + 5, yTop + 16);
-      ctx.lineTo(xMid + 11, yTop + 16);
-      ctx.lineTo(xMid + 8, yTop + 22);
-      ctx.closePath();
-      ctx.fill();
-      drawMath('I', '', xMid + 18, yTop + 14, '#f43f5e', 11, 'left');
+      drawMath('U', '', xMid - 28, (yTop + yBottom) / 2, '#22c55e', 12, 'right');
 
       // ── Resistor R2 (Top right wire) ──
-      const xR2 = (xMid + xRight) / 2;
+      const xR2 = (xMid + xRight) / 2 - 10;
       ctx.fillStyle = '#020617';
       ctx.fillRect(xR2 - 20, yTop - 7, 40, 14);
       ctx.strokeStyle = '#38bdf8';
       ctx.lineWidth = 1.6;
       ctx.strokeRect(xR2 - 20, yTop - 7, 40, 14);
 
-      // Resistor R2 Label (cleanly positioned above the box)
-      drawMath('R', '2', xR2, yTop - 16, '#38bdf8', 12, 'center');
+      // Resistor R2 Label (cleanly inside/above the box)
+      drawMath('R', '2', xR2, yTop - 14, '#38bdf8', 12, 'center');
 
-      // Voltage Arrow U2 (pointing left, positioned well above R2)
-      ctx.strokeStyle = '#22c55e';
-      ctx.lineWidth = 1.2;
+      // Current I2 Arrow (Directly ON the wire between A and R2)
+      const xWireI2 = (xMid + xR2 - 20) / 2;
+      ctx.fillStyle = '#f43f5e';
       ctx.beginPath();
-      ctx.moveTo(xR2 + 18, yTop - 28);
-      ctx.lineTo(xR2 - 18, yTop - 28);
+      ctx.moveTo(xWireI2 - 3, yTop - 4);
+      ctx.lineTo(xWireI2 - 3, yTop + 4);
+      ctx.lineTo(xWireI2 + 5, yTop);
+      ctx.closePath();
+      ctx.fill();
+      drawMath('I', '2', xWireI2, yTop - 11, '#f43f5e', 11, 'center');
+
+      // Long Voltage Arrow U2 (Across the entire branch from C' to A)
+      ctx.strokeStyle = '#22c55e';
+      ctx.lineWidth = 1.4;
+      ctx.beginPath();
+      ctx.moveTo(xRight - 10, yTop - 26);
+      ctx.lineTo(xMid + 10, yTop - 26);
       ctx.stroke();
       ctx.fillStyle = '#22c55e';
       ctx.beginPath();
-      ctx.moveTo(xR2 - 14, yTop - 31);
-      ctx.lineTo(xR2 - 14, yTop - 25);
-      ctx.lineTo(xR2 - 21, yTop - 28);
+      ctx.moveTo(xMid + 16, yTop - 30);
+      ctx.lineTo(xMid + 16, yTop - 22);
+      ctx.lineTo(xMid + 7, yTop - 26);
       ctx.closePath();
       ctx.fill();
-      drawMath('U', '2', xR2, yTop - 36, '#22c55e', 10.5, 'center');
-
-      // Current I2 Arrow (A -> C', rightward below the wire)
-      ctx.fillStyle = '#f43f5e';
-      ctx.strokeStyle = '#f43f5e';
-      ctx.lineWidth = 1.4;
-      ctx.beginPath();
-      ctx.moveTo(xR2 - 12, yTop + 14);
-      ctx.lineTo(xR2 + 12, yTop + 14);
-      ctx.stroke();
-      ctx.beginPath();
-      ctx.moveTo(xR2 + 8, yTop + 11.5);
-      ctx.lineTo(xR2 + 8, yTop + 16.5);
-      ctx.lineTo(xR2 + 14, yTop + 14);
-      ctx.closePath();
-      ctx.fill();
-      drawMath('I', '2', xR2, yTop + 24, '#f43f5e', 10.5, 'center');
+      drawMath('U', '2', (xMid + xRight) / 2, yTop - 34, '#22c55e', 11, 'center');
 
       // ── Source E2 (Right vertical wire, centered) ──
       const yE2 = (yTop + yBottom) / 2;
@@ -429,26 +412,24 @@ export function FiveMethodsCircuitLab() {
       ctx.fillStyle = '#facc15';
       ctx.font = 'bold 11px sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText('+', xRight + 18, yE2 - 10);
-      ctx.fillText('−', xRight + 18, yE2 + 14);
+      ctx.fillText('+', xRight + 14, yE2 - 10);
+      ctx.fillText('−', xRight + 14, yE2 + 14);
 
-      // Label E2 (placed cleanly to the right)
-      drawMath('E', '2', xRight + 26, yE2 + 2, '#facc15', 13, 'left');
-
-      // Voltage Arrow E2 (pointing up, on the left of the wire)
+      // Long Voltage Arrow E2 (Running all the way from D' to C' on the right)
       ctx.strokeStyle = '#facc15';
-      ctx.lineWidth = 1.4;
+      ctx.lineWidth = 1.6;
       ctx.beginPath();
-      ctx.moveTo(xRight - 18, yE2 + 18);
-      ctx.lineTo(xRight - 18, yE2 - 18);
+      ctx.moveTo(xRight + 24, yBottom - 8);
+      ctx.lineTo(xRight + 24, yTop + 8);
       ctx.stroke();
       ctx.fillStyle = '#facc15';
       ctx.beginPath();
-      ctx.moveTo(xRight - 21, yE2 - 14);
-      ctx.lineTo(xRight - 15, yE2 - 14);
-      ctx.lineTo(xRight - 18, yE2 - 21);
+      ctx.moveTo(xRight + 20, yTop + 14);
+      ctx.lineTo(xRight + 28, yTop + 14);
+      ctx.lineTo(xRight + 24, yTop + 5);
       ctx.closePath();
       ctx.fill();
+      drawMath('E', '2', xRight + 32, yE2, '#facc15', 13, 'left');
 
       // 5. Draw All Node Dots & Mathematical Labels: D, C, A, B, C', D'
       const drawNode = (x: number, y: number, main: string, sub: string, align: CanvasTextAlign, offX: number, offY: number, dotColor = '#38bdf8') => {
