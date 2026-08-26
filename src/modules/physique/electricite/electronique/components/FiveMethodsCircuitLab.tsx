@@ -251,28 +251,28 @@ export function FiveMethodsCircuitLab() {
       ctx.lineTo(xLeft + 7, yE1 + 6);
       ctx.stroke();
 
-      // Plus / Minus polarities
+      // Plus / Minus polarities (on the outside left)
       ctx.fillStyle = '#facc15';
       ctx.font = 'bold 11px sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText('+', xLeft - 14, yE1 - 10);
-      ctx.fillText('−', xLeft - 14, yE1 + 14);
+      ctx.fillText('+', xLeft - 16, yE1 - 10);
+      ctx.fillText('−', xLeft - 16, yE1 + 14);
 
-      // Long Voltage Arrow E1 (Running all the way from C to D on the left)
+      // Long Voltage Arrow E1 (INSIDE Maille 1: running from C to D on the right of left wire)
       ctx.strokeStyle = '#facc15';
-      ctx.lineWidth = 1.6;
+      ctx.lineWidth = 1.5;
       ctx.beginPath();
-      ctx.moveTo(xLeft - 24, yBottom - 8);
-      ctx.lineTo(xLeft - 24, yTop + 8);
+      ctx.moveTo(xLeft + 20, yBottom - 18);
+      ctx.lineTo(xLeft + 20, yTop + 36);
       ctx.stroke();
       ctx.fillStyle = '#facc15';
       ctx.beginPath();
-      ctx.moveTo(xLeft - 28, yTop + 14);
-      ctx.lineTo(xLeft - 20, yTop + 14);
-      ctx.lineTo(xLeft - 24, yTop + 5);
+      ctx.moveTo(xLeft + 16, yTop + 42);
+      ctx.lineTo(xLeft + 24, yTop + 42);
+      ctx.lineTo(xLeft + 20, yTop + 34);
       ctx.closePath();
       ctx.fill();
-      drawMath('E', '1', xLeft - 32, yE1, '#facc15', 13, 'right');
+      drawMath('E', '1', xLeft + 30, yE1, '#facc15', 12.5, 'left');
 
       // ── Resistor R1 (Top left wire) ──
       const xR1 = (xLeft + xMid) / 2 + 10;
@@ -282,35 +282,35 @@ export function FiveMethodsCircuitLab() {
       ctx.lineWidth = 1.6;
       ctx.strokeRect(xR1 - 20, yTop - 7, 40, 14);
 
-      // Resistor R1 Label (cleanly inside/above the box)
+      // Resistor R1 Label (cleanly above the box)
       drawMath('R', '1', xR1, yTop - 14, '#38bdf8', 12, 'center');
 
       // Current I1 Arrow (Directly ON the wire between D and R1)
       const xWireI1 = (xLeft + xR1 - 20) / 2;
       ctx.fillStyle = '#f43f5e';
       ctx.beginPath();
-      ctx.moveTo(xWireI1 - 3, yTop - 4);
-      ctx.lineTo(xWireI1 - 3, yTop + 4);
-      ctx.lineTo(xWireI1 + 5, yTop);
+      ctx.moveTo(xWireI1 - 3, yTop - 3.5);
+      ctx.lineTo(xWireI1 - 3, yTop + 3.5);
+      ctx.lineTo(xWireI1 + 4.5, yTop);
       ctx.closePath();
       ctx.fill();
       drawMath('I', '1', xWireI1, yTop - 11, '#f43f5e', 11, 'center');
 
-      // Long Voltage Arrow U1 (Across the entire branch from A to D)
+      // Long Voltage Arrow U1 (INSIDE Maille 1: below the top-left wire, from A to D)
       ctx.strokeStyle = '#22c55e';
       ctx.lineWidth = 1.4;
       ctx.beginPath();
-      ctx.moveTo(xMid - 10, yTop - 26);
-      ctx.lineTo(xLeft + 10, yTop - 26);
+      ctx.moveTo(xMid - 25, yTop + 20);
+      ctx.lineTo(xLeft + 35, yTop + 20);
       ctx.stroke();
       ctx.fillStyle = '#22c55e';
       ctx.beginPath();
-      ctx.moveTo(xLeft + 16, yTop - 30);
-      ctx.lineTo(xLeft + 16, yTop - 22);
-      ctx.lineTo(xLeft + 7, yTop - 26);
+      ctx.moveTo(xLeft + 41, yTop + 16.5);
+      ctx.lineTo(xLeft + 41, yTop + 23.5);
+      ctx.lineTo(xLeft + 33, yTop + 20);
       ctx.closePath();
       ctx.fill();
-      drawMath('U', '1', (xLeft + xMid) / 2, yTop - 34, '#22c55e', 11, 'center');
+      drawMath('U', '1', (xLeft + xMid) / 2, yTop + 30, '#22c55e', 11, 'center');
 
       // ── Resistor R (Central vertical branch) ──
       const yR = (yTop + yBottom) / 2 + 10;
@@ -326,28 +326,28 @@ export function FiveMethodsCircuitLab() {
       const yWireI = (yTop + yR - 20) / 2;
       ctx.fillStyle = '#f43f5e';
       ctx.beginPath();
-      ctx.moveTo(xMid - 4, yWireI - 3);
-      ctx.lineTo(xMid + 4, yWireI - 3);
-      ctx.lineTo(xMid, yWireI + 5);
+      ctx.moveTo(xMid - 3.5, yWireI - 3);
+      ctx.lineTo(xMid + 3.5, yWireI - 3);
+      ctx.lineTo(xMid, yWireI + 4.5);
       ctx.closePath();
       ctx.fill();
-      drawMath('I', '', xMid + 12, yWireI, '#f43f5e', 11.5, 'left');
+      drawMath('I', '', xMid + 14, yWireI, '#f43f5e', 11.5, 'left');
 
-      // Long Voltage Arrow U (Running all the way from B to A on the left of the central wire)
+      // Long Voltage Arrow U (INSIDE Maille 1: from B to A, on the left of central branch)
       ctx.strokeStyle = '#22c55e';
       ctx.lineWidth = 1.4;
       ctx.beginPath();
-      ctx.moveTo(xMid - 20, yBottom - 10);
-      ctx.lineTo(xMid - 20, yTop + 10);
+      ctx.moveTo(xMid - 20, yBottom - 18);
+      ctx.lineTo(xMid - 20, yTop + 36);
       ctx.stroke();
       ctx.fillStyle = '#22c55e';
       ctx.beginPath();
-      ctx.moveTo(xMid - 24, yTop + 16);
-      ctx.lineTo(xMid - 16, yTop + 16);
-      ctx.lineTo(xMid - 20, yTop + 7);
+      ctx.moveTo(xMid - 24, yTop + 42);
+      ctx.lineTo(xMid - 16, yTop + 42);
+      ctx.lineTo(xMid - 20, yTop + 34);
       ctx.closePath();
       ctx.fill();
-      drawMath('U', '', xMid - 28, (yTop + yBottom) / 2, '#22c55e', 12, 'right');
+      drawMath('U', '', xMid - 28, (yTop + yBottom) / 2, '#22c55e', 11.5, 'right');
 
       // ── Resistor R2 (Top right wire) ──
       const xR2 = (xMid + xRight) / 2 - 10;
@@ -357,35 +357,35 @@ export function FiveMethodsCircuitLab() {
       ctx.lineWidth = 1.6;
       ctx.strokeRect(xR2 - 20, yTop - 7, 40, 14);
 
-      // Resistor R2 Label (cleanly inside/above the box)
+      // Resistor R2 Label (cleanly above the box)
       drawMath('R', '2', xR2, yTop - 14, '#38bdf8', 12, 'center');
 
       // Current I2 Arrow (Directly ON the wire between A and R2)
       const xWireI2 = (xMid + xR2 - 20) / 2;
       ctx.fillStyle = '#f43f5e';
       ctx.beginPath();
-      ctx.moveTo(xWireI2 - 3, yTop - 4);
-      ctx.lineTo(xWireI2 - 3, yTop + 4);
-      ctx.lineTo(xWireI2 + 5, yTop);
+      ctx.moveTo(xWireI2 - 3, yTop - 3.5);
+      ctx.lineTo(xWireI2 - 3, yTop + 3.5);
+      ctx.lineTo(xWireI2 + 4.5, yTop);
       ctx.closePath();
       ctx.fill();
       drawMath('I', '2', xWireI2, yTop - 11, '#f43f5e', 11, 'center');
 
-      // Long Voltage Arrow U2 (Across the entire branch from C' to A)
+      // Long Voltage Arrow U2 (INSIDE Maille 2: below the top-right wire, from C' to A)
       ctx.strokeStyle = '#22c55e';
       ctx.lineWidth = 1.4;
       ctx.beginPath();
-      ctx.moveTo(xRight - 10, yTop - 26);
-      ctx.lineTo(xMid + 10, yTop - 26);
+      ctx.moveTo(xRight - 35, yTop + 20);
+      ctx.lineTo(xMid + 25, yTop + 20);
       ctx.stroke();
       ctx.fillStyle = '#22c55e';
       ctx.beginPath();
-      ctx.moveTo(xMid + 16, yTop - 30);
-      ctx.lineTo(xMid + 16, yTop - 22);
-      ctx.lineTo(xMid + 7, yTop - 26);
+      ctx.moveTo(xMid + 31, yTop + 16.5);
+      ctx.lineTo(xMid + 31, yTop + 23.5);
+      ctx.lineTo(xMid + 23, yTop + 20);
       ctx.closePath();
       ctx.fill();
-      drawMath('U', '2', (xMid + xRight) / 2, yTop - 34, '#22c55e', 11, 'center');
+      drawMath('U', '2', (xMid + xRight) / 2, yTop + 30, '#22c55e', 11, 'center');
 
       // ── Source E2 (Right vertical wire, centered) ──
       const yE2 = (yTop + yBottom) / 2;
@@ -408,28 +408,28 @@ export function FiveMethodsCircuitLab() {
       ctx.lineTo(xRight + 7, yE2 + 6);
       ctx.stroke();
 
-      // Plus / Minus polarities
+      // Plus / Minus polarities (on the outside right)
       ctx.fillStyle = '#facc15';
       ctx.font = 'bold 11px sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText('+', xRight + 14, yE2 - 10);
-      ctx.fillText('−', xRight + 14, yE2 + 14);
+      ctx.fillText('+', xRight + 16, yE2 - 10);
+      ctx.fillText('−', xRight + 16, yE2 + 14);
 
-      // Long Voltage Arrow E2 (Running all the way from D' to C' on the right)
+      // Long Voltage Arrow E2 (INSIDE Maille 2: running from D' to C' on the left of right wire)
       ctx.strokeStyle = '#facc15';
-      ctx.lineWidth = 1.6;
+      ctx.lineWidth = 1.5;
       ctx.beginPath();
-      ctx.moveTo(xRight + 24, yBottom - 8);
-      ctx.lineTo(xRight + 24, yTop + 8);
+      ctx.moveTo(xRight - 20, yBottom - 18);
+      ctx.lineTo(xRight - 20, yTop + 36);
       ctx.stroke();
       ctx.fillStyle = '#facc15';
       ctx.beginPath();
-      ctx.moveTo(xRight + 20, yTop + 14);
-      ctx.lineTo(xRight + 28, yTop + 14);
-      ctx.lineTo(xRight + 24, yTop + 5);
+      ctx.moveTo(xRight - 24, yTop + 42);
+      ctx.lineTo(xRight - 16, yTop + 42);
+      ctx.lineTo(xRight - 20, yTop + 34);
       ctx.closePath();
       ctx.fill();
-      drawMath('E', '2', xRight + 32, yE2, '#facc15', 13, 'left');
+      drawMath('E', '2', xRight - 30, yE2, '#facc15', 12.5, 'right');
 
       // 5. Draw All Node Dots & Mathematical Labels: D, C, A, B, C', D'
       const drawNode = (x: number, y: number, main: string, sub: string, align: CanvasTextAlign, offX: number, offY: number, dotColor = '#38bdf8') => {
@@ -447,12 +447,12 @@ export function FiveMethodsCircuitLab() {
       drawNode(xRight, yTop, "C'", '', 'left', 8, -4);
       drawNode(xRight, yBottom, "D'", '', 'left', 8, 4);
 
-      // Mesh orientation symbols (Circular arrows)
+      // Mesh orientation symbols (Circular arrows in the center of each mesh)
       ctx.fillStyle = 'rgba(56, 189, 248, 0.45)';
       ctx.font = 'bold 9.5px sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText('⟲ ∑Uᵢ = 0 (Maille 1)', (xLeft + xMid) / 2, yBottom - 14);
-      ctx.fillText('⟲ ∑Uᵢ = 0 (Maille 2)', (xMid + xRight) / 2, yBottom - 14);
+      ctx.fillText('⟲ ∑Uᵢ = 0 (Maille 1)', (xLeft + xMid) / 2, yBottom - 18);
+      ctx.fillText('⟲ ∑Uᵢ = 0 (Maille 2)', (xMid + xRight) / 2, yBottom - 18);
 
       ctx.restore();
 
@@ -469,55 +469,7 @@ export function FiveMethodsCircuitLab() {
   }, [E1, R1, E2, R2, R, calculations, isSimulating]);
 
   return (
-    <div className="space-y-5 w-full max-w-full font-sans">
-      {/* ── HEADER BANNER ── */}
-      <div className="p-4 rounded-2xl bg-gradient-to-r from-cyan-950/60 via-slate-900/80 to-indigo-950/60 border border-cyan-500/30 shadow-md">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="space-y-1">
-            <div className="flex items-center gap-2">
-              <span className="px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 text-[10px] font-mono font-bold uppercase tracking-wider border border-cyan-500/30">
-                Module : Électricité 1
-              </span>
-              <span className="text-xs text-slate-400 font-mono">Pr. Mokssine EL MISKI</span>
-            </div>
-            <h3 className="text-sm sm:text-base font-black text-white flex items-center gap-2">
-              <Activity className="w-4 h-4 text-cyan-400" />
-              Exercice 7 : Un circuit à mettre en équations par 5 méthodes
-            </h3>
-            <p className="text-xs text-slate-300">
-              <strong>Énoncé :</strong> Établir l&apos;expression du courant <LatexMath math="I" /> qui circule dans la résistance <LatexMath math="R" />.
-            </p>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setIsSimulating(!isSimulating)}
-              className={`px-3 py-1 rounded-xl text-xs font-bold font-mono flex items-center gap-1.5 transition-all shadow-sm ${
-                isSimulating 
-                  ? 'bg-cyan-500 text-slate-950 hover:bg-cyan-400 shadow-cyan-500/20' 
-                  : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
-              }`}
-            >
-              {isSimulating ? <Activity className="w-3.5 h-3.5 animate-spin" /> : <Play className="w-3.5 h-3.5" />}
-              {isSimulating ? 'Animation' : 'Pause'}
-            </button>
-            <button
-              onClick={() => {
-                setE1(12);
-                setR1(10);
-                setE2(6);
-                setR2(20);
-                setR(15);
-              }}
-              className="p-1.5 rounded-xl bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700 transition-colors"
-              title="Réinitialiser"
-            >
-              <RotateCcw className="w-3.5 h-3.5" />
-            </button>
-          </div>
-        </div>
-      </div>
-
+    <div className="space-y-4 w-full max-w-full font-sans">
       {/* ── INTERACTIVE CANVAS & CONTROLS GRID ── */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-stretch">
         
@@ -534,34 +486,86 @@ export function FiveMethodsCircuitLab() {
             </div>
           </div>
 
-          {/* Metrics HUD (Compact Pure LaTeX) */}
+          {/* Metrics HUD (Ultra-Sleek Glassmorphic Compact Cards) */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-            <div className="p-2 rounded-xl bg-slate-900/90 border border-cyan-500/20 text-center">
-              <span className="text-[10px] text-slate-400 font-mono block"><LatexMath math="V_A" /></span>
-              <span className="text-xs font-bold font-mono text-cyan-300">{calculations.VA.toFixed(2)} V</span>
+            {/* VA Card */}
+            <div className="py-1.5 px-2.5 rounded-xl bg-gradient-to-b from-cyan-950/40 to-slate-950/80 border border-cyan-500/30 backdrop-blur-md flex flex-col items-center justify-center shadow-sm hover:border-cyan-400/50 transition-all">
+              <div className="flex items-center gap-1 text-[10px] text-slate-400 font-mono">
+                <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 shadow-sm shadow-cyan-400/50" />
+                <LatexMath math="V_A" />
+              </div>
+              <span className="text-xs sm:text-[13px] font-black font-mono text-cyan-300 tracking-tight">
+                {calculations.VA.toFixed(2)} V
+              </span>
             </div>
-            <div className="p-2 rounded-xl bg-slate-900/90 border border-rose-500/30 text-center">
-              <span className="text-[10px] text-slate-400 font-mono block"><LatexMath math="I \text{ (Charge } R)" /></span>
-              <span className="text-xs font-bold font-mono text-rose-400">{calculations.I.toFixed(3)} A</span>
+
+            {/* I (Charge R) Card */}
+            <div className="py-1.5 px-2.5 rounded-xl bg-gradient-to-b from-rose-950/40 to-slate-950/80 border border-rose-500/40 backdrop-blur-md flex flex-col items-center justify-center shadow-sm hover:border-rose-400/50 transition-all">
+              <div className="flex items-center gap-1 text-[10px] text-slate-400 font-mono">
+                <span className="w-1.5 h-1.5 rounded-full bg-rose-400 shadow-sm shadow-rose-400/50" />
+                <LatexMath math="I \text{ (Charge } R)" />
+              </div>
+              <span className="text-xs sm:text-[13px] font-black font-mono text-rose-400 tracking-tight">
+                {calculations.I.toFixed(3)} A
+              </span>
             </div>
-            <div className="p-2 rounded-xl bg-slate-900/90 border border-amber-500/20 text-center">
-              <span className="text-[10px] text-slate-400 font-mono block"><LatexMath math="I_1 \text{ (Branche 1)}" /></span>
-              <span className="text-xs font-bold font-mono text-amber-300">{calculations.I1.toFixed(3)} A</span>
+
+            {/* I1 (Branche 1) Card */}
+            <div className="py-1.5 px-2.5 rounded-xl bg-gradient-to-b from-amber-950/40 to-slate-950/80 border border-amber-500/30 backdrop-blur-md flex flex-col items-center justify-center shadow-sm hover:border-amber-400/50 transition-all">
+              <div className="flex items-center gap-1 text-[10px] text-slate-400 font-mono">
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-400 shadow-sm shadow-amber-400/50" />
+                <LatexMath math="I_1 \text{ (Branche 1)}" />
+              </div>
+              <span className="text-xs sm:text-[13px] font-black font-mono text-amber-300 tracking-tight">
+                {calculations.I1.toFixed(3)} A
+              </span>
             </div>
-            <div className="p-2 rounded-xl bg-slate-900/90 border border-indigo-500/20 text-center">
-              <span className="text-[10px] text-slate-400 font-mono block"><LatexMath math="I_2 \text{ (Branche 2)}" /></span>
-              <span className="text-xs font-bold font-mono text-indigo-300">{calculations.I2.toFixed(3)} A</span>
+
+            {/* I2 (Branche 2) Card */}
+            <div className="py-1.5 px-2.5 rounded-xl bg-gradient-to-b from-indigo-950/40 to-slate-950/80 border border-indigo-500/30 backdrop-blur-md flex flex-col items-center justify-center shadow-sm hover:border-indigo-400/50 transition-all">
+              <div className="flex items-center gap-1 text-[10px] text-slate-400 font-mono">
+                <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 shadow-sm shadow-indigo-400/50" />
+                <LatexMath math="I_2 \text{ (Branche 2)}" />
+              </div>
+              <span className="text-xs sm:text-[13px] font-black font-mono text-indigo-300 tracking-tight">
+                {calculations.I2.toFixed(3)} A
+              </span>
             </div>
           </div>
         </div>
 
         {/* Right: Parameter Sliders Panel (5 Cols) */}
         <div className="lg:col-span-5 p-3.5 sm:p-4 rounded-2xl bg-slate-900/80 border border-slate-800 flex flex-col justify-between space-y-2.5 shadow-md">
-          <div className="flex items-center gap-1.5 border-b border-slate-800 pb-1.5">
-            <Sliders className="w-3.5 h-3.5 text-cyan-400" />
-            <h4 className="text-[11px] font-bold text-white uppercase tracking-wider">
-              Paramètres Variables du Circuit
-            </h4>
+          <div className="flex items-center justify-between border-b border-slate-800 pb-1.5">
+            <div className="flex items-center gap-1.5">
+              <Sliders className="w-3.5 h-3.5 text-cyan-400" />
+              <h4 className="text-[11px] font-bold text-white uppercase tracking-wider">
+                Paramètres du Circuit
+              </h4>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <button
+                onClick={() => setIsSimulating(!isSimulating)}
+                className="px-2 py-0.5 rounded-lg bg-slate-800 text-slate-300 hover:text-white text-[10px] font-mono flex items-center gap-1 border border-slate-700"
+                title={isSimulating ? 'Mettre en pause' : 'Démarrer animation'}
+              >
+                {isSimulating ? <Activity className="w-3 h-3 text-cyan-400 animate-spin" /> : <Play className="w-3 h-3 text-emerald-400" />}
+                {isSimulating ? 'Pause' : 'Play'}
+              </button>
+              <button
+                onClick={() => {
+                  setE1(12);
+                  setR1(10);
+                  setE2(6);
+                  setR2(20);
+                  setR(15);
+                }}
+                className="p-1 rounded-lg bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700 border border-slate-700 transition-colors"
+                title="Réinitialiser"
+              >
+                <RotateCcw className="w-3 h-3" />
+              </button>
+            </div>
           </div>
 
           <div className="space-y-2 text-xs">
