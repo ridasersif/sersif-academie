@@ -854,54 +854,303 @@ export function FiveMethodsCircuitLab() {
           </div>
         )}
 
-        {/* ── TAB 2: THÉORÈME DE SUPERPOSITION ── */}
+        {/* ── TAB 2: THÉORÈME DE SUPERPOSITION (WHITEBOARD STEP-BY-STEP) ── */}
         {activeTab === 'superposition' && (
-          <div className="p-4 sm:p-5 rounded-2xl bg-slate-900/90 border border-amber-500/30 space-y-4 animate-in fade-in duration-200 shadow-md">
-            <div className="flex items-center justify-between">
+          <div className="p-4 sm:p-5 rounded-2xl bg-slate-900/90 border border-amber-500/30 space-y-4 animate-in fade-in duration-200 shadow-md font-sans">
+            
+            {/* Header */}
+            <div className="flex items-center justify-between border-b border-slate-800 pb-2.5">
               <span className="text-xs font-extrabold text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
                 <CheckCircle2 className="w-4 h-4 text-amber-400" />
-                2°) Résolution par le Théorème de Superposition
+                2°) Résolution par le Principe de la Superposition
               </span>
               <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-amber-500/10 text-amber-300 border border-amber-500/20 font-bold">
-                Principe de Linéarité
+                Linéarité : I = I&apos; + I&apos;&apos;
               </span>
             </div>
 
-            <div className="space-y-3 text-slate-300 text-xs leading-relaxed">
-              <p>
-                On décompose le courant total en la somme de deux contributions : <LatexMath math="I = I' + I''" /> où chaque source agit seule en éteignant l&apos;autre (source de tension éteinte = court-circuit / fil).
+            {/* Principle definition banner */}
+            <div className="p-3 rounded-xl bg-amber-950/30 border border-amber-500/20 text-slate-300 text-xs leading-relaxed space-y-1">
+              <span className="font-bold text-amber-300 block">💡 Principe Fondamental :</span>
+              <p className="text-[11.5px]">
+                Dans un réseau linéaire comprenant plusieurs générateurs autonomes, le courant total <LatexMath math="I" /> dans une branche est égal à la <strong>somme algébrique</strong> des courants créés par chaque générateur agissant seul :
               </p>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-[11px]">
-                {/* Cas 1: E1 seule */}
-                <div className="p-3 rounded-xl bg-slate-950/80 border border-amber-500/20 space-y-1.5">
-                  <span className="font-bold text-amber-300">1. Source <LatexMath math="E_1" /> active seule (<LatexMath math="E_2 = 0\text{V}" />) :</span>
-                  <p className="text-slate-300">
-                    <LatexMath math="R" /> et <LatexMath math="R_2" /> sont en parallèle. La résistance équivalente vue par <LatexMath math="E_1" /> est <LatexMath math="R_1 + \frac{R R_2}{R + R_2}" />.
-                  </p>
-                  <p className="text-slate-300">Par pont diviseur de courant :</p>
-                  <div className="p-2 rounded bg-black/60 text-center font-mono text-amber-300 font-bold">
-                    <LatexMath math="I' = \frac{E_1}{R_1 + \frac{R R_2}{R + R_2}} \cdot \frac{R_2}{R + R_2} = \frac{R_2 E_1}{R_1 R_2 + R(R_1 + R_2)}" />
-                  </div>
-                </div>
-
-                {/* Cas 2: E2 seule */}
-                <div className="p-3 rounded-xl bg-slate-950/80 border border-amber-500/20 space-y-1.5">
-                  <span className="font-bold text-amber-300">2. Source <LatexMath math="E_2" /> active seule (<LatexMath math="E_1 = 0\text{V}" />) :</span>
-                  <p className="text-slate-300">
-                    Par symétrie rigoureuse en permutant les indices 1 et 2 :
-                  </p>
-                  <div className="p-2 rounded bg-black/60 text-center font-mono text-amber-300 font-bold">
-                    <LatexMath math="I'' = \frac{E_2}{R_2 + \frac{R R_1}{R + R_1}} \cdot \frac{R_1}{R + R_1} = \frac{R_1 E_2}{R_1 R_2 + R(R_1 + R_2)}" />
-                  </div>
-                </div>
-              </div>
-
-              {/* Somme Algébrique */}
-              <div className="p-3 rounded-xl bg-amber-950/40 border border-amber-500/30 text-center font-mono font-bold text-amber-300 text-xs">
-                <LatexMath math={`I = I' + I'' = \\frac{R_2 E_1 + R_1 E_2}{R_1 R_2 + R(R_1 + R_2)} \\implies \\mathbf{I = ${calculations.I.toFixed(3)}\\text{ A}}`} />
+              <div className="p-2 rounded-lg bg-black/60 text-center font-mono font-bold text-amber-300 text-xs">
+                <LatexMath math="\mathbf{I = I' + I''}" />
+                <span className="text-[10px] text-slate-400 font-normal font-sans ml-2">
+                  (avec extinction des autres générateurs : générateur de tension éteint <LatexMath math="E = 0\text{ V}" /> <LatexMath math="\iff" /> fil de court-circuit)
+                </span>
               </div>
             </div>
+
+            {/* Step a: Générateur E1 Seul */}
+            <div className="p-4 rounded-xl bg-slate-950/80 border border-amber-500/30 space-y-3 shadow-inner">
+              <div className="flex items-center justify-between border-b border-slate-800 pb-1.5">
+                <span className="text-xs font-bold text-amber-300 flex items-center gap-1.5">
+                  <span className="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 text-[10px] font-mono font-bold">a)</span>
+                  Action du Générateur (<LatexMath math="E_1" />) Seul (Extinction de <LatexMath math="E_2 = 0\text{ V}" />) :
+                </span>
+              </div>
+
+              {/* Schematics Grid (Original circuit with E2 shorted + Simplified equivalent circuit) */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {/* SVG 1: Circuit avec E2 éteint */}
+                <div className="p-3 rounded-xl bg-black/50 border border-slate-800 flex flex-col items-center justify-center space-y-2">
+                  <span className="text-[10px] font-mono text-slate-400 font-bold">Circuit 1 : Source <LatexMath math="E_1" /> active (<LatexMath math="E_2 = 0\text{ V}" />)</span>
+                  <svg viewBox="0 0 280 140" className="w-full max-w-[260px] h-auto text-xs">
+                    {/* Sky Blue Wires */}
+                    <path d="M 30 110 L 30 30 L 140 30 L 140 110 L 30 110 M 140 30 L 250 30 L 250 110 L 140 110" fill="none" stroke="#38bdf8" strokeWidth="2" />
+                    
+                    {/* Source E1 */}
+                    <rect x="20" y="55" width="20" height="30" fill="#020617" />
+                    <line x1="20" y1="65" x2="40" y2="65" stroke="#facc15" strokeWidth="2.5" />
+                    <line x1="24" y1="75" x2="36" y2="75" stroke="#facc15" strokeWidth="3.5" />
+                    <text x="14" y="73" fill="#facc15" fontSize="10" fontStyle="italic" fontWeight="bold" textAnchor="end">E₁</text>
+
+                    {/* Resistor R1 */}
+                    <rect x="65" y="24" width="36" height="12" fill="#020617" stroke="#38bdf8" strokeWidth="1.5" rx="2" />
+                    <text x="83" y="19" fill="#38bdf8" fontSize="9.5" fontStyle="italic" fontWeight="bold" textAnchor="middle">R₁</text>
+
+                    {/* Load Resistor R (Central) with Current I' */}
+                    <rect x="134" y="55" width="12" height="34" fill="#020617" stroke="#c084fc" strokeWidth="1.6" rx="2" />
+                    <text x="154" y="75" fill="#c084fc" fontSize="10" fontStyle="italic" fontWeight="bold">R</text>
+                    {/* Current I' Arrow */}
+                    <path d="M 140 40 L 140 50 M 137 47 L 140 52 L 143 47" fill="#f43f5e" stroke="#f43f5e" strokeWidth="1.4" />
+                    <text x="147" y="47" fill="#f43f5e" fontSize="9.5" fontStyle="italic" fontWeight="bold">I&apos;</text>
+
+                    {/* Resistor R2 (Right branch) */}
+                    <rect x="244" y="55" width="12" height="34" fill="#020617" stroke="#38bdf8" strokeWidth="1.5" rx="2" />
+                    <text x="238" y="75" fill="#38bdf8" fontSize="10" fontStyle="italic" fontWeight="bold" textAnchor="end">R₂</text>
+
+                    {/* Nodes A and B */}
+                    <circle cx="140" cy="30" r="3" fill="#f43f5e" />
+                    <text x="140" y="22" fill="#f8fafc" fontSize="10" fontStyle="italic" fontWeight="bold" textAnchor="middle">A</text>
+                    <circle cx="140" cy="110" r="3" fill="#64748b" />
+                    <text x="140" y="124" fill="#f8fafc" fontSize="10" fontStyle="italic" fontWeight="bold" textAnchor="middle">B</text>
+                  </svg>
+                  <p className="text-[10px] text-slate-400 text-center">
+                    <LatexMath math="R" /> et <LatexMath math="R_2" /> sont connectées en <strong>parallèle</strong> entre <LatexMath math="A" /> et <LatexMath math="B" />.
+                  </p>
+                </div>
+
+                {/* SVG 2: Schéma équivalent */}
+                <div className="p-3 rounded-xl bg-black/50 border border-slate-800 flex flex-col items-center justify-center space-y-2">
+                  <span className="text-[10px] font-mono text-amber-300 font-bold">Schéma Équivalent Réduit</span>
+                  <svg viewBox="0 0 240 140" className="w-full max-w-[230px] h-auto text-xs">
+                    {/* Sky Blue Loop */}
+                    <path d="M 30 110 L 30 30 L 190 30 L 190 110 L 30 110" fill="none" stroke="#38bdf8" strokeWidth="2" />
+                    
+                    {/* Source E1 */}
+                    <rect x="20" y="55" width="20" height="30" fill="#020617" />
+                    <line x1="20" y1="65" x2="40" y2="65" stroke="#facc15" strokeWidth="2.5" />
+                    <line x1="24" y1="75" x2="36" y2="75" stroke="#facc15" strokeWidth="3.5" />
+                    <text x="14" y="73" fill="#facc15" fontSize="10" fontStyle="italic" fontWeight="bold" textAnchor="end">E₁</text>
+
+                    {/* Resistor R1 */}
+                    <rect x="80" y="24" width="36" height="12" fill="#020617" stroke="#38bdf8" strokeWidth="1.5" rx="2" />
+                    <text x="98" y="19" fill="#38bdf8" fontSize="9.5" fontStyle="italic" fontWeight="bold" textAnchor="middle">R₁</text>
+
+                    {/* Resistor Req */}
+                    <rect x="184" y="55" width="12" height="34" fill="#020617" stroke="#f59e0b" strokeWidth="1.6" rx="2" />
+                    <text x="202" y="75" fill="#f59e0b" fontSize="10" fontStyle="italic" fontWeight="bold">R_éq</text>
+
+                    {/* Nodes A and B */}
+                    <circle cx="190" cy="30" r="3" fill="#f43f5e" />
+                    <text x="190" y="22" fill="#f8fafc" fontSize="10" fontStyle="italic" fontWeight="bold" textAnchor="middle">A</text>
+                    <circle cx="190" cy="110" r="3" fill="#64748b" />
+                    <text x="190" y="124" fill="#f8fafc" fontSize="10" fontStyle="italic" fontWeight="bold" textAnchor="middle">B</text>
+                  </svg>
+                  <p className="text-[10px] text-amber-300/90 text-center font-mono">
+                    <LatexMath math="R_{\text{éq}} = R \parallel R_2 = \frac{R \cdot R_2}{R + R_2}" />
+                  </p>
+                </div>
+              </div>
+
+              {/* Mathematical Derivation Steps */}
+              <div className="space-y-2 text-[11.5px] leading-relaxed pt-1">
+                <p>
+                  • <strong>Diviseur de tension aux bornes de <LatexMath math="AB" /> :</strong>
+                </p>
+                <div className="p-2 rounded-lg bg-black/60 text-center font-mono text-amber-300 font-bold text-xs">
+                  <LatexMath math="U_{AB} = \frac{R_{\text{éq}}}{R_1 + R_{\text{éq}}} \cdot E_1" />
+                </div>
+
+                <p>
+                  • <strong>Or, par la loi d&apos;Ohm aux bornes de la résistance <LatexMath math="R" /> :</strong>
+                </p>
+                <div className="p-2 rounded-lg bg-black/60 text-center font-mono text-slate-200 text-xs">
+                  <LatexMath math="U_{AB} = R \cdot I' \quad \implies \quad I' = \frac{1}{R} \cdot U_{AB}" />
+                </div>
+
+                <p>
+                  • <strong>En remplaçant <LatexMath math="U_{AB}" /> et <LatexMath math="R_{\text{éq}} = \frac{R \cdot R_2}{R + R_2}" /> :</strong>
+                </p>
+                <div className="p-2.5 rounded-lg bg-black/70 text-center font-mono text-amber-200 text-xs space-y-1.5">
+                  <div>
+                    <LatexMath math="I' = \frac{1}{R} \cdot \frac{\frac{R \cdot R_2}{R + R_2}}{R_1 + \frac{R \cdot R_2}{R + R_2}} \cdot E_1" />
+                  </div>
+                  <div>
+                    <LatexMath math="I' = \frac{1}{\cancel{R}} \cdot \frac{\cancel{R} \cdot R_2}{\frac{R_1(R + R_2) + R \cdot R_2}{R + R_2}} \cdot \frac{1}{R + R_2} \cdot E_1" />
+                  </div>
+                  <div className="pt-1">
+                    <LatexMath math="\implies \mathbf{I' = \frac{R_2 \cdot E_1}{R \cdot R_1 + R_1 \cdot R_2 + R \cdot R_2} = \frac{R_2 E_1}{R_1 R_2 + R(R_1 + R_2)}}" />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Step b: Générateur E2 Seul */}
+            <div className="p-4 rounded-xl bg-slate-950/80 border border-amber-500/30 space-y-3 shadow-inner">
+              <div className="flex items-center justify-between border-b border-slate-800 pb-1.5">
+                <span className="text-xs font-bold text-amber-300 flex items-center gap-1.5">
+                  <span className="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 text-[10px] font-mono font-bold">b)</span>
+                  Action du Générateur (<LatexMath math="E_2" />) Seul (Extinction de <LatexMath math="E_1 = 0\text{ V}" />) :
+                </span>
+              </div>
+
+              {/* Schematics Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {/* SVG 3: Circuit avec E1 éteint */}
+                <div className="p-3 rounded-xl bg-black/50 border border-slate-800 flex flex-col items-center justify-center space-y-2">
+                  <span className="text-[10px] font-mono text-slate-400 font-bold">Circuit 2 : Source <LatexMath math="E_2" /> active (<LatexMath math="E_1 = 0\text{ V}" />)</span>
+                  <svg viewBox="0 0 280 140" className="w-full max-w-[260px] h-auto text-xs">
+                    {/* Sky Blue Wires */}
+                    <path d="M 30 110 L 30 30 L 140 30 L 140 110 L 30 110 M 140 30 L 250 30 L 250 110 L 140 110" fill="none" stroke="#38bdf8" strokeWidth="2" />
+                    
+                    {/* Resistor R1 (Left branch, with E1 shorted) */}
+                    <rect x="24" y="55" width="12" height="34" fill="#020617" stroke="#38bdf8" strokeWidth="1.5" rx="2" />
+                    <text x="18" y="75" fill="#38bdf8" fontSize="10" fontStyle="italic" fontWeight="bold" textAnchor="end">R₁</text>
+
+                    {/* Load Resistor R (Central) with Current I'' */}
+                    <rect x="134" y="55" width="12" height="34" fill="#020617" stroke="#c084fc" strokeWidth="1.6" rx="2" />
+                    <text x="154" y="75" fill="#c084fc" fontSize="10" fontStyle="italic" fontWeight="bold">R</text>
+                    {/* Current I'' Arrow */}
+                    <path d="M 140 40 L 140 50 M 137 47 L 140 52 L 143 47" fill="#f43f5e" stroke="#f43f5e" strokeWidth="1.4" />
+                    <text x="147" y="47" fill="#f43f5e" fontSize="9.5" fontStyle="italic" fontWeight="bold">I&apos;&apos;</text>
+
+                    {/* Resistor R2 */}
+                    <rect x="175" y="24" width="36" height="12" fill="#020617" stroke="#38bdf8" strokeWidth="1.5" rx="2" />
+                    <text x="193" y="19" fill="#38bdf8" fontSize="9.5" fontStyle="italic" fontWeight="bold" textAnchor="middle">R₂</text>
+
+                    {/* Source E2 (Right branch) */}
+                    <rect x="240" y="55" width="20" height="30" fill="#020617" />
+                    <line x1="240" y1="65" x2="260" y2="65" stroke="#facc15" strokeWidth="2.5" />
+                    <line x1="244" y1="75" x2="256" y2="75" stroke="#facc15" strokeWidth="3.5" />
+                    <text x="268" y="73" fill="#facc15" fontSize="10" fontStyle="italic" fontWeight="bold">E₂</text>
+
+                    {/* Nodes A and B */}
+                    <circle cx="140" cy="30" r="3" fill="#f43f5e" />
+                    <text x="140" y="22" fill="#f8fafc" fontSize="10" fontStyle="italic" fontWeight="bold" textAnchor="middle">A</text>
+                    <circle cx="140" cy="110" r="3" fill="#64748b" />
+                    <text x="140" y="124" fill="#f8fafc" fontSize="10" fontStyle="italic" fontWeight="bold" textAnchor="middle">B</text>
+                  </svg>
+                  <p className="text-[10px] text-slate-400 text-center">
+                    <LatexMath math="R" /> et <LatexMath math="R_1" /> sont connectées en <strong>parallèle</strong> entre <LatexMath math="A" /> et <LatexMath math="B" />.
+                  </p>
+                </div>
+
+                {/* SVG 4: Schéma équivalent 2 */}
+                <div className="p-3 rounded-xl bg-black/50 border border-slate-800 flex flex-col items-center justify-center space-y-2">
+                  <span className="text-[10px] font-mono text-amber-300 font-bold">Schéma Équivalent Réduit</span>
+                  <svg viewBox="0 0 240 140" className="w-full max-w-[230px] h-auto text-xs">
+                    {/* Sky Blue Loop */}
+                    <path d="M 50 110 L 50 30 L 210 30 L 210 110 L 50 110" fill="none" stroke="#38bdf8" strokeWidth="2" />
+                    
+                    {/* Resistor R'eq */}
+                    <rect x="44" y="55" width="12" height="34" fill="#020617" stroke="#f59e0b" strokeWidth="1.6" rx="2" />
+                    <text x="38" y="75" fill="#f59e0b" fontSize="10" fontStyle="italic" fontWeight="bold" textAnchor="end">R&apos;_éq</text>
+
+                    {/* Resistor R2 */}
+                    <rect x="110" y="24" width="36" height="12" fill="#020617" stroke="#38bdf8" strokeWidth="1.5" rx="2" />
+                    <text x="128" y="19" fill="#38bdf8" fontSize="9.5" fontStyle="italic" fontWeight="bold" textAnchor="middle">R₂</text>
+
+                    {/* Source E2 */}
+                    <rect x="200" y="55" width="20" height="30" fill="#020617" />
+                    <line x1="200" y1="65" x2="220" y2="65" stroke="#facc15" strokeWidth="2.5" />
+                    <line x1="204" y1="75" x2="216" y2="75" stroke="#facc15" strokeWidth="3.5" />
+                    <text x="228" y="73" fill="#facc15" fontSize="10" fontStyle="italic" fontWeight="bold">E₂</text>
+
+                    {/* Nodes A and B */}
+                    <circle cx="50" cy="30" r="3" fill="#f43f5e" />
+                    <text x="50" y="22" fill="#f8fafc" fontSize="10" fontStyle="italic" fontWeight="bold" textAnchor="middle">A</text>
+                    <circle cx="50" cy="110" r="3" fill="#64748b" />
+                    <text x="50" y="124" fill="#f8fafc" fontSize="10" fontStyle="italic" fontWeight="bold" textAnchor="middle">B</text>
+                  </svg>
+                  <p className="text-[10px] text-amber-300/90 text-center font-mono">
+                    <LatexMath math="R'_{\text{éq}} = R \parallel R_1 = \frac{R \cdot R_1}{R + R_1}" />
+                  </p>
+                </div>
+              </div>
+
+              {/* Mathematical Derivation Steps */}
+              <div className="space-y-2 text-[11.5px] leading-relaxed pt-1">
+                <p>
+                  • <strong>Diviseur de tension aux bornes de <LatexMath math="AB" /> :</strong>
+                </p>
+                <div className="p-2 rounded-lg bg-black/60 text-center font-mono text-amber-300 font-bold text-xs">
+                  <LatexMath math="U'_{AB} = \frac{R'_{\text{éq}}}{R_2 + R'_{\text{éq}}} \cdot E_2" />
+                </div>
+
+                <p>
+                  • <strong>Or, par la loi d&apos;Ohm aux bornes de <LatexMath math="R" /> :</strong>
+                </p>
+                <div className="p-2 rounded-lg bg-black/60 text-center font-mono text-slate-200 text-xs">
+                  <LatexMath math="U'_{AB} = R \cdot I'' \quad \implies \quad I'' = \frac{1}{R} \cdot U'_{AB}" />
+                </div>
+
+                <p>
+                  • <strong>En remplaçant <LatexMath math="R'_{\text{éq}} = \frac{R \cdot R_1}{R + R_1}" /> :</strong>
+                </p>
+                <div className="p-2.5 rounded-lg bg-black/70 text-center font-mono text-amber-200 text-xs space-y-1.5">
+                  <div>
+                    <LatexMath math="I'' = \frac{1}{R} \cdot \frac{\frac{R \cdot R_1}{R + R_1}}{R_2 + \frac{R \cdot R_1}{R + R_1}} \cdot E_2 = \frac{1}{\cancel{R}} \cdot \frac{\cancel{R} \cdot R_1}{\frac{R_2(R + R_1) + R \cdot R_1}{R + R_1}} \cdot \frac{1}{R + R_1} \cdot E_2" />
+                  </div>
+                  <div className="pt-1">
+                    <LatexMath math="\implies \mathbf{I'' = \frac{R_1 \cdot E_2}{R \cdot R_2 + R_1 \cdot R_2 + R \cdot R_1} = \frac{R_1 E_2}{R_1 R_2 + R(R_1 + R_2)}}" />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Step c: Somme Algébrique Finale Encadrée */}
+            <div className="p-4 rounded-xl bg-slate-950/80 border border-amber-500/40 space-y-3 shadow-md">
+              <span className="text-xs font-bold text-amber-300 flex items-center gap-1.5">
+                <span className="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 text-[10px] font-mono font-bold">c)</span>
+                Somme Algébrique (Principe de Linéarité) :
+              </span>
+              <p className="text-[11.5px] text-slate-300">
+                Par superposition directe des deux états <LatexMath math="I = I' + I''" /> :
+              </p>
+              
+              <div className="p-3 rounded-xl bg-amber-500/15 border-2 border-amber-400 text-center font-mono text-amber-200 font-black text-xs sm:text-sm shadow-md">
+                <LatexMath math="\mathbf{I = I' + I'' = \frac{R_2 E_1 + R_1 E_2}{R_1 R_2 + R(R_1 + R_2)} = \frac{\frac{E_1}{R_1} + \frac{E_2}{R_2}}{1 + R\left(\frac{1}{R_1} + \frac{1}{R_2}\right)}}" />
+              </div>
+
+              {/* Application Numérique en direct avec les sliders */}
+              <div className="p-3 rounded-xl bg-black/70 border border-slate-800 text-[11px] font-mono space-y-1.5">
+                <div className="flex items-center justify-between border-b border-slate-800 pb-1">
+                  <span className="text-amber-400 font-bold flex items-center gap-1.5">
+                    <Sparkles className="w-3.5 h-3.5" />
+                    Application Numérique en direct (Valeurs des Sliders) :
+                  </span>
+                  <span className="text-[10px] text-slate-400 font-mono">
+                    <LatexMath math={`Dén = ${R1 * R2 + R * (R1 + R2)}\\text{ }\\Omega^2`} />
+                  </span>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-slate-200 pt-0.5">
+                  <div className="p-2 rounded bg-slate-900/60 border border-slate-800 text-center">
+                    <LatexMath math={`I' = \\frac{${R2} \\times ${E1}}{${R1 * R2 + R * (R1 + R2)}} = \\mathbf{${((R2 * E1) / (R1 * R2 + R * (R1 + R2))).toFixed(3)}\\text{ A}}`} />
+                  </div>
+                  <div className="p-2 rounded bg-slate-900/60 border border-slate-800 text-center">
+                    <LatexMath math={`I'' = \\frac{${R1} \\times ${E2}}{${R1 * R2 + R * (R1 + R2)}} = \\mathbf{${((R1 * E2) / (R1 * R2 + R * (R1 + R2))).toFixed(3)}\\text{ A}}`} />
+                  </div>
+                </div>
+                <div className="p-2 rounded bg-amber-950/40 border border-amber-500/30 text-center text-amber-300 font-bold">
+                  <LatexMath math={`I = I' + I'' = ${((R2 * E1) / (R1 * R2 + R * (R1 + R2))).toFixed(3)} + ${((R1 * E2) / (R1 * R2 + R * (R1 + R2))).toFixed(3)} = \\mathbf{${calculations.I.toFixed(3)}\\text{ A}}`} />
+                </div>
+              </div>
+            </div>
+
           </div>
         )}
 
