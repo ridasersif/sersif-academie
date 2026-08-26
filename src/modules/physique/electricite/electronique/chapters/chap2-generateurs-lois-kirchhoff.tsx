@@ -24,10 +24,14 @@ import {
 } from "lucide-react";
 import LatexMath from "@/components/ui/LatexMath";
 
-// Dynamic 3D Simulation Canvas for Thévenin / Norton
+// Dynamic Simulation Canvases
 const KirchhoffLaws3DCanvas = dynamic(() => import('../components/KirchhoffLaws3DCanvas'), { ssr: false });
 const NetworkThevenin3DCanvas = dynamic(
   () => import("../components/NetworkThevenin3DCanvas"),
+  { ssr: false }
+);
+const SourcesLabSimulator = dynamic(
+  () => import("../components/SourcesLabSimulator"),
   { ssr: false }
 );
 
@@ -920,6 +924,9 @@ export default function Chap2GenerateursLoisKirchhoff() {
               </div>
             </CollapsibleProof>
           </div>
+
+          {/* Interactive Simulator: Sources & Extinction Lab */}
+          <SourcesLabSimulator />
         </div>
       </section>
 
