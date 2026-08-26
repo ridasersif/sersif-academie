@@ -697,103 +697,399 @@ export default function Chap3RegimeSinusoidalImpedances() {
 
       </section>
 
-      {/* ── PARTIE 2: IMPÉDANCES & ADMITTANCES DES DIPÔLES FONDAMENTAUX ── */}
+      {/* ── PARTIE 2: IMPÉDANCES & ADMITTANCES DES DIPÔLES FONDAMENTAUX (ILLUSTRÉE SVG) ── */}
       <section className="bg-card/90 border border-border/80 rounded-3xl p-5 sm:p-8 shadow-sm space-y-6">
         <div className="flex items-center gap-2 border-b border-border/60 pb-3">
           <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
             <Zap className="w-5 h-5" />
           </div>
           <div>
-            <span className="text-[10px] font-mono text-emerald-400 uppercase font-bold tracking-wider block">Partie 2 • Caractéristiques des Dipôles</span>
+            <span className="text-[10px] font-mono text-emerald-400 uppercase font-bold tracking-wider block">Partie 2 • Caractéristiques Fondamentales</span>
             <h2 className="text-lg sm:text-2xl font-black text-foreground">
-              2. Impédances et Admittances Complexes des Dipôles R, L, C
+              2. Impédance & Admittance d&apos;un Dipôle : Définition Générale et Dipôles R, L, C
             </h2>
           </div>
         </div>
 
-        <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
-          L&apos;<strong>impédance complexe</strong> <LatexMath math="\underline{Z}" /> généralise la résistance en régime sinusoïdal en intégrant simultanément l&apos;amplitude et le déphasage :
-        </p>
-        <div className="p-3.5 rounded-2xl bg-black/60 border border-emerald-500/30 text-center font-mono text-emerald-300 font-bold text-xs sm:text-sm shadow-inner">
-          <LatexMath math="\underline{Z} = \frac{\underline{u}(t)}{\underline{i}(t)} = \frac{\underline{U}_m}{\underline{I}_m} = R + j X = |\underline{Z}| e^{j\phi} \quad \text{et} \quad \underline{Y} = \frac{1}{\underline{Z}} = G + j B" />
-        </div>
-
-        {/* 3 Dipoles Detailed Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 my-4">
-          {/* Resistor R */}
-          <div className="p-5 rounded-2xl bg-slate-900/90 border border-rose-500/30 space-y-3 shadow-md">
-            <span className="text-[10px] font-mono uppercase px-2.5 py-0.5 rounded-full bg-rose-500/10 text-rose-400 font-bold border border-rose-500/20">
-              Résistance (R)
-            </span>
-            <div className="p-2.5 rounded-xl bg-black/50 text-center font-mono text-rose-300 font-bold text-xs sm:text-sm border border-rose-500/20">
-              <LatexMath math="\underline{Z}_R = R \quad (\phi = 0)" />
-            </div>
-            <p className="text-xs text-slate-300 leading-snug">
-              Tension et courant <strong>strictement en phase</strong>. Pas d&apos;effet réactif (<LatexMath math="X = 0" />). Indépendant de la fréquence.
-            </p>
+        {/* 2.1 Définition Générale : Dipôle Générique Z en Convention Récepteur */}
+        <div className="p-5 sm:p-6 rounded-2xl bg-gradient-to-r from-slate-900 via-slate-950 to-slate-900 border border-emerald-500/30 space-y-4 shadow-lg">
+          <div className="flex items-center gap-2 text-emerald-400 font-extrabold text-xs uppercase tracking-wider">
+            <Sparkles className="w-4 h-4 text-emerald-400" />
+            <span>2.1 Définition Générale de l&apos;Impédance et de l&apos;Admittance Complexe</span>
           </div>
 
-          {/* Inductor L */}
-          <div className="p-5 rounded-2xl bg-slate-900/90 border border-amber-500/30 space-y-3 shadow-md">
-            <span className="text-[10px] font-mono uppercase px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-400 font-bold border border-amber-500/20">
-              Bobine Idéale (L)
-            </span>
-            <div className="p-2.5 rounded-xl bg-black/50 text-center font-mono text-amber-300 font-bold text-xs sm:text-sm border border-amber-500/20">
-              <LatexMath math="\underline{Z}_L = j L \omega = L\omega e^{j\frac{\pi}{2}}" />
-            </div>
-            <p className="text-xs text-slate-300 leading-snug">
-              Déphasage <LatexMath math="\phi = +90^\circ" /> : tension en avance sur le courant.
-              <br />
-              • <LatexMath math="\omega \to 0" /> : Fil parfait (court-circuit).
-              <br />
-              • <LatexMath math="\omega \to \infty" /> : Circuit ouvert (bloque les hautes fréquences).
-            </p>
-          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-center">
+            
+            {/* Schéma SVG du Dipôle Générique (5 Cols) */}
+            <div className="lg:col-span-5 p-4 rounded-2xl bg-black/60 border border-slate-800 flex flex-col items-center justify-center shadow-inner">
+              <span className="text-[11px] font-mono text-slate-400 mb-2 font-bold">Convention Récepteur :</span>
+              <svg viewBox="0 0 320 130" className="w-full h-auto max-w-[280px] font-sans">
+                {/* Wires */}
+                <line x1="20" y1="55" x2="110" y2="55" stroke="#94a3b8" strokeWidth="2.5" />
+                <line x1="210" y1="55" x2="300" y2="55" stroke="#94a3b8" strokeWidth="2.5" />
+                
+                {/* Terminal dots */}
+                <circle cx="20" cy="55" r="4" fill="#38bdf8" />
+                <circle cx="300" cy="55" r="4" fill="#38bdf8" />
+                <text x="12" y="42" fill="#38bdf8" fontSize="11" fontWeight="bold">A</text>
+                <text x="302" y="42" fill="#38bdf8" fontSize="11" fontWeight="bold">B</text>
 
-          {/* Capacitor C */}
-          <div className="p-5 rounded-2xl bg-slate-900/90 border border-cyan-500/30 space-y-3 shadow-md">
-            <span className="text-[10px] font-mono uppercase px-2.5 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 font-bold border border-cyan-500/20">
-              Condensateur Idéal (C)
-            </span>
-            <div className="p-2.5 rounded-xl bg-black/50 text-center font-mono text-cyan-300 font-bold text-xs sm:text-sm border border-cyan-500/20">
-              <LatexMath math="\underline{Z}_C = \frac{1}{j C \omega} = \frac{1}{C\omega} e^{-j\frac{\pi}{2}}" />
-            </div>
-            <p className="text-xs text-slate-300 leading-snug">
-              Déphasage <LatexMath math="\phi = -90^\circ" /> : tension en retard sur le courant.
-              <br />
-              • <LatexMath math="\omega \to 0" /> : Interrupteur ouvert (bloque le continu).
-              <br />
-              • <LatexMath math="\omega \to \infty" /> : Fil parfait (court-circuit en HF).
-            </p>
-          </div>
-        </div>
+                {/* Dipole Box Z */}
+                <rect x="110" y="30" width="100" height="50" rx="8" fill="#0f172a" stroke="#10b981" strokeWidth="2.5" />
+                <text x="160" y="62" fill="#34d399" fontSize="18" fontWeight="bold" textAnchor="middle" fontFamily="monospace">Z</text>
 
-        {/* Real Dipoles Models Proof */}
-        <CollapsibleProof
-          title="Modèles Réels : Bobine Réelle et Condensateur à Pertes"
-          subtitle="Prise en compte de la résistance d'enroulement et des fuites diélectriques"
-          color="amber"
-          badge="Électronique Pratique"
-        >
-          <div className="space-y-3 text-slate-300 font-sans text-xs leading-relaxed">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div className="p-3 rounded-xl bg-black/50 border border-slate-800 space-y-1.5">
-                <span className="text-amber-400 font-bold block">1. Bobine Réelle (Série) :</span>
-                <p>Modélisée par une résistance interne <LatexMath math="r" /> en série avec <LatexMath math="L" /> :</p>
-                <div className="p-1.5 rounded bg-slate-900 text-center text-amber-300 font-mono">
-                  <LatexMath math="\underline{Z} = r + j L \omega \implies |\underline{Z}| = \sqrt{r^2 + L^2 \omega^2}, \quad \tan\phi = \frac{L\omega}{r}" />
+                {/* Current Arrow i(t) */}
+                <line x1="45" y1="35" x2="85" y2="35" stroke="#06b6d4" strokeWidth="2" />
+                <polygon points="85,35 77,31 77,39" fill="#06b6d4" />
+                <text x="65" y="24" fill="#06b6d4" fontSize="13" fontWeight="bold" textAnchor="middle" fontFamily="monospace">i(t)</text>
+
+                {/* Voltage Arrow u(t) (Convention récepteur: sens opposé à i) */}
+                <line x1="280" y1="105" x2="40" y2="105" stroke="#f43f5e" strokeWidth="2" />
+                <polygon points="40,105 48,101 48,109" fill="#f43f5e" />
+                <text x="160" y="123" fill="#f43f5e" fontSize="13" fontWeight="bold" textAnchor="middle" fontFamily="monospace">u(t)</text>
+              </svg>
+            </div>
+
+            {/* Formules et Définitions Clés (7 Cols) */}
+            <div className="lg:col-span-7 space-y-3 text-xs">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 font-mono">
+                {/* Impédance Z */}
+                <div className="p-3.5 rounded-xl bg-slate-900 border border-emerald-500/30 space-y-1">
+                  <span className="text-emerald-400 font-sans font-bold block">1. Impédance Complexe :</span>
+                  <div className="p-1.5 rounded bg-black/60 text-center text-emerald-300 font-bold text-sm">
+                    <LatexMath math="\underline{Z} = \frac{\underline{u}}{\underline{i}} \iff \underline{u} = \underline{Z} \cdot \underline{i}" />
+                  </div>
+                  <p className="text-slate-400 font-sans text-[11px] pt-1">Homogène à une résistance [<LatexMath math="\Omega" />].</p>
+                </div>
+
+                {/* Admittance Y */}
+                <div className="p-3.5 rounded-xl bg-slate-900 border border-cyan-500/30 space-y-1">
+                  <span className="text-cyan-400 font-sans font-bold block">2. Admittance Complexe :</span>
+                  <div className="p-1.5 rounded bg-black/60 text-center text-cyan-300 font-bold text-sm">
+                    <LatexMath math="\underline{Y} = \frac{1}{\underline{Z}} \iff \underline{i} = \underline{Y} \cdot \underline{u}" />
+                  </div>
+                  <p className="text-slate-400 font-sans text-[11px] pt-1">Homogène à une conductance [Siemens <LatexMath math="\text{S}" />].</p>
                 </div>
               </div>
-              <div className="p-3 rounded-xl bg-black/50 border border-slate-800 space-y-1.5">
-                <span className="text-cyan-400 font-bold block">2. Condensateur avec Fuites (Parallèle) :</span>
-                <p>Modélisé par une résistance de fuite <LatexMath math="R_p" /> en parallèle avec <LatexMath math="C" /> :</p>
-                <div className="p-1.5 rounded bg-slate-900 text-center text-cyan-300 font-mono">
-                  <LatexMath math="\underline{Y} = \frac{1}{R_p} + j C \omega \implies \underline{Z} = \frac{R_p}{1 + j R_p C \omega}" />
+
+              {/* Module & Argument */}
+              <div className="p-3.5 rounded-xl bg-slate-900/90 border border-slate-800 space-y-1.5 text-slate-300">
+                <div className="flex items-center justify-between flex-wrap gap-2">
+                  <span className="text-amber-400 font-bold font-mono">• Module Réel : <LatexMath math="|\underline{Z}| = Z = \frac{U_m}{I_m} = \frac{U_{\text{eff}}}{I_{\text{eff}}} \quad [\Omega]" /></span>
+                  <span className="text-indigo-400 font-bold font-mono">• Déphasage : <LatexMath math="\phi = \arg(\underline{Z}) = \phi_u - \phi_i" /></span>
                 </div>
+                <p className="text-[11px] text-slate-400 leading-snug">
+                  L&apos;impédance s&apos;écrit sous forme trigonométrique : <LatexMath math="\underline{Z} = |\underline{Z}| e^{j\phi} = Z (\cos\phi + j \sin\phi) = R + jX" />.
+                </p>
               </div>
             </div>
+
           </div>
-        </CollapsibleProof>
+        </div>
+
+        {/* 2.2 Les 3 Dipôles Fondamentaux : R, L, C avec Schémas SVG et Calculs */}
+        <div className="space-y-4 pt-2">
+          <h3 className="text-sm sm:text-base font-bold text-foreground flex items-center gap-2">
+            <Workflow className="w-4 h-4 text-cyan-400" />
+            <span>2.2 Caractéristiques des 3 Dipôles Élémentaires : Résistance, Bobine et Condensateur</span>
+          </h3>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            
+            {/* 1. RÉSISTANCE PURE R */}
+            <div className="p-5 rounded-2xl bg-slate-900/90 border border-rose-500/30 space-y-3 shadow-md flex flex-col justify-between">
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-mono uppercase px-2.5 py-0.5 rounded-full bg-rose-500/10 text-rose-400 font-bold border border-rose-500/20">
+                    1. Résistance (R)
+                  </span>
+                  <span className="text-xs font-mono font-bold text-rose-300"><LatexMath math="\phi = 0" /></span>
+                </div>
+
+                {/* SVG Schema R */}
+                <div className="p-2 rounded-xl bg-black/50 border border-slate-800 flex justify-center items-center py-3">
+                  <svg viewBox="0 0 160 50" className="w-full max-w-[140px] h-auto">
+                    <line x1="10" y1="25" x2="45" y2="25" stroke="#94a3b8" strokeWidth="2" />
+                    <line x1="115" y1="25" x2="150" y2="25" stroke="#94a3b8" strokeWidth="2" />
+                    <rect x="45" y="12" width="70" height="26" rx="4" fill="#1e1b4b" stroke="#f43f5e" strokeWidth="2" />
+                    <text x="80" y="29" fill="#fda4af" fontSize="13" fontWeight="bold" textAnchor="middle" fontFamily="monospace">R</text>
+                  </svg>
+                </div>
+
+                {/* Formulas R */}
+                <div className="space-y-1.5 font-mono text-xs">
+                  <div className="p-1.5 rounded bg-black/40 border border-slate-800 text-rose-300">
+                    • <LatexMath math="\underline{Z}_R = R" />
+                  </div>
+                  <div className="p-1.5 rounded bg-black/40 border border-slate-800 text-rose-300">
+                    • <LatexMath math="\underline{Y}_R = \frac{1}{R} = G" />
+                  </div>
+                  <div className="p-1.5 rounded bg-black/40 border border-slate-800 text-cyan-300">
+                    • Module : <LatexMath math="|\underline{Z}_R| = R" />
+                  </div>
+                  <div className="p-1.5 rounded bg-black/40 border border-slate-800 text-amber-300">
+                    • Phase : <LatexMath math="\phi = \arg(\underline{Z}_R) = 0" />
+                  </div>
+                </div>
+              </div>
+
+              <p className="text-[11px] text-slate-400 leading-snug pt-1">
+                Tension et courant sont <strong>strictement en phase</strong>. L&apos;impédance est indépendante de la pulsation <LatexMath math="\omega" />.
+              </p>
+            </div>
+
+            {/* 2. BOBINE IDÉALE L */}
+            <div className="p-5 rounded-2xl bg-slate-900/90 border border-amber-500/30 space-y-3 shadow-md flex flex-col justify-between">
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-mono uppercase px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-400 font-bold border border-amber-500/20">
+                    2. Bobine Idéale (L)
+                  </span>
+                  <span className="text-xs font-mono font-bold text-amber-300"><LatexMath math="\phi = +90^\circ" /></span>
+                </div>
+
+                {/* SVG Schema L (Inductor Loops) */}
+                <div className="p-2 rounded-xl bg-black/50 border border-slate-800 flex justify-center items-center py-3">
+                  <svg viewBox="0 0 160 50" className="w-full max-w-[140px] h-auto">
+                    <line x1="10" y1="25" x2="35" y2="25" stroke="#94a3b8" strokeWidth="2" />
+                    <line x1="125" y1="25" x2="150" y2="25" stroke="#94a3b8" strokeWidth="2" />
+                    {/* 4 Coil Arcs */}
+                    <path d="M 35,25 A 11,11 0 0,1 57,25 A 11,11 0 0,1 79,25 A 11,11 0 0,1 101,25 A 11,11 0 0,1 123,25" fill="none" stroke="#f59e0b" strokeWidth="2.5" />
+                    <text x="80" y="44" fill="#fcd34d" fontSize="12" fontWeight="bold" textAnchor="middle" fontFamily="monospace">L</text>
+                  </svg>
+                </div>
+
+                {/* Formulas L */}
+                <div className="space-y-1.5 font-mono text-xs">
+                  <div className="p-1.5 rounded bg-black/40 border border-slate-800 text-amber-300">
+                    • <LatexMath math="\underline{Z}_L = j L \omega = L\omega e^{j\frac{\pi}{2}}" />
+                  </div>
+                  <div className="p-1.5 rounded bg-black/40 border border-slate-800 text-amber-300">
+                    • <LatexMath math="\underline{Y}_L = \frac{1}{j L \omega} = -j \frac{1}{L\omega}" />
+                  </div>
+                  <div className="p-1.5 rounded bg-black/40 border border-slate-800 text-cyan-300">
+                    • Module : <LatexMath math="|\underline{Z}_L| = L\omega" />
+                  </div>
+                  <div className="p-1.5 rounded bg-black/40 border border-slate-800 text-amber-300">
+                    • Phase : <LatexMath math="\phi = +\frac{\pi}{2} (+90^\circ)" />
+                  </div>
+                </div>
+              </div>
+
+              <p className="text-[11px] text-slate-400 leading-snug pt-1">
+                La tension est <strong>en avance de 90°</strong> sur le courant. Fil parfait en continu (<LatexMath math="\omega \to 0" />) et interrupteur ouvert en HF (<LatexMath math="\omega \to \infty" />).
+              </p>
+            </div>
+
+            {/* 3. CONDENSATEUR IDÉAL C */}
+            <div className="p-5 rounded-2xl bg-slate-900/90 border border-cyan-500/30 space-y-3 shadow-md flex flex-col justify-between">
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-mono uppercase px-2.5 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 font-bold border border-cyan-500/20">
+                    3. Condensateur (C)
+                  </span>
+                  <span className="text-xs font-mono font-bold text-cyan-300"><LatexMath math="\phi = -90^\circ" /></span>
+                </div>
+
+                {/* SVG Schema C (Capacitor Plates) */}
+                <div className="p-2 rounded-xl bg-black/50 border border-slate-800 flex justify-center items-center py-3">
+                  <svg viewBox="0 0 160 50" className="w-full max-w-[140px] h-auto">
+                    <line x1="10" y1="25" x2="68" y2="25" stroke="#94a3b8" strokeWidth="2" />
+                    <line x1="92" y1="25" x2="150" y2="25" stroke="#94a3b8" strokeWidth="2" />
+                    {/* Parallel Plates */}
+                    <line x1="68" y1="10" x2="68" y2="40" stroke="#06b6d4" strokeWidth="3" strokeLinecap="round" />
+                    <line x1="92" y1="10" x2="92" y2="40" stroke="#06b6d4" strokeWidth="3" strokeLinecap="round" />
+                    <text x="80" y="47" fill="#67e8f9" fontSize="12" fontWeight="bold" textAnchor="middle" fontFamily="monospace">C</text>
+                  </svg>
+                </div>
+
+                {/* Formulas C */}
+                <div className="space-y-1.5 font-mono text-xs">
+                  <div className="p-1.5 rounded bg-black/40 border border-slate-800 text-cyan-300">
+                    • <LatexMath math="\underline{Z}_C = \frac{1}{j C \omega} = -j \frac{1}{C\omega}" />
+                  </div>
+                  <div className="p-1.5 rounded bg-black/40 border border-slate-800 text-cyan-300">
+                    • <LatexMath math="\underline{Y}_C = j C \omega = C\omega e^{j\frac{\pi}{2}}" />
+                  </div>
+                  <div className="p-1.5 rounded bg-black/40 border border-slate-800 text-cyan-300">
+                    • Module : <LatexMath math="|\underline{Z}_C| = \frac{1}{C\omega}" />
+                  </div>
+                  <div className="p-1.5 rounded bg-black/40 border border-slate-800 text-amber-300">
+                    • Phase : <LatexMath math="\phi = -\frac{\pi}{2} (-90^\circ)" />
+                  </div>
+                </div>
+              </div>
+
+              <p className="text-[11px] text-slate-400 leading-snug pt-1">
+                La tension est <strong>en retard de 90°</strong> sur le courant. Interrupteur ouvert en continu (<LatexMath math="\omega \to 0" />) et court-circuit en HF (<LatexMath math="\omega \to \infty" />).
+              </p>
+            </div>
+
+          </div>
+        </div>
+
+        {/* 2.3 Modèles Réels : Bobine Réelle et Condensateur à Pertes avec Schémas SVG */}
+        <div className="space-y-4 pt-2">
+          <h3 className="text-sm sm:text-base font-bold text-foreground flex items-center gap-2">
+            <Layers className="w-4 h-4 text-amber-400" />
+            <span>2.3 Modèles Réels : Bobine Réelle et Condensateur à Pertes Diélectriques</span>
+          </h3>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+            
+            {/* 1. BOBINE RÉELLE (Modèle Série r + L) */}
+            <div className="p-5 rounded-2xl bg-slate-900/90 border border-amber-500/40 space-y-4 shadow-lg flex flex-col justify-between">
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-mono uppercase px-2.5 py-0.5 rounded-full bg-amber-500/15 text-amber-300 font-bold border border-amber-500/30">
+                    1. Bobine Réelle (Modèle Série r + L)
+                  </span>
+                  <span className="text-xs font-mono font-bold text-amber-400">0 &lt; \phi &lt; 90°</span>
+                </div>
+
+                {/* SVG Schematic Real Inductor */}
+                <div className="p-3 rounded-2xl bg-black/60 border border-slate-800 flex justify-center items-center shadow-inner">
+                  <svg viewBox="0 0 320 90" className="w-full max-w-[280px] h-auto font-sans">
+                    {/* Wires */}
+                    <line x1="20" y1="40" x2="60" y2="40" stroke="#94a3b8" strokeWidth="2.2" />
+                    <line x1="120" y1="40" x2="160" y2="40" stroke="#94a3b8" strokeWidth="2.2" />
+                    <line x1="240" y1="40" x2="300" y2="40" stroke="#94a3b8" strokeWidth="2.2" />
+
+                    {/* Terminals */}
+                    <circle cx="20" cy="40" r="3.5" fill="#38bdf8" />
+                    <circle cx="300" cy="40" r="3.5" fill="#38bdf8" />
+                    <text x="14" y="30" fill="#38bdf8" fontSize="11" fontWeight="bold">A</text>
+                    <text x="302" y="30" fill="#38bdf8" fontSize="11" fontWeight="bold">B</text>
+
+                    {/* Resistor r box */}
+                    <rect x="60" y="27" width="60" height="26" rx="4" fill="#1e1b4b" stroke="#f43f5e" strokeWidth="2" />
+                    <text x="90" y="44" fill="#fda4af" fontSize="13" fontWeight="bold" textAnchor="middle" fontFamily="monospace">r</text>
+
+                    {/* Coil L (3 loops) */}
+                    <path d="M 160,40 A 13,13 0 0,1 186,40 A 13,13 0 0,1 212,40 A 13,13 0 0,1 238,40" fill="none" stroke="#f59e0b" strokeWidth="2.5" />
+                    <text x="200" y="62" fill="#fcd34d" fontSize="13" fontWeight="bold" textAnchor="middle" fontFamily="monospace">L</text>
+
+                    {/* Current Arrow i */}
+                    <line x1="30" y1="20" x2="55" y2="20" stroke="#06b6d4" strokeWidth="1.8" />
+                    <polygon points="55,20 49,17 49,23" fill="#06b6d4" />
+                    <text x="42" y="14" fill="#06b6d4" fontSize="10.5" fontWeight="bold" textAnchor="middle" fontFamily="monospace">i(t)</text>
+
+                    {/* Voltage Arrow u */}
+                    <line x1="285" y1="78" x2="35" y2="78" stroke="#ec4899" strokeWidth="1.8" />
+                    <polygon points="35,78 41,75 41,81" fill="#ec4899" />
+                    <text x="160" y="88" fill="#ec4899" fontSize="11" fontWeight="bold" textAnchor="middle" fontFamily="monospace">u(t)</text>
+                  </svg>
+                </div>
+
+                {/* Mathematical Derivations */}
+                <div className="space-y-2 font-mono text-xs text-slate-200">
+                  <div className="p-2 rounded-lg bg-black/40 border border-slate-800">
+                    <span className="text-amber-400 font-sans font-bold block">• Impédance Complexe :</span>
+                    <LatexMath math="\underline{Z} = r + j L \omega" />
+                  </div>
+                  <div className="p-2 rounded-lg bg-black/40 border border-slate-800">
+                    <span className="text-cyan-400 font-sans font-bold block">• Admittance Complexe :</span>
+                    <LatexMath math="\underline{Y} = \frac{1}{r + j L \omega} = \frac{r - j L \omega}{r^2 + L^2 \omega^2}" />
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="p-2 rounded-lg bg-black/40 border border-slate-800">
+                      <span className="text-emerald-400 font-sans font-bold block">• Module :</span>
+                      <LatexMath math="|\underline{Z}| = \sqrt{r^2 + L^2\omega^2}" />
+                    </div>
+                    <div className="p-2 rounded-lg bg-black/40 border border-slate-800">
+                      <span className="text-amber-400 font-sans font-bold block">• Phase :</span>
+                      <LatexMath math="\tan\phi = \frac{L\omega}{r}" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Behavior limits */}
+              <div className="p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-[11.5px] text-slate-300 space-y-1">
+                <p>• <strong>En Continu (<LatexMath math="\omega \to 0" />) :</strong> <LatexMath math="\underline{Z} = r" /> (résistance pure du fil de cuivre).</p>
+                <p>• <strong>En Haute Fréquence (<LatexMath math="\omega \to \infty" />) :</strong> <LatexMath math="|\underline{Z}| \to \infty" /> et <LatexMath math="\phi \to +90^\circ" /> (circuit ouvert inductif).</p>
+              </div>
+            </div>
+
+            {/* 2. CONDENSATEUR AVEC PERTES (Modèle Parallèle Rp || C) */}
+            <div className="p-5 rounded-2xl bg-slate-900/90 border border-cyan-500/40 space-y-4 shadow-lg flex flex-col justify-between">
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-mono uppercase px-2.5 py-0.5 rounded-full bg-cyan-500/15 text-cyan-300 font-bold border border-cyan-500/30">
+                    2. Condensateur avec Fuites (<LatexMath math="R_p \parallel C" />)
+                  </span>
+                  <span className="text-xs font-mono font-bold text-cyan-400">-90° &lt; \phi &lt; 0</span>
+                </div>
+
+                {/* SVG Schematic Lossy Capacitor */}
+                <div className="p-3 rounded-2xl bg-black/60 border border-slate-800 flex justify-center items-center shadow-inner">
+                  <svg viewBox="0 0 320 110" className="w-full max-w-[280px] h-auto font-sans">
+                    {/* Input wire */}
+                    <line x1="20" y1="55" x2="70" y2="55" stroke="#94a3b8" strokeWidth="2.2" />
+                    <circle cx="20" cy="55" r="3.5" fill="#38bdf8" />
+                    <text x="14" y="45" fill="#38bdf8" fontSize="11" fontWeight="bold">A</text>
+
+                    {/* Output wire */}
+                    <line x1="250" y1="55" x2="300" y2="55" stroke="#94a3b8" strokeWidth="2.2" />
+                    <circle cx="300" cy="55" r="3.5" fill="#38bdf8" />
+                    <text x="302" y="45" fill="#38bdf8" fontSize="11" fontWeight="bold">B</text>
+
+                    {/* Branching vertical wires */}
+                    <line x1="70" y1="25" x2="70" y2="85" stroke="#94a3b8" strokeWidth="2.2" />
+                    <line x1="250" y1="25" x2="250" y2="85" stroke="#94a3b8" strokeWidth="2.2" />
+
+                    {/* Top branch: Resistor Rp */}
+                    <line x1="70" y1="25" x2="110" y2="25" stroke="#94a3b8" strokeWidth="2.2" />
+                    <line x1="210" y1="25" x2="250" y2="25" stroke="#94a3b8" strokeWidth="2.2" />
+                    <rect x="110" y="14" width="100" height="22" rx="4" fill="#1e1b4b" stroke="#f43f5e" strokeWidth="2" />
+                    <text x="160" y="30" fill="#fda4af" fontSize="12" fontWeight="bold" textAnchor="middle" fontFamily="monospace">Rp (Fuites)</text>
+
+                    {/* Bottom branch: Capacitor C */}
+                    <line x1="70" y1="85" x2="145" y2="85" stroke="#94a3b8" strokeWidth="2.2" />
+                    <line x1="175" y1="85" x2="250" y2="85" stroke="#94a3b8" strokeWidth="2.2" />
+                    <line x1="145" y1="72" x2="145" y2="98" stroke="#06b6d4" strokeWidth="3" strokeLinecap="round" />
+                    <line x1="175" y1="72" x2="175" y2="98" stroke="#06b6d4" strokeWidth="3" strokeLinecap="round" />
+                    <text x="160" y="106" fill="#67e8f9" fontSize="12" fontWeight="bold" textAnchor="middle" fontFamily="monospace">C</text>
+
+                    {/* Current Arrow i */}
+                    <line x1="30" y1="35" x2="55" y2="35" stroke="#06b6d4" strokeWidth="1.8" />
+                    <polygon points="55,35 49,32 49,38" fill="#06b6d4" />
+                    <text x="42" y="27" fill="#06b6d4" fontSize="10.5" fontWeight="bold" textAnchor="middle" fontFamily="monospace">i(t)</text>
+                  </svg>
+                </div>
+
+                {/* Mathematical Derivations */}
+                <div className="space-y-2 font-mono text-xs text-slate-200">
+                  <div className="p-2 rounded-lg bg-black/40 border border-slate-800">
+                    <span className="text-cyan-400 font-sans font-bold block">• Admittance Parallèle :</span>
+                    <LatexMath math="\underline{Y} = \frac{1}{R_p} + j C \omega" />
+                  </div>
+                  <div className="p-2 rounded-lg bg-black/40 border border-slate-800">
+                    <span className="text-emerald-400 font-sans font-bold block">• Impédance Complexe :</span>
+                    <LatexMath math="\underline{Z} = \frac{R_p}{1 + j R_p C \omega} = \frac{R_p(1 - j R_p C \omega)}{1 + R_p^2 C^2 \omega^2}" />
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="p-2 rounded-lg bg-black/40 border border-slate-800">
+                      <span className="text-cyan-400 font-sans font-bold block">• Module :</span>
+                      <LatexMath math="|\underline{Z}| = \frac{R_p}{\sqrt{1 + R_p^2 C^2 \omega^2}}" />
+                    </div>
+                    <div className="p-2 rounded-lg bg-black/40 border border-slate-800">
+                      <span className="text-amber-400 font-sans font-bold block">• Phase :</span>
+                      <LatexMath math="\tan\phi = -R_p C \omega" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Behavior limits */}
+              <div className="p-2.5 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-[11.5px] text-slate-300 space-y-1">
+                <p>• <strong>En Continu (<LatexMath math="\omega \to 0" />) :</strong> <LatexMath math="\underline{Z} = R_p" /> (résistance de fuite d&apos;isolement du diélectrique).</p>
+                <p>• <strong>En Haute Fréquence (<LatexMath math="\omega \to \infty" />) :</strong> <LatexMath math="\underline{Z} \to 0" /> et <LatexMath math="\phi \to -90^\circ" /> (court-circuit capacitif).</p>
+              </div>
+            </div>
+
+          </div>
+        </div>
       </section>
 
       {/* ── PARTIE 3: LOIS DE KIRCHHOFF & THÉORÈMES COMPLEXES ── */}
