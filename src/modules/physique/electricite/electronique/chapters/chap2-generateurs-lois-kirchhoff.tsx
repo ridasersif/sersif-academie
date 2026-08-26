@@ -339,29 +339,90 @@ export default function Chap2GenerateursLoisKirchhoff() {
         </p>
 
         {/* Definitions Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 my-4">
-          <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800 space-y-1.5">
-            <span className="text-[10px] font-mono uppercase tracking-wider text-cyan-400 font-bold">1. Branche (B)</span>
-            <h4 className="text-[11px] font-bold text-slate-200">Portion à Courant Unique</h4>
-            <p className="text-[11px] text-muted-foreground leading-relaxed">
-              Ensemble de dipôles montés en série entre deux nœuds consécutifs, parcourus par la même intensité <LatexMath math="i(t)" />.
-            </p>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 my-4">
+          <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800 flex flex-col justify-between shadow-sm">
+            <div className="space-y-1.5">
+              <span className="text-[10px] font-mono uppercase tracking-wider text-cyan-400 font-bold">1. Branche (B)</span>
+              <h4 className="text-[11px] font-bold text-slate-200">Portion à Courant Unique</h4>
+              <p className="text-[11px] text-muted-foreground leading-relaxed">
+                Ensemble de dipôles montés en série entre deux nœuds consécutifs, parcourus par la même intensité <LatexMath math="i(t)" />.
+              </p>
+            </div>
+            <div className="mt-4 w-full h-24 flex justify-center items-center bg-black/40 rounded-xl border border-slate-800/50 overflow-hidden">
+              <svg width="100%" height="100%" viewBox="0 0 200 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                {/* Wire & Resistor */}
+                <path d="M 30 40 L 70 40 L 75 25 L 85 55 L 95 25 L 105 55 L 110 40 L 170 40" stroke="#22d3ee" strokeWidth="3" strokeLinejoin="round"/>
+                {/* Nodes A & B */}
+                <circle cx="30" cy="40" r="5" fill="#22d3ee"/>
+                <circle cx="170" cy="40" r="5" fill="#22d3ee"/>
+                {/* Current Arrow on the line */}
+                <path d="M 45 34 L 53 40 L 45 46" stroke="#22d3ee" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
+                {/* Labels */}
+                <text x="40" y="25" fill="#22d3ee" fontSize="14" fontFamily="monospace" fontWeight="bold">i(t)</text>
+                <text x="25" y="60" fill="#94a3b8" fontSize="14" fontFamily="sans-serif">A</text>
+                <text x="165" y="60" fill="#94a3b8" fontSize="14" fontFamily="sans-serif">B</text>
+              </svg>
+            </div>
           </div>
 
-          <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800 space-y-1.5">
-            <span className="text-[10px] font-mono uppercase tracking-wider text-amber-400 font-bold">2. Nœud (N)</span>
-            <h4 className="text-[11px] font-bold text-slate-200">Jonction de Conducteurs</h4>
-            <p className="text-[11px] text-muted-foreground leading-relaxed">
-              Point de connexion où se rejoignent au moins <strong>trois branches</strong> (ou deux branches non triviales).
-            </p>
+          <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800 flex flex-col justify-between shadow-sm">
+            <div className="space-y-1.5">
+              <span className="text-[10px] font-mono uppercase tracking-wider text-amber-400 font-bold">2. Nœud (N)</span>
+              <h4 className="text-[11px] font-bold text-slate-200">Jonction de Conducteurs</h4>
+              <p className="text-[11px] text-muted-foreground leading-relaxed">
+                Point de connexion où se rejoignent au moins <strong>trois branches</strong> (ou deux branches non triviales).
+              </p>
+            </div>
+            <div className="mt-4 w-full h-24 flex justify-center items-center bg-black/40 rounded-xl border border-slate-800/50 overflow-hidden">
+              <svg width="100%" height="100%" viewBox="0 0 200 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                {/* Left Branch (in) */}
+                <path d="M 40 40 L 100 40" stroke="#fbbf24" strokeWidth="3"/>
+                <path d="M 65 34 L 73 40 L 65 46" stroke="#fbbf24" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
+                <text x="60" y="25" fill="#fbbf24" fontSize="14" fontFamily="monospace" fontWeight="bold">i1</text>
+                
+                {/* Top Branch (out) */}
+                <path d="M 100 40 L 100 10" stroke="#fbbf24" strokeWidth="3"/>
+                <path d="M 94 25 L 100 17 L 106 25" stroke="#fbbf24" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
+                <text x="115" y="25" fill="#fbbf24" fontSize="14" fontFamily="monospace" fontWeight="bold">i2</text>
+
+                {/* Bottom Branch (out) */}
+                <path d="M 100 40 L 100 70" stroke="#fbbf24" strokeWidth="3"/>
+                <path d="M 94 55 L 100 63 L 106 55" stroke="#fbbf24" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
+                <text x="115" y="65" fill="#fbbf24" fontSize="14" fontFamily="monospace" fontWeight="bold">i3</text>
+                
+                {/* Node Center */}
+                <circle cx="100" cy="40" r="6" fill="#fbbf24"/>
+                <text x="80" y="55" fill="#94a3b8" fontSize="14" fontFamily="sans-serif">N</text>
+              </svg>
+            </div>
           </div>
 
-          <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800 space-y-1.5">
-            <span className="text-[10px] font-mono uppercase tracking-wider text-emerald-400 font-bold">3. Maille (M)</span>
-            <h4 className="text-[11px] font-bold text-slate-200">Boucle Fermée</h4>
-            <p className="text-[11px] text-muted-foreground leading-relaxed">
-              Succession de branches formant un contour fermé orienté ne passant qu&apos;une seule fois par un même nœud.
-            </p>
+          <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800 flex flex-col justify-between shadow-sm">
+            <div className="space-y-1.5">
+              <span className="text-[10px] font-mono uppercase tracking-wider text-emerald-400 font-bold">3. Maille (M)</span>
+              <h4 className="text-[11px] font-bold text-slate-200">Boucle Fermée</h4>
+              <p className="text-[11px] text-muted-foreground leading-relaxed">
+                Succession de branches formant un contour fermé orienté ne passant qu&apos;une seule fois par un même nœud.
+              </p>
+            </div>
+            <div className="mt-4 w-full h-24 flex justify-center items-center bg-black/40 rounded-xl border border-slate-800/50 overflow-hidden">
+              <svg width="100%" height="100%" viewBox="0 0 200 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                {/* Loop Rectangle */}
+                <rect x="50" y="20" width="100" height="40" stroke="#34d399" strokeWidth="3" fill="none" rx="4"/>
+                {/* Nodes at corners */}
+                <circle cx="50" cy="20" r="4" fill="#34d399"/>
+                <circle cx="150" cy="20" r="4" fill="#34d399"/>
+                <circle cx="50" cy="60" r="4" fill="#34d399"/>
+                <circle cx="150" cy="60" r="4" fill="#34d399"/>
+                
+                {/* Circular Orientation Arrow inside */}
+                <path d="M 100 28 A 12 12 0 1 1 88 40" stroke="#34d399" strokeWidth="2" fill="none" strokeDasharray="4 4"/>
+                <path d="M 95 24 L 102 28 L 95 32" stroke="#34d399" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+                
+                {/* Label */}
+                <text x="94" y="45" fill="#34d399" fontSize="16" fontFamily="monospace" fontWeight="bold">M</text>
+              </svg>
+            </div>
           </div>
         </div>
 
