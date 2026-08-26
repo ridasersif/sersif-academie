@@ -928,23 +928,25 @@ export default function Chap3RegimeSinusoidalImpedances() {
           </div>
         </div>
 
-        {/* 2.3 Modèles Réels : Bobine Réelle et Condensateur à Pertes avec Schémas SVG */}
-        <div className="space-y-4 pt-2">
-          <h3 className="text-sm sm:text-base font-bold text-foreground flex items-center gap-2">
-            <Layers className="w-4 h-4 text-amber-400" />
-            <span>2.3 Modèles Réels : Bobine Réelle et Condensateur à Pertes Diélectriques</span>
-          </h3>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+        {/* 2.3 Modèles Réels : Bobine Réelle et Condensateur à Pertes avec Schémas SVG (Dans un volet déroulant interactif) */}
+        <CollapsibleProof
+          title="2.3 Modèles Réels : Bobine Réelle et Condensateur à Pertes Diélectriques"
+          subtitle="Schémas SVG, impédance complexe, admittance, module, déphasage et comportements BF/HF"
+          color="amber"
+          badge="Électronique Pratique & Modélisation"
+        >
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 pt-2">
             
             {/* 1. BOBINE RÉELLE (Modèle Série r + L) */}
-            <div className="p-5 rounded-2xl bg-slate-900/90 border border-amber-500/40 space-y-4 shadow-lg flex flex-col justify-between">
+            <div className="p-4 sm:p-5 rounded-2xl bg-slate-900/90 border border-amber-500/40 space-y-4 shadow-lg flex flex-col justify-between">
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-mono uppercase px-2.5 py-0.5 rounded-full bg-amber-500/15 text-amber-300 font-bold border border-amber-500/30">
                     1. Bobine Réelle (Modèle Série r + L)
                   </span>
-                  <span className="text-xs font-mono font-bold text-amber-400">0 &lt; \phi &lt; 90°</span>
+                  <span className="text-xs font-mono font-bold text-amber-400">
+                    <LatexMath math="0 < \phi < +90^\circ" />
+                  </span>
                 </div>
 
                 {/* SVG Schematic Real Inductor */}
@@ -1012,13 +1014,15 @@ export default function Chap3RegimeSinusoidalImpedances() {
             </div>
 
             {/* 2. CONDENSATEUR AVEC PERTES (Modèle Parallèle Rp || C) */}
-            <div className="p-5 rounded-2xl bg-slate-900/90 border border-cyan-500/40 space-y-4 shadow-lg flex flex-col justify-between">
+            <div className="p-4 sm:p-5 rounded-2xl bg-slate-900/90 border border-cyan-500/40 space-y-4 shadow-lg flex flex-col justify-between">
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-mono uppercase px-2.5 py-0.5 rounded-full bg-cyan-500/15 text-cyan-300 font-bold border border-cyan-500/30">
                     2. Condensateur avec Fuites (<LatexMath math="R_p \parallel C" />)
                   </span>
-                  <span className="text-xs font-mono font-bold text-cyan-400">-90° &lt; \phi &lt; 0</span>
+                  <span className="text-xs font-mono font-bold text-cyan-400">
+                    <LatexMath math="-90^\circ < \phi < 0" />
+                  </span>
                 </div>
 
                 {/* SVG Schematic Lossy Capacitor */}
@@ -1089,141 +1093,730 @@ export default function Chap3RegimeSinusoidalImpedances() {
             </div>
 
           </div>
-        </div>
+        </CollapsibleProof>
       </section>
 
-      {/* ── PARTIE 3: LOIS DE KIRCHHOFF & THÉORÈMES COMPLEXES ── */}
+      {/* ── PARTIE 3: LOIS DE KIRCHHOFF, DIVISEURS & THÉORÈMES COMPLEXES (ILLUSTRÉE SVG) ── */}
       <section className="bg-card/90 border border-border/80 rounded-3xl p-5 sm:p-8 shadow-sm space-y-6">
         <div className="flex items-center gap-2 border-b border-border/60 pb-3">
           <div className="p-2 rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/20">
             <Workflow className="w-5 h-5" />
           </div>
           <div>
-            <span className="text-[10px] font-mono text-amber-400 uppercase font-bold tracking-wider block">Partie 3 • Résolution Algébrique</span>
+            <span className="text-[10px] font-mono text-amber-400 uppercase font-bold tracking-wider block">Partie 3 • Résolution Algébrique des Réseaux</span>
             <h2 className="text-lg sm:text-2xl font-black text-foreground">
-              3. Lois de Kirchhoff, Diviseurs & Théorème de Millman Complexe
+              3. Lois de Kirchhoff, Ponts Diviseurs & Théorème de Millman Complexe
             </h2>
           </div>
         </div>
 
-        <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
-          Toutes les lois fondamentales du régime continu s&apos;étendent directement au régime sinusoïdal forcé en remplaçant les résistances par des impédances complexes <LatexMath math="\underline{Z}" />.
-        </p>
-
-        {/* Association rules */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 my-3">
-          <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-2">
-            <span className="text-xs font-bold text-cyan-400 uppercase tracking-wider block">Association Série & Pont Diviseur de Tension</span>
-            <div className="p-3 rounded-xl bg-black/60 text-center font-mono text-cyan-300 font-bold text-xs sm:text-sm">
-              <LatexMath math="\underline{Z}_{\text{éq}} = \sum_{k=1}^n \underline{Z}_k \quad \implies \quad \underline{U}_k = \frac{\underline{Z}_k}{\sum \underline{Z}_i} \underline{E}" />
-            </div>
+        {/* 3.1 Pourquoi les Lois de Kirchhoff restent-elles valables en RSF ? */}
+        <div className="p-5 rounded-2xl bg-gradient-to-r from-slate-900 via-slate-950 to-slate-900 border border-amber-500/30 space-y-3 shadow-md">
+          <div className="flex items-center gap-2 text-amber-300 font-extrabold text-xs uppercase tracking-wider">
+            <Lightbulb className="w-4 h-4 text-amber-400" />
+            <span>3.1 Pourquoi les Lois de Kirchhoff s&apos;appliquent-elles en Notation Complexe ?</span>
           </div>
-
-          <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-2">
-            <span className="text-xs font-bold text-indigo-400 uppercase tracking-wider block">Association Parallèle & Pont Diviseur de Courant</span>
-            <div className="p-3 rounded-xl bg-black/60 text-center font-mono text-indigo-300 font-bold text-xs sm:text-sm">
-              <LatexMath math="\underline{Y}_{\text{éq}} = \sum_{k=1}^n \underline{Y}_k = \sum_{k=1}^n \frac{1}{\underline{Z}_k} \quad \implies \quad \underline{I}_k = \frac{\underline{Y}_k}{\sum \underline{Y}_i} \underline{I}_{\text{tot}}" />
+          <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+            Dans le cadre de l&apos;<strong>ARQS</strong> (Approximation des Régimes Quasi-Stationnaires), la loi des nœuds temporelle s&apos;écrit <LatexMath math="\sum i_k(t) = 0" /> et la loi des mailles s&apos;écrit <LatexMath math="\sum u_k(t) = 0" />.
+            <br />
+            En passant en notation complexe avec <LatexMath math="\underline{s}_k(t) = \underline{S}_k e^{j\omega t}" />, le facteur commun <LatexMath math="e^{j\omega t}" /> se simplifie de part et d&apos;autre :
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1 text-xs">
+            <div className="p-3 rounded-xl bg-black/60 border border-slate-800 space-y-1">
+              <span className="text-cyan-400 font-bold font-mono block">1. Loi des Nœuds Complexe :</span>
+              <div className="p-2 rounded bg-slate-900 text-center font-mono text-cyan-300 font-bold">
+                <LatexMath math="\sum_{k} \underline{I}_k = 0 \iff \sum \underline{I}_{\text{entrants}} = \sum \underline{I}_{\text{sortants}}" />
+              </div>
+            </div>
+            <div className="p-3 rounded-xl bg-black/60 border border-slate-800 space-y-1">
+              <span className="text-amber-400 font-bold font-mono block">2. Loi des Mailles Complexe :</span>
+              <div className="p-2 rounded bg-slate-900 text-center font-mono text-amber-300 font-bold">
+                <LatexMath math="\sum_{k} \underline{U}_k = 0" />
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Complex Millman Theorem */}
+        {/* 3.2 Ponts Diviseurs de Tension et de Courant (avec Schémas SVG) */}
+        <div className="space-y-4 pt-2">
+          <h3 className="text-sm sm:text-base font-bold text-foreground flex items-center gap-2">
+            <Scale className="w-4 h-4 text-cyan-400" />
+            <span>3.2 Ponts Diviseurs de Tension & de Courant en Notation Complexe</span>
+          </h3>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+            
+            {/* Pont Diviseur de Tension (Série) */}
+            <div className="p-5 rounded-2xl bg-slate-900/90 border border-cyan-500/30 space-y-4 shadow-lg flex flex-col justify-between">
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-mono uppercase px-2.5 py-0.5 rounded-full bg-cyan-500/15 text-cyan-300 font-bold border border-cyan-500/30">
+                    Pont Diviseur de Tension (Série)
+                  </span>
+                  <span className="text-xs font-mono font-bold text-cyan-400">
+                    <LatexMath math="\underline{Z}_1 + \underline{Z}_2" />
+                  </span>
+                </div>
+
+                {/* SVG Schema Voltage Divider (Fully connected closed loop) */}
+                <div className="p-3 rounded-2xl bg-black/60 border border-slate-800 flex justify-center items-center shadow-inner">
+                  <svg viewBox="0 0 320 165" className="w-full max-w-[290px] h-auto font-sans">
+                    {/* Closed Circuit Wires */}
+                    <line x1="50" y1="25" x2="165" y2="25" stroke="#94a3b8" strokeWidth="2.2" />
+                    <line x1="50" y1="140" x2="165" y2="140" stroke="#94a3b8" strokeWidth="2.2" />
+                    <line x1="50" y1="25" x2="50" y2="67" stroke="#94a3b8" strokeWidth="2.2" />
+                    <line x1="50" y1="97" x2="50" y2="140" stroke="#94a3b8" strokeWidth="2.2" />
+
+                    {/* AC Generator Circle (E) */}
+                    <circle cx="50" cy="82" r="16" fill="#0f172a" stroke="#f43f5e" strokeWidth="2.2" />
+                    {/* AC Sine wave symbol inside generator */}
+                    <path d="M 42,82 Q 46,74 50,82 T 58,82" fill="none" stroke="#f43f5e" strokeWidth="2" strokeLinecap="round" />
+                    <text x="24" y="86" fill="#f43f5e" fontSize="13" fontWeight="bold" textAnchor="end" fontFamily="monospace">E</text>
+
+                    {/* Input current arrow I on top wire */}
+                    <line x1="90" y1="18" x2="115" y2="18" stroke="#38bdf8" strokeWidth="1.8" />
+                    <polygon points="115,18 109,15 109,21" fill="#38bdf8" />
+                    <text x="102" y="12" fill="#38bdf8" fontSize="10.5" fontWeight="bold" textAnchor="middle" fontFamily="monospace">i(t)</text>
+
+                    {/* Vertical Series Branch with Z1 and Z2 */}
+                    <line x1="165" y1="25" x2="165" y2="40" stroke="#94a3b8" strokeWidth="2.2" />
+                    <rect x="135" y="40" width="60" height="28" rx="5" fill="#0f172a" stroke="#06b6d4" strokeWidth="2" />
+                    <text x="165" y="58" fill="#67e8f9" fontSize="12" fontWeight="bold" textAnchor="middle" fontFamily="monospace">Z1</text>
+
+                    <line x1="165" y1="68" x2="165" y2="85" stroke="#94a3b8" strokeWidth="2.2" />
+                    <rect x="135" y="85" width="60" height="28" rx="5" fill="#0f172a" stroke="#10b981" strokeWidth="2" />
+                    <text x="165" y="103" fill="#34d399" fontSize="12" fontWeight="bold" textAnchor="middle" fontFamily="monospace">Z2</text>
+
+                    <line x1="165" y1="113" x2="165" y2="140" stroke="#94a3b8" strokeWidth="2.2" />
+
+                    {/* Node dots */}
+                    <circle cx="165" cy="76" r="3.5" fill="#10b981" />
+                    <circle cx="165" cy="140" r="3.5" fill="#10b981" />
+
+                    {/* Output Taps (Us across Z2) */}
+                    <line x1="165" y1="76" x2="235" y2="76" stroke="#94a3b8" strokeWidth="1.8" strokeDasharray="3 2" />
+                    <line x1="165" y1="140" x2="235" y2="140" stroke="#94a3b8" strokeWidth="1.8" strokeDasharray="3 2" />
+
+                    <circle cx="235" cy="76" r="3.5" fill="#38bdf8" />
+                    <circle cx="235" cy="140" r="3.5" fill="#38bdf8" />
+                    <text x="244" y="80" fill="#38bdf8" fontSize="11" fontWeight="bold">M</text>
+                    <text x="244" y="144" fill="#38bdf8" fontSize="11" fontWeight="bold">N</text>
+
+                    {/* Output Voltage Us Arrow */}
+                    <line x1="268" y1="135" x2="268" y2="82" stroke="#10b981" strokeWidth="2" />
+                    <polygon points="268,82 264,90 272,90" fill="#10b981" />
+                    <text x="282" y="112" fill="#10b981" fontSize="12" fontWeight="bold" textAnchor="start" fontFamily="monospace">Us</text>
+                  </svg>
+                </div>
+
+                {/* Formula */}
+                <div className="p-3 rounded-xl bg-black/60 border border-cyan-500/30 text-center font-mono text-cyan-300 font-bold text-xs sm:text-sm shadow-inner">
+                  <LatexMath math="\underline{U}_s = \frac{\underline{Z}_2}{\underline{Z}_1 + \underline{Z}_2} \cdot \underline{E}" />
+                </div>
+              </div>
+
+              <div className="p-2.5 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-[11.5px] text-slate-300 space-y-1">
+                <span className="text-cyan-400 font-bold block font-mono">Exemple Filtre RC Passe-Bas :</span>
+                <p>Si <LatexMath math="\underline{Z}_1 = R" /> et <LatexMath math="\underline{Z}_2 = \frac{1}{jC\omega}" /> :</p>
+                <div className="p-1 rounded bg-black/40 text-center text-cyan-300 font-mono text-xs">
+                  <LatexMath math="\underline{H}(j\omega) = \frac{\underline{U}_s}{\underline{E}} = \frac{1}{1 + j R C \omega}" />
+                </div>
+              </div>
+            </div>
+
+            {/* Pont Diviseur de Courant (Parallèle) */}
+            <div className="p-5 rounded-2xl bg-slate-900/90 border border-indigo-500/30 space-y-4 shadow-lg flex flex-col justify-between">
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-mono uppercase px-2.5 py-0.5 rounded-full bg-indigo-500/15 text-indigo-300 font-bold border border-indigo-500/30">
+                    Pont Diviseur de Courant (Parallèle)
+                  </span>
+                  <span className="text-xs font-mono font-bold text-indigo-400">
+                    <LatexMath math="\underline{Y}_1 + \underline{Y}_2" />
+                  </span>
+                </div>
+
+                {/* SVG Schema Current Divider (Symmetrical parallel branches) */}
+                <div className="p-3 rounded-2xl bg-black/60 border border-slate-800 flex justify-center items-center shadow-inner">
+                  <svg viewBox="0 0 320 165" className="w-full max-w-[290px] h-auto font-sans">
+                    {/* Input wire */}
+                    <line x1="15" y1="82" x2="70" y2="82" stroke="#94a3b8" strokeWidth="2.2" />
+                    <circle cx="15" cy="82" r="3.5" fill="#38bdf8" />
+
+                    {/* Total Current Arrow */}
+                    <line x1="28" y1="72" x2="55" y2="72" stroke="#38bdf8" strokeWidth="1.8" />
+                    <polygon points="55,72 49,69 49,75" fill="#38bdf8" />
+                    <text x="41" y="64" fill="#38bdf8" fontSize="10.5" fontWeight="bold" textAnchor="middle" fontFamily="monospace">Itot</text>
+
+                    {/* Node A */}
+                    <circle cx="70" cy="82" r="4" fill="#6366f1" />
+                    <text x="62" y="97" fill="#a5b4fc" fontSize="11" fontWeight="bold" fontFamily="monospace">A</text>
+
+                    {/* Branching vertical lines */}
+                    <line x1="70" y1="42" x2="70" y2="122" stroke="#94a3b8" strokeWidth="2.2" />
+
+                    {/* Top Branch Z1 */}
+                    <line x1="70" y1="42" x2="110" y2="42" stroke="#94a3b8" strokeWidth="2.2" />
+                    <rect x="110" y="27" width="70" height="30" rx="5" fill="#0f172a" stroke="#6366f1" strokeWidth="2" />
+                    <text x="145" y="46" fill="#a5b4fc" fontSize="12" fontWeight="bold" textAnchor="middle" fontFamily="monospace">Z1 (Y1)</text>
+                    <line x1="180" y1="42" x2="220" y2="42" stroke="#94a3b8" strokeWidth="2.2" />
+
+                    {/* Current I1 arrow */}
+                    <line x1="80" y1="33" x2="102" y2="33" stroke="#6366f1" strokeWidth="1.8" />
+                    <polygon points="102,33 96,30 96,36" fill="#6366f1" />
+                    <text x="91" y="25" fill="#6366f1" fontSize="10.5" fontWeight="bold" textAnchor="middle" fontFamily="monospace">I1</text>
+
+                    {/* Bottom Branch Z2 */}
+                    <line x1="70" y1="122" x2="110" y2="122" stroke="#94a3b8" strokeWidth="2.2" />
+                    <rect x="110" y="107" width="70" height="30" rx="5" fill="#0f172a" stroke="#ec4899" strokeWidth="2" />
+                    <text x="145" y="126" fill="#f472b6" fontSize="12" fontWeight="bold" textAnchor="middle" fontFamily="monospace">Z2 (Y2)</text>
+                    <line x1="180" y1="122" x2="220" y2="122" stroke="#94a3b8" strokeWidth="2.2" />
+
+                    {/* Current I2 arrow */}
+                    <line x1="80" y1="113" x2="102" y2="113" stroke="#ec4899" strokeWidth="1.8" />
+                    <polygon points="102,113 96,110 96,116" fill="#ec4899" />
+                    <text x="91" y="105" fill="#ec4899" fontSize="10.5" fontWeight="bold" textAnchor="middle" fontFamily="monospace">I2</text>
+
+                    {/* Recombining vertical line & Node B */}
+                    <line x1="220" y1="42" x2="220" y2="122" stroke="#94a3b8" strokeWidth="2.2" />
+                    <circle cx="220" cy="82" r="4" fill="#6366f1" />
+                    <text x="228" y="97" fill="#a5b4fc" fontSize="11" fontWeight="bold" fontFamily="monospace">B</text>
+
+                    {/* Output wire */}
+                    <line x1="220" y1="82" x2="285" y2="82" stroke="#94a3b8" strokeWidth="2.2" />
+                    <circle cx="285" cy="82" r="3.5" fill="#38bdf8" />
+
+                    {/* Voltage U Arrow between B and A at bottom */}
+                    <line x1="210" y1="152" x2="80" y2="152" stroke="#e2e8f0" strokeWidth="1.8" />
+                    <polygon points="80,152 87,148 87,156" fill="#e2e8f0" />
+                    <text x="145" y="163" fill="#e2e8f0" fontSize="11" fontWeight="bold" textAnchor="middle" fontFamily="monospace">u(t)</text>
+                  </svg>
+                </div>
+
+                {/* Formula */}
+                <div className="p-3 rounded-xl bg-black/60 border border-indigo-500/30 text-center font-mono text-indigo-300 font-bold text-xs sm:text-sm shadow-inner">
+                  <LatexMath math="\underline{I}_1 = \frac{\underline{Y}_1}{\underline{Y}_1 + \underline{Y}_2} \cdot \underline{I}_{\text{tot}} = \frac{\underline{Z}_2}{\underline{Z}_1 + \underline{Z}_2} \cdot \underline{I}_{\text{tot}}" />
+                </div>
+              </div>
+
+              <div className="p-2.5 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-[11.5px] text-slate-300 space-y-1">
+                <span className="text-indigo-400 font-bold block font-mono">Règle des Admittances :</span>
+                <p>Le courant dans une branche est proportionnel à son <strong>admittance propre</strong> <LatexMath math="\underline{Y}_1" /> (facilité de passage du courant).</p>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        {/* 3.3 Théorème de Millman Complexe (Schéma SVG + Démonstration Pas-à-Pas) */}
         <CollapsibleProof
-          title="Théorème de Millman en Notation Complexe"
-          subtitle="Détermination directe du potentiel complexe d'un nœud sans poser de système d'équations"
+          title="3.3 Théorème de Millman en Notation Complexe (Démonstration & Schéma SVG)"
+          subtitle="Détermination instantanée du potentiel complexe d'un nœud sans poser de système d'équations"
           color="emerald"
-          badge="Méthode Fondamentale CPGE"
+          badge="Outil Fondamental Concours CPGE"
         >
-          <div className="space-y-2.5 text-slate-300 font-sans text-xs sm:text-sm">
-            <p className="leading-relaxed">
-              Pour un nœud A relié à des potentiels complexes <LatexMath math="\underline{V}_k" /> à travers des impédances <LatexMath math="\underline{Z}_k" /> (admittances <LatexMath math="\underline{Y}_k = 1/\underline{Z}_k" />) et des sources de courant incidentes <LatexMath math="\underline{\eta}_j" /> :
-            </p>
-            <div className="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-center font-mono font-bold text-sm sm:text-base">
-              <LatexMath math="\underline{V}_A = \frac{\sum_{k=1}^n \underline{Y}_k \underline{V}_k + \sum_{j=1}^p \underline{\eta}_j}{\sum_{k=1}^n \underline{Y}_k} = \frac{\sum_{k=1}^n \frac{\underline{V}_k}{\underline{Z}_k} + \sum_{j=1}^p \underline{\eta}_j}{\sum_{k=1}^n \frac{1}{\underline{Z}_k}}" />
+          <div className="space-y-4 text-slate-300 font-sans text-xs sm:text-sm leading-relaxed">
+            
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-center">
+              {/* SVG Millman Node Diagram */}
+              <div className="lg:col-span-5 p-3 rounded-2xl bg-black/60 border border-slate-800 flex justify-center items-center shadow-inner">
+                <svg viewBox="0 0 300 180" className="w-full max-w-[270px] h-auto font-sans">
+                  {/* Central Node A */}
+                  <circle cx="150" cy="90" r="6" fill="#10b981" stroke="#34d399" strokeWidth="2" />
+                  <text x="150" y="112" fill="#34d399" fontSize="13" fontWeight="bold" textAnchor="middle" fontFamily="monospace">VA</text>
+
+                  {/* Branch 1: to V1 */}
+                  <line x1="40" y1="35" x2="150" y2="90" stroke="#94a3b8" strokeWidth="2" />
+                  <circle cx="40" cy="35" r="4" fill="#38bdf8" />
+                  <text x="28" y="28" fill="#38bdf8" fontSize="11" fontWeight="bold" fontFamily="monospace">V1</text>
+                  <rect x="75" y="46" width="38" height="20" rx="3" fill="#0f172a" stroke="#06b6d4" strokeWidth="1.8" />
+                  <text x="94" y="60" fill="#67e8f9" fontSize="10" fontWeight="bold" textAnchor="middle" fontFamily="monospace">Z1</text>
+
+                  {/* Branch 2: to V2 */}
+                  <line x1="40" y1="145" x2="150" y2="90" stroke="#94a3b8" strokeWidth="2" />
+                  <circle cx="40" cy="145" r="4" fill="#f59e0b" />
+                  <text x="28" y="158" fill="#f59e0b" fontSize="11" fontWeight="bold" fontFamily="monospace">V2</text>
+                  <rect x="75" y="114" width="38" height="20" rx="3" fill="#0f172a" stroke="#f59e0b" strokeWidth="1.8" />
+                  <text x="94" y="128" fill="#fcd34d" fontSize="10" fontWeight="bold" textAnchor="middle" fontFamily="monospace">Z2</text>
+
+                  {/* Branch 3: to V3 */}
+                  <line x1="260" y1="35" x2="150" y2="90" stroke="#94a3b8" strokeWidth="2" />
+                  <circle cx="260" cy="35" r="4" fill="#a855f7" />
+                  <text x="270" y="32" fill="#a855f7" fontSize="11" fontWeight="bold" fontFamily="monospace">V3</text>
+                  <rect x="187" y="46" width="38" height="20" rx="3" fill="#0f172a" stroke="#a855f7" strokeWidth="1.8" />
+                  <text x="206" y="60" fill="#d8b4fe" fontSize="10" fontWeight="bold" textAnchor="middle" fontFamily="monospace">Z3</text>
+
+                  {/* Current Source eta entering */}
+                  <line x1="260" y1="145" x2="150" y2="90" stroke="#ec4899" strokeWidth="2" strokeDasharray="4 3" />
+                  <polygon points="186,108 196,114 191,121" fill="#ec4899" />
+                  <text x="240" y="155" fill="#ec4899" fontSize="11" fontWeight="bold" fontFamily="monospace">η</text>
+                </svg>
+              </div>
+
+              {/* Master Formula */}
+              <div className="lg:col-span-7 space-y-2">
+                <span className="text-emerald-400 font-bold uppercase block text-xs tracking-wider">Formule Canonique de Millman en RSF :</span>
+                <div className="p-3.5 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-center font-mono font-bold text-sm sm:text-base shadow-inner">
+                  <LatexMath math="\underline{V}_A = \frac{\sum_{k=1}^n \underline{Y}_k \underline{V}_k + \sum_{j=1}^p \underline{\eta}_j}{\sum_{k=1}^n \underline{Y}_k} = \frac{\sum_{k=1}^n \frac{\underline{V}_k}{\underline{Z}_k} + \sum_{j=1}^p \underline{\eta}_j}{\sum_{k=1}^n \frac{1}{\underline{Z}_k}}" />
+                </div>
+              </div>
+            </div>
+
+            {/* Step-by-Step Proof */}
+            <div className="p-4 rounded-xl bg-black/60 border border-slate-800 space-y-2 text-xs">
+              <span className="text-amber-400 font-bold font-sans block uppercase">Démonstration Pas-à-Pas :</span>
+              <p>
+                1. On applique la loi des nœuds complexe au nœud A en sommant les courants issus des différentes branches et les générateurs de courant :
+              </p>
+              <div className="p-2 rounded bg-slate-900 text-center font-mono text-cyan-300">
+                <LatexMath math="\sum_{k=1}^n \underline{I}_k + \sum_{j=1}^p \underline{\eta}_j = 0" />
+              </div>
+              <p>
+                2. D&apos;après la loi d&apos;Ohm complexe, le courant entrant dans le nœud A depuis le potentiel <LatexMath math="\underline{V}_k" /> à travers l&apos;impédance <LatexMath math="\underline{Z}_k" /> s&apos;écrit :
+              </p>
+              <div className="p-2 rounded bg-slate-900 text-center font-mono text-cyan-300">
+                <LatexMath math="\underline{I}_k = \frac{\underline{V}_k - \underline{V}_A}{\underline{Z}_k} = \underline{Y}_k (\underline{V}_k - \underline{V}_A)" />
+              </div>
+              <p>
+                3. En réinjectant dans la loi des nœuds :
+              </p>
+              <div className="p-2 rounded bg-slate-900 text-center font-mono text-amber-300">
+                <LatexMath math="\sum_{k=1}^n \underline{Y}_k \underline{V}_k - \underline{V}_A \sum_{k=1}^n \underline{Y}_k + \sum_{j=1}^p \underline{\eta}_j = 0" />
+              </div>
+              <p>
+                4. En isolant <LatexMath math="\underline{V}_A" />, on retrouve instantanément la formule générale de Millman !
+              </p>
             </div>
           </div>
         </CollapsibleProof>
+
+        {/* 3.4 Modèles de Thévenin et Norton Complexes */}
+        <div className="p-4 sm:p-5 rounded-2xl bg-slate-900/90 border border-indigo-500/30 space-y-3 shadow-md">
+          <div className="flex items-center gap-2 text-indigo-300 font-bold text-xs uppercase tracking-wider">
+            <Sparkles className="w-4 h-4 text-indigo-400" />
+            <span>3.4 Théorèmes de Thévenin & Norton en Régime Sinusoïdal Forcé</span>
+          </div>
+          <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+            Tout réseau linéaire actif vu entre deux bornes A et B est équivalent à :
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+            <div className="p-3 rounded-xl bg-black/60 border border-slate-800 space-y-1">
+              <span className="text-cyan-400 font-bold block">1. Générateur de Thévenin Complexe :</span>
+              <p className="text-slate-300">• F.é.m. complexe <LatexMath math="\underline{E}_{\text{th}} = \underline{U}_{AB0}" /> (tension à vide).</p>
+              <p className="text-slate-300">• Impédance <LatexMath math="\underline{Z}_{\text{th}}" /> (impédance d&apos;entrée, sources éteintes).</p>
+            </div>
+            <div className="p-3 rounded-xl bg-black/60 border border-slate-800 space-y-1">
+              <span className="text-indigo-400 font-bold block">2. Générateur de Norton Complexe :</span>
+              <p className="text-slate-300">• Courant de court-circuit <LatexMath math="\underline{I}_N = \underline{I}_{cc}" />.</p>
+              <p className="text-slate-300">• Relation de passage : <LatexMath math="\underline{E}_{\text{th}} = \underline{Z}_{\text{th}} \cdot \underline{I}_N" />.</p>
+            </div>
+          </div>
+        </div>
+
       </section>
 
-      {/* ── PARTIE 4: PUISSANCES EN RSF & THÉORÈME DE BOUCHEROT ── */}
-      <section className="bg-card/90 border border-border/80 rounded-3xl p-5 sm:p-8 shadow-sm space-y-6">
+      {/* ── PARTIE 4: PUISSANCES EN RSF & THÉORÈME DE BOUCHEROT (ILLUSTRÉE SVG) ── */}
+      <section className="bg-card/90 border border-border/80 rounded-3xl p-5 sm:p-8 shadow-sm space-y-7">
         <div className="flex items-center gap-2 border-b border-border/60 pb-3">
           <div className="p-2 rounded-xl bg-rose-500/10 text-rose-400 border border-rose-500/20">
             <TrendingUp className="w-5 h-5" />
           </div>
           <div>
-            <span className="text-[10px] font-mono text-rose-400 uppercase font-bold tracking-wider block">Partie 4 • Bilan Énergétique</span>
+            <span className="text-[10px] font-mono text-rose-400 uppercase font-bold tracking-wider block">Partie 4 • Bilan Énergétique & Puissances</span>
             <h2 className="text-lg sm:text-2xl font-black text-foreground">
               4. Puissances en Régime Sinusoïdal Forcé & Théorème de Boucherot
             </h2>
           </div>
         </div>
 
-        <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
-          En alternatif, on distingue la <strong>puissance active</strong> (travail utile dissipé) et la <strong>puissance réactive</strong> (échange d&apos;énergie réversible).
-        </p>
-
-        {/* 3 Powers Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 my-4">
-          <div className="p-5 rounded-2xl bg-slate-900/90 border border-emerald-500/30 space-y-2 shadow-md">
-            <span className="text-[10px] font-mono uppercase px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 font-bold border border-emerald-500/20">
-              1. Puissance Active (P)
-            </span>
-            <div className="p-2.5 rounded-xl bg-black/50 text-center font-mono text-emerald-300 font-bold text-xs sm:text-sm">
-              <LatexMath math="P = U_{\text{eff}} I_{\text{eff}} \cos\phi \quad [\text{W}]" />
-            </div>
-            <p className="text-xs text-slate-300 leading-snug">
-              Énergie électrique transformée irréversiblement en travail utile ou chaleur Joule.
-            </p>
+        {/* 4.1 De la Puissance Instantanée aux 4 Puissances */}
+        <div className="p-5 sm:p-6 rounded-2xl bg-gradient-to-r from-slate-900 via-slate-950 to-slate-900 border border-rose-500/30 space-y-4 shadow-lg">
+          <div className="flex items-center gap-2 text-rose-300 font-extrabold text-xs uppercase tracking-wider">
+            <Sparkles className="w-4 h-4 text-rose-400" />
+            <span>4.1 Décomposition Fondamentale de la Puissance Instantanée <LatexMath math="p(t)" /></span>
           </div>
 
-          <div className="p-5 rounded-2xl bg-slate-900/90 border border-amber-500/30 space-y-2 shadow-md">
-            <span className="text-[10px] font-mono uppercase px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-400 font-bold border border-amber-500/20">
-              2. Puissance Réactive (Q)
-            </span>
-            <div className="p-2.5 rounded-xl bg-black/50 text-center font-mono text-amber-300 font-bold text-xs sm:text-sm">
-              <LatexMath math="Q = U_{\text{eff}} I_{\text{eff}} \sin\phi \quad [\text{VAR}]" />
-            </div>
-            <p className="text-xs text-slate-300 leading-snug">
-              Énergie oscillant périodiquement (<LatexMath math="Q_L > 0" /> pour bobines, <LatexMath math="Q_C < 0" /> pour condensateurs).
-            </p>
+          <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+            Soit un dipôle soumis à une tension <LatexMath math="u(t) = U_{\text{eff}} \sqrt{2} \cos(\omega t + \phi_u)" /> traversé par un courant <LatexMath math="i(t) = I_{\text{eff}} \sqrt{2} \cos(\omega t + \phi_i)" /> avec un déphasage <LatexMath math="\phi = \phi_u - \phi_i" /> :
+          </p>
+
+          <div className="p-4 rounded-xl bg-black/70 border border-slate-800 text-center font-mono text-xs sm:text-sm text-slate-200 shadow-inner overflow-x-auto">
+            <LatexMath math="p(t) = u(t) \cdot i(t) = \underbrace{U_{\text{eff}} I_{\text{eff}} \cos\phi}_{\text{Puissance Active (Moyenne) } P} \cdot \left[1 + \cos(2\omega t + \dots)\right] - \underbrace{U_{\text{eff}} I_{\text{eff}} \sin\phi}_{\text{Puissance Réactive } Q} \cdot \sin(2\omega t + \dots)" />
           </div>
 
-          <div className="p-5 rounded-2xl bg-slate-900/90 border border-cyan-500/30 space-y-2 shadow-md">
-            <span className="text-[10px] font-mono uppercase px-2.5 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 font-bold border border-cyan-500/20">
-              3. Puissance Complexe (S)
-            </span>
-            <div className="p-2.5 rounded-xl bg-black/50 text-center font-mono text-cyan-300 font-bold text-xs sm:text-sm">
-              <LatexMath math="\underline{S} = P + j Q \implies S = \sqrt{P^2 + Q^2} \quad [\text{VA}]" />
+          {/* Grille des 4 Puissances (2x2 Spacieuse pour Éviter Tout Retour à la Ligne) */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+            {/* 1. Active */}
+            <div className="p-5 rounded-2xl bg-slate-900/95 border border-emerald-500/35 space-y-3 shadow-md flex flex-col justify-between">
+              <div className="space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-mono uppercase px-2.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 font-bold border border-emerald-500/30">
+                    1. Puissance Active (P)
+                  </span>
+                  <span className="text-xs font-mono font-bold text-emerald-300">Unité : Watts [W]</span>
+                </div>
+                <div className="p-3 rounded-xl bg-black/70 text-center font-mono text-emerald-300 font-bold text-sm sm:text-base border border-emerald-500/25 shadow-inner">
+                  <LatexMath math="P = U_{\text{eff}} I_{\text{eff}} \cos\phi" />
+                </div>
+              </div>
+              <p className="text-slate-300 text-xs leading-relaxed">
+                C&apos;est la <strong>seule puissance physiquement transformée</strong> en travail utile (force mécanique d&apos;un moteur, chaleur par effet Joule, lumière). Pour tout dipôle passif récepteur, <LatexMath math="P \ge 0" />.
+              </p>
             </div>
-            <p className="text-xs text-slate-300 leading-snug">
-              Dimensionne les câbles et transformateurs. Facteur de puissance <LatexMath math="k = \cos\phi = \frac{P}{S}" />.
-            </p>
+
+            {/* 2. Réactive */}
+            <div className="p-5 rounded-2xl bg-slate-900/95 border border-amber-500/35 space-y-3 shadow-md flex flex-col justify-between">
+              <div className="space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-mono uppercase px-2.5 py-0.5 rounded-full bg-amber-500/15 text-amber-400 font-bold border border-amber-500/30">
+                    2. Puissance Réactive (Q)
+                  </span>
+                  <span className="text-xs font-mono font-bold text-amber-300">Unité : [VAR]</span>
+                </div>
+                <div className="p-3 rounded-xl bg-black/70 text-center font-mono text-amber-300 font-bold text-sm sm:text-base border border-amber-500/25 shadow-inner">
+                  <LatexMath math="Q = U_{\text{eff}} I_{\text{eff}} \sin\phi" />
+                </div>
+              </div>
+              <p className="text-slate-300 text-xs leading-relaxed">
+                Énergie <strong>oscillante périodique</strong> échangée sans travail utile : <LatexMath math="Q > 0" /> pour les bobines (magnétisation) et <LatexMath math="Q < 0" /> pour les condensateurs (fourniture de réactif).
+              </p>
+            </div>
+
+            {/* 3. Apparente */}
+            <div className="p-5 rounded-2xl bg-slate-900/95 border border-cyan-500/35 space-y-3 shadow-md flex flex-col justify-between">
+              <div className="space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-mono uppercase px-2.5 py-0.5 rounded-full bg-cyan-500/15 text-cyan-400 font-bold border border-cyan-500/30">
+                    3. Puissance Apparente (S)
+                  </span>
+                  <span className="text-xs font-mono font-bold text-cyan-300">Unité : [VA]</span>
+                </div>
+                <div className="p-3 rounded-xl bg-black/70 text-center font-mono text-cyan-300 font-bold text-sm sm:text-base border border-cyan-500/25 shadow-inner">
+                  <LatexMath math="S = U_{\text{eff}} I_{\text{eff}} = \sqrt{P^2 + Q^2}" />
+                </div>
+              </div>
+              <p className="text-slate-300 text-xs leading-relaxed">
+                Représente le <strong>calibre électrique total</strong>. Elle sert à dimensionner les transformateurs, les générateurs et la section minimale des câbles de transport.
+              </p>
+            </div>
+
+            {/* 4. Complexe */}
+            <div className="p-5 rounded-2xl bg-slate-900/95 border border-purple-500/35 space-y-3 shadow-md flex flex-col justify-between">
+              <div className="space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-mono uppercase px-2.5 py-0.5 rounded-full bg-purple-500/15 text-purple-400 font-bold border border-purple-500/30">
+                    4. Puissance Complexe (<LatexMath math="\underline{S}" />)
+                  </span>
+                  <span className="text-xs font-mono font-bold text-purple-300">Unité : [VA]</span>
+                </div>
+                <div className="p-3 rounded-xl bg-black/70 text-center font-mono text-purple-300 font-bold text-sm sm:text-base border border-purple-500/25 shadow-inner">
+                  <LatexMath math="\underline{S} = \underline{U}_{\text{eff}} \cdot \underline{I}_{\text{eff}}^* = P + j Q" />
+                </div>
+              </div>
+              <p className="text-slate-300 text-xs leading-relaxed">
+                Outil algébrique puissant qui regroupe <LatexMath math="P" /> et <LatexMath math="Q" /> : <LatexMath math="\underline{S} = \underline{Z} I_{\text{eff}}^2 = \underline{Y}^* U_{\text{eff}}^2" />.
+              </p>
+            </div>
           </div>
         </div>
 
-        {/* Boucherot Theorem & Power Factor Improvement */}
+        {/* 4.2 Le Triangle des Puissances (Schéma Large SVG et Bilan des Dipôles) */}
+        <div className="space-y-4 pt-2">
+          <h3 className="text-sm sm:text-base font-bold text-foreground flex items-center gap-2">
+            <Layers className="w-4 h-4 text-cyan-400" />
+            <span>4.2 Le Triangle des Puissances & Bilan Énergétique des Dipôles R, L, C</span>
+          </h3>
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
+            
+            {/* SVG Triangle des Puissances (5 Cols - Large & Aéré avec Vraies Formules LaTeX) */}
+            <div className="lg:col-span-5 p-5 rounded-2xl bg-black/60 border border-slate-800 flex flex-col items-center justify-center shadow-inner space-y-3">
+              <span className="text-xs font-mono text-slate-400 font-bold uppercase tracking-wider text-center">
+                Triangle Géométrique des Puissances
+              </span>
+              
+              <svg viewBox="0 0 380 230" className="w-full max-w-[350px] h-auto font-sans overflow-visible">
+                {/* Horizontal side P (Active) */}
+                <line x1="45" y1="165" x2="255" y2="165" stroke="#10b981" strokeWidth="3.5" />
+                <polygon points="255,165 244,160 244,170" fill="#10b981" />
+
+                {/* Vertical side Q (Reactive) */}
+                <line x1="255" y1="165" x2="255" y2="35" stroke="#f59e0b" strokeWidth="3.5" />
+                <polygon points="255,35 250,46 260,46" fill="#f59e0b" />
+
+                {/* Hypotenuse S (Apparent) */}
+                <line x1="45" y1="165" x2="255" y2="35" stroke="#06b6d4" strokeWidth="3.5" />
+                <polygon points="255,35 243,40 250,48" fill="#06b6d4" />
+
+                {/* Right angle marker */}
+                <polyline points="238,165 238,148 255,148" fill="none" stroke="#94a3b8" strokeWidth="1.8" />
+
+                {/* Angle arc phi */}
+                <path d="M 100,165 A 55,55 0 0,0 90,135" fill="none" stroke="#e2e8f0" strokeWidth="2" />
+
+                {/* Formules Mathématiques KaTeX via foreignObject */}
+                {/* Angle phi */}
+                <foreignObject x="100" y="138" width="30" height="30">
+                  <div className="text-slate-100 font-bold text-sm">
+                    <LatexMath math="\phi" />
+                  </div>
+                </foreignObject>
+
+                {/* P (Bottom) */}
+                <foreignObject x="45" y="172" width="210" height="35">
+                  <div className="flex items-center justify-center text-emerald-300 text-xs sm:text-sm font-bold">
+                    <LatexMath math="P = S \cos\phi \quad [\text{W}]" />
+                  </div>
+                </foreignObject>
+
+                {/* Q (Right) */}
+                <foreignObject x="265" y="75" width="115" height="55">
+                  <div className="flex flex-col justify-center text-amber-300 text-xs sm:text-sm font-bold leading-tight">
+                    <LatexMath math="Q = S \sin\phi" />
+                    <span className="text-[10.5px] text-amber-400 font-mono mt-0.5">[VAR]</span>
+                  </div>
+                </foreignObject>
+
+                {/* S (Hypotenuse) */}
+                <foreignObject x="30" y="60" width="185" height="40">
+                  <div className="flex items-center justify-center text-cyan-300 text-xs sm:text-sm font-bold">
+                    <LatexMath math="S = \sqrt{P^2 + Q^2} \quad [\text{VA}]" />
+                  </div>
+                </foreignObject>
+              </svg>
+
+              <div className="w-full p-2.5 rounded-xl bg-slate-900/90 border border-slate-800 text-center font-mono text-xs text-slate-300">
+                <span className="text-cyan-400 font-bold">Facteur de Puissance :</span> <LatexMath math="k = \cos\phi = \frac{P}{S} = \frac{P}{\sqrt{P^2 + Q^2}}" />
+              </div>
+            </div>
+
+            {/* Cartes Spacieuses des 3 Dipôles R, L, C (7 Cols) */}
+            <div className="lg:col-span-7 space-y-3 flex flex-col justify-between">
+              
+              {/* 1. Résistance R */}
+              <div className="p-4 rounded-2xl bg-slate-900/90 border border-rose-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-md">
+                <div className="space-y-1">
+                  <span className="text-xs font-mono font-bold text-rose-400 block uppercase">1. Résistance Pure (R)</span>
+                  <p className="text-xs text-slate-300">Toute l&apos;énergie électrique est dissipée irréversiblement en chaleur Joule (<LatexMath math="\phi = 0 \implies \cos\phi = 1" />).</p>
+                </div>
+                <div className="flex items-center gap-2 font-mono text-xs shrink-0">
+                  <span className="px-3 py-1.5 rounded-xl bg-emerald-500/15 text-emerald-300 font-bold border border-emerald-500/30">
+                    <LatexMath math="P = R I_{\text{eff}}^2" />
+                  </span>
+                  <span className="px-3 py-1.5 rounded-xl bg-amber-500/15 text-amber-300 font-bold border border-amber-500/30">
+                    <LatexMath math="Q = 0" />
+                  </span>
+                </div>
+              </div>
+
+              {/* 2. Bobine L */}
+              <div className="p-4 rounded-2xl bg-slate-900/90 border border-amber-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-md">
+                <div className="space-y-1">
+                  <span className="text-xs font-mono font-bold text-amber-400 block uppercase">2. Bobine Idéale (L)</span>
+                  <p className="text-xs text-slate-300"><strong>Consomme</strong> du réactif pour créer son champ magnétique (<LatexMath math="\phi = +90^\circ" />).</p>
+                </div>
+                <div className="flex items-center gap-2 font-mono text-xs shrink-0">
+                  <span className="px-3 py-1.5 rounded-xl bg-emerald-500/15 text-emerald-300 font-bold border border-emerald-500/30">
+                    <LatexMath math="P = 0" />
+                  </span>
+                  <span className="px-3 py-1.5 rounded-xl bg-amber-500/15 text-amber-300 font-bold border border-amber-500/30">
+                    <LatexMath math="Q = +L\omega I_{\text{eff}}^2" />
+                  </span>
+                </div>
+              </div>
+
+              {/* 3. Condensateur C */}
+              <div className="p-4 rounded-2xl bg-slate-900/90 border border-cyan-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-md">
+                <div className="space-y-1">
+                  <span className="text-xs font-mono font-bold text-cyan-400 block uppercase">3. Condensateur Idéal (C)</span>
+                  <p className="text-xs text-slate-300"><strong>Fournit</strong> du réactif au réseau électrique (<LatexMath math="\phi = -90^\circ" />).</p>
+                </div>
+                <div className="flex items-center gap-2 font-mono text-xs shrink-0">
+                  <span className="px-3 py-1.5 rounded-xl bg-emerald-500/15 text-emerald-300 font-bold border border-emerald-500/30">
+                    <LatexMath math="P = 0" />
+                  </span>
+                  <span className="px-3 py-1.5 rounded-xl bg-cyan-500/15 text-cyan-300 font-bold border border-cyan-500/30">
+                    <LatexMath math="Q = -C\omega U_{\text{eff}}^2" />
+                  </span>
+                </div>
+              </div>
+
+              {/* Règle d'or */}
+              <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-300 flex items-center gap-2.5">
+                <Lightbulb className="w-5 h-5 text-amber-400 shrink-0" />
+                <p>
+                  <strong>Règle Fondamentale :</strong> Une bobine <em>consomme</em> du réactif (<LatexMath math="Q > 0" />) alors qu&apos;un condensateur <em>génère</em> du réactif (<LatexMath math="Q < 0" />).
+                </p>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        {/* 4.3 Théorème de Boucherot & Relèvement du Facteur de Puissance (Schéma SVG Spacieux + Démonstration) */}
         <CollapsibleProof
-          title="Théorème de Boucherot & Relèvement du Facteur de Puissance"
-          subtitle="Démonstration du calcul de la capacité C pour optimiser une installation industrielle"
+          title="4.3 Théorème de Boucherot & Relèvement du Facteur de Puissance (Application Industrielle)"
+          subtitle="Démonstration complète du calcul de la capacité C pour optimiser une usine et supprimer les pénalités"
           color="amber"
           badge="Application Industrielle Majeure"
         >
-          <div className="space-y-3 text-slate-300 font-sans text-xs sm:text-sm leading-relaxed">
-            <p>
-              <strong>Théorème de Boucherot :</strong> Les puissances active et réactive se conservent indépendamment :
-            </p>
-            <div className="p-2.5 rounded-xl bg-black/60 text-center text-amber-300 font-mono font-bold">
-              <LatexMath math="P_{\text{total}} = \sum_{k} P_k \quad \text{et} \quad Q_{\text{total}} = \sum_{k} Q_k" />
+          <div className="space-y-5 text-slate-300 font-sans text-xs sm:text-sm leading-relaxed pt-2">
+            
+            {/* Théorème de Boucherot Enoncé */}
+            <div className="p-4 sm:p-5 rounded-2xl bg-slate-900/90 border border-amber-500/30 space-y-2.5 shadow-md">
+              <span className="text-amber-400 font-bold uppercase text-xs tracking-wider block">
+                Énoncé du Théorème de Boucherot (Conservation de l&apos;Énergie) :
+              </span>
+              <p className="text-xs sm:text-sm text-slate-300">
+                Dans tout réseau électrique linéaire alimenté par des sources sinusoïdales à la même pulsation <LatexMath math="\omega" />, la puissance active totale et la puissance réactive totale sont <strong>les sommes algébriques directes</strong> :
+              </p>
+              <div className="p-3.5 rounded-xl bg-black/70 text-center font-mono font-bold text-amber-300 text-sm sm:text-base border border-slate-800">
+                <LatexMath math="P_{\text{total}} = \sum_{k=1}^n P_k \quad \text{et} \quad Q_{\text{total}} = \sum_{k=1}^n Q_k \implies \underline{S}_{\text{total}} = \sum_{k=1}^n \underline{S}_k = P_{\text{total}} + j Q_{\text{total}}" />
+              </div>
+              <div className="p-2.5 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-300 text-xs font-semibold">
+                ⚠️ <strong>Piège Classique :</strong> La puissance apparente ne se conserve <strong>JAMAIS</strong> directement : <LatexMath math="S_{\text{total}} = \sqrt{P_{\text{total}}^2 + Q_{\text{total}}^2} \le \sum S_k" />.
+              </div>
             </div>
-            <p className="pt-1">
-              Pour relever le facteur de puissance d&apos;une usine de <LatexMath math="\cos\phi" /> à <LatexMath math="\cos\phi'" /> sous tension <LatexMath math="U_{\text{eff}}" />, on installe un condensateur de capacité :
-            </p>
-            <div className="p-3 rounded-xl bg-amber-500/15 border border-amber-500/40 text-center font-mono text-amber-300 font-bold text-sm sm:text-base">
-              <LatexMath math="C = \frac{P(\tan\phi - \tan\phi')}{\omega U_{\text{eff}}^2}" />
+
+            {/* Relèvement du Cos phi : Schéma SVG Aéré + Démonstration */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-center">
+              
+              {/* SVG Industrial Power Factor Correction (Spacieux - 420x190 avec Vraies Formules LaTeX) */}
+              <div className="lg:col-span-5 p-4 rounded-2xl bg-black/60 border border-slate-800 flex flex-col items-center justify-center shadow-inner space-y-2">
+                <span className="text-[11px] font-mono text-slate-400 font-bold text-center">
+                  Raccordement Usine + Batterie de Condensateurs C :
+                </span>
+                
+                <svg viewBox="0 0 420 190" className="w-full max-w-[380px] h-auto font-sans overflow-visible">
+                  {/* Grid AC Supply Terminals */}
+                  <circle cx="45" cy="50" r="4" fill="#38bdf8" />
+                  <circle cx="45" cy="140" r="4" fill="#38bdf8" />
+                  <text x="45" y="32" fill="#38bdf8" fontSize="11" fontWeight="bold" textAnchor="middle" fontFamily="monospace">Ligne</text>
+                  <text x="45" y="162" fill="#38bdf8" fontSize="11" fontWeight="bold" textAnchor="middle" fontFamily="monospace">Neutre</text>
+
+                  {/* Supply Voltage Arrow Ueff */}
+                  <line x1="45" y1="62" x2="45" y2="128" stroke="#f43f5e" strokeWidth="2" />
+                  <polygon points="45,62 41,70 49,70" fill="#f43f5e" />
+                  
+                  <foreignObject x="5" y="78" width="38" height="35">
+                    <div className="flex items-center justify-center text-rose-400 text-xs font-bold">
+                      <LatexMath math="U_{\text{eff}}" />
+                    </div>
+                  </foreignObject>
+
+                  {/* Horizontal Wires */}
+                  <line x1="45" y1="50" x2="160" y2="50" stroke="#94a3b8" strokeWidth="2.2" />
+                  <line x1="45" y1="140" x2="160" y2="140" stroke="#94a3b8" strokeWidth="2.2" />
+
+                  {/* Nodes for Capacitor */}
+                  <circle cx="160" cy="50" r="4" fill="#6366f1" />
+                  <circle cx="160" cy="140" r="4" fill="#6366f1" />
+
+                  {/* Branch 1: Capacitor C */}
+                  <line x1="160" y1="50" x2="160" y2="80" stroke="#94a3b8" strokeWidth="2.2" />
+                  <line x1="160" y1="110" x2="160" y2="140" stroke="#94a3b8" strokeWidth="2.2" />
+                  {/* Capacitor Plates */}
+                  <line x1="135" y1="80" x2="185" y2="80" stroke="#06b6d4" strokeWidth="3.5" strokeLinecap="round" />
+                  <line x1="135" y1="110" x2="185" y2="110" stroke="#06b6d4" strokeWidth="3.5" strokeLinecap="round" />
+                  
+                  <foreignObject x="190" y="80" width="30" height="30">
+                    <div className="text-cyan-300 text-xs font-bold">
+                      <LatexMath math="C" />
+                    </div>
+                  </foreignObject>
+                  
+                  <foreignObject x="95" y="148" width="130" height="35">
+                    <div className="text-center text-cyan-300 text-[11px] font-bold">
+                      <LatexMath math="Q_C = -C\omega U_{\text{eff}}^2" />
+                    </div>
+                  </foreignObject>
+
+                  {/* Connecting Wires to Factory */}
+                  <line x1="160" y1="50" x2="295" y2="50" stroke="#94a3b8" strokeWidth="2.2" />
+                  <line x1="160" y1="140" x2="295" y2="140" stroke="#94a3b8" strokeWidth="2.2" />
+
+                  {/* Factory Branch Box */}
+                  <line x1="295" y1="50" x2="295" y2="65" stroke="#94a3b8" strokeWidth="2.2" />
+                  <line x1="295" y1="125" x2="295" y2="140" stroke="#94a3b8" strokeWidth="2.2" />
+                  <rect x="240" y="65" width="115" height="60" rx="8" fill="#1e1b4b" stroke="#f59e0b" strokeWidth="2.2" />
+                  
+                  <foreignObject x="240" y="67" width="115" height="56">
+                    <div className="flex flex-col items-center justify-center h-full text-center text-amber-300 space-y-0.5">
+                      <span className="text-[11px] font-bold text-amber-200 font-sans">Usine</span>
+                      <div className="text-[10px] font-bold">
+                        <LatexMath math="P, \ Q_1 = P\tan\phi_1" />
+                      </div>
+                    </div>
+                  </foreignObject>
+                </svg>
+              </div>
+
+              {/* Mathematical Step-by-Step Derivation (7 Cols) */}
+              <div className="lg:col-span-7 space-y-3 text-xs">
+                <span className="text-amber-400 font-bold uppercase block text-xs tracking-wider">
+                  Démonstration Rigoureuse du Calcul de la Capacité C :
+                </span>
+                
+                <p className="text-slate-300 leading-relaxed">
+                  1. <strong>Avant compensation :</strong> L&apos;usine absorbe la puissance active <LatexMath math="P" /> et une forte puissance réactive <LatexMath math="Q_1 = P \tan\phi_1" /> (moteurs asynchrones, transformateurs).
+                </p>
+                
+                <p className="text-slate-300 leading-relaxed">
+                  2. <strong>Raccordement du condensateur en parallèle :</strong> Le condensateur parfait ne consomme <em>aucune puissance active</em> (<LatexMath math="P_C = 0" />) et fournit la puissance réactive <LatexMath math="Q_C = -C\omega U_{\text{eff}}^2" />.
+                </p>
+                
+                <p className="text-slate-300 leading-relaxed">
+                  3. <strong>Application du Théorème de Boucherot :</strong>
+                </p>
+                <div className="p-2.5 rounded-xl bg-slate-950 text-center font-mono text-cyan-300 border border-slate-800">
+                  <LatexMath math="P_{\text{nouv}} = P \quad \text{et} \quad Q_{\text{nouv}} = Q_1 + Q_C = P \tan\phi_1 - C\omega U_{\text{eff}}^2" />
+                </div>
+                
+                <p className="text-slate-300 leading-relaxed">
+                  4. On impose le nouveau facteur de puissance désiré <LatexMath math="\cos\phi_2" /> (<LatexMath math="Q_{\text{nouv}} = P \tan\phi_2" />) :
+                </p>
+                <div className="p-3.5 rounded-xl bg-amber-500/15 border border-amber-500/40 text-amber-300 text-center font-mono font-bold text-sm sm:text-base shadow-inner">
+                  <LatexMath math="C = \frac{P(\tan\phi_1 - \tan\phi_2)}{\omega U_{\text{eff}}^2}" />
+                </div>
+
+                <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-[11.5px] space-y-1">
+                  <span className="font-bold block">✨ Intérêt Économique & Industriel :</span>
+                  <p>
+                    En augmentant <LatexMath math="\cos\phi" /> vers <LatexMath math="1" />, le courant de ligne diminue (<LatexMath math="I_{\text{eff}} = \frac{P}{U_{\text{eff}} \cos\phi}" />), ce qui divise par 2 à 4 les pertes par effet Joule <LatexMath math="P_{\text{Joule}} = r_{\text{ligne}} I_{\text{eff}}^2" /> et supprime les pénalités tarifaires des distributeurs d&apos;énergie.
+                  </p>
+                </div>
+              </div>
+
             </div>
+
           </div>
         </CollapsibleProof>
+
+        {/* 4.4 Adaptation d'Impédance en Puissance (Théorème du Transfert Maximal) */}
+        <div className="p-5 rounded-2xl bg-slate-900/90 border border-purple-500/30 space-y-3 shadow-md">
+          <div className="flex items-center gap-2 text-purple-300 font-bold text-xs uppercase tracking-wider">
+            <Workflow className="w-4 h-4 text-purple-400" />
+            <span>4.4 Adaptation d&apos;Impédance en Puissance (Transfert Maximal)</span>
+          </div>
+          <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+            Pour qu&apos;un générateur d&apos;impédance interne <LatexMath math="\underline{Z}_g = R_g + j X_g" /> transfère la <strong>puissance active maximale</strong> à une charge réceptrice <LatexMath math="\underline{Z}_u = R_u + j X_u" />, il faut réaliser l&apos;adaptation conjuguée :
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs font-mono">
+            <div className="p-3.5 rounded-xl bg-black/60 border border-slate-800 space-y-1.5">
+              <span className="text-purple-400 font-sans font-bold block">Condition d&apos;Adaptation Conjuguée :</span>
+              <div className="p-2 rounded-lg bg-slate-900 text-center text-purple-300 font-bold">
+                <LatexMath math="\underline{Z}_u = \underline{Z}_g^* \iff R_u = R_g \quad \text{et} \quad X_u = -X_g" />
+              </div>
+            </div>
+            <div className="p-3.5 rounded-xl bg-black/60 border border-slate-800 space-y-1.5">
+              <span className="text-emerald-400 font-sans font-bold block">Puissance Maximale Transférée :</span>
+              <div className="p-2 rounded-lg bg-slate-900 text-center text-emerald-300 font-bold">
+                <LatexMath math="P_{\max} = \frac{E_{\text{eff}}^2}{4 R_g} \quad (\text{Rendement } \eta = 50\%)" />
+              </div>
+            </div>
+          </div>
+        </div>
+
       </section>
 
       {/* ── PARTIE 5: LABORATOIRE 3D INTERACTIF ── */}
