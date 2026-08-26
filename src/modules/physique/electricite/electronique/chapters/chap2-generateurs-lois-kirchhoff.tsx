@@ -509,63 +509,81 @@ export default function Chap2GenerateursLoisKirchhoff() {
             1. Les Générateurs Idéaux
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="p-5 rounded-xl bg-slate-900/60 border border-slate-700/50 space-y-4 shadow-sm">
-              <div className="flex items-center justify-between">
-                <div className="text-[11px] font-bold text-cyan-400 uppercase">Générateur Idéal de Tension</div>
-                <div className="p-1.5 rounded bg-black/50 text-center font-mono text-cyan-300 text-[10px] border border-cyan-500/20">
-                  <LatexMath math="u = E" />
+
+            {/* Tension Card */}
+            <div className="p-5 rounded-xl bg-slate-900/60 border border-cyan-500/20 space-y-3 shadow-sm flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <div className="text-[11px] font-bold text-cyan-400 uppercase tracking-wider">Générateur Idéal de Tension</div>
+                  <div className="px-2 py-0.5 rounded-full bg-cyan-950/60 font-mono text-cyan-300 text-[10px] border border-cyan-500/30"><LatexMath math="u = E" /></div>
                 </div>
+                <p className="text-[11px] text-slate-300 leading-relaxed">
+                  La tension est constante <LatexMath math="u(t) = e(t)" /> <strong>quelle que soit l&apos;intensité</strong> du courant <LatexMath math="i(t)" /> délivrée. Sa résistance interne est nulle.
+                </p>
               </div>
-              <p className="text-[11px] text-slate-300">
-                La tension est constante <LatexMath math="u(t) = e(t)" /> <strong>quelle que soit l&apos;intensité</strong> du courant <LatexMath math="i(t)" /> délivrée. Sa résistance interne est nulle.
-              </p>
-              <div className="w-full bg-black/40 py-4 rounded-lg border border-slate-800 flex justify-center">
-                <svg width="140" height="50" viewBox="0 0 200 100" className="text-cyan-400 drop-shadow-md">
+              <div className="w-full bg-slate-950/80 py-3 px-4 rounded-xl border border-slate-800 flex justify-center items-center">
+                <svg viewBox="0 0 240 65" className="w-full max-w-[220px] h-auto" overflow="visible">
+                  <defs>
+                    <marker id="arrow-tension" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                      <polygon points="0 0, 6 3, 0 6" fill="#facc15"/>
+                    </marker>
+                  </defs>
+                  {/* Voltage Arrow above with label */}
+                  <line x1="75" y1="12" x2="165" y2="12" stroke="#facc15" strokeWidth="1.8" markerEnd="url(#arrow-tension)" strokeLinecap="round"/>
+                  <text x="120" y="8" textAnchor="middle" fill="#facc15" fontSize="10" fontWeight="bold" fontFamily="monospace">u = e(t)</text>
+                  
                   {/* Wires */}
-                  <path d="M 10 50 L 70 50 M 130 50 L 190 50" stroke="currentColor" strokeWidth="4" strokeLinecap="round" />
-                  {/* Terminals */}
-                  <circle cx="10" cy="50" r="5" fill="currentColor" />
-                  <circle cx="190" cy="50" r="5" fill="currentColor" />
-                  {/* Circle */}
-                  <circle cx="100" cy="50" r="30" stroke="currentColor" strokeWidth="4" fill="none" />
-                  {/* E inside circle */}
-                  <text x="100" y="58" textAnchor="middle" fill="currentColor" fontSize="24" fontWeight="bold" fontFamily="monospace">E</text>
-                  {/* Voltage Arrow above */}
-                  <path d="M 70 12 L 130 12 L 120 4 M 130 12 L 120 20" stroke="#facc15" strokeWidth="3" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-                  <text x="100" y="4" textAnchor="middle" fill="#facc15" fontSize="16" fontWeight="bold">u</text>
-                  {/* Terminal labels */}
-                  <text x="10" y="32" textAnchor="middle" fill="currentColor" fontSize="18" fontWeight="bold">A</text>
-                  <text x="190" y="32" textAnchor="middle" fill="currentColor" fontSize="18" fontWeight="bold">B</text>
+                  <line x1="25" y1="40" x2="102" y2="40" stroke="#22d3ee" strokeWidth="2.2" strokeLinecap="round"/>
+                  <line x1="138" y1="40" x2="215" y2="40" stroke="#22d3ee" strokeWidth="2.2" strokeLinecap="round"/>
+                  
+                  {/* Generator Circle */}
+                  <circle cx="120" cy="40" r="18" fill="#020617" stroke="#22d3ee" strokeWidth="2.2"/>
+                  <text x="120" y="45" textAnchor="middle" fill="#22d3ee" fontSize="14" fontWeight="bold" fontFamily="monospace">E</text>
+                  
+                  {/* Terminals A and B */}
+                  <circle cx="25" cy="40" r="3.5" fill="#22d3ee"/>
+                  <text x="25" y="27" textAnchor="middle" fill="#94a3b8" fontSize="11" fontWeight="bold">A</text>
+                  <circle cx="215" cy="40" r="3.5" fill="#22d3ee"/>
+                  <text x="215" y="27" textAnchor="middle" fill="#94a3b8" fontSize="11" fontWeight="bold">B</text>
                 </svg>
               </div>
             </div>
-            
-            <div className="p-5 rounded-xl bg-slate-900/60 border border-slate-700/50 space-y-4 shadow-sm">
-              <div className="flex items-center justify-between">
-                <div className="text-[11px] font-bold text-indigo-400 uppercase">Générateur Idéal de Courant</div>
-                <div className="p-1.5 rounded bg-black/50 text-center font-mono text-indigo-300 text-[10px] border border-indigo-500/20">
-                  <LatexMath math="i = \eta" />
+
+            {/* Courant Card */}
+            <div className="p-5 rounded-xl bg-slate-900/60 border border-indigo-500/20 space-y-3 shadow-sm flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <div className="text-[11px] font-bold text-indigo-400 uppercase tracking-wider">Générateur Idéal de Courant</div>
+                  <div className="px-2 py-0.5 rounded-full bg-indigo-950/60 font-mono text-indigo-300 text-[10px] border border-indigo-500/30"><LatexMath math="i = \eta" /></div>
                 </div>
+                <p className="text-[11px] text-slate-300 leading-relaxed">
+                  Le courant est constant <LatexMath math="i(t) = \eta(t)" /> <strong>quelle que soit la tension</strong> <LatexMath math="u(t)" /> à ses bornes. Sa résistance interne est infinie.
+                </p>
               </div>
-              <p className="text-[11px] text-slate-300">
-                Le courant est constant <LatexMath math="i(t) = \eta(t)" /> <strong>quelle que soit la tension</strong> <LatexMath math="u(t)" /> à ses bornes. Sa résistance interne est infinie.
-              </p>
-              <div className="w-full bg-black/40 py-4 rounded-lg border border-slate-800 flex justify-center">
-                <svg width="140" height="50" viewBox="0 0 200 100" className="text-indigo-400 drop-shadow-md">
+              <div className="w-full bg-slate-950/80 py-3 px-4 rounded-xl border border-slate-800 flex justify-center items-center">
+                <svg viewBox="0 0 240 65" className="w-full max-w-[220px] h-auto" overflow="visible">
+                  <defs>
+                    <marker id="arrow-courant" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                      <polygon points="0 0, 6 3, 0 6" fill="#818cf8"/>
+                    </marker>
+                  </defs>
+                  
+                  {/* Label above */}
+                  <text x="120" y="10" textAnchor="middle" fill="#818cf8" fontSize="10" fontWeight="bold" fontFamily="monospace">i = η(t)</text>
+                  
                   {/* Wires */}
-                  <path d="M 10 50 L 70 50 M 130 50 L 190 50" stroke="currentColor" strokeWidth="4" strokeLinecap="round" />
-                  {/* Terminals */}
-                  <circle cx="10" cy="50" r="5" fill="currentColor" />
-                  <circle cx="190" cy="50" r="5" fill="currentColor" />
-                  {/* Circle */}
-                  <circle cx="100" cy="50" r="30" stroke="currentColor" strokeWidth="4" fill="none" />
-                  {/* Current Arrow inside circle */}
-                  <path d="M 75 50 L 125 50 L 115 40 M 125 50 L 115 60" stroke="currentColor" strokeWidth="4" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-                  {/* Label */}
-                  <text x="100" y="30" textAnchor="middle" fill="currentColor" fontSize="22" fontWeight="bold" fontFamily="monospace">η</text>
-                  {/* Terminal labels */}
-                  <text x="10" y="32" textAnchor="middle" fill="currentColor" fontSize="18" fontWeight="bold">A</text>
-                  <text x="190" y="32" textAnchor="middle" fill="currentColor" fontSize="18" fontWeight="bold">B</text>
+                  <line x1="25" y1="40" x2="102" y2="40" stroke="#818cf8" strokeWidth="2.2" strokeLinecap="round"/>
+                  <line x1="138" y1="40" x2="215" y2="40" stroke="#818cf8" strokeWidth="2.2" strokeLinecap="round"/>
+                  
+                  {/* Generator Circle with internal arrow */}
+                  <circle cx="120" cy="40" r="18" fill="#020617" stroke="#818cf8" strokeWidth="2.2"/>
+                  <line x1="108" y1="40" x2="132" y2="40" stroke="#818cf8" strokeWidth="2.2" markerEnd="url(#arrow-courant)" strokeLinecap="round"/>
+                  
+                  {/* Terminals A and B */}
+                  <circle cx="25" cy="40" r="3.5" fill="#818cf8"/>
+                  <text x="25" y="27" textAnchor="middle" fill="#94a3b8" fontSize="11" fontWeight="bold">A</text>
+                  <circle cx="215" cy="40" r="3.5" fill="#818cf8"/>
+                  <text x="215" y="27" textAnchor="middle" fill="#94a3b8" fontSize="11" fontWeight="bold">B</text>
                 </svg>
               </div>
             </div>
@@ -574,93 +592,114 @@ export default function Chap2GenerateursLoisKirchhoff() {
 
         {/* 2. Éteindre une Source */}
         <div className="space-y-4">
-          <h3 className="text-[14px] font-bold text-emerald-400 flex items-center gap-2 mt-8">
+          <h3 className="text-[14px] font-bold text-emerald-400 flex items-center gap-2 mt-6">
             2. Éteindre une Source
           </h3>
           <p className="text-[11px] text-slate-300 leading-relaxed">
             Cette opération est fondamentale pour appliquer le théorème de Superposition et pour calculer la résistance équivalente de Thévenin / Norton. Éteindre (ou passiver) une source revient à annuler sa grandeur caractéristique.
           </p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="p-5 rounded-xl bg-slate-900/60 border border-rose-500/30 space-y-4 shadow-sm relative overflow-hidden">
-              <div className="absolute top-0 right-0 p-2 opacity-5 pointer-events-none">
-                <Zap className="w-16 h-16 text-rose-500" />
+
+            {/* Éteindre Tension */}
+            <div className="p-5 rounded-xl bg-slate-900/60 border border-rose-500/30 space-y-3 shadow-sm flex flex-col justify-between">
+              <div>
+                <div className="text-[11px] font-bold text-rose-400 uppercase tracking-wider mb-2">Éteindre un Générateur de Tension</div>
+                <p className="text-[11px] text-slate-300 leading-relaxed">
+                  On pose <LatexMath math="e = 0" />. Un composant dont la tension est toujours nulle est un <strong>fil conducteur parfait</strong> (court-circuit).
+                </p>
               </div>
-              <div className="text-[11px] font-bold text-rose-400 uppercase relative z-10">Éteindre un Générateur de Tension</div>
-              <p className="text-[11px] text-slate-300 relative z-10">
-                On pose <LatexMath math="e = 0" />. Un composant dont la tension est toujours nulle est un <strong>fil conducteur parfait</strong> (court-circuit).
-              </p>
-              <div className="w-full bg-rose-950/20 py-4 rounded-lg border border-rose-500/20 flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 relative z-10">
-                {/* Source */}
-                <svg width="80" height="35" viewBox="0 0 200 100" className="text-cyan-400">
-                  <path d="M 10 50 L 70 50 M 130 50 L 190 50" stroke="currentColor" strokeWidth="6" strokeLinecap="round" />
-                  <circle cx="10" cy="50" r="7" fill="currentColor" />
-                  <circle cx="190" cy="50" r="7" fill="currentColor" />
-                  <circle cx="100" cy="50" r="30" stroke="currentColor" strokeWidth="5" fill="none" />
-                  <text x="100" y="58" textAnchor="middle" fill="currentColor" fontSize="24" fontWeight="bold" fontFamily="monospace">E</text>
-                  <text x="10" y="25" textAnchor="middle" fill="currentColor" fontSize="20" fontWeight="bold">A</text>
-                  <text x="190" y="25" textAnchor="middle" fill="currentColor" fontSize="20" fontWeight="bold">B</text>
-                </svg>
-                
-                {/* Arrow */}
-                <div className="flex flex-col items-center px-2">
-                  <span className="text-[10px] font-bold text-rose-400 mb-1">e = 0</span>
-                  <svg width="35" height="20" viewBox="0 0 100 50" className="text-rose-500 drop-shadow-[0_0_8px_rgba(244,63,94,0.6)]">
-                    <path d="M 10 25 L 90 25 L 70 10 M 90 25 L 70 40" stroke="currentColor" strokeWidth="8" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                </div>
-                
-                {/* Short Circuit */}
-                <svg width="80" height="35" viewBox="0 0 200 100" className="text-rose-400">
-                  <path d="M 10 50 L 190 50" stroke="currentColor" strokeWidth="8" strokeLinecap="round" />
-                  <circle cx="10" cy="50" r="7" fill="currentColor" />
-                  <circle cx="190" cy="50" r="7" fill="currentColor" />
-                  <text x="10" y="25" textAnchor="middle" fill="currentColor" fontSize="20" fontWeight="bold">A</text>
-                  <text x="190" y="25" textAnchor="middle" fill="currentColor" fontSize="20" fontWeight="bold">B</text>
-                </svg>
-              </div>
-            </div>
-            
-            <div className="p-5 rounded-xl bg-slate-900/60 border border-amber-500/30 space-y-4 shadow-sm relative overflow-hidden">
-              <div className="absolute top-0 right-0 p-2 opacity-5 pointer-events-none">
-                <Zap className="w-16 h-16 text-amber-500" />
-              </div>
-              <div className="text-[11px] font-bold text-amber-400 uppercase relative z-10">Éteindre un Générateur de Courant</div>
-              <p className="text-[11px] text-slate-300 relative z-10">
-                On pose <LatexMath math="\eta = 0" />. Un composant traversé par un courant toujours nul est un <strong>circuit ouvert</strong> (interrupteur ouvert).
-              </p>
-              <div className="w-full bg-amber-950/20 py-4 rounded-lg border border-amber-500/20 flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 relative z-10">
-                {/* Source */}
-                <svg width="80" height="35" viewBox="0 0 200 100" className="text-indigo-400">
-                  <path d="M 10 50 L 70 50 M 130 50 L 190 50" stroke="currentColor" strokeWidth="6" strokeLinecap="round" />
-                  <circle cx="10" cy="50" r="7" fill="currentColor" />
-                  <circle cx="190" cy="50" r="7" fill="currentColor" />
-                  <circle cx="100" cy="50" r="30" stroke="currentColor" strokeWidth="5" fill="none" />
-                  <path d="M 80 50 L 120 50 L 110 40 M 120 50 L 110 60" stroke="currentColor" strokeWidth="5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-                  <text x="100" y="25" textAnchor="middle" fill="currentColor" fontSize="24" fontWeight="bold" fontFamily="monospace">η</text>
-                  <text x="10" y="25" textAnchor="middle" fill="currentColor" fontSize="20" fontWeight="bold">A</text>
-                  <text x="190" y="25" textAnchor="middle" fill="currentColor" fontSize="20" fontWeight="bold">B</text>
-                </svg>
-                
-                {/* Arrow */}
-                <div className="flex flex-col items-center px-2">
-                  <span className="text-[10px] font-bold text-amber-400 mb-1">η = 0</span>
-                  <svg width="35" height="20" viewBox="0 0 100 50" className="text-amber-500 drop-shadow-[0_0_8px_rgba(245,158,11,0.6)]">
-                    <path d="M 10 25 L 90 25 L 70 10 M 90 25 L 70 40" stroke="currentColor" strokeWidth="8" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                </div>
-                
-                {/* Open Circuit */}
-                <svg width="80" height="35" viewBox="0 0 200 100" className="text-amber-400">
-                  <path d="M 10 50 L 75 50 M 125 50 L 190 50" stroke="currentColor" strokeWidth="8" strokeLinecap="round" />
-                  <circle cx="10" cy="50" r="7" fill="currentColor" />
-                  <circle cx="190" cy="50" r="7" fill="currentColor" />
-                  <circle cx="75" cy="50" r="7" stroke="currentColor" strokeWidth="5" fill="#0f172a" />
-                  <circle cx="125" cy="50" r="7" stroke="currentColor" strokeWidth="5" fill="#0f172a" />
-                  <text x="10" y="25" textAnchor="middle" fill="currentColor" fontSize="20" fontWeight="bold">A</text>
-                  <text x="190" y="25" textAnchor="middle" fill="currentColor" fontSize="20" fontWeight="bold">B</text>
+              <div className="w-full bg-slate-950/80 py-3.5 px-3 rounded-xl border border-slate-800 flex justify-center items-center">
+                <svg viewBox="0 0 310 70" className="w-full max-w-[290px] h-auto" overflow="visible">
+                  <defs>
+                    <marker id="trans-arrow-rose" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                      <polygon points="0 0, 6 3, 0 6" fill="#f43f5e"/>
+                    </marker>
+                  </defs>
+
+                  {/* LEFT: Source E */}
+                  <g>
+                    <line x1="15" y1="35" x2="44" y2="35" stroke="#22d3ee" strokeWidth="2" strokeLinecap="round"/>
+                    <line x1="76" y1="35" x2="105" y2="35" stroke="#22d3ee" strokeWidth="2" strokeLinecap="round"/>
+                    <circle cx="60" cy="35" r="16" fill="#020617" stroke="#22d3ee" strokeWidth="2"/>
+                    <text x="60" y="40" textAnchor="middle" fill="#22d3ee" fontSize="12" fontWeight="bold" fontFamily="monospace">E</text>
+                    <circle cx="15" cy="35" r="3" fill="#22d3ee"/>
+                    <text x="15" y="22" textAnchor="middle" fill="#94a3b8" fontSize="10" fontWeight="bold">A</text>
+                    <circle cx="105" cy="35" r="3" fill="#22d3ee"/>
+                    <text x="105" y="22" textAnchor="middle" fill="#94a3b8" fontSize="10" fontWeight="bold">B</text>
+                  </g>
+
+                  {/* MIDDLE: Arrow with e=0 */}
+                  <g>
+                    <text x="155" y="22" textAnchor="middle" fill="#f43f5e" fontSize="10" fontWeight="bold" fontFamily="monospace">e = 0</text>
+                    <line x1="135" y1="35" x2="175" y2="35" stroke="#f43f5e" strokeWidth="2.2" markerEnd="url(#trans-arrow-rose)" strokeLinecap="round"/>
+                  </g>
+
+                  {/* RIGHT: Short-circuit Wire */}
+                  <g>
+                    <line x1="205" y1="35" x2="295" y2="35" stroke="#f43f5e" strokeWidth="3" strokeLinecap="round"/>
+                    <circle cx="205" cy="35" r="3.5" fill="#f43f5e"/>
+                    <text x="205" y="22" textAnchor="middle" fill="#94a3b8" fontSize="10" fontWeight="bold">A</text>
+                    <circle cx="295" cy="35" r="3.5" fill="#f43f5e"/>
+                    <text x="295" y="22" textAnchor="middle" fill="#94a3b8" fontSize="10" fontWeight="bold">B</text>
+                    <text x="250" y="55" textAnchor="middle" fill="#f43f5e" fontSize="9" fontWeight="600">Court-circuit</text>
+                  </g>
                 </svg>
               </div>
             </div>
+
+            {/* Éteindre Courant */}
+            <div className="p-5 rounded-xl bg-slate-900/60 border border-amber-500/30 space-y-3 shadow-sm flex flex-col justify-between">
+              <div>
+                <div className="text-[11px] font-bold text-amber-400 uppercase tracking-wider mb-2">Éteindre un Générateur de Courant</div>
+                <p className="text-[11px] text-slate-300 leading-relaxed">
+                  On pose <LatexMath math="\eta = 0" />. Un composant traversé par un courant toujours nul est un <strong>circuit ouvert</strong> (interrupteur ouvert).
+                </p>
+              </div>
+              <div className="w-full bg-slate-950/80 py-3.5 px-3 rounded-xl border border-slate-800 flex justify-center items-center">
+                <svg viewBox="0 0 310 70" className="w-full max-w-[290px] h-auto" overflow="visible">
+                  <defs>
+                    <marker id="trans-arrow-amber" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                      <polygon points="0 0, 6 3, 0 6" fill="#f59e0b"/>
+                    </marker>
+                    <marker id="courant-mini" markerWidth="5" markerHeight="5" refX="4" refY="2.5" orient="auto">
+                      <polygon points="0 0, 5 2.5, 0 5" fill="#818cf8"/>
+                    </marker>
+                  </defs>
+
+                  {/* LEFT: Source η */}
+                  <g>
+                    <line x1="15" y1="35" x2="44" y2="35" stroke="#818cf8" strokeWidth="2" strokeLinecap="round"/>
+                    <line x1="76" y1="35" x2="105" y2="35" stroke="#818cf8" strokeWidth="2" strokeLinecap="round"/>
+                    <circle cx="60" cy="35" r="16" fill="#020617" stroke="#818cf8" strokeWidth="2"/>
+                    <line x1="50" y1="35" x2="70" y2="35" stroke="#818cf8" strokeWidth="1.8" markerEnd="url(#courant-mini)" strokeLinecap="round"/>
+                    <circle cx="15" cy="35" r="3" fill="#818cf8"/>
+                    <text x="15" y="22" textAnchor="middle" fill="#94a3b8" fontSize="10" fontWeight="bold">A</text>
+                    <circle cx="105" cy="35" r="3" fill="#818cf8"/>
+                    <text x="105" y="22" textAnchor="middle" fill="#94a3b8" fontSize="10" fontWeight="bold">B</text>
+                  </g>
+
+                  {/* MIDDLE: Arrow with η=0 */}
+                  <g>
+                    <text x="155" y="22" textAnchor="middle" fill="#f59e0b" fontSize="10" fontWeight="bold" fontFamily="monospace">η = 0</text>
+                    <line x1="135" y1="35" x2="175" y2="35" stroke="#f59e0b" strokeWidth="2.2" markerEnd="url(#trans-arrow-amber)" strokeLinecap="round"/>
+                  </g>
+
+                  {/* RIGHT: Open Circuit */}
+                  <g>
+                    <line x1="205" y1="35" x2="236" y2="35" stroke="#f59e0b" strokeWidth="2.2" strokeLinecap="round"/>
+                    <line x1="264" y1="35" x2="295" y2="35" stroke="#f59e0b" strokeWidth="2.2" strokeLinecap="round"/>
+                    <circle cx="236" cy="35" r="3.5" fill="#020617" stroke="#f59e0b" strokeWidth="2.2"/>
+                    <circle cx="264" cy="35" r="3.5" fill="#020617" stroke="#f59e0b" strokeWidth="2.2"/>
+                    <circle cx="205" cy="35" r="3.5" fill="#f59e0b"/>
+                    <text x="205" y="22" textAnchor="middle" fill="#94a3b8" fontSize="10" fontWeight="bold">A</text>
+                    <circle cx="295" cy="35" r="3.5" fill="#f59e0b"/>
+                    <text x="295" y="22" textAnchor="middle" fill="#94a3b8" fontSize="10" fontWeight="bold">B</text>
+                    <text x="250" y="55" textAnchor="middle" fill="#f59e0b" fontSize="9" fontWeight="600">Circuit ouvert</text>
+                  </g>
+                </svg>
+              </div>
+            </div>
+
           </div>
         </div>
 
