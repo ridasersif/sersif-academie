@@ -15,6 +15,7 @@ import {
   RESEAUX_ARQS_CHAPTERS,
   ELECTRONIQUE_ANALOGIQUE_CHAPTERS
 } from "@/modules/physique/electricite/electronique/chapters";
+import { SOLUTIONS_ELECTROCHIMIE_CHAPTERS } from "@/modules/chimie/solutions-aqueuses-et-electrochimie/chapters";
 import { 
   ArrowLeft, 
   BookOpen, 
@@ -80,6 +81,8 @@ export default function EtudePage({ params }: { params: Promise<{ moduleId: stri
     chapters = ELECTRONIQUE_ANALOGIQUE_CHAPTERS;
   } else if (subModuleId === "electronique") {
     chapters = ELECTRONIQUE_CHAPTERS;
+  } else if (subModuleId === "solutions-aqueuses-et-electrochimie") {
+    chapters = SOLUTIONS_ELECTROCHIMIE_CHAPTERS;
   }
 
   // Always initialize to 0 for SSR to avoid hydration mismatch

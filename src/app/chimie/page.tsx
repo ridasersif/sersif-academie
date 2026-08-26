@@ -4,6 +4,7 @@ import ScientificBackground from "@/components/ScientificBackground";
 import { ThemeToggle } from "@/components/theme-toggle";
 import MusicPlayer from "@/components/MusicPlayer";
 import { ArrowRight, BookOpen } from "lucide-react";
+import { COURSES_DATA } from "@/data/courses";
 
 export default function ChimiePage() {
   const modules = [
@@ -58,15 +59,13 @@ export default function ChimiePage() {
             href="/" 
             className="text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2 text-xs sm:text-sm font-semibold group"
           >
-            <svg className="w-4 h-4 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-            </svg>
-            <span>Retour</span>
+            <span className="group-hover:-translate-x-1 transition-transform inline-block">←</span>
+            <span>Accueil</span>
           </Link>
           
           <span className="text-border/60">|</span>
           
-          <h1 className="text-xs sm:text-sm font-bold tracking-tight text-foreground">
+          <h1 className="text-xs sm:text-sm font-bold tracking-tight text-foreground truncate max-w-[200px] sm:max-w-none">
             Sersif Académie <span className="text-muted-foreground font-normal">/</span> <span className="text-emerald-500 font-bold">Chimie</span>
           </h1>
         </div>
@@ -79,12 +78,12 @@ export default function ChimiePage() {
       </header>
 
       {/* Main Content Area */}
-      <main className="flex-1 p-4 sm:p-8 md:p-12 max-w-6xl mx-auto w-full z-10">
+      <main className="flex-1 p-4 sm:p-8 md:p-12 max-w-7xl mx-auto w-full z-10">
         
-        {/* Title Header */}
+        {/* Header Title */}
         <div className="mb-10 text-center md:text-left">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-xs font-bold mb-3">
-            <BookOpen className="w-3.5 h-3.5" />
+            <BookOpen className="w-4 h-4" />
             <span>Programme Officiel de Chimie</span>
           </div>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-black mb-3 text-foreground tracking-tight">
@@ -97,9 +96,15 @@ export default function ChimiePage() {
 
         {/* Professional MasterClass Style Cards Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {modules.map((mod) => (
-            <Link key={mod.id} href={`/cours/${mod.id}`} className="group block h-full">
-              <div className="h-full bg-card/85 backdrop-blur-xl border border-border/80 rounded-[28px] p-3 shadow-md hover:shadow-2xl hover:border-emerald-500/50 transition-all duration-300 transform group-hover:-translate-y-1.5 flex flex-col justify-between">
+          {modules.map((mod) => {
+            const courseData = COURSES_DATA[mod.id];
+            const targetHref = (courseData?.subModules?.length === 1)
+              ? `/cours/${mod.id}/${courseData.subModules[0].id}`
+              : `/cours/${mod.id}`;
+
+            return (
+              <Link key={mod.id} href={targetHref} className="group block h-full">
+                <div className="h-full bg-card/85 backdrop-blur-xl border border-border/80 rounded-[28px] p-3 shadow-md hover:shadow-2xl hover:border-emerald-500/50 transition-all duration-300 transform group-hover:-translate-y-1.5 flex flex-col justify-between">
                 
                 <div>
                   {/* Crisp 3D Image Container */}
@@ -140,7 +145,8 @@ export default function ChimiePage() {
 
               </div>
             </Link>
-          ))}
+            );
+          })}
         </div>
 
       </main>

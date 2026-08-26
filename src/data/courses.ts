@@ -232,5 +232,62 @@ export const COURSES_DATA: Record<string, CourseModule> = {
         ]
       }
     ]
+  },
+  "chimie-des-solutions-aqueuses-et-electrochimie": {
+    id: "chimie-des-solutions-aqueuses-et-electrochimie",
+    code: "Module 05",
+    title: "Solutions Aqueuses & Électrochimie",
+    subject: "chimie",
+    image: "/modules/electrochimie_v2.png",
+    description: "Généralités sur les solutions aqueuses, équilibres acido-basiques, réactions de précipitation, oxydoréduction, piles électrochimiques et accumulateurs.",
+    subModules: [
+      {
+        id: "solutions-aqueuses-et-electrochimie",
+        code: "Module Complet",
+        title: "Solutions Aqueuses & Électrochimie",
+        subtitle: "Cours Magistral, Équilibres, Piles & Électrolyse",
+        image: "/modules/electrochimie_v2.png",
+        badge: "7 Chapitres",
+        description: "Programme complet de chimie des solutions aqueuses et électrochimie pour la préparation au concours de recrutement des enseignants.",
+        elements: [
+          {
+            id: "generalites-solutions",
+            title: "1. Généralités sur les Solutions Aqueuses",
+            details: "L'eau solvant, effets ionisants, solvatants et dispersants. Concentrations, activités chimiques, force ionique et modèle de Debye-Hückel."
+          },
+          {
+            id: "reactions-acido-basiques",
+            title: "2. Réactions Acido-Basiques & Calculs de pH",
+            details: "Théorie de Brönsted, couples acide/base, Ka, Ke, méthode de la Réaction Prépondérante (RP) et calculs rigoureux de pH."
+          },
+          {
+            id: "dosages-tampons",
+            title: "3. Dosages Acido-Basiques & Solutions Tampons",
+            details: "Courbes de titrage pH-métrique, indicateurs colorés, suivi conductimétrique, effet tampon et pouvoir tampon."
+          },
+          {
+            id: "reactions-precipitation",
+            title: "4. Réactions de Précipitation & Solubilité",
+            details: "Produit de solubilité Ks, solubilité s, effet de l'ion commun, influence du pH et de la complexation."
+          },
+          {
+            id: "oxydoreduction-nernst",
+            title: "5. Oxydo-Réduction & Formule de Nernst",
+            details: "Degrés d'oxydation, ESH, formule de Nernst, règle du gamma, prévision thermodynamique et potentiel apparent."
+          },
+          {
+            id: "piles-faraday-electrolyse",
+            title: "6. Piles Électrochimiques, Faraday & Électrolyse",
+            details: "Pile Daniell, force électromotrice, thermodynamique des piles, loi de Faraday et électrolyse."
+          },
+          {
+            id: "piles-avancees-accumulateurs",
+            title: "7. Piles Avancées, Accumulateurs & Piles à Combustibles",
+            details: "Piles de concentration, accumulateurs au plomb et Li-ion, piles à combustible H2/O2."
+          }
+        ]
+      }
+    ]
   }
 };
+

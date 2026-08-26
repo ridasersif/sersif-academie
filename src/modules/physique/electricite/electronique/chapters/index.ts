@@ -1,4 +1,7 @@
 import Chap1FondementsElectrocinetique from "./chap1-fondements-electrocinetique";
+import Chap2GenerateursLoisKirchhoff from "./chap2-generateurs-lois-kirchhoff";
+import Chap3RegimeSinusoidalImpedances from "./chap3-regime-sinusoidal-impedances";
+import Chap4CircuitRLCResonances from "./chap4-circuit-rlc-resonances";
 import Chap1DensiteConductivite from "./chap1-densite-conductivite";
 import Chap2LoiOhmDipoles from "./chap2-loi-ohm-dipoles";
 import Chap3PuissanceElectrocinetique from "./chap3-puissance-electrocinetique";
@@ -16,21 +19,21 @@ export const ELECTRONIQUE_DE_BASE_CHAPTERS = [
     num: "02",
     title: "Générateurs Réels, Lois de Kirchhoff & Théorèmes des Réseaux",
     subtitle: "Thévenin, Norton, transfert maximal de puissance, ARQS et Kirchhoff",
-    component: null,
+    component: Chap2GenerateursLoisKirchhoff,
   },
   {
     id: "regime-sinusoidal-impedances",
     num: "03",
     title: "Régime Sinusoïdal Forcé & Impédances Complexes",
     subtitle: "Grandeurs complexes, impédances de R, L, C et puissances",
-    component: null,
+    component: Chap3RegimeSinusoidalImpedances,
   },
   {
     id: "circuit-rlc-resonances",
     num: "04",
     title: "Circuit RLC Série, Résonances & Réponses Fréquentielles",
     subtitle: "Étude différentielle, résonances en I et U, et facteur de qualité Q",
-    component: null,
+    component: Chap4CircuitRLCResonances,
   }
 ];
 
@@ -42,21 +45,21 @@ export const RESEAUX_ARQS_CHAPTERS = [
     num: "01",
     title: "Lois de Kirchhoff & Théorèmes",
     subtitle: "Superposition, Thévenin, Norton et transformation",
-    component: null,
+    component: Chap2GenerateursLoisKirchhoff,
   },
   {
     id: "regime-sinusoidal-impedance",
     num: "02",
     title: "Régime Sinusoïdal Forcé & Impédance",
     subtitle: "Admittance et impédance complexes des dipôles R, L, C",
-    component: null,
+    component: Chap3RegimeSinusoidalImpedances,
   },
   {
     id: "circuit-rlc-resonances",
     num: "03",
     title: "Circuit RLC Série & Résonances",
     subtitle: "Étude complète et puissance moyenne",
-    component: null,
+    component: Chap4CircuitRLCResonances,
   }
 ];
 
@@ -91,6 +94,9 @@ export const ELECTRONIQUE_CHAPTERS = [
 
 export { 
   Chap1FondementsElectrocinetique, 
+  Chap2GenerateursLoisKirchhoff,
+  Chap3RegimeSinusoidalImpedances,
+  Chap4CircuitRLCResonances,
   Chap1DensiteConductivite, 
   Chap2LoiOhmDipoles, 
   Chap3PuissanceElectrocinetique 
