@@ -59,24 +59,36 @@ const KCLSystem = ({ isPlaying }: { isPlaying: boolean }) => {
         <sphereGeometry args={[0.3, 32, 32]} />
         <meshStandardMaterial color="#38bdf8" metalness={0.8} roughness={0.2} emissive="#0ea5e9" emissiveIntensity={0.5} />
       </mesh>
-      <Html position={[0, 0.8, 0]} center>
-        <span className="text-cyan-400 font-bold font-mono text-xs whitespace-nowrap bg-slate-900/90 border border-slate-700/50 px-2 py-1 rounded shadow-lg">Nœud A</span>
+      <Html position={[0, 0.7, 0]} center>
+        <div className="flex items-center gap-1.5 whitespace-nowrap bg-slate-950/80 px-2.5 py-1 rounded-full border border-cyan-500/30 backdrop-blur-md shadow-lg">
+          <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"></span>
+          <span className="text-cyan-300 font-mono text-[11px] font-bold">Nœud A</span>
+        </div>
       </Html>
 
       {/* Wires */}
-      <Line points={wireIn} color="#64748b" lineWidth={5} />
-      <Line points={wireOut1} color="#64748b" lineWidth={4} />
-      <Line points={wireOut2} color="#64748b" lineWidth={3} />
+      <Line points={wireIn} color="#475569" lineWidth={4} />
+      <Line points={wireOut1} color="#475569" lineWidth={4} />
+      <Line points={wireOut2} color="#475569" lineWidth={4} />
 
       {/* Current Labels */}
-      <Html position={[-2, 0.5, 0]} center>
-        <span className="text-amber-400 font-bold font-mono text-[10px] whitespace-nowrap bg-slate-900/90 border border-slate-700/50 px-2 py-1 rounded shadow-lg">I = 10 A</span>
+      <Html position={[-2, 0.4, 0]} center>
+        <div className="flex items-center gap-1.5 whitespace-nowrap bg-slate-950/80 px-2.5 py-1 rounded-full border border-slate-700/50 backdrop-blur-md shadow-lg">
+          <span className="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+          <span className="text-slate-200 font-mono text-[11px] font-bold">I = 10A</span>
+        </div>
       </Html>
-      <Html position={[1.5, 1.5, 0]} center>
-        <span className="text-rose-400 font-bold font-mono text-[10px] whitespace-nowrap bg-slate-900/90 border border-slate-700/50 px-2 py-1 rounded shadow-lg">I₁ = 6 A</span>
+      <Html position={[1.5, 1.4, 0]} center>
+        <div className="flex items-center gap-1.5 whitespace-nowrap bg-slate-950/80 px-2.5 py-1 rounded-full border border-slate-700/50 backdrop-blur-md shadow-lg">
+          <span className="w-1.5 h-1.5 rounded-full bg-rose-400"></span>
+          <span className="text-slate-200 font-mono text-[11px] font-bold">I₁ = 6A</span>
+        </div>
       </Html>
-      <Html position={[1.5, -1.5, 0]} center>
-        <span className="text-emerald-400 font-bold font-mono text-[10px] whitespace-nowrap bg-slate-900/90 border border-slate-700/50 px-2 py-1 rounded shadow-lg">I₂ = 4 A</span>
+      <Html position={[1.5, -1.4, 0]} center>
+        <div className="flex items-center gap-1.5 whitespace-nowrap bg-slate-950/80 px-2.5 py-1 rounded-full border border-slate-700/50 backdrop-blur-md shadow-lg">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+          <span className="text-slate-200 font-mono text-[11px] font-bold">I₂ = 4A</span>
+        </div>
       </Html>
 
       {/* Particles */}
@@ -150,7 +162,7 @@ const KVLSystem = ({ isPlaying }: { isPlaying: boolean }) => {
 
   return (
     <group ref={meshRef}>
-      <Line points={loopPoints} color="#64748b" lineWidth={3} />
+      <Line points={loopPoints} color="#475569" lineWidth={3} />
       
       {[loopPoints[0], loopPoints[1], loopPoints[2], loopPoints[3]].map((p, i) => (
         <mesh key={i} position={p}>
@@ -164,8 +176,11 @@ const KVLSystem = ({ isPlaying }: { isPlaying: boolean }) => {
         <cylinderGeometry args={[0.3, 0.3, 1, 32]} />
         <meshStandardMaterial color="#facc15" />
       </mesh>
-      <Html position={[-3.2, 0, 0]} center>
-        <span className="text-amber-400 font-bold font-mono text-[10px] whitespace-nowrap bg-slate-900/90 px-2 py-1 rounded border border-amber-500/20 shadow-xl">E = 12V</span>
+      <Html position={[-2.6, 0, 0]} center>
+        <div className="flex items-center gap-1.5 whitespace-nowrap bg-slate-950/80 px-2.5 py-1 rounded-full border border-slate-700/50 backdrop-blur-md shadow-lg">
+          <span className="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+          <span className="text-slate-200 font-mono text-[11px] font-bold">E = 12V</span>
+        </div>
       </Html>
 
       {/* Resistor R1 */}
@@ -173,8 +188,11 @@ const KVLSystem = ({ isPlaying }: { isPlaying: boolean }) => {
         <boxGeometry args={[0.4, 1.2, 0.4]} />
         <meshStandardMaterial color="#f43f5e" />
       </mesh>
-      <Html position={[0, 2.8, 0]} center>
-        <span className="text-rose-400 font-bold font-mono text-[10px] whitespace-nowrap bg-slate-900/90 px-2 py-1 rounded border border-rose-500/20 shadow-xl">U₁ = -4V</span>
+      <Html position={[0, 2.6, 0]} center>
+        <div className="flex items-center gap-1.5 whitespace-nowrap bg-slate-950/80 px-2.5 py-1 rounded-full border border-slate-700/50 backdrop-blur-md shadow-lg">
+          <span className="w-1.5 h-1.5 rounded-full bg-rose-400"></span>
+          <span className="text-slate-200 font-mono text-[11px] font-bold">U₁ = -4V</span>
+        </div>
       </Html>
 
       {/* Resistor R2 */}
@@ -182,24 +200,27 @@ const KVLSystem = ({ isPlaying }: { isPlaying: boolean }) => {
         <boxGeometry args={[0.4, 1.2, 0.4]} />
         <meshStandardMaterial color="#10b981" />
       </mesh>
-      <Html position={[3.2, 0, 0]} center>
-        <span className="text-emerald-400 font-bold font-mono text-[10px] whitespace-nowrap bg-slate-900/90 px-2 py-1 rounded border border-emerald-500/20 shadow-xl">U₂ = -8V</span>
+      <Html position={[2.7, 0, 0]} center>
+        <div className="flex items-center gap-1.5 whitespace-nowrap bg-slate-950/80 px-2.5 py-1 rounded-full border border-slate-700/50 backdrop-blur-md shadow-lg">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+          <span className="text-slate-200 font-mono text-[11px] font-bold">U₂ = -8V</span>
+        </div>
       </Html>
 
       {/* KVL Mesh Loop Arrow */}
       <group ref={arrowRef}>
         <mesh position={[0, 0, 0]}>
-          <ringGeometry args={[0.7, 0.8, 32, 1, 0, Math.PI * 1.5]} />
-          <meshBasicMaterial color="#38bdf8" side={THREE.DoubleSide} />
+          <ringGeometry args={[0.65, 0.75, 32, 1, 0, Math.PI * 1.5]} />
+          <meshBasicMaterial color="#06b6d4" side={THREE.DoubleSide} />
         </mesh>
-        <mesh position={[-0.75, -0.75, 0]} rotation={[0, 0, Math.PI/4]}>
-          <coneGeometry args={[0.2, 0.4, 16]} />
-          <meshBasicMaterial color="#38bdf8" />
+        <mesh position={[0.7, 0, 0]} rotation={[0, 0, Math.PI]}>
+          <coneGeometry args={[0.15, 0.35, 16]} />
+          <meshBasicMaterial color="#06b6d4" />
         </mesh>
       </group>
       
       <Html position={[0, 0, 0]} center>
-        <span className="text-cyan-400 font-bold font-mono text-sm whitespace-nowrap drop-shadow-md">Maille M</span>
+        <span className="text-cyan-300 font-bold font-mono text-[11px] whitespace-nowrap drop-shadow-md">Maille M</span>
       </Html>
 
       {/* Flowing Electrons */}

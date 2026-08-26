@@ -492,7 +492,7 @@ export default function Chap2GenerateursLoisKirchhoff() {
         </div>
       </section>
 
-      {/* ── PARTIE 2: GÉNÉRATEURS RÉELS & MODÈLES LINÉAIRES ── */}
+      {/* ── PARTIE 2: MODÉLISATION DES SOURCES ── */}
       <section className="bg-card/90 border border-border/80 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 shadow-sm w-full max-w-full overflow-x-hidden space-y-6">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[11px] font-extrabold mb-1">
           <Zap className="w-3.5 h-3.5" />
@@ -500,66 +500,134 @@ export default function Chap2GenerateursLoisKirchhoff() {
         </div>
 
         <h2 className="text-lg sm:text-lg font-black text-foreground leading-tight">
-          2. Générateurs Réels & Modèles de Thévenin / Norton
+          Générateurs Idéaux, Extinction des Sources & Modèles Réels
         </h2>
 
-        <p className="text-[11px] text-muted-foreground leading-relaxed">
-          Une source réelle d&apos;énergie électrique n&apos;est jamais parfaite : le passage du courant interne dissipe une partie de l&apos;énergie sous forme de chaleur. On la modélise par l&apos;association d&apos;une source idéale et d&apos;une résistance interne <LatexMath math="r" />.
-        </p>
-
-        {/* Dual Generator Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-4">
-          {/* Thévenin Generator */}
-          <div className="p-5 rounded-2xl bg-slate-900/90 border border-cyan-500/30 space-y-3 shadow-md">
-            <div className="flex items-center justify-between">
-              <span className="text-[11px] font-extrabold text-cyan-400 uppercase tracking-wider">
-                Modèle de Thévenin (Tension)
-              </span>
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-cyan-500/10 text-cyan-300 border border-cyan-500/20">
-                Série (E, r)
-              </span>
+        {/* 1. Les Générateurs Idéaux */}
+        <div className="space-y-4">
+          <h3 className="text-[14px] font-bold text-emerald-400 flex items-center gap-2">
+            1. Les Générateurs Idéaux
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-700/50 space-y-2 shadow-sm">
+              <div className="text-[11px] font-bold text-cyan-400 uppercase">Générateur Idéal de Tension</div>
+              <p className="text-[11px] text-slate-300">
+                La tension est constante <LatexMath math="u(t) = e(t)" /> <strong>quelle que soit l&apos;intensité</strong> du courant <LatexMath math="i(t)" /> délivrée. Sa résistance interne est nulle.
+              </p>
+              <div className="p-2 rounded bg-black/50 text-center font-mono text-cyan-300 text-[11px] border border-cyan-500/20">
+                <LatexMath math="u = E \quad (\text{Constante})" />
+              </div>
             </div>
-            <div className="p-3 rounded-xl bg-black/60 text-center font-mono text-cyan-300 font-bold text-[11px] border border-cyan-500/20">
-              <LatexMath math="u(i) = E - r \cdot i" />
+            <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-700/50 space-y-2 shadow-sm">
+              <div className="text-[11px] font-bold text-indigo-400 uppercase">Générateur Idéal de Courant</div>
+              <p className="text-[11px] text-slate-300">
+                Le courant est constant <LatexMath math="i(t) = \eta(t)" /> <strong>quelle que soit la tension</strong> <LatexMath math="u(t)" /> à ses bornes. Sa résistance interne est infinie.
+              </p>
+              <div className="p-2 rounded bg-black/50 text-center font-mono text-indigo-300 text-[11px] border border-indigo-500/20">
+                <LatexMath math="i = \eta \quad (\text{Constante})" />
+              </div>
             </div>
-            <ul className="text-[11px] text-slate-300 space-y-1.5 pl-1 leading-relaxed">
-              <li>• <strong>Tension à vide (<LatexMath math="i = 0" />) :</strong> <LatexMath math="u_0 = E" /> (f.é.m en Volts).</li>
-              <li>• <strong>Courant de court-circuit (<LatexMath math="u = 0" />) :</strong> <LatexMath math="I_{cc} = \frac{E}{r}" />.</li>
-              <li>• <strong>Pente de la caractéristique :</strong> <LatexMath math="\frac{\mathrm{d}u}{\mathrm{d}i} = -r < 0" />.</li>
-            </ul>
-          </div>
-
-          {/* Norton Generator */}
-          <div className="p-5 rounded-2xl bg-slate-900/90 border border-indigo-500/30 space-y-3 shadow-md">
-            <div className="flex items-center justify-between">
-              <span className="text-[11px] font-extrabold text-indigo-400 uppercase tracking-wider">
-                Modèle de Norton (Courant)
-              </span>
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-300 border border-indigo-500/20">
-                Parallèle (η, r)
-              </span>
-            </div>
-            <div className="p-3 rounded-xl bg-black/60 text-center font-mono text-indigo-300 font-bold text-[11px] border border-indigo-500/20">
-              <LatexMath math="i(u) = \eta - \frac{u}{r}" />
-            </div>
-            <ul className="text-[11px] text-slate-300 space-y-1.5 pl-1 leading-relaxed">
-              <li>• <strong>Courant de court-circuit (<LatexMath math="u = 0" />) :</strong> <LatexMath math="i = \eta" /> (c.e.m en Ampères).</li>
-              <li>• <strong>Tension à vide (<LatexMath math="i = 0" />) :</strong> <LatexMath math="u_0 = r \cdot \eta" />.</li>
-              <li>• <strong>Conductance interne :</strong> <LatexMath math="g = \frac{1}{r}" />.</li>
-            </ul>
           </div>
         </div>
 
-        {/* Thévenin <-> Norton Equivalence Box */}
-        <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 space-y-2 text-[11px]">
-          <h4 className="font-extrabold uppercase text-emerald-400 flex items-center gap-1.5">
-            <RefreshCw className="w-4 h-4" /> Formules d&apos;Équivalence Thévenin ⟺ Norton
-          </h4>
-          <p className="text-slate-300 leading-relaxed">
-            Les deux représentations sont rigoureusement interchangeables du point de vue des bornes extérieures :
+        {/* 2. Éteindre une Source */}
+        <div className="space-y-4">
+          <h3 className="text-[14px] font-bold text-emerald-400 flex items-center gap-2 mt-8">
+            2. Éteindre une Source
+          </h3>
+          <p className="text-[11px] text-slate-300 leading-relaxed">
+            Cette opération est fondamentale pour appliquer le théorème de Superposition et pour calculer la résistance équivalente de Thévenin / Norton. Éteindre (ou passiver) une source revient à annuler sa grandeur caractéristique.
           </p>
-          <div className="p-2.5 rounded-lg bg-black/60 border border-emerald-500/30 text-center text-emerald-300 font-mono font-bold text-[11px]">
-            <LatexMath math="\eta_N = \frac{E_{th}}{r_{th}} \quad \iff \quad E_{th} = r_N \cdot \eta_N \quad \text{avec} \quad r_N = r_{th}" />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="p-4 rounded-xl bg-slate-900/60 border border-rose-500/30 space-y-2 shadow-sm relative overflow-hidden">
+              <div className="absolute top-0 right-0 p-2 opacity-10">
+                <Zap className="w-10 h-10 text-rose-500" />
+              </div>
+              <div className="text-[11px] font-bold text-rose-400 uppercase">Éteindre un Générateur de Tension</div>
+              <p className="text-[11px] text-slate-300">
+                On pose <LatexMath math="e = 0" />. Un composant dont la tension est toujours nulle, quel que soit le courant, est un <strong>fil conducteur parfait</strong> (ou un court-circuit).
+              </p>
+              <div className="p-2 rounded bg-rose-500/10 text-center font-mono text-rose-300 text-[11px] font-bold border border-rose-500/20">
+                Source de Tension ➔ Fil Conducteur
+              </div>
+            </div>
+            <div className="p-4 rounded-xl bg-slate-900/60 border border-amber-500/30 space-y-2 shadow-sm relative overflow-hidden">
+              <div className="absolute top-0 right-0 p-2 opacity-10">
+                <Zap className="w-10 h-10 text-amber-500" />
+              </div>
+              <div className="text-[11px] font-bold text-amber-400 uppercase">Éteindre un Générateur de Courant</div>
+              <p className="text-[11px] text-slate-300">
+                On pose <LatexMath math="\eta = 0" />. Un composant traversé par un courant toujours nul, quelle que soit la tension, est un <strong>circuit ouvert</strong> (ou interrupteur ouvert).
+              </p>
+              <div className="p-2 rounded bg-amber-500/10 text-center font-mono text-amber-300 text-[11px] font-bold border border-amber-500/20">
+                Source de Courant ➔ Circuit Ouvert
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* 3. Les Générateurs Réels */}
+        <div className="space-y-4">
+          <h3 className="text-[14px] font-bold text-emerald-400 flex items-center gap-2 mt-8">
+            3. Les Générateurs Réels
+          </h3>
+          <p className="text-[11px] text-slate-300 leading-relaxed">
+            Une source réelle d&apos;énergie électrique n&apos;est jamais parfaite : le passage du courant interne dissipe une partie de l&apos;énergie sous forme de chaleur. On la modélise par l&apos;association d&apos;une source idéale et d&apos;une résistance interne <LatexMath math="r" />.
+          </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-4">
+            {/* Thévenin Generator */}
+            <div className="p-5 rounded-2xl bg-slate-900/90 border border-cyan-500/30 space-y-3 shadow-md">
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-extrabold text-cyan-400 uppercase tracking-wider">
+                  Modèle de Thévenin
+                </span>
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-cyan-500/10 text-cyan-300 border border-cyan-500/20">
+                  Série (E, r)
+                </span>
+              </div>
+              <p className="text-[10px] text-slate-400">Modélisation : Source de tension idéale + résistance <LatexMath math="r" /> en série.</p>
+              <div className="p-3 rounded-xl bg-black/60 text-center font-mono text-cyan-300 font-bold text-[11px] border border-cyan-500/20">
+                <LatexMath math="u(i) = E - r \cdot i" />
+              </div>
+              <ul className="text-[11px] text-slate-300 space-y-1.5 pl-1 leading-relaxed mt-2">
+                <li>• <strong>Tension à vide (<LatexMath math="i = 0" />) :</strong> <LatexMath math="u_0 = E" />.</li>
+                <li>• <strong>Courant de court-circuit (<LatexMath math="u = 0" />) :</strong> <LatexMath math="I_{cc} = \frac{E}{r}" />.</li>
+              </ul>
+            </div>
+
+            {/* Norton Generator */}
+            <div className="p-5 rounded-2xl bg-slate-900/90 border border-indigo-500/30 space-y-3 shadow-md">
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-extrabold text-indigo-400 uppercase tracking-wider">
+                  Modèle de Norton
+                </span>
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-300 border border-indigo-500/20">
+                  Parallèle (η, r)
+                </span>
+              </div>
+              <p className="text-[10px] text-slate-400">Modélisation : Source de courant idéale + résistance <LatexMath math="r" /> en parallèle.</p>
+              <div className="p-3 rounded-xl bg-black/60 text-center font-mono text-indigo-300 font-bold text-[11px] border border-indigo-500/20">
+                <LatexMath math="i(u) = \eta - \frac{u}{r}" />
+              </div>
+              <ul className="text-[11px] text-slate-300 space-y-1.5 pl-1 leading-relaxed mt-2">
+                <li>• <strong>Courant de court-circuit (<LatexMath math="u = 0" />) :</strong> <LatexMath math="i = \eta" />.</li>
+                <li>• <strong>Tension à vide (<LatexMath math="i = 0" />) :</strong> <LatexMath math="u_0 = r \cdot \eta" />.</li>
+              </ul>
+            </div>
+          </div>
+
+          {/* Thévenin <-> Norton Equivalence Box */}
+          <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 space-y-2 text-[11px] mt-2">
+            <h4 className="font-extrabold uppercase text-emerald-400 flex items-center gap-1.5">
+              <RefreshCw className="w-4 h-4" /> Équivalence Thévenin ⟺ Norton
+            </h4>
+            <p className="text-slate-300 leading-relaxed">
+              Les deux modèles sont rigoureusement interchangeables. On passe de l&apos;un à l&apos;autre via la loi d&apos;Ohm interne :
+            </p>
+            <div className="p-2.5 rounded-lg bg-black/60 border border-emerald-500/30 text-center text-emerald-300 font-mono font-bold text-[11px]">
+              <LatexMath math="E_{th} = r \cdot \eta \quad \text{et} \quad r_{th} = r_N = r" />
+            </div>
           </div>
         </div>
       </section>
