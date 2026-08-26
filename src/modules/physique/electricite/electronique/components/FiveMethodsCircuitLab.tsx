@@ -217,13 +217,15 @@ export function FiveMethodsCircuitLab() {
         }
       };
 
-      // Particles in Branch 1 (Left: C -> D -> A)
+      // Particles in Branch 1 (Left Loop: C -> D -> A -> B -> C)
       drawParticles({ x: xLeft, y: yBottom }, { x: xLeft, y: yTop }, calculations.I1);
       drawParticles({ x: xLeft, y: yTop }, { x: xMid, y: yTop }, calculations.I1);
+      drawParticles({ x: xMid, y: yBottom }, { x: xLeft, y: yBottom }, calculations.I1);
 
-      // Particles in Branch 2 (Right: D' -> C' -> A if I2 entered from right)
-      drawParticles({ x: xRight, y: yBottom }, { x: xRight, y: yTop }, -calculations.I2);
-      drawParticles({ x: xRight, y: yTop }, { x: xMid, y: yTop }, -calculations.I2);
+      // Particles in Branch 2 (Right Loop: D' -> C' -> A -> B -> D')
+      drawParticles({ x: xRight, y: yBottom }, { x: xRight, y: yTop }, calculations.I2);
+      drawParticles({ x: xRight, y: yTop }, { x: xMid, y: yTop }, calculations.I2);
+      drawParticles({ x: xMid, y: yBottom }, { x: xRight, y: yBottom }, calculations.I2);
 
       // Particles in Center Branch (A -> B through R)
       drawParticles({ x: xMid, y: yTop }, { x: xMid, y: yBottom }, calculations.I, '#f43f5e');
@@ -285,13 +287,22 @@ export function FiveMethodsCircuitLab() {
       // Resistor R1 Label (cleanly above the box)
       drawMath('R', '1', xR1, yTop - 14, '#38bdf8', 12, 'center');
 
-      // Current I1 Arrow (Directly ON the wire between D and R1)
+      // Dynamic Current I1 Arrow (Flips dynamically according to physical direction)
       const xWireI1 = (xLeft + xR1 - 20) / 2;
+      const isI1Positive = calculations.I1 >= 0;
       ctx.fillStyle = '#f43f5e';
       ctx.beginPath();
-      ctx.moveTo(xWireI1 - 3, yTop - 3.5);
-      ctx.lineTo(xWireI1 - 3, yTop + 3.5);
-      ctx.lineTo(xWireI1 + 4.5, yTop);
+      if (isI1Positive) {
+        // Flows Right towards Node A
+        ctx.moveTo(xWireI1 - 3.5, yTop - 3.5);
+        ctx.lineTo(xWireI1 - 3.5, yTop + 3.5);
+        ctx.lineTo(xWireI1 + 4.5, yTop);
+      } else {
+        // Flows Left towards Node D
+        ctx.moveTo(xWireI1 + 3.5, yTop - 3.5);
+        ctx.lineTo(xWireI1 + 3.5, yTop + 3.5);
+        ctx.lineTo(xWireI1 - 4.5, yTop);
+      }
       ctx.closePath();
       ctx.fill();
       drawMath('I', '1', xWireI1, yTop - 11, '#f43f5e', 11, 'center');
@@ -322,13 +333,22 @@ export function FiveMethodsCircuitLab() {
 
       drawMath('R', '', xMid + 16, yR, '#c084fc', 13, 'left');
 
-      // Current I Arrow (Directly ON the central wire between A and R)
+      // Dynamic Current I Arrow (Flips dynamically according to physical direction)
       const yWireI = (yTop + yR - 20) / 2;
+      const isIPositive = calculations.I >= 0;
       ctx.fillStyle = '#f43f5e';
       ctx.beginPath();
-      ctx.moveTo(xMid - 3.5, yWireI - 3);
-      ctx.lineTo(xMid + 3.5, yWireI - 3);
-      ctx.lineTo(xMid, yWireI + 4.5);
+      if (isIPositive) {
+        // Flows Down towards Node B
+        ctx.moveTo(xMid - 3.5, yWireI - 3.5);
+        ctx.lineTo(xMid + 3.5, yWireI - 3.5);
+        ctx.lineTo(xMid, yWireI + 4.5);
+      } else {
+        // Flows Up towards Node A
+        ctx.moveTo(xMid - 3.5, yWireI + 3.5);
+        ctx.lineTo(xMid + 3.5, yWireI + 3.5);
+        ctx.lineTo(xMid, yWireI - 4.5);
+      }
       ctx.closePath();
       ctx.fill();
       drawMath('I', '', xMid + 14, yWireI, '#f43f5e', 11.5, 'left');
@@ -360,13 +380,22 @@ export function FiveMethodsCircuitLab() {
       // Resistor R2 Label (cleanly above the box)
       drawMath('R', '2', xR2, yTop - 14, '#38bdf8', 12, 'center');
 
-      // Current I2 Arrow (Directly ON the wire between A and R2)
+      // Dynamic Current I2 Arrow (Flips dynamically according to physical direction)
       const xWireI2 = (xMid + xR2 - 20) / 2;
+      const isI2Positive = calculations.I2 >= 0;
       ctx.fillStyle = '#f43f5e';
       ctx.beginPath();
-      ctx.moveTo(xWireI2 - 3, yTop - 3.5);
-      ctx.lineTo(xWireI2 - 3, yTop + 3.5);
-      ctx.lineTo(xWireI2 + 4.5, yTop);
+      if (isI2Positive) {
+        // Flows Left towards Node A (from C' to A)
+        ctx.moveTo(xWireI2 + 3.5, yTop - 3.5);
+        ctx.lineTo(xWireI2 + 3.5, yTop + 3.5);
+        ctx.lineTo(xWireI2 - 4.5, yTop);
+      } else {
+        // Flows Right towards Node C' (from A to C')
+        ctx.moveTo(xWireI2 - 3.5, yTop - 3.5);
+        ctx.lineTo(xWireI2 - 3.5, yTop + 3.5);
+        ctx.lineTo(xWireI2 + 4.5, yTop);
+      }
       ctx.closePath();
       ctx.fill();
       drawMath('I', '2', xWireI2, yTop - 11, '#f43f5e', 11, 'center');

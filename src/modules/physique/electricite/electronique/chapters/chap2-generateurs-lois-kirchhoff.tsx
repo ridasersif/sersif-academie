@@ -118,8 +118,21 @@ function Chap2QuickQuiz() {
 
   const questions = [
     {
-      q: "Dans un réseau comportant N nœuds et B branches, quel est le nombre de mailles indépendantes M ?",
-      qMath: "\\text{Théorème d'Euler pour les graphes de réseaux}",
+      q: "Dans l'Approximation des Régimes Quasi-Stationnaires (ARQS), quelle condition sur la dimension caractéristique L du circuit et la longueur d'onde λ (ou période T) doit être vérifiée ?",
+      qMath: "\\text{Condition fondamentale de l'ARQS}",
+      optionsMath: [
+        "L \\ll \\lambda \\quad \\iff \\quad \\tau = \\frac{L}{c} \\ll T",
+        "L \\gg \\lambda \\quad \\iff \\quad \\tau = \\frac{L}{c} \\gg T",
+        "L = \\lambda \\quad (\\text{Régime de résonance})",
+        "\\tau = \\frac{L}{c} = T",
+      ],
+      correct: 0,
+      explanation: "L'ARQS suppose que le temps de propagation de l'onde électromagnétique est négligeable devant la période des signaux :",
+      expMath: "\\tau = \\frac{L}{c} \\ll T \\iff L \\ll \\lambda = c T",
+    },
+    {
+      q: "Dans un réseau comportant N nœuds et B branches, quel est le nombre exact de mailles indépendantes M ?",
+      qMath: "\\text{Relation topologique d'Euler}",
       optionsMath: [
         "M = B - N",
         "M = B - N + 1",
@@ -127,63 +140,113 @@ function Chap2QuickQuiz() {
         "M = N - 1",
       ],
       correct: 1,
-      explanation: "Le nombre d'équations de mailles indépendantes est donné par la relation topologique :",
+      explanation: "Le nombre d'équations de mailles linéairement indépendantes est donné par la formule d'Euler :",
       expMath: "M = B - (N - 1) = B - N + 1",
     },
     {
-      q: "Quelle est la relation d'équivalence entre le modèle de Thévenin (Eth, Rth) et le modèle de Norton (ηN, RN) ?",
-      qMath: "\\text{Transformation Thévenin } \\iff \\text{ Norton}",
-      optionsMath: [
-        "\\eta_N = \\frac{E_{th}}{R_{th}} \\quad \\text{et} \\quad R_N = R_{th}",
-        "\\eta_N = E_{th} \\cdot R_{th} \\quad \\text{et} \\quad R_N = \\frac{1}{R_{th}}",
-        "\\eta_N = \\frac{R_{th}}{E_{th}} \\quad \\text{et} \\quad R_N = R_{th}",
-        "\\eta_N = \\frac{E_{th}}{R_{th}^2} \\quad \\text{et} \\quad R_N = 2 R_{th}",
-      ],
-      correct: 0,
-      explanation: "L'égalité des caractéristiques courant-tension impose :",
-      expMath: "\\eta_N = \\frac{E_{th}}{R_{th}} \\quad \\text{et} \\quad R_N = R_{th}",
-    },
-    {
-      q: "Lors de l'application du théorème de superposition, comment éteint-on une source idéale de tension indépendante ?",
-      qMath: "\\text{Passivation d'une source de f.é.m } E",
+      q: "Lors de l'application du théorème de superposition ou du calcul de Rth, comment éteint-on (passivation) une source idéale de tension indépendante E ?",
+      qMath: "\\text{Passivation d'une f.é.m. idéale } E",
       optionsText: [
         "On la remplace par un interrupteur ouvert (i = 0)",
         "On la remplace par un court-circuit / fil parfait (u = 0)",
-        "On la remplace par une résistance infinie",
-        "On conserve sa tension en inversant sa polarité",
+        "On la remplace par une résistance infinie R → ∞",
+        "On inverse le sens de sa flèche de tension",
       ],
       correct: 1,
-      explanation: "Éteindre une source de tension signifie imposer E = 0 V, ce qui équivaut physiquement à un court-circuit (fil parfait).",
+      explanation: "Éteindre une source de tension idéale signifie imposer une différence de potentiel nulle E = 0 V, ce qui correspond à un court-circuit (fil parfait).",
     },
     {
-      q: "D'après le théorème de Millman, quel est le potentiel VA d'un nœud A relié à des branches (Ek, Rk) et (ηj) ?",
-      qMath: "\\text{Formule du Théorème de Millman}",
-      optionsMath: [
-        "V_A = \\frac{\\sum \\frac{V_k}{R_k} + \\sum \\eta_j}{\\sum \\frac{1}{R_k}}",
-        "V_A = \\frac{\\sum V_k R_k}{\\sum R_k}",
-        "V_A = \\sum \\frac{V_k}{R_k} \\times \\sum R_k",
-        "V_A = \\frac{\\sum V_k}{\\sum \\frac{1}{R_k}}",
+      q: "Comment éteint-on (passivation) une source idéale de courant indépendante η lors de la superposition ou du calcul de RN ?",
+      qMath: "\\text{Passivation d'une source de courant idéale } \\eta",
+      optionsText: [
+        "On la remplace par un court-circuit (fil parfait)",
+        "On la remplace par un circuit ouvert / interrupteur ouvert (i = 0)",
+        "On la remplace par une résistance nulle R = 0",
+        "On double la valeur de toutes les résistances associées",
+      ],
+      correct: 1,
+      explanation: "Éteindre une source de courant idéale signifie imposer un courant nul η = 0 A, ce qui correspond physiquement à une branche coupée (circuit ouvert).",
+    },
+    {
+      q: "Pourquoi le théorème de superposition ne s'applique-t-il PAS directement au calcul des puissances électriques P = U · I ?",
+      qMath: "\\text{Linéarité des grandeurs électriques}",
+      optionsText: [
+        "Car la puissance est une grandeur quadratique non-linéaire (P = R·I²)",
+        "Car les résistances changent de valeur selon le sens du courant",
+        "Car la loi des mailles n'est plus valable en régime continu",
+        "Car la puissance totale est toujours égale à zéro",
       ],
       correct: 0,
-      explanation: "Le théorème de Millman est la réécriture de la loi des nœuds en termes de potentiels et conductances :",
-      expMath: "V_A = \\frac{\\sum_{k} G_k V_k + \\sum_{j} \\eta_j}{\\sum_{k} G_k} = \\frac{\\sum \\frac{V_k}{R_k} + \\sum \\eta_j}{\\sum \\frac{1}{R_k}}",
+      explanation: "La puissance dépend du carré du courant : (I₁ + I₂)² = I₁² + I₂² + 2·I₁·I₂ ≠ I₁² + I₂². Le terme croisé interdit la superposition directe des puissances.",
     },
     {
-      q: "À quelle condition sur la résistance de charge Rc la puissance dissipée dans celle-ci est-elle maximale ?",
+      q: "Comment définit-on la force électromotrice de Thévenin Eth d'un dipôle linéaire actif entre deux bornes A et B ?",
+      qMath: "\\text{Définition de } E_{th}",
+      optionsMath: [
+        "E_{th} = U_{AB0} \\quad (\\text{Tension à vide entre A et B})",
+        "E_{th} = I_{cc} \\cdot R_{th}^2",
+        "E_{th} = U_{AB} \\text{ mesurée en court-circuit}",
+        "E_{th} = \\frac{I_{cc}}{R_{th}}",
+      ],
+      correct: 0,
+      explanation: "Par définition du modèle de Thévenin U_AB = Eth - Rth·I, lorsque le circuit est à vide (I = 0), la tension mesurée est exactement égale à Eth :",
+      expMath: "U_{AB0} = E_{th} - R_{th} \\times 0 = E_{th}",
+    },
+    {
+      q: "Quelle est la relation d'équivalence universelle entre le générateur de Thévenin (Eth, Rth) et le générateur de Norton (IN, RN) ?",
+      qMath: "\\text{Transformation Thévenin } \\iff \\text{ Norton}",
+      optionsMath: [
+        "I_N = \\frac{E_{th}}{R_{th}} \\quad \\text{et} \\quad R_N = R_{th}",
+        "I_N = E_{th} \\cdot R_{th} \\quad \\text{et} \\quad R_N = \\frac{1}{R_{th}}",
+        "I_N = \\frac{R_{th}}{E_{th}} \\quad \\text{et} \\quad R_N = 2 R_{th}",
+        "I_N = \\frac{E_{th}}{R_{th}^2} \\quad \\text{et} \\quad R_N = R_{th}",
+      ],
+      correct: 0,
+      explanation: "L'équivalence stricte des deux modèles impose que le courant de court-circuit soit IN = Eth / Rth avec une résistance interne identique RN = Rth :",
+      expMath: "I_N = \\frac{E_{th}}{R_{th}} \\quad \\text{et} \\quad R_N = R_{th}",
+    },
+    {
+      q: "D'après le théorème de Millman, quel est le potentiel VA d'un nœud A relié à n branches contenant (Ek, Rk) et m branches avec sources de courant ηj ?",
+      qMath: "\\text{Formule générale du Théorème de Millman}",
+      optionsMath: [
+        "V_A = \\frac{\\sum_{k} \\frac{V_k}{R_k} + \\sum_{j} \\eta_j}{\\sum_{k} \\frac{1}{R_k}}",
+        "V_A = \\frac{\\sum_{k} V_k R_k}{\\sum_{k} R_k}",
+        "V_A = \\sum_{k} \\frac{V_k}{R_k} \\times \\sum_{k} R_k",
+        "V_A = \\frac{\\sum_{k} V_k + \\sum_{j} \\eta_j}{\\sum_{k} R_k}",
+      ],
+      correct: 0,
+      explanation: "Millman découle directement de la loi des nœuds exprimée avec les conductances Gk = 1/Rk :",
+      expMath: "V_A = \\frac{\\sum G_k V_k + \\sum \\eta_{\\text{entrant}}}{\\sum G_k} = \\frac{\\sum \\frac{V_k}{R_k} + \\sum \\eta_j}{\\sum \\frac{1}{R_k}}",
+    },
+    {
+      q: "Considérons un pont diviseur alimenté par E = 30 V avec R1 = 10 Ω et R2 = 20 Ω. Quelles sont les valeurs de l'équivalent de Thévenin (Eth, Rth) vu aux bornes de R2 ?",
+      qMath: "\\text{Application numérique : Pont diviseur sous tension}",
+      optionsMath: [
+        "E_{th} = 20\\text{ V} \\quad \\text{et} \\quad R_{th} = 6.67\\text{ }\\Omega",
+        "E_{th} = 10\\text{ V} \\quad \\text{et} \\quad R_{th} = 30\\text{ }\\Omega",
+        "E_{th} = 30\\text{ V} \\quad \\text{et} \\quad R_{th} = 20\\text{ }\\Omega",
+        "E_{th} = 15\\text{ V} \\quad \\text{et} \\quad R_{th} = 10\\text{ }\\Omega",
+      ],
+      correct: 0,
+      explanation: "Eth est donné par le diviseur de tension à vide et Rth par la mise en parallèle de R1 et R2 (E éteint) :",
+      expMath: "E_{th} = 30 \\times \\frac{20}{10 + 20} = 20\\text{ V}, \\quad R_{th} = \\frac{10 \\times 20}{10 + 20} = \\frac{200}{30} = 6.67\\text{ }\\Omega",
+    },
+    {
+      q: "À quelle condition sur la résistance de charge Rc la puissance électrique P(Rc) fournie par un dipôle (Eth, Rth) est-elle maximale ?",
       qMath: "\\text{Théorème du Transfert Maximal de Puissance}",
       optionsMath: [
+        "R_c = R_{th} \\quad (\\text{Condition d'Adaptation d'Impédance})",
         "R_c = 0 \\quad (\\text{Court-circuit})",
-        "R_c = R_{th} \\quad (\\text{Adaptation d'Impédance})",
         "R_c = 2 R_{th}",
-        "R_c \\to \\infty \\quad (\\text{Circuit ouvert})",
+        "R_c \\to +\\infty \\quad (\\text{Circuit ouvert})",
       ],
-      correct: 1,
-      explanation: "L'annulation de la dérivée de la puissance P(Rc) = Eth²·Rc / (Rth + Rc)² donne :",
-      expMath: "\\frac{\\mathrm{d}P}{\\mathrm{d}R_c} = 0 \\iff R_c = R_{th} \\quad \\text{avec } P_{\\max} = \\frac{E_{th}^2}{4 R_{th}}",
+      correct: 0,
+      explanation: "La dérivée de la puissance P(Rc) = Eth²·Rc / (Rth + Rc)² s'annule pour Rc = Rth, avec :",
+      expMath: "P_{\\max} = \\frac{E_{th}^2}{4 R_{th}}",
     },
     {
-      q: "Quel est le rendement énergétique global η du circuit à l'adaptation de puissance (lorsque Rc = Rth) ?",
-      qMath: "\\eta = \\frac{P_{\\text{utile}}}{P_{\\text{totale}}} \\text{ pour } R_c = R_{th}",
+      q: "Quel est le rendement énergétique global η du circuit lorsque l'adaptation de puissance maximale est atteinte (Rc = Rth) ?",
+      qMath: "\\eta = \\frac{P_{\\text{charge}}}{P_{\\text{totale}}} \\text{ pour } R_c = R_{th}",
       optionsMath: [
         "\\eta = 100\\%",
         "\\eta = 75\\%",
@@ -191,8 +254,20 @@ function Chap2QuickQuiz() {
         "\\eta = 25\\%",
       ],
       correct: 2,
-      explanation: "À l'adaptation, la moitié de la puissance totale est dissipée en pertes internes dans Rth, d'où un rendement de 50% :",
+      explanation: "À l'adaptation, une puissance égale à celle délivrée à la charge est dissipée en pertes thermiques dans la résistance interne Rth :",
       expMath: "\\eta = \\frac{R_c I^2}{(R_{th} + R_c) I^2} = \\frac{R_{th}}{2 R_{th}} = 50\\%",
+    },
+    {
+      q: "Si l'on cherche à obtenir un rendement énergétique maximal proche de 100% (transport d'énergie électrique), quelle relation doit-on privilégier entre Rc et Rth ?",
+      qMath: "\\text{Optimisation du rendement énergétique } \\eta \\to 100\\%",
+      optionsMath: [
+        "R_c \\gg R_{th} \\quad (R_{th} \\to 0)",
+        "R_c = R_{th}",
+        "R_c \\ll R_{th}",
+        "R_c = 0",
+      ],
+      correct: 0,
+      explanation: "Pour minimiser les pertes par effet Joule dans la source (lignes de transport EDF), on minimise la résistance interne afin d'avoir Rc ≫ Rth, d'où η = Rc / (Rth + Rc) → 100%.",
     },
   ];
 
@@ -205,16 +280,16 @@ function Chap2QuickQuiz() {
   return (
     <div className="p-4 sm:p-6 rounded-2xl bg-card/80 border border-border/80 space-y-5 shadow-sm">
       <div className="flex items-center justify-between flex-wrap gap-2 border-b border-border/60 pb-3">
-        <div className="flex items-center gap-2 text-indigo-400 font-bold text-[11px]">
+        <div className="flex items-center gap-2 text-indigo-400 font-bold text-xs sm:text-sm">
           <HelpCircle className="w-4 h-4" />
-          <span>QCM d&apos;Auto-Évaluation • Lois de Kirchhoff & Théorèmes (6 Questions)</span>
+          <span>QCM d&apos;Auto-Évaluation • Lois de Kirchhoff & Théorèmes Fondamentaux (12 Questions)</span>
         </div>
         {showResults && (
           <span
-            className={`text-[11px] font-mono font-bold px-3 py-1 rounded-full border shadow-sm ${
-              score >= 5
+            className={`text-xs font-mono font-bold px-3 py-1 rounded-full border shadow-sm ${
+              score >= 10
                 ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/30"
-                : score >= 3
+                : score >= 6
                 ? "bg-amber-500/10 text-amber-400 border-amber-500/30"
                 : "bg-rose-500/10 text-rose-400 border-rose-500/30"
             }`}
