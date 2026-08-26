@@ -509,22 +509,64 @@ export default function Chap2GenerateursLoisKirchhoff() {
             1. Les Générateurs Idéaux
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-700/50 space-y-2 shadow-sm">
-              <div className="text-[11px] font-bold text-cyan-400 uppercase">Générateur Idéal de Tension</div>
+            <div className="p-5 rounded-xl bg-slate-900/60 border border-slate-700/50 space-y-4 shadow-sm">
+              <div className="flex items-center justify-between">
+                <div className="text-[11px] font-bold text-cyan-400 uppercase">Générateur Idéal de Tension</div>
+                <div className="p-1.5 rounded bg-black/50 text-center font-mono text-cyan-300 text-[10px] border border-cyan-500/20">
+                  <LatexMath math="u = E" />
+                </div>
+              </div>
               <p className="text-[11px] text-slate-300">
                 La tension est constante <LatexMath math="u(t) = e(t)" /> <strong>quelle que soit l&apos;intensité</strong> du courant <LatexMath math="i(t)" /> délivrée. Sa résistance interne est nulle.
               </p>
-              <div className="p-2 rounded bg-black/50 text-center font-mono text-cyan-300 text-[11px] border border-cyan-500/20">
-                <LatexMath math="u = E \quad (\text{Constante})" />
+              <div className="w-full bg-black/40 py-4 rounded-lg border border-slate-800 flex justify-center">
+                <svg width="140" height="50" viewBox="0 0 200 100" className="text-cyan-400 drop-shadow-md">
+                  {/* Wires */}
+                  <path d="M 10 50 L 70 50 M 130 50 L 190 50" stroke="currentColor" strokeWidth="4" strokeLinecap="round" />
+                  {/* Terminals */}
+                  <circle cx="10" cy="50" r="5" fill="currentColor" />
+                  <circle cx="190" cy="50" r="5" fill="currentColor" />
+                  {/* Circle */}
+                  <circle cx="100" cy="50" r="30" stroke="currentColor" strokeWidth="4" fill="none" />
+                  {/* E inside circle */}
+                  <text x="100" y="58" textAnchor="middle" fill="currentColor" fontSize="24" fontWeight="bold" fontFamily="monospace">E</text>
+                  {/* Voltage Arrow above */}
+                  <path d="M 70 12 L 130 12 L 120 4 M 130 12 L 120 20" stroke="#facc15" strokeWidth="3" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+                  <text x="100" y="4" textAnchor="middle" fill="#facc15" fontSize="16" fontWeight="bold">u</text>
+                  {/* Terminal labels */}
+                  <text x="10" y="32" textAnchor="middle" fill="currentColor" fontSize="18" fontWeight="bold">A</text>
+                  <text x="190" y="32" textAnchor="middle" fill="currentColor" fontSize="18" fontWeight="bold">B</text>
+                </svg>
               </div>
             </div>
-            <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-700/50 space-y-2 shadow-sm">
-              <div className="text-[11px] font-bold text-indigo-400 uppercase">Générateur Idéal de Courant</div>
+            
+            <div className="p-5 rounded-xl bg-slate-900/60 border border-slate-700/50 space-y-4 shadow-sm">
+              <div className="flex items-center justify-between">
+                <div className="text-[11px] font-bold text-indigo-400 uppercase">Générateur Idéal de Courant</div>
+                <div className="p-1.5 rounded bg-black/50 text-center font-mono text-indigo-300 text-[10px] border border-indigo-500/20">
+                  <LatexMath math="i = \eta" />
+                </div>
+              </div>
               <p className="text-[11px] text-slate-300">
                 Le courant est constant <LatexMath math="i(t) = \eta(t)" /> <strong>quelle que soit la tension</strong> <LatexMath math="u(t)" /> à ses bornes. Sa résistance interne est infinie.
               </p>
-              <div className="p-2 rounded bg-black/50 text-center font-mono text-indigo-300 text-[11px] border border-indigo-500/20">
-                <LatexMath math="i = \eta \quad (\text{Constante})" />
+              <div className="w-full bg-black/40 py-4 rounded-lg border border-slate-800 flex justify-center">
+                <svg width="140" height="50" viewBox="0 0 200 100" className="text-indigo-400 drop-shadow-md">
+                  {/* Wires */}
+                  <path d="M 10 50 L 70 50 M 130 50 L 190 50" stroke="currentColor" strokeWidth="4" strokeLinecap="round" />
+                  {/* Terminals */}
+                  <circle cx="10" cy="50" r="5" fill="currentColor" />
+                  <circle cx="190" cy="50" r="5" fill="currentColor" />
+                  {/* Circle */}
+                  <circle cx="100" cy="50" r="30" stroke="currentColor" strokeWidth="4" fill="none" />
+                  {/* Current Arrow inside circle */}
+                  <path d="M 75 50 L 125 50 L 115 40 M 125 50 L 115 60" stroke="currentColor" strokeWidth="4" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+                  {/* Label */}
+                  <text x="100" y="30" textAnchor="middle" fill="currentColor" fontSize="22" fontWeight="bold" fontFamily="monospace">η</text>
+                  {/* Terminal labels */}
+                  <text x="10" y="32" textAnchor="middle" fill="currentColor" fontSize="18" fontWeight="bold">A</text>
+                  <text x="190" y="32" textAnchor="middle" fill="currentColor" fontSize="18" fontWeight="bold">B</text>
+                </svg>
               </div>
             </div>
           </div>
@@ -539,28 +581,84 @@ export default function Chap2GenerateursLoisKirchhoff() {
             Cette opération est fondamentale pour appliquer le théorème de Superposition et pour calculer la résistance équivalente de Thévenin / Norton. Éteindre (ou passiver) une source revient à annuler sa grandeur caractéristique.
           </p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="p-4 rounded-xl bg-slate-900/60 border border-rose-500/30 space-y-2 shadow-sm relative overflow-hidden">
-              <div className="absolute top-0 right-0 p-2 opacity-10">
-                <Zap className="w-10 h-10 text-rose-500" />
+            <div className="p-5 rounded-xl bg-slate-900/60 border border-rose-500/30 space-y-4 shadow-sm relative overflow-hidden">
+              <div className="absolute top-0 right-0 p-2 opacity-5 pointer-events-none">
+                <Zap className="w-16 h-16 text-rose-500" />
               </div>
-              <div className="text-[11px] font-bold text-rose-400 uppercase">Éteindre un Générateur de Tension</div>
-              <p className="text-[11px] text-slate-300">
-                On pose <LatexMath math="e = 0" />. Un composant dont la tension est toujours nulle, quel que soit le courant, est un <strong>fil conducteur parfait</strong> (ou un court-circuit).
+              <div className="text-[11px] font-bold text-rose-400 uppercase relative z-10">Éteindre un Générateur de Tension</div>
+              <p className="text-[11px] text-slate-300 relative z-10">
+                On pose <LatexMath math="e = 0" />. Un composant dont la tension est toujours nulle est un <strong>fil conducteur parfait</strong> (court-circuit).
               </p>
-              <div className="p-2 rounded bg-rose-500/10 text-center font-mono text-rose-300 text-[11px] font-bold border border-rose-500/20">
-                Source de Tension ➔ Fil Conducteur
+              <div className="w-full bg-rose-950/20 py-4 rounded-lg border border-rose-500/20 flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 relative z-10">
+                {/* Source */}
+                <svg width="80" height="35" viewBox="0 0 200 100" className="text-cyan-400">
+                  <path d="M 10 50 L 70 50 M 130 50 L 190 50" stroke="currentColor" strokeWidth="6" strokeLinecap="round" />
+                  <circle cx="10" cy="50" r="7" fill="currentColor" />
+                  <circle cx="190" cy="50" r="7" fill="currentColor" />
+                  <circle cx="100" cy="50" r="30" stroke="currentColor" strokeWidth="5" fill="none" />
+                  <text x="100" y="58" textAnchor="middle" fill="currentColor" fontSize="24" fontWeight="bold" fontFamily="monospace">E</text>
+                  <text x="10" y="25" textAnchor="middle" fill="currentColor" fontSize="20" fontWeight="bold">A</text>
+                  <text x="190" y="25" textAnchor="middle" fill="currentColor" fontSize="20" fontWeight="bold">B</text>
+                </svg>
+                
+                {/* Arrow */}
+                <div className="flex flex-col items-center px-2">
+                  <span className="text-[10px] font-bold text-rose-400 mb-1">e = 0</span>
+                  <svg width="35" height="20" viewBox="0 0 100 50" className="text-rose-500 drop-shadow-[0_0_8px_rgba(244,63,94,0.6)]">
+                    <path d="M 10 25 L 90 25 L 70 10 M 90 25 L 70 40" stroke="currentColor" strokeWidth="8" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </div>
+                
+                {/* Short Circuit */}
+                <svg width="80" height="35" viewBox="0 0 200 100" className="text-rose-400">
+                  <path d="M 10 50 L 190 50" stroke="currentColor" strokeWidth="8" strokeLinecap="round" />
+                  <circle cx="10" cy="50" r="7" fill="currentColor" />
+                  <circle cx="190" cy="50" r="7" fill="currentColor" />
+                  <text x="10" y="25" textAnchor="middle" fill="currentColor" fontSize="20" fontWeight="bold">A</text>
+                  <text x="190" y="25" textAnchor="middle" fill="currentColor" fontSize="20" fontWeight="bold">B</text>
+                </svg>
               </div>
             </div>
-            <div className="p-4 rounded-xl bg-slate-900/60 border border-amber-500/30 space-y-2 shadow-sm relative overflow-hidden">
-              <div className="absolute top-0 right-0 p-2 opacity-10">
-                <Zap className="w-10 h-10 text-amber-500" />
+            
+            <div className="p-5 rounded-xl bg-slate-900/60 border border-amber-500/30 space-y-4 shadow-sm relative overflow-hidden">
+              <div className="absolute top-0 right-0 p-2 opacity-5 pointer-events-none">
+                <Zap className="w-16 h-16 text-amber-500" />
               </div>
-              <div className="text-[11px] font-bold text-amber-400 uppercase">Éteindre un Générateur de Courant</div>
-              <p className="text-[11px] text-slate-300">
-                On pose <LatexMath math="\eta = 0" />. Un composant traversé par un courant toujours nul, quelle que soit la tension, est un <strong>circuit ouvert</strong> (ou interrupteur ouvert).
+              <div className="text-[11px] font-bold text-amber-400 uppercase relative z-10">Éteindre un Générateur de Courant</div>
+              <p className="text-[11px] text-slate-300 relative z-10">
+                On pose <LatexMath math="\eta = 0" />. Un composant traversé par un courant toujours nul est un <strong>circuit ouvert</strong> (interrupteur ouvert).
               </p>
-              <div className="p-2 rounded bg-amber-500/10 text-center font-mono text-amber-300 text-[11px] font-bold border border-amber-500/20">
-                Source de Courant ➔ Circuit Ouvert
+              <div className="w-full bg-amber-950/20 py-4 rounded-lg border border-amber-500/20 flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 relative z-10">
+                {/* Source */}
+                <svg width="80" height="35" viewBox="0 0 200 100" className="text-indigo-400">
+                  <path d="M 10 50 L 70 50 M 130 50 L 190 50" stroke="currentColor" strokeWidth="6" strokeLinecap="round" />
+                  <circle cx="10" cy="50" r="7" fill="currentColor" />
+                  <circle cx="190" cy="50" r="7" fill="currentColor" />
+                  <circle cx="100" cy="50" r="30" stroke="currentColor" strokeWidth="5" fill="none" />
+                  <path d="M 80 50 L 120 50 L 110 40 M 120 50 L 110 60" stroke="currentColor" strokeWidth="5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+                  <text x="100" y="25" textAnchor="middle" fill="currentColor" fontSize="24" fontWeight="bold" fontFamily="monospace">η</text>
+                  <text x="10" y="25" textAnchor="middle" fill="currentColor" fontSize="20" fontWeight="bold">A</text>
+                  <text x="190" y="25" textAnchor="middle" fill="currentColor" fontSize="20" fontWeight="bold">B</text>
+                </svg>
+                
+                {/* Arrow */}
+                <div className="flex flex-col items-center px-2">
+                  <span className="text-[10px] font-bold text-amber-400 mb-1">η = 0</span>
+                  <svg width="35" height="20" viewBox="0 0 100 50" className="text-amber-500 drop-shadow-[0_0_8px_rgba(245,158,11,0.6)]">
+                    <path d="M 10 25 L 90 25 L 70 10 M 90 25 L 70 40" stroke="currentColor" strokeWidth="8" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </div>
+                
+                {/* Open Circuit */}
+                <svg width="80" height="35" viewBox="0 0 200 100" className="text-amber-400">
+                  <path d="M 10 50 L 75 50 M 125 50 L 190 50" stroke="currentColor" strokeWidth="8" strokeLinecap="round" />
+                  <circle cx="10" cy="50" r="7" fill="currentColor" />
+                  <circle cx="190" cy="50" r="7" fill="currentColor" />
+                  <circle cx="75" cy="50" r="7" stroke="currentColor" strokeWidth="5" fill="#0f172a" />
+                  <circle cx="125" cy="50" r="7" stroke="currentColor" strokeWidth="5" fill="#0f172a" />
+                  <text x="10" y="25" textAnchor="middle" fill="currentColor" fontSize="20" fontWeight="bold">A</text>
+                  <text x="190" y="25" textAnchor="middle" fill="currentColor" fontSize="20" fontWeight="bold">B</text>
+                </svg>
               </div>
             </div>
           </div>
