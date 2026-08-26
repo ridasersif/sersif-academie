@@ -1,9 +1,9 @@
 "use client";
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { OrbitControls, Text, Line, Html } from "@react-three/drei";
+import { OrbitControls, Line, Html } from "@react-three/drei";
 import * as THREE from "three";
-import { GitMerge, Orbit, Workflow, Layers, RefreshCw } from "lucide-react";
+import { GitMerge, Layers, RefreshCw, Zap } from "lucide-react";
 
 // --- LOI DES NŒUDS (KCL) ---
 const KCLSystem = ({ isPlaying }: { isPlaying: boolean }) => {
@@ -12,7 +12,7 @@ const KCLSystem = ({ isPlaying }: { isPlaying: boolean }) => {
   const electronOut2 = useRef<THREE.InstancedMesh>(null);
   const dummy = new THREE.Object3D();
 
-  // Wires for KCL: In(left to center), Out1(center to top-right), Out2(center to bottom-right)
+  // Wires for KCL
   const wireIn = [new THREE.Vector3(-4, 0, 0), new THREE.Vector3(0, 0, 0)];
   const wireOut1 = [new THREE.Vector3(0, 0, 0), new THREE.Vector3(3, 2, 0)];
   const wireOut2 = [new THREE.Vector3(0, 0, 0), new THREE.Vector3(3, -2, 0)];
@@ -21,7 +21,6 @@ const KCLSystem = ({ isPlaying }: { isPlaying: boolean }) => {
     if (!isPlaying) return;
     const time = state.clock.elapsedTime * 2;
 
-    // 10 particles entering (I = I1 + I2 -> 10 = 6 + 4)
     if (electronIn.current) {
       for (let i = 0; i < 10; i++) {
         const t = (time + i / 10) % 1;
@@ -32,7 +31,6 @@ const KCLSystem = ({ isPlaying }: { isPlaying: boolean }) => {
       electronIn.current.instanceMatrix.needsUpdate = true;
     }
 
-    // 6 particles out top (I1)
     if (electronOut1.current) {
       for (let i = 0; i < 6; i++) {
         const t = (time + i / 6) % 1;
@@ -43,7 +41,6 @@ const KCLSystem = ({ isPlaying }: { isPlaying: boolean }) => {
       electronOut1.current.instanceMatrix.needsUpdate = true;
     }
 
-    // 4 particles out bottom (I2)
     if (electronOut2.current) {
       for (let i = 0; i < 4; i++) {
         const t = (time + i / 4) % 1;
@@ -62,7 +59,9 @@ const KCLSystem = ({ isPlaying }: { isPlaying: boolean }) => {
         <sphereGeometry args={[0.3, 32, 32]} />
         <meshStandardMaterial color="#38bdf8" metalness={0.8} roughness={0.2} emissive="#0ea5e9" emissiveIntensity={0.5} />
       </mesh>
-      <Text position={[0, 0.6, 0]} fontSize={0.4} color="#38bdf8" font="/fonts/Inter-Bold.ttf">Nœud A</Text>
+      <Html position={[0, 0.8, 0]} center>
+        <span className="text-cyan-400 font-bold font-mono text-xs whitespace-nowrap bg-slate-900/90 border border-slate-700/50 px-2 py-1 rounded shadow-lg">Nœud A</span>
+      </Html>
 
       {/* Wires */}
       <Line points={wireIn} color="#64748b" lineWidth={5} />
@@ -70,9 +69,15 @@ const KCLSystem = ({ isPlaying }: { isPlaying: boolean }) => {
       <Line points={wireOut2} color="#64748b" lineWidth={3} />
 
       {/* Current Labels */}
-      <Text position={[-2, 0.5, 0]} fontSize={0.3} color="#facc15">I = 10 A</Text>
-      <Text position={[1.5, 1.5, 0]} fontSize={0.3} color="#f43f5e">I₁ = 6 A</Text>
-      <Text position={[1.5, -1.5, 0]} fontSize={0.3} color="#10b981">I₂ = 4 A</Text>
+      <Html position={[-2, 0.5, 0]} center>
+        <span className="text-amber-400 font-bold font-mono text-[10px] whitespace-nowrap bg-slate-900/90 border border-slate-700/50 px-2 py-1 rounded shadow-lg">I = 10 A</span>
+      </Html>
+      <Html position={[1.5, 1.5, 0]} center>
+        <span className="text-rose-400 font-bold font-mono text-[10px] whitespace-nowrap bg-slate-900/90 border border-slate-700/50 px-2 py-1 rounded shadow-lg">I₁ = 6 A</span>
+      </Html>
+      <Html position={[1.5, -1.5, 0]} center>
+        <span className="text-emerald-400 font-bold font-mono text-[10px] whitespace-nowrap bg-slate-900/90 border border-slate-700/50 px-2 py-1 rounded shadow-lg">I₂ = 4 A</span>
+      </Html>
 
       {/* Particles */}
       <instancedMesh ref={electronIn} args={[undefined, undefined, 10]}>
@@ -94,8 +99,10 @@ const KCLSystem = ({ isPlaying }: { isPlaying: boolean }) => {
 // --- LOI DES MAILLES (KVL) ---
 const KVLSystem = ({ isPlaying }: { isPlaying: boolean }) => {
   const meshRef = useRef<THREE.Group>(null);
+  const arrowRef = useRef<THREE.Group>(null);
+  const electrons = useRef<THREE.InstancedMesh>(null);
+  const dummy = new THREE.Object3D();
   
-  // A simple square loop: ( -2, 2 ) -> ( 2, 2 ) -> ( 2, -2 ) -> ( -2, -2 ) -> ( -2, 2 )
   const loopPoints = [
     new THREE.Vector3(-2, 2, 0),
     new THREE.Vector3(2, 2, 0),
@@ -104,13 +111,40 @@ const KVLSystem = ({ isPlaying }: { isPlaying: boolean }) => {
     new THREE.Vector3(-2, 2, 0),
   ];
 
-  useFrame((state) => {
+  useFrame((state, delta) => {
     if (!isPlaying) return;
     const time = state.clock.elapsedTime;
-    // Rotate slightly for 3D effect
+    
     if (meshRef.current) {
-      meshRef.current.rotation.y = Math.sin(time * 0.5) * 0.2;
-      meshRef.current.rotation.x = Math.cos(time * 0.5) * 0.1;
+      meshRef.current.rotation.y = Math.sin(time * 0.5) * 0.1;
+      meshRef.current.rotation.x = Math.cos(time * 0.5) * 0.05;
+    }
+
+    if (arrowRef.current) {
+      arrowRef.current.rotation.z -= delta * 2;
+    }
+
+    if (electrons.current) {
+      const perimeter = 16;
+      const numElectrons = 20;
+      for (let i = 0; i < numElectrons; i++) {
+        const t = (time * 0.5 + i / numElectrons) % 1; 
+        const d = t * perimeter;
+        let x = 0, y = 0;
+        if (d < 4) {
+          x = -2 + d; y = 2;
+        } else if (d < 8) {
+          x = 2; y = 2 - (d - 4);
+        } else if (d < 12) {
+          x = 2 - (d - 8); y = -2;
+        } else {
+          x = -2; y = -2 + (d - 12);
+        }
+        dummy.position.set(x, y, 0);
+        dummy.updateMatrix();
+        electrons.current.setMatrixAt(i, dummy.matrix);
+      }
+      electrons.current.instanceMatrix.needsUpdate = true;
     }
   });
 
@@ -118,7 +152,6 @@ const KVLSystem = ({ isPlaying }: { isPlaying: boolean }) => {
     <group ref={meshRef}>
       <Line points={loopPoints} color="#64748b" lineWidth={3} />
       
-      {/* Node points */}
       {[loopPoints[0], loopPoints[1], loopPoints[2], loopPoints[3]].map((p, i) => (
         <mesh key={i} position={p}>
           <sphereGeometry args={[0.15, 16, 16]} />
@@ -126,49 +159,54 @@ const KVLSystem = ({ isPlaying }: { isPlaying: boolean }) => {
         </mesh>
       ))}
 
-      {/* Components on branches */}
-      {/* Generator E (left branch) */}
+      {/* Generator E */}
       <mesh position={[-2, 0, 0]}>
         <cylinderGeometry args={[0.3, 0.3, 1, 32]} />
         <meshStandardMaterial color="#facc15" />
       </mesh>
-      <Text position={[-2.8, 0, 0]} fontSize={0.3} color="#facc15">E = 12V</Text>
+      <Html position={[-3.2, 0, 0]} center>
+        <span className="text-amber-400 font-bold font-mono text-[10px] whitespace-nowrap bg-slate-900/90 px-2 py-1 rounded border border-amber-500/20 shadow-xl">E = 12V</span>
+      </Html>
 
-      {/* Resistor R1 (top branch) */}
+      {/* Resistor R1 */}
       <mesh position={[0, 2, 0]} rotation={[0, 0, Math.PI/2]}>
         <boxGeometry args={[0.4, 1.2, 0.4]} />
         <meshStandardMaterial color="#f43f5e" />
       </mesh>
-      <Text position={[0, 2.7, 0]} fontSize={0.3} color="#f43f5e">U₁ = -4V</Text>
+      <Html position={[0, 2.8, 0]} center>
+        <span className="text-rose-400 font-bold font-mono text-[10px] whitespace-nowrap bg-slate-900/90 px-2 py-1 rounded border border-rose-500/20 shadow-xl">U₁ = -4V</span>
+      </Html>
 
-      {/* Resistor R2 (right branch) */}
+      {/* Resistor R2 */}
       <mesh position={[2, 0, 0]}>
         <boxGeometry args={[0.4, 1.2, 0.4]} />
         <meshStandardMaterial color="#10b981" />
       </mesh>
-      <Text position={[2.8, 0, 0]} fontSize={0.3} color="#10b981">U₂ = -8V</Text>
-
-      {/* Bottom branch is just a wire */}
-
-      {/* KVL Mesh Loop Arrow (Circle) */}
-      <mesh position={[0, 0, 0]}>
-        <ringGeometry args={[0.8, 0.9, 32, 1, 0, Math.PI * 1.5]} />
-        <meshBasicMaterial color="#38bdf8" side={THREE.DoubleSide} />
-      </mesh>
-      {/* Arrow head for the loop */}
-      <mesh position={[-0.85, -0.85, 0]} rotation={[0, 0, Math.PI/4]}>
-        <coneGeometry args={[0.2, 0.4, 16]} />
-        <meshBasicMaterial color="#38bdf8" />
-      </mesh>
-      
-      <Text position={[0, 0, 0]} fontSize={0.4} color="#38bdf8" font="/fonts/Inter-Bold.ttf">Maille M</Text>
-      
-      {/* Floating KVL Equation */}
-      <Html position={[0, -2.8, 0]} center transform>
-        <div className="px-4 py-2 bg-slate-900/80 backdrop-blur-md rounded-xl border border-slate-700/50 text-cyan-300 font-mono text-xs font-bold whitespace-nowrap shadow-xl">
-          E + U₁ + U₂ = 12 - 4 - 8 = 0 V
-        </div>
+      <Html position={[3.2, 0, 0]} center>
+        <span className="text-emerald-400 font-bold font-mono text-[10px] whitespace-nowrap bg-slate-900/90 px-2 py-1 rounded border border-emerald-500/20 shadow-xl">U₂ = -8V</span>
       </Html>
+
+      {/* KVL Mesh Loop Arrow */}
+      <group ref={arrowRef}>
+        <mesh position={[0, 0, 0]}>
+          <ringGeometry args={[0.7, 0.8, 32, 1, 0, Math.PI * 1.5]} />
+          <meshBasicMaterial color="#38bdf8" side={THREE.DoubleSide} />
+        </mesh>
+        <mesh position={[-0.75, -0.75, 0]} rotation={[0, 0, Math.PI/4]}>
+          <coneGeometry args={[0.2, 0.4, 16]} />
+          <meshBasicMaterial color="#38bdf8" />
+        </mesh>
+      </group>
+      
+      <Html position={[0, 0, 0]} center>
+        <span className="text-cyan-400 font-bold font-mono text-sm whitespace-nowrap drop-shadow-md">Maille M</span>
+      </Html>
+
+      {/* Flowing Electrons */}
+      <instancedMesh ref={electrons} args={[undefined, undefined, 20]}>
+        <sphereGeometry args={[0.08, 16, 16]} />
+        <meshBasicMaterial color="#38bdf8" />
+      </instancedMesh>
     </group>
   );
 };
@@ -176,67 +214,124 @@ const KVLSystem = ({ isPlaying }: { isPlaying: boolean }) => {
 export default function KirchhoffLaws3DCanvas() {
   const [isPlaying, setIsPlaying] = useState(true);
   const [activeTab, setActiveTab] = useState<"KCL" | "KVL">("KCL");
+  
+  // Lazy loading observer
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsVisible(entry.isIntersecting);
+      },
+      { threshold: 0.1, rootMargin: "100px" }
+    );
+    
+    if (containerRef.current) {
+      observer.observe(containerRef.current);
+    }
+    
+    return () => observer.disconnect();
+  }, []);
 
   return (
-    <div className="relative w-full rounded-2xl overflow-hidden bg-slate-950 border border-border/80 shadow-2xl flex flex-col h-[500px]">
-      
-      {/* 3D CANVAS */}
-      <div className="relative w-full h-full bg-gradient-to-t from-slate-950 to-[#020617]">
-        <Canvas camera={{ position: [0, 0, 8], fov: 50 }}>
-          <ambientLight intensity={1} />
-          <directionalLight position={[5, 10, 5]} intensity={1.5} />
-          {activeTab === "KCL" ? (
-            <KCLSystem isPlaying={isPlaying} />
-          ) : (
-            <KVLSystem isPlaying={isPlaying} />
-          )}
-          <OrbitControls 
-            enableZoom={false} 
-            enablePan={false}
-            minPolarAngle={Math.PI / 3}
-            maxPolarAngle={Math.PI / 1.5}
-            minAzimuthAngle={-Math.PI / 4}
-            maxAzimuthAngle={Math.PI / 4}
-          />
-        </Canvas>
+    <div ref={containerRef} className="relative w-full rounded-2xl overflow-hidden bg-slate-950/50 border border-slate-800 shadow-xl flex flex-col md:flex-row h-auto md:h-[400px]">
+      {isVisible && (
+        <>
+          {/* GAUCHE : Observations & Contrôles */}
+          <div className="w-full md:w-5/12 p-5 flex flex-col justify-between bg-slate-900 border-b md:border-b-0 md:border-r border-slate-800 z-10 relative">
+            <div>
+              <div className="flex flex-wrap gap-2 mb-6">
+                <button
+                  onClick={() => setActiveTab("KCL")}
+                  className={`px-3 py-2 rounded-lg text-[11px] font-bold transition-all duration-300 flex items-center gap-1.5 flex-1 justify-center ${
+                    activeTab === "KCL" ? "bg-cyan-500/20 text-cyan-300 border border-cyan-500/30" : "bg-slate-950 text-slate-400 hover:text-slate-200 border border-transparent"
+                  }`}
+                >
+                  <GitMerge className="w-4 h-4" /> KCL
+                </button>
+                <button
+                  onClick={() => setActiveTab("KVL")}
+                  className={`px-3 py-2 rounded-lg text-[11px] font-bold transition-all duration-300 flex items-center gap-1.5 flex-1 justify-center ${
+                    activeTab === "KVL" ? "bg-amber-500/20 text-amber-300 border border-amber-500/30" : "bg-slate-950 text-slate-400 hover:text-slate-200 border border-transparent"
+                  }`}
+                >
+                  <Layers className="w-4 h-4" /> KVL
+                </button>
+              </div>
 
-        {/* Top Controls Overlay */}
-        <div className="absolute top-4 left-0 right-0 flex justify-center pointer-events-none">
-          <div className="flex gap-2 p-1.5 bg-slate-900/80 backdrop-blur-md border border-slate-700/50 rounded-xl pointer-events-auto shadow-lg">
-            <button
-              onClick={() => setActiveTab("KCL")}
-              className={`px-4 py-1.5 rounded-lg text-[11px] font-bold transition-colors flex items-center gap-1.5 ${
-                activeTab === "KCL" ? "bg-cyan-500/20 text-cyan-300" : "text-slate-400 hover:text-slate-200"
-              }`}
-            >
-              <GitMerge className="w-3.5 h-3.5" /> Loi des Nœuds (KCL)
-            </button>
-            <button
-              onClick={() => setActiveTab("KVL")}
-              className={`px-4 py-1.5 rounded-lg text-[11px] font-bold transition-colors flex items-center gap-1.5 ${
-                activeTab === "KVL" ? "bg-amber-500/20 text-amber-300" : "text-slate-400 hover:text-slate-200"
-              }`}
-            >
-              <Layers className="w-3.5 h-3.5" /> Loi des Mailles (KVL)
-            </button>
-          </div>
-        </div>
+              {activeTab === "KCL" ? (
+                <div className="space-y-4 animate-in fade-in slide-in-from-left-2 duration-500">
+                  <h3 className="text-cyan-400 font-extrabold text-xs uppercase tracking-wider flex items-center gap-2">
+                    <Zap className="w-4 h-4" /> Conservation de la Charge
+                  </h3>
+                  <p className="text-slate-300 text-[11px] leading-relaxed">
+                    Observez le nœud central A. Les charges électriques ne peuvent ni s&apos;y accumuler ni y disparaître.
+                  </p>
+                  <div className="p-3 bg-cyan-950/30 rounded-xl border border-cyan-500/20 shadow-inner">
+                    <div className="text-center font-mono text-cyan-300 text-xs font-bold mb-1">I = I₁ + I₂</div>
+                    <div className="text-center text-slate-400 text-[10px]">10A = 6A + 4A</div>
+                  </div>
+                  <ul className="text-[10px] text-slate-400 space-y-1 list-disc list-inside mt-2">
+                    <li><strong className="text-amber-400">Jaune:</strong> Courant entrant (I)</li>
+                    <li><strong className="text-rose-400">Rouge:</strong> Courant sortant 1 (I₁)</li>
+                    <li><strong className="text-emerald-400">Vert:</strong> Courant sortant 2 (I₂)</li>
+                  </ul>
+                </div>
+              ) : (
+                <div className="space-y-4 animate-in fade-in slide-in-from-left-2 duration-500">
+                  <h3 className="text-amber-400 font-extrabold text-xs uppercase tracking-wider flex items-center gap-2">
+                    <Zap className="w-4 h-4" /> Unicité du Potentiel
+                  </h3>
+                  <p className="text-slate-300 text-[11px] leading-relaxed">
+                    En parcourant la maille fermée M, le potentiel revient à sa valeur initiale. La somme des tensions est nulle.
+                  </p>
+                  <div className="p-3 bg-amber-950/30 rounded-xl border border-amber-500/20 shadow-inner">
+                    <div className="text-center font-mono text-amber-300 text-xs font-bold mb-1">E + U₁ + U₂ = 0</div>
+                    <div className="text-center text-slate-400 text-[10px]">12V - 4V - 8V = 0V</div>
+                  </div>
+                  <ul className="text-[10px] text-slate-400 space-y-1 list-disc list-inside mt-2">
+                    <li><strong className="text-amber-400">E:</strong> Tension du générateur</li>
+                    <li><strong className="text-rose-400">U₁:</strong> Chute de tension R1</li>
+                    <li><strong className="text-emerald-400">U₂:</strong> Chute de tension R2</li>
+                  </ul>
+                </div>
+              )}
+            </div>
 
-        {/* Bottom Left Status/Controls */}
-        <div className="absolute bottom-4 left-4 bg-slate-950/80 backdrop-blur-md px-3 py-2 rounded-xl border border-slate-800 shadow-lg flex items-center gap-3">
-          <button
-            onClick={() => setIsPlaying(!isPlaying)}
-            className="p-1.5 rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white transition-colors"
-          >
-            <RefreshCw className={`w-4 h-4 ${isPlaying ? "animate-spin-slow text-emerald-400" : ""}`} />
-          </button>
-          <div className="text-[10px] font-mono text-slate-400">
-            {activeTab === "KCL" 
-              ? "Conservation de la charge: I = I₁ + I₂" 
-              : "Unicité du potentiel: ΣU = 0"}
+            <div className="mt-6 pt-4 border-t border-slate-800/80">
+              <button
+                onClick={() => setIsPlaying(!isPlaying)}
+                className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-slate-950 border border-slate-800 text-slate-300 hover:bg-slate-800 transition-colors text-[10px] font-bold uppercase tracking-widest"
+              >
+                <RefreshCw className={`w-3.5 h-3.5 ${isPlaying ? "animate-spin-slow text-emerald-400" : ""}`} />
+                {isPlaying ? "Mettre en pause" : "Relancer l'animation"}
+              </button>
+            </div>
           </div>
-        </div>
-      </div>
+
+          {/* DROITE : Canvas 3D */}
+          <div className="w-full md:w-7/12 relative h-[300px] md:h-full bg-gradient-to-br from-[#020617] to-slate-950 animate-in fade-in duration-700">
+            <Canvas camera={{ position: [0, 0, 7.5], fov: 50 }}>
+              <ambientLight intensity={1} />
+              <directionalLight position={[5, 10, 5]} intensity={1.5} />
+              {activeTab === "KCL" ? (
+                <KCLSystem isPlaying={isPlaying} />
+              ) : (
+                <KVLSystem isPlaying={isPlaying} />
+              )}
+              <OrbitControls 
+                enableZoom={false} 
+                enablePan={false}
+                minPolarAngle={Math.PI / 3}
+                maxPolarAngle={Math.PI / 1.5}
+                minAzimuthAngle={-Math.PI / 4}
+                maxAzimuthAngle={Math.PI / 4}
+              />
+            </Canvas>
+          </div>
+        </>
+      )}
     </div>
   );
 }
