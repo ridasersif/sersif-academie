@@ -60,7 +60,7 @@ export default function ImpedanceFresnel3DCanvas() {
         X = 0;
         mag = R;
         phi = 0;
-        badge = "Purement Résistif • \\phi = 0^\\circ \\text{ (En phase)}";
+        badge = "\\text{Purement Résistif} \\cdot \\phi = 0^\\circ \\text{ (En phase)}";
         color = "text-emerald-300 bg-emerald-500/10 border-emerald-500/30";
       } else if (tab === "inductor") {
         // Pure Inductance: Z = L*omega, phi = +PI/2 (+90°) strictly
@@ -68,7 +68,7 @@ export default function ImpedanceFresnel3DCanvas() {
         X = L * omega;
         mag = X;
         phi = Math.PI / 2; // +90° strictly
-        badge = "Bobine Idéale • \\phi = +90^\\circ \\text{ (Tension en avance)}";
+        badge = "\\text{Bobine Idéale} \\cdot \\phi = +90^\\circ \\text{ (Tension en avance)}";
         color = "text-amber-300 bg-amber-500/10 border-amber-500/30";
       } else if (tab === "capacitor") {
         // Pure Capacitance: Z = 1/(C*omega), phi = -PI/2 (-90°) strictly
@@ -76,7 +76,7 @@ export default function ImpedanceFresnel3DCanvas() {
         X = -1 / (C * omega);
         mag = Math.abs(X);
         phi = -Math.PI / 2; // -90° strictly
-        badge = "Condensateur Idéal • \\phi = -90^\\circ \\text{ (Tension en retard)}";
+        badge = "\\text{Condensateur Idéal} \\cdot \\phi = -90^\\circ \\text{ (Tension en retard)}";
         color = "text-cyan-300 bg-cyan-500/10 border-cyan-500/30";
       } else {
         // RLC Series Circuit
@@ -88,13 +88,13 @@ export default function ImpedanceFresnel3DCanvas() {
         const deg = Math.round((phi * 180) / Math.PI);
         const diffF = Math.abs(frequency - f0);
         if (diffF < 0.04) {
-          badge = "\\text{🎯 Résonance d'Intensité (} f = f_0, \\ Z = R, \\ I_{\\max} \\text{)}";
+          badge = "\\text{🎯 Résonance (} f = f_0, \\ Z = R, \\ I_{\\max} \\text{)}";
           color = "text-purple-300 bg-purple-500/15 border-purple-500/40";
         } else if (X > 0) {
-          badge = `\\text{Inductif • } \\phi = +${deg}^\\circ \\text{ (Avance)}`;
+          badge = `\\text{Comportement Inductif} \\cdot \\phi = +${deg}^\\circ \\text{ (Avance)}`;
           color = "text-amber-300 bg-amber-500/10 border-amber-500/30";
         } else {
-          badge = `\\text{Capacitif • } \\phi = ${deg}^\\circ \\text{ (Retard)}`;
+          badge = `\\text{Comportement Capacitif} \\cdot \\phi = ${deg}^\\circ \\text{ (Retard)}`;
           color = "text-cyan-300 bg-cyan-500/10 border-cyan-500/30";
         }
       }
@@ -194,66 +194,68 @@ export default function ImpedanceFresnel3DCanvas() {
 
   return (
     <div className="w-full bg-slate-950 border border-slate-800/90 rounded-3xl p-3 sm:p-5 shadow-2xl space-y-3 font-sans">
-      
-      {/* ── TOP BAR : TITLE, BADGE & TABS ── */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-2.5 border-b border-slate-800/70 pb-2.5">
+      {/* ── TOP BAR : TITLE & STATE BADGE ── */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800/70 pb-2.5">
         <div className="flex items-center gap-2">
           <div className="p-1.5 rounded-lg bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
             <Compass className="w-4 h-4" />
           </div>
-          <div>
-            <h3 className="text-xs sm:text-sm font-black text-white uppercase tracking-wider">
-              Génération des Formes d&apos;Onde par Vecteurs de Fresnel
-            </h3>
-            <span className={`text-[10.5px] font-mono font-bold px-2 py-0.5 rounded-md border inline-block mt-0.5 ${badgeColor}`}>
-              <LatexMath math={stateBadge} />
-            </span>
-          </div>
+          <h3 className="text-xs sm:text-sm font-black text-white uppercase tracking-wider">
+            Génération des Formes d&apos;Onde par Vecteurs de Fresnel
+          </h3>
         </div>
 
-        {/* Dipole Selector Tabs */}
-        <div className="flex items-center gap-1 bg-slate-900/90 p-1 rounded-xl border border-slate-800 shadow-inner flex-wrap">
-          <button
-            onClick={() => setTab("resistor")}
-            className={`px-2.5 py-1 text-xs font-bold rounded-lg transition-all cursor-pointer ${
-              tab === "resistor"
-                ? "bg-rose-600 text-white shadow-[0_0_10px_rgba(225,29,72,0.4)]"
-                : "text-slate-400 hover:text-white"
-            }`}
-          >
-            Résistance (R)
-          </button>
-          <button
-            onClick={() => setTab("inductor")}
-            className={`px-2.5 py-1 text-xs font-bold rounded-lg transition-all cursor-pointer ${
-              tab === "inductor"
-                ? "bg-amber-500 text-slate-950 shadow-[0_0_10px_rgba(245,158,11,0.4)] font-black"
-                : "text-slate-400 hover:text-white"
-            }`}
-          >
-            Bobine (L)
-          </button>
-          <button
-            onClick={() => setTab("capacitor")}
-            className={`px-2.5 py-1 text-xs font-bold rounded-lg transition-all cursor-pointer ${
-              tab === "capacitor"
-                ? "bg-cyan-500 text-slate-950 shadow-[0_0_10px_rgba(6,182,212,0.4)] font-black"
-                : "text-slate-400 hover:text-white"
-            }`}
-          >
-            Condensateur (C)
-          </button>
-          <button
-            onClick={() => setTab("rlc")}
-            className={`px-2.5 py-1 text-xs font-bold rounded-lg transition-all cursor-pointer ${
-              tab === "rlc"
-                ? "bg-indigo-600 text-white shadow-[0_0_10px_rgba(99,102,241,0.4)]"
-                : "text-slate-400 hover:text-white"
-            }`}
-          >
-            Circuit RLC Série
-          </button>
-        </div>
+        {/* State Badge */}
+        <span className={`text-[10px] sm:text-[11px] font-mono font-bold px-2.5 py-0.5 rounded-lg border self-start sm:self-auto shadow-sm ${badgeColor}`}>
+          <LatexMath math={stateBadge} />
+        </span>
+      </div>
+
+      {/* ── DIPOLE BUTTONS (ALL ON A SINGLE ROW) ── */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 sm:gap-2 p-1.5 rounded-2xl bg-slate-900/90 border border-slate-800 shadow-inner">
+        <button
+          onClick={() => setTab("resistor")}
+          className={`py-1.5 px-2 text-[11px] sm:text-xs font-bold rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1 text-center whitespace-nowrap ${
+            tab === "resistor"
+              ? "bg-rose-600 text-white shadow-[0_0_12px_rgba(225,29,72,0.5)] font-black"
+              : "text-slate-400 hover:text-white hover:bg-slate-800/60"
+          }`}
+        >
+          <span>Résistance (R)</span>
+        </button>
+
+        <button
+          onClick={() => setTab("inductor")}
+          className={`py-1.5 px-2 text-[11px] sm:text-xs font-bold rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1 text-center whitespace-nowrap ${
+            tab === "inductor"
+              ? "bg-amber-500 text-slate-950 shadow-[0_0_12px_rgba(245,158,11,0.5)] font-black"
+              : "text-slate-400 hover:text-white hover:bg-slate-800/60"
+          }`}
+        >
+          <span>Bobine Idéale (L)</span>
+        </button>
+
+        <button
+          onClick={() => setTab("capacitor")}
+          className={`py-1.5 px-2 text-[11px] sm:text-xs font-bold rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1 text-center whitespace-nowrap ${
+            tab === "capacitor"
+              ? "bg-cyan-500 text-slate-950 shadow-[0_0_12px_rgba(6,182,212,0.5)] font-black"
+              : "text-slate-400 hover:text-white hover:bg-slate-800/60"
+          }`}
+        >
+          <span>Condensateur (C)</span>
+        </button>
+
+        <button
+          onClick={() => setTab("rlc")}
+          className={`py-1.5 px-2 text-[11px] sm:text-xs font-bold rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1 text-center whitespace-nowrap ${
+            tab === "rlc"
+              ? "bg-indigo-600 text-white shadow-[0_0_12px_rgba(99,102,241,0.5)] font-black"
+              : "text-slate-400 hover:text-white hover:bg-slate-800/60"
+          }`}
+        >
+          <span>Circuit RLC Série</span>
+        </button>
       </div>
 
       {/* ── UNIFIED FRESNEL-TO-OSCILLOSCOPE CANVAS (SVG) ── */}
@@ -408,11 +410,12 @@ export default function ImpedanceFresnel3DCanvas() {
               strokeLinejoin="round"
             />
 
-            {/* Wave Legend Badges on Screen */}
-            <text x={oscXStart + 15} y={oscMidY - maxCircleR + 14} fill="#06b6d4" fontSize="9.5" fontWeight="bold" fontFamily="monospace">
+            {/* Wave Legend Badges on Screen (Top Right) */}
+            <rect x={oscXStart + oscWidth - 150} y={oscMidY - maxCircleR - 2} width="150" height="34" rx="6" fill="#020617" fillOpacity="0.8" stroke="#1e293b" strokeWidth="0.8" />
+            <text x={oscXStart + oscWidth - 10} y={oscMidY - maxCircleR + 12} fill="#22d3ee" fontSize="9.5" fontWeight="bold" fontFamily="monospace" textAnchor="end">
               u(t) = Um·sin(ωt)
             </text>
-            <text x={oscXStart + 15} y={oscMidY - maxCircleR + 27} fill="#f43f5e" fontSize="9.5" fontWeight="bold" fontFamily="monospace">
+            <text x={oscXStart + oscWidth - 10} y={oscMidY - maxCircleR + 25} fill="#fb7185" fontSize="9.5" fontWeight="bold" fontFamily="monospace" textAnchor="end">
               i(t) = Im·sin(ωt - φ)
             </text>
           </g>
