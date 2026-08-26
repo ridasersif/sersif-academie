@@ -35,6 +35,10 @@ const SourcesLabSimulator = dynamic(
   () => import("../components/SourcesLabSimulator"),
   { ssr: false }
 );
+const FiveMethodsCircuitLab = dynamic(
+  () => import("../components/FiveMethodsCircuitLab").then(mod => mod.FiveMethodsCircuitLab),
+  { ssr: false }
+);
 
 /* ── Collapsible Proof Component ── */
 function CollapsibleProof({
@@ -931,27 +935,22 @@ export default function Chap2GenerateursLoisKirchhoff() {
         </div>
       </section>
 
-      {/* ── PARTIE 3: OUTILS FONDAMENTAUX & THÉORÈMES DES RÉSEAUX ── */}
+      {/* ── PARTIE 3: OUTILS FONDAMENTAUX DE RÉDUCTION ── */}
       <section className="bg-card/90 border border-border/80 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 shadow-sm w-full max-w-full overflow-x-hidden space-y-6">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 text-[11px] font-extrabold mb-1">
-          <Cpu className="w-3.5 h-3.5" />
-          <span>Partie 3 • Outils Fondamentaux & Théorèmes</span>
+          <Sliders className="w-3.5 h-3.5" />
+          <span>Partie 3 • Outils Fondamentaux</span>
         </div>
 
         <h2 className="text-lg sm:text-lg font-black text-foreground leading-tight">
-          3. Outils Fondamentaux & Théorèmes des Réseaux Linéaires
+          3. Outils Fondamentaux de Réduction des Circuits
         </h2>
 
         <p className="text-[11px] text-muted-foreground leading-relaxed">
-          Avant d&apos;aborder les grands théorèmes des réseaux, la maîtrise des lois de réduction (associations de résistances) et des règles de division (tension et courant) constitue le socle indispensable pour simplifier n&apos;importe quel circuit sans calcul matriciel lourd.
+          La maîtrise des lois de réduction (associations série et parallèle de résistances) et des règles de division (pont diviseur de tension et de courant) constitue le socle indispensable pour simplifier et résoudre rapidement n&apos;importe quelle branche d&apos;un réseau sans calcul matriciel lourd.
         </p>
 
-        {/* ── SOUS-SECTION A: LES OUTILS FONDAMENTAUX ── */}
         <div className="space-y-5">
-          <div className="flex items-center gap-2 text-xs font-bold text-amber-400 uppercase tracking-wider border-b border-slate-800 pb-2">
-            <Sliders className="w-4 h-4" /> A. Les Outils Fondamentaux de Réduction
-          </div>
-
           {/* 1. Association des Résistances */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             
@@ -969,10 +968,10 @@ export default function Chap2GenerateursLoisKirchhoff() {
 
               {/* SVG Série Agrandie et Détaillée */}
               <div className="w-full bg-slate-950/90 py-3.5 px-4 rounded-xl border border-slate-800 flex justify-center items-center">
-                <svg viewBox="0 0 280 75" className="w-full max-w-[270px] h-auto" overflow="visible">
+                <svg viewBox="0 0 280 80" className="w-full max-w-[270px] h-auto" overflow="visible">
                   <defs>
                     <marker id="ser-i-arr" markerWidth="5" markerHeight="5" refX="4" refY="2.5" orient="auto">
-                      <polygon points="0 0, 5 2.5, 0 5" fill="#38bdf8"/>
+                      <polygon points="0 0, 5 2.5, 0 5" fill="#f43f5e"/>
                     </marker>
                     <marker id="ser-u-arr" markerWidth="5" markerHeight="5" refX="4" refY="2.5" orient="auto">
                       <polygon points="0 0, 5 2.5, 0 5" fill="#22d3ee"/>
@@ -983,39 +982,54 @@ export default function Chap2GenerateursLoisKirchhoff() {
                   </defs>
 
                   {/* Wire & Resistors */}
-                  <line x1="20" y1="35" x2="65" y2="35" stroke="#22d3ee" strokeWidth="2.2" strokeLinecap="round"/>
-                  {/* Current Arrow i */}
-                  <line x1="25" y1="35" x2="48" y2="35" stroke="#38bdf8" strokeWidth="2" markerEnd="url(#ser-i-arr)"/>
-                  <text x="36" y="27" textAnchor="middle" fill="#38bdf8" fontSize="9.5" fontWeight="bold" fontFamily="monospace">i</text>
+                  <line x1="20" y1="36" x2="65" y2="36" stroke="#22d3ee" strokeWidth="2.2" strokeLinecap="round"/>
+                  
+                  {/* Current Arrow i (Red) */}
+                  <line x1="25" y1="36" x2="48" y2="36" stroke="#f43f5e" strokeWidth="2" markerEnd="url(#ser-i-arr)"/>
+                  <text x="36" y="27" textAnchor="middle" fill="#f43f5e" fontSize="11" fontStyle="italic" fontWeight="bold" fontFamily="serif">i</text>
 
-                  {/* R1 Box */}
-                  <rect x="65" y="24" width="46" height="22" rx="3" fill="#020617" stroke="#22d3ee" strokeWidth="2"/>
-                  <text x="88" y="38.5" textAnchor="middle" fill="#22d3ee" fontSize="11" fontWeight="bold" fontFamily="monospace">R₁</text>
+                  {/* R1 Slender Box */}
+                  <rect x="65" y="26" width="44" height="20" rx="2.5" fill="#020617" stroke="#22d3ee" strokeWidth="1.8"/>
+                  <text x="87" y="40" textAnchor="middle" fill="#22d3ee" fontSize="11" fontStyle="italic" fontWeight="bold" fontFamily="serif">
+                    R<tspan fontSize="8" dy="2">1</tspan>
+                  </text>
 
-                  <line x1="111" y1="35" x2="150" y2="35" stroke="#22d3ee" strokeWidth="2.2" strokeLinecap="round"/>
+                  <line x1="109" y1="36" x2="148" y2="36" stroke="#22d3ee" strokeWidth="2.2" strokeLinecap="round"/>
 
-                  {/* R2 Box */}
-                  <rect x="150" y="24" width="46" height="22" rx="3" fill="#020617" stroke="#22d3ee" strokeWidth="2"/>
-                  <text x="173" y="38.5" textAnchor="middle" fill="#22d3ee" fontSize="11" fontWeight="bold" fontFamily="monospace">R₂</text>
+                  {/* R2 Slender Box */}
+                  <rect x="148" y="26" width="44" height="20" rx="2.5" fill="#020617" stroke="#22d3ee" strokeWidth="1.8"/>
+                  <text x="170" y="40" textAnchor="middle" fill="#22d3ee" fontSize="11" fontStyle="italic" fontWeight="bold" fontFamily="serif">
+                    R<tspan fontSize="8" dy="2">2</tspan>
+                  </text>
 
-                  <line x1="196" y1="35" x2="260" y2="35" stroke="#22d3ee" strokeWidth="2.2" strokeLinecap="round"/>
+                  <line x1="192" y1="36" x2="260" y2="36" stroke="#22d3ee" strokeWidth="2.2" strokeLinecap="round"/>
 
                   {/* Nodes A and B */}
-                  <circle cx="20" cy="35" r="3.5" fill="#22d3ee"/>
-                  <text x="20" y="20" textAnchor="middle" fill="#94a3b8" fontSize="10.5" fontWeight="bold">A</text>
-                  <circle cx="260" cy="35" r="3.5" fill="#22d3ee"/>
-                  <text x="260" y="20" textAnchor="middle" fill="#94a3b8" fontSize="10.5" fontWeight="bold">B</text>
+                  <circle cx="20" cy="36" r="3.5" fill="#22d3ee"/>
+                  <text x="20" y="20" textAnchor="middle" fill="#94a3b8" fontSize="11" fontWeight="bold" fontFamily="serif">A</text>
+                  <circle cx="260" cy="36" r="3.5" fill="#22d3ee"/>
+                  <text x="260" y="20" textAnchor="middle" fill="#94a3b8" fontSize="11" fontWeight="bold" fontFamily="serif">B</text>
 
                   {/* Partial Voltage Arrows */}
-                  <line x1="65" y1="12" x2="111" y2="12" stroke="#22d3ee" strokeWidth="1.4" markerEnd="url(#ser-u-arr)"/>
-                  <text x="88" y="7" textAnchor="middle" fill="#22d3ee" fontSize="9" fontWeight="bold" fontFamily="monospace">u₁</text>
+                  <line x1="65" y1="13" x2="109" y2="13" stroke="#22d3ee" strokeWidth="1.4" markerEnd="url(#ser-u-arr)"/>
+                  <text x="87" y="8" textAnchor="middle" fill="#22d3ee" fontSize="10" fontStyle="italic" fontWeight="bold" fontFamily="serif">
+                    u<tspan fontSize="7.5" dy="1.5">1</tspan>
+                  </text>
 
-                  <line x1="150" y1="12" x2="196" y2="12" stroke="#22d3ee" strokeWidth="1.4" markerEnd="url(#ser-u-arr)"/>
-                  <text x="173" y="7" textAnchor="middle" fill="#22d3ee" fontSize="9" fontWeight="bold" fontFamily="monospace">u₂</text>
+                  <line x1="148" y1="13" x2="192" y2="13" stroke="#22d3ee" strokeWidth="1.4" markerEnd="url(#ser-u-arr)"/>
+                  <text x="170" y="8" textAnchor="middle" fill="#22d3ee" fontSize="10" fontStyle="italic" fontWeight="bold" fontFamily="serif">
+                    u<tspan fontSize="7.5" dy="1.5">2</tspan>
+                  </text>
 
                   {/* Total Voltage u_AB Arrow */}
-                  <line x1="20" y1="62" x2="260" y2="62" stroke="#facc15" strokeWidth="1.6" markerEnd="url(#ser-utot-arr)"/>
-                  <text x="140" y="56" textAnchor="middle" fill="#facc15" fontSize="9.5" fontWeight="bold" fontFamily="monospace">u_AB = u₁ + u₂</text>
+                  <line x1="20" y1="65" x2="260" y2="65" stroke="#facc15" strokeWidth="1.6" markerEnd="url(#ser-utot-arr)"/>
+                  <text x="140" y="59" textAnchor="middle" fill="#facc15" fontSize="10.5" fontStyle="italic" fontWeight="bold" fontFamily="serif">
+                    u<tspan fontSize="8" dy="1.5">AB</tspan>
+                    <tspan fontStyle="normal" fontSize="10"> = </tspan>
+                    u<tspan fontSize="8" dy="1.5">1</tspan>
+                    <tspan fontStyle="normal" fontSize="10"> + </tspan>
+                    u<tspan fontSize="8" dy="1.5">2</tspan>
+                  </text>
                 </svg>
               </div>
 
@@ -1075,56 +1089,73 @@ export default function Chap2GenerateursLoisKirchhoff() {
                 </p>
               </div>
 
-              {/* SVG Parallèle Agrandie et Détaillée */}
-              <div className="w-full bg-slate-950/90 py-3 px-4 rounded-xl border border-slate-800 flex justify-center items-center">
-                <svg viewBox="0 0 280 80" className="w-full max-w-[270px] h-auto" overflow="visible">
+              {/* SVG Parallèle Refait Proprement & Symétrique */}
+              <div className="w-full bg-slate-950/90 py-3.5 px-4 rounded-xl border border-slate-800 flex justify-center items-center">
+                <svg viewBox="0 0 280 90" className="w-full max-w-[270px] h-auto" overflow="visible">
                   <defs>
                     <marker id="par-i-arr" markerWidth="5" markerHeight="5" refX="4" refY="2.5" orient="auto">
-                      <polygon points="0 0, 5 2.5, 0 5" fill="#818cf8"/>
+                      <polygon points="0 0, 5 2.5, 0 5" fill="#f43f5e"/>
                     </marker>
                     <marker id="par-ibr-arr" markerWidth="5" markerHeight="5" refX="4" refY="2.5" orient="auto">
-                      <polygon points="0 0, 5 2.5, 0 5" fill="#a5b4fc"/>
+                      <polygon points="0 0, 5 2.5, 0 5" fill="#fb7185"/>
                     </marker>
                     <marker id="par-u-arr" markerWidth="5" markerHeight="5" refX="4" refY="2.5" orient="auto">
                       <polygon points="0 0, 5 2.5, 0 5" fill="#facc15"/>
                     </marker>
                   </defs>
 
-                  {/* Main entry wire with current i */}
-                  <line x1="15" y1="20" x2="60" y2="20" stroke="#818cf8" strokeWidth="2.2" strokeLinecap="round"/>
-                  <line x1="20" y1="20" x2="45" y2="20" stroke="#818cf8" strokeWidth="2" markerEnd="url(#par-i-arr)"/>
-                  <text x="32" y="12" textAnchor="middle" fill="#818cf8" fontSize="9.5" fontWeight="bold" fontFamily="monospace">i</text>
+                  {/* Left Voltage Arrow u_AB (Spanning exactly between A and B level) */}
+                  <line x1="18" y1="67" x2="18" y2="23" stroke="#facc15" strokeWidth="1.6" markerEnd="url(#par-u-arr)"/>
+                  <text x="8" y="49" textAnchor="middle" fill="#facc15" fontSize="11" fontStyle="italic" fontWeight="bold" fontFamily="serif">
+                    u<tspan fontSize="8" dy="1.5">AB</tspan>
+                  </text>
 
-                  {/* Upper and Lower Rails */}
-                  <line x1="60" y1="20" x2="220" y2="20" stroke="#818cf8" strokeWidth="2" strokeLinecap="round"/>
-                  <line x1="60" y1="60" x2="220" y2="60" stroke="#818cf8" strokeWidth="2" strokeLinecap="round"/>
+                  {/* Upper Rail (A) - Exactly x=35 to x=245 */}
+                  <line x1="35" y1="20" x2="245" y2="20" stroke="#818cf8" strokeWidth="2.2" strokeLinecap="round"/>
+                  {/* Lower Rail (B) - Exactly x=35 to x=245 */}
+                  <line x1="35" y1="70" x2="245" y2="70" stroke="#818cf8" strokeWidth="2.2" strokeLinecap="round"/>
+
+                  {/* Node A */}
+                  <circle cx="35" cy="20" r="3.5" fill="#818cf8"/>
+                  <text x="35" y="9" textAnchor="middle" fill="#94a3b8" fontSize="11" fontWeight="bold" fontFamily="serif">A</text>
+
+                  {/* Node B */}
+                  <circle cx="35" cy="70" r="3.5" fill="#818cf8"/>
+                  <text x="35" y="84" textAnchor="middle" fill="#94a3b8" fontSize="11" fontWeight="bold" fontFamily="serif">B</text>
+
+                  {/* Current Arrow i on Upper Rail */}
+                  <line x1="45" y1="20" x2="75" y2="20" stroke="#f43f5e" strokeWidth="2" markerEnd="url(#par-i-arr)"/>
+                  <text x="60" y="11" textAnchor="middle" fill="#f43f5e" fontSize="11" fontStyle="italic" fontWeight="bold" fontFamily="serif">i</text>
 
                   {/* Branch 1 (R1) */}
-                  <line x1="105" y1="20" x2="105" y2="60" stroke="#818cf8" strokeWidth="1.8"/>
-                  <line x1="105" y1="20" x2="105" y2="26" stroke="#a5b4fc" strokeWidth="1.8" markerEnd="url(#par-ibr-arr)"/>
-                  <text x="117" y="28" textAnchor="middle" fill="#a5b4fc" fontSize="9" fontWeight="bold" fontFamily="monospace">i₁</text>
-                  <rect x="94" y="30" width="22" height="20" rx="2.5" fill="#020617" stroke="#818cf8" strokeWidth="1.8"/>
-                  <text x="105" y="44" textAnchor="middle" fill="#818cf8" fontSize="9.5" fontWeight="bold" fontFamily="monospace">R₁</text>
+                  <line x1="115" y1="20" x2="115" y2="70" stroke="#818cf8" strokeWidth="1.8"/>
+                  <circle cx="115" cy="20" r="2.5" fill="#818cf8"/>
+                  <circle cx="115" cy="70" r="2.5" fill="#818cf8"/>
+                  {/* Arrow i1 */}
+                  <line x1="115" y1="20" x2="115" y2="29" stroke="#fb7185" strokeWidth="1.8" markerEnd="url(#par-ibr-arr)"/>
+                  <text x="127" y="28" textAnchor="middle" fill="#fb7185" fontSize="10" fontStyle="italic" fontWeight="bold" fontFamily="serif">
+                    i<tspan fontSize="7.5" dy="1.5">1</tspan>
+                  </text>
+                  {/* Slender R1 box */}
+                  <rect x="106" y="34" width="18" height="22" rx="2" fill="#020617" stroke="#818cf8" strokeWidth="1.8"/>
+                  <text x="115" y="48.5" textAnchor="middle" fill="#818cf8" fontSize="10.5" fontStyle="italic" fontWeight="bold" fontFamily="serif">
+                    R<tspan fontSize="7.5" dy="1.5">1</tspan>
+                  </text>
 
                   {/* Branch 2 (R2) */}
-                  <line x1="175" y1="20" x2="175" y2="60" stroke="#818cf8" strokeWidth="1.8"/>
-                  <line x1="175" y1="20" x2="175" y2="26" stroke="#a5b4fc" strokeWidth="1.8" markerEnd="url(#par-ibr-arr)"/>
-                  <text x="187" y="28" textAnchor="middle" fill="#a5b4fc" fontSize="9" fontWeight="bold" fontFamily="monospace">i₂</text>
-                  <rect x="164" y="30" width="22" height="20" rx="2.5" fill="#020617" stroke="#818cf8" strokeWidth="1.8"/>
-                  <text x="175" y="44" textAnchor="middle" fill="#818cf8" fontSize="9.5" fontWeight="bold" fontFamily="monospace">R₂</text>
-
-                  {/* Exit wire */}
-                  <line x1="220" y1="60" x2="265" y2="60" stroke="#818cf8" strokeWidth="2.2" strokeLinecap="round"/>
-
-                  {/* Nodes A and B */}
-                  <circle cx="60" cy="20" r="3.5" fill="#818cf8"/>
-                  <text x="60" y="10" textAnchor="middle" fill="#94a3b8" fontSize="10.5" fontWeight="bold">A</text>
-                  <circle cx="60" cy="60" r="3.5" fill="#818cf8"/>
-                  <text x="60" y="74" textAnchor="middle" fill="#94a3b8" fontSize="10.5" fontWeight="bold">B</text>
-
-                  {/* Voltage Arrow between A and B */}
-                  <line x1="48" y1="58" x2="48" y2="22" stroke="#facc15" strokeWidth="1.5" markerEnd="url(#par-u-arr)"/>
-                  <text x="36" y="42" textAnchor="middle" fill="#facc15" fontSize="9" fontWeight="bold" fontFamily="monospace">u_AB</text>
+                  <line x1="185" y1="20" x2="185" y2="70" stroke="#818cf8" strokeWidth="1.8"/>
+                  <circle cx="185" cy="20" r="2.5" fill="#818cf8"/>
+                  <circle cx="185" cy="70" r="2.5" fill="#818cf8"/>
+                  {/* Arrow i2 */}
+                  <line x1="185" y1="20" x2="185" y2="29" stroke="#fb7185" strokeWidth="1.8" markerEnd="url(#par-ibr-arr)"/>
+                  <text x="197" y="28" textAnchor="middle" fill="#fb7185" fontSize="10" fontStyle="italic" fontWeight="bold" fontFamily="serif">
+                    i<tspan fontSize="7.5" dy="1.5">2</tspan>
+                  </text>
+                  {/* Slender R2 box */}
+                  <rect x="176" y="34" width="18" height="22" rx="2" fill="#020617" stroke="#818cf8" strokeWidth="1.8"/>
+                  <text x="185" y="48.5" textAnchor="middle" fill="#818cf8" fontSize="10.5" fontStyle="italic" fontWeight="bold" fontFamily="serif">
+                    R<tspan fontSize="7.5" dy="1.5">2</tspan>
+                  </text>
                 </svg>
               </div>
 
@@ -1177,269 +1208,303 @@ export default function Chap2GenerateursLoisKirchhoff() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
             {/* Pont Diviseur de Tension (PDT) */}
-            <div className="p-5 rounded-2xl bg-slate-900/90 border border-emerald-500/30 space-y-3 shadow-md flex flex-col justify-between">
+            <div className="p-5 rounded-2xl bg-slate-900/90 border border-emerald-500/30 space-y-4 shadow-md flex flex-col justify-between">
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-[11px] font-extrabold text-emerald-400 uppercase tracking-wider">
-                    Pont Diviseur de Tension (PDT)
+                  <span className="text-xs font-extrabold text-emerald-400 uppercase tracking-wider">
+                    1°) Pont Diviseur de Tension (PDT)
                   </span>
-                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-300 border border-emerald-500/20">
-                    Série non chargée
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-300 border border-emerald-500/20 font-bold">
+                    Branche Série
                   </span>
                 </div>
-                <p className="text-[11px] text-slate-300 leading-relaxed">
-                  Permet de calculer directement la tension aux bornes d&apos;une résistance <LatexMath math="R_2" /> dans une branche série alimentée par une tension totale <LatexMath math="E" />.
-                </p>
+                <div className="p-3 rounded-xl bg-slate-950/70 border border-slate-800 text-[11px] text-slate-300 space-y-1.5">
+                  <p>
+                    📌 <strong>Énoncé :</strong> On applique une différence de potentiel <LatexMath math="U" /> aux bornes d&apos;un circuit constitué de deux résistances <LatexMath math="R_1" /> et <LatexMath math="R_2" /> associées en série.
+                  </p>
+                  <p className="text-emerald-300 font-medium">
+                    🎯 <strong>Objectif :</strong> Exprimer en fonction de <LatexMath math="U" />, de <LatexMath math="R_1" /> et de <LatexMath math="R_2" /> la tension <LatexMath math="U_2" /> existant aux bornes de <LatexMath math="R_2" />.
+                  </p>
+                </div>
               </div>
 
-              {/* SVG PDT */}
-              <div className="w-full bg-slate-950/80 py-3 px-3 rounded-xl border border-slate-800 flex justify-center items-center">
-                <svg viewBox="0 0 250 65" className="w-full max-w-[230px] h-auto" overflow="visible">
+              {/* SVG PDT Style Tableau (Vertical avec point C) */}
+              <div className="w-full bg-slate-950/90 py-3.5 px-4 rounded-xl border border-slate-800 flex justify-center items-center">
+                <svg viewBox="0 0 240 145" className="w-full max-w-[220px] h-auto" overflow="visible">
                   <defs>
-                    <marker id="pdt-u-arrow" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
-                      <polygon points="0 0, 6 3, 0 6" fill="#facc15"/>
+                    <marker id="pdt-u-arrow" markerWidth="5" markerHeight="5" refX="4" refY="2.5" orient="auto">
+                      <polygon points="0 0, 5 2.5, 0 5" fill="#facc15"/>
                     </marker>
                     <marker id="pdt-u2-arrow" markerWidth="5" markerHeight="5" refX="4" refY="2.5" orient="auto">
                       <polygon points="0 0, 5 2.5, 0 5" fill="#34d399"/>
                     </marker>
+                    <marker id="pdt-i-arrow" markerWidth="5" markerHeight="5" refX="4" refY="2.5" orient="auto">
+                      <polygon points="0 0, 5 2.5, 0 5" fill="#f43f5e"/>
+                    </marker>
                   </defs>
 
-                  {/* Total Voltage Arrow E */}
-                  <line x1="25" y1="12" x2="225" y2="12" stroke="#facc15" strokeWidth="1.6" markerEnd="url(#pdt-u-arrow)" strokeLinecap="round"/>
-                  <text x="125" y="8" textAnchor="middle" fill="#facc15" fontSize="10" fontWeight="bold" fontFamily="monospace">E (Tension totale)</text>
+                  {/* Left Voltage Arrow U (From B level up to A level) */}
+                  <line x1="30" y1="125" x2="30" y2="20" stroke="#facc15" strokeWidth="1.6" markerEnd="url(#pdt-u-arrow)"/>
+                  <text x="18" y="75" textAnchor="middle" fill="#facc15" fontSize="12" fontStyle="italic" fontWeight="bold" fontFamily="serif">U</text>
 
-                  {/* Wires & Resistors */}
-                  <line x1="25" y1="36" x2="55" y2="36" stroke="#10b981" strokeWidth="2" strokeLinecap="round"/>
-                  <rect x="55" y="27" width="38" height="18" rx="2" fill="#020617" stroke="#10b981" strokeWidth="1.8"/>
-                  <text x="74" y="40" textAnchor="middle" fill="#34d399" fontSize="10" fontWeight="bold" fontFamily="monospace">R₁</text>
+                  {/* Top terminal A and entry wire */}
+                  <circle cx="55" cy="18" r="3" fill="#10b981"/>
+                  <text x="45" y="21" textAnchor="end" fill="#94a3b8" fontSize="11" fontWeight="bold" fontFamily="serif">A</text>
+                  <line x1="55" y1="18" x2="105" y2="18" stroke="#10b981" strokeWidth="2" strokeLinecap="round"/>
+                  
+                  {/* Current Arrow I (Red) */}
+                  <line x1="62" y1="18" x2="88" y2="18" stroke="#f43f5e" strokeWidth="1.8" markerEnd="url(#pdt-i-arrow)"/>
+                  <text x="75" y="10" textAnchor="middle" fill="#f43f5e" fontSize="11" fontStyle="italic" fontWeight="bold" fontFamily="serif">I</text>
 
-                  <line x1="93" y1="36" x2="125" y2="36" stroke="#10b981" strokeWidth="2" strokeLinecap="round"/>
-                  <rect x="125" y="27" width="38" height="18" rx="2" fill="#020617" stroke="#10b981" strokeWidth="1.8"/>
-                  <text x="144" y="40" textAnchor="middle" fill="#34d399" fontSize="10" fontWeight="bold" fontFamily="monospace">R₂</text>
+                  {/* Vertical Wire down to R1 */}
+                  <line x1="105" y1="18" x2="105" y2="28" stroke="#10b981" strokeWidth="2"/>
 
-                  <line x1="163" y1="36" x2="225" y2="36" stroke="#10b981" strokeWidth="2" strokeLinecap="round"/>
+                  {/* Resistor R1 */}
+                  <rect x="96" y="28" width="18" height="26" rx="2" fill="#020617" stroke="#10b981" strokeWidth="1.8"/>
+                  <text x="124" y="44" fill="#34d399" fontSize="11" fontStyle="italic" fontWeight="bold" fontFamily="serif">
+                    R<tspan fontSize="8" dy="2">1</tspan>
+                  </text>
 
-                  {/* Arrow U2 across R2 */}
-                  <line x1="120" y1="56" x2="168" y2="56" stroke="#34d399" strokeWidth="1.5" markerEnd="url(#pdt-u2-arrow)" strokeLinecap="round"/>
-                  <text x="144" y="52" textAnchor="middle" fill="#34d399" fontSize="9" fontWeight="bold" fontFamily="monospace">U₂</text>
+                  {/* Wire between R1 and R2 + Midpoint C */}
+                  <line x1="105" y1="54" x2="105" y2="76" stroke="#10b981" strokeWidth="2"/>
+                  <circle cx="105" cy="65" r="2.5" fill="#10b981"/>
+                  <text x="94" y="68" textAnchor="end" fill="#94a3b8" fontSize="10" fontWeight="bold" fontFamily="serif">C</text>
 
-                  <circle cx="25" cy="36" r="3" fill="#10b981"/>
-                  <circle cx="225" cy="36" r="3" fill="#10b981"/>
+                  {/* Resistor R2 */}
+                  <rect x="96" y="76" width="18" height="26" rx="2" fill="#020617" stroke="#10b981" strokeWidth="1.8"/>
+                  <text x="124" y="92" fill="#34d399" fontSize="11" fontStyle="italic" fontWeight="bold" fontFamily="serif">
+                    R<tspan fontSize="8" dy="2">2</tspan>
+                  </text>
+
+                  {/* Bottom Wire and Terminal B */}
+                  <line x1="105" y1="102" x2="105" y2="125" stroke="#10b981" strokeWidth="2"/>
+                  <line x1="105" y1="125" x2="55" y2="125" stroke="#10b981" strokeWidth="2" strokeLinecap="round"/>
+                  <circle cx="55" cy="125" r="3" fill="#10b981"/>
+                  <text x="45" y="128" textAnchor="end" fill="#94a3b8" fontSize="11" fontWeight="bold" fontFamily="serif">B</text>
+
+                  {/* Right Voltage Arrow U2 (across R2, between C and B) */}
+                  <line x1="110" y1="65" x2="160" y2="65" stroke="#64748b" strokeWidth="1" strokeDasharray="3,3"/>
+                  <line x1="110" y1="125" x2="160" y2="125" stroke="#64748b" strokeWidth="1" strokeDasharray="3,3"/>
+                  <line x1="155" y1="123" x2="155" y2="69" stroke="#34d399" strokeWidth="1.6" markerEnd="url(#pdt-u2-arrow)"/>
+                  <text x="170" y="98" fill="#34d399" fontSize="11" fontStyle="italic" fontWeight="bold" fontFamily="serif">
+                    U<tspan fontSize="8" dy="2">2</tspan>
+                  </text>
                 </svg>
               </div>
 
+              {/* Main Formula */}
               <div className="p-3 rounded-xl bg-black/60 text-center font-mono text-emerald-300 font-bold text-xs border border-emerald-500/20">
-                <LatexMath math="U_2 = E \cdot \frac{R_2}{R_1 + R_2}" />
+                <LatexMath math="U_2 = \frac{R_2}{R_1 + R_2} \cdot U = \frac{R_2}{R_{eq}} \cdot U" />
               </div>
 
-              {/* Démonstration PDT */}
+              {/* Démonstration PDT Détaillée */}
               <CollapsibleProof
-                title="Démonstration du Pont Diviseur de Tension"
-                subtitle="Calcul direct par la loi d'Ohm en série"
+                title="Démonstration : Preuve du Diviseur de Tension"
+                subtitle="Par égalité de l'intensité commune traversant la branche"
                 color="emerald"
                 badge="Démonstration"
               >
-                <div className="space-y-2 text-slate-300 font-sans text-[11px]">
-                  <p>1. Le courant commun traversant l&apos;association série s&apos;écrit : <LatexMath math="i = \frac{E}{R_1 + R_2}" />.</p>
-                  <p>2. La tension aux bornes de <LatexMath math="R_2" /> est donnée par la loi d&apos;Ohm : <LatexMath math="U_2 = R_2 \cdot i = R_2 \cdot \frac{E}{R_1 + R_2} = E \cdot \frac{R_2}{R_1 + R_2}" />.</p>
-                  <p className="text-[10px] text-amber-300">⚠️ <strong>Condition :</strong> Ce résultat n&apos;est valable que si <strong>aucun courant n&apos;est prélevé</strong> au point milieu (circuit non chargé).</p>
+                <div className="space-y-2.5 text-slate-300 font-sans text-[11px]">
+                  <div className="p-2.5 rounded-lg bg-black/40 border border-slate-800">
+                    <span className="text-emerald-400 font-bold">1. Tension globale aux bornes du dipôle équivalent :</span>
+                    <div className="text-center font-mono text-emerald-300 pt-1">
+                      <LatexMath math="U = R_{eq} \cdot I \quad \text{avec} \quad R_{eq} = R_1 + R_2 \implies I = \frac{U}{R_{eq}}" />
+                    </div>
+                  </div>
+
+                  <div className="p-2.5 rounded-lg bg-black/40 border border-slate-800">
+                    <span className="text-emerald-400 font-bold">2. Loi d&apos;Ohm aux bornes de la résistance <LatexMath math="R_2" /> :</span>
+                    <div className="text-center font-mono text-emerald-300 pt-1">
+                      <LatexMath math="U_2 = R_2 \cdot I \implies I = \frac{U_2}{R_2}" />
+                    </div>
+                  </div>
+
+                  <div className="p-2.5 rounded-lg bg-emerald-950/40 border border-emerald-500/30 text-emerald-200">
+                    <span className="font-bold text-emerald-400">3. Égalité des deux expressions de l&apos;intensité <LatexMath math="I" /> :</span>
+                    <div className="text-center font-mono font-bold text-emerald-300 pt-1">
+                      <LatexMath math="\frac{U}{R_{eq}} = \frac{U_2}{R_2} \implies U_2 = \frac{R_2}{R_{eq}} \cdot U = \frac{R_2}{R_1 + R_2} \cdot U" />
+                    </div>
+                  </div>
+
+                  <div className="p-2 rounded-lg bg-slate-950/60 border border-slate-800 text-[10.5px]">
+                    <span className="text-amber-300 font-bold">💡 Conclusion physique :</span>
+                    <div className="text-center font-mono text-slate-300 pt-1">
+                      <LatexMath math="\frac{U_2}{U} = \frac{R_2}{R_{eq}}" /> <span className="ml-2 text-slate-400 font-sans">(D&apos;où le nom de <em>diviseur de tension</em>)</span>
+                    </div>
+                  </div>
                 </div>
               </CollapsibleProof>
             </div>
 
             {/* Pont Diviseur de Courant (PDC) */}
-            <div className="p-5 rounded-2xl bg-slate-900/90 border border-indigo-500/30 space-y-3 shadow-md flex flex-col justify-between">
+            <div className="p-5 rounded-2xl bg-slate-900/90 border border-indigo-500/30 space-y-4 shadow-md flex flex-col justify-between">
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-[11px] font-extrabold text-indigo-400 uppercase tracking-wider">
-                    Pont Diviseur de Courant (PDC)
+                  <span className="text-xs font-extrabold text-indigo-400 uppercase tracking-wider">
+                    2°) Pont Diviseur de Courant (PDC)
                   </span>
-                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-300 border border-indigo-500/20">
-                    Parallèle
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 font-bold">
+                    Branche Parallèle
                   </span>
                 </div>
-                <p className="text-[11px] text-slate-300 leading-relaxed">
-                  Permet de calculer la fraction de courant total <LatexMath math="I" /> dérivée dans une branche d&apos;un dipôle constitué de deux résistances en parallèle.
-                </p>
+                <div className="p-3 rounded-xl bg-slate-950/70 border border-slate-800 text-[11px] text-slate-300 space-y-1.5">
+                  <p>
+                    📌 <strong>Énoncé :</strong> On applique une d.d.p <LatexMath math="U" /> aux bornes d&apos;un circuit constitué de deux résistances <LatexMath math="R_1" /> et <LatexMath math="R_2" /> associées en parallèle.
+                  </p>
+                  <p className="text-indigo-300 font-medium">
+                    🎯 <strong>Objectif :</strong> Exprimer en fonction de <LatexMath math="I" />, de <LatexMath math="G_1, G_2" /> (ou <LatexMath math="R_1, R_2" />) l&apos;intensité du courant <LatexMath math="I_2" /> (ou <LatexMath math="I_1" />).
+                  </p>
+                </div>
               </div>
 
-              {/* SVG PDC */}
-              <div className="w-full bg-slate-950/80 py-3 px-3 rounded-xl border border-slate-800 flex justify-center items-center">
-                <svg viewBox="0 0 250 65" className="w-full max-w-[230px] h-auto" overflow="visible">
+              {/* SVG PDC Style Tableau */}
+              <div className="w-full bg-slate-950/90 py-3.5 px-4 rounded-xl border border-slate-800 flex justify-center items-center">
+                <svg viewBox="0 0 250 115" className="w-full max-w-[240px] h-auto" overflow="visible">
                   <defs>
+                    <marker id="pdc-u-arrow" markerWidth="5" markerHeight="5" refX="4" refY="2.5" orient="auto">
+                      <polygon points="0 0, 5 2.5, 0 5" fill="#facc15"/>
+                    </marker>
                     <marker id="pdc-i-arrow" markerWidth="5" markerHeight="5" refX="4" refY="2.5" orient="auto">
-                      <polygon points="0 0, 5 2.5, 0 5" fill="#818cf8"/>
+                      <polygon points="0 0, 5 2.5, 0 5" fill="#f43f5e"/>
                     </marker>
                     <marker id="pdc-i1-arrow" markerWidth="5" markerHeight="5" refX="4" refY="2.5" orient="auto">
-                      <polygon points="0 0, 5 2.5, 0 5" fill="#38bdf8"/>
+                      <polygon points="0 0, 5 2.5, 0 5" fill="#fb7185"/>
                     </marker>
                   </defs>
 
-                  {/* Main current entry I */}
-                  <line x1="15" y1="32" x2="50" y2="32" stroke="#818cf8" strokeWidth="2" markerEnd="url(#pdc-i-arrow)" strokeLinecap="round"/>
-                  <text x="32" y="24" textAnchor="middle" fill="#818cf8" fontSize="9" fontWeight="bold" fontFamily="monospace">I</text>
+                  {/* Left Voltage Arrow U between B and A */}
+                  <line x1="22" y1="88" x2="22" y2="28" stroke="#facc15" strokeWidth="1.6" markerEnd="url(#pdc-u-arrow)"/>
+                  <text x="12" y="60" textAnchor="middle" fill="#facc15" fontSize="11" fontStyle="italic" fontWeight="bold" fontFamily="serif">U</text>
 
-                  {/* Upper rail & Lower rail */}
-                  <line x1="55" y1="18" x2="195" y2="18" stroke="#818cf8" strokeWidth="1.8" strokeLinecap="round"/>
-                  <line x1="55" y1="46" x2="195" y2="46" stroke="#818cf8" strokeWidth="1.8" strokeLinecap="round"/>
-                  <line x1="55" y1="18" x2="55" y2="46" stroke="#818cf8" strokeWidth="1.8"/>
-                  <line x1="195" y1="18" x2="195" y2="46" stroke="#818cf8" strokeWidth="1.8"/>
+                  {/* Terminal A on top wire */}
+                  <circle cx="38" cy="25" r="3" fill="#818cf8"/>
+                  <text x="30" y="28" textAnchor="end" fill="#94a3b8" fontSize="10.5" fontWeight="bold" fontFamily="serif">A</text>
+
+                  {/* Top Wire into Node A */}
+                  <line x1="38" y1="25" x2="105" y2="25" stroke="#818cf8" strokeWidth="2"/>
+                  <line x1="45" y1="25" x2="75" y2="25" stroke="#f43f5e" strokeWidth="1.8" markerEnd="url(#pdc-i-arrow)"/>
+                  <text x="60" y="15" textAnchor="middle" fill="#f43f5e" fontSize="11" fontStyle="italic" fontWeight="bold" fontFamily="serif">I</text>
+
+                  {/* Node A */}
+                  <circle cx="105" cy="25" r="2.5" fill="#818cf8"/>
+                  <text x="105" y="14" textAnchor="middle" fill="#94a3b8" fontSize="10.5" fontWeight="bold" fontFamily="serif">A</text>
 
                   {/* Branch 1 (R1) */}
-                  <line x1="100" y1="18" x2="100" y2="46" stroke="#818cf8" strokeWidth="1.6"/>
-                  <rect x="92" y="24" width="16" height="16" rx="2" fill="#020617" stroke="#818cf8" strokeWidth="1.6"/>
-                  <text x="100" y="35.5" textAnchor="middle" fill="#818cf8" fontSize="8.5" fontWeight="bold" fontFamily="monospace">R₁</text>
-                  <line x1="100" y1="18" x2="100" y2="23" stroke="#38bdf8" strokeWidth="1.6" markerEnd="url(#pdc-i1-arrow)"/>
-                  <text x="112" y="24" textAnchor="middle" fill="#38bdf8" fontSize="8" fontWeight="bold" fontFamily="monospace">I₁</text>
+                  <line x1="105" y1="25" x2="105" y2="90" stroke="#818cf8" strokeWidth="1.8"/>
+                  <line x1="105" y1="25" x2="105" y2="35" stroke="#fb7185" strokeWidth="1.8" markerEnd="url(#pdc-i1-arrow)"/>
+                  <text x="96" y="38" textAnchor="end" fill="#fb7185" fontSize="10" fontStyle="italic" fontWeight="bold" fontFamily="serif">
+                    I<tspan fontSize="7.5" dy="1.5">1</tspan>
+                  </text>
+                  <rect x="96" y="42" width="18" height="24" rx="2" fill="#020617" stroke="#818cf8" strokeWidth="1.8"/>
+                  <text x="122" y="56" fill="#818cf8" fontSize="10.5" fontStyle="italic" fontWeight="bold" fontFamily="serif">
+                    R<tspan fontSize="7.5" dy="1.5">1</tspan>
+                  </text>
 
                   {/* Branch 2 (R2) */}
-                  <line x1="150" y1="18" x2="150" y2="46" stroke="#818cf8" strokeWidth="1.6"/>
-                  <rect x="142" y="24" width="16" height="16" rx="2" fill="#020617" stroke="#818cf8" strokeWidth="1.6"/>
-                  <text x="150" y="35.5" textAnchor="middle" fill="#818cf8" fontSize="8.5" fontWeight="bold" fontFamily="monospace">R₂</text>
-                  <line x1="150" y1="18" x2="150" y2="23" stroke="#38bdf8" strokeWidth="1.6" markerEnd="url(#pdc-i1-arrow)"/>
-                  <text x="162" y="24" textAnchor="middle" fill="#38bdf8" fontSize="8" fontWeight="bold" fontFamily="monospace">I₂</text>
+                  <line x1="105" y1="25" x2="185" y2="25" stroke="#818cf8" strokeWidth="2"/>
+                  <line x1="118" y1="25" x2="155" y2="25" stroke="#fb7185" strokeWidth="1.8" markerEnd="url(#pdc-i-arrow)"/>
+                  <text x="140" y="15" textAnchor="middle" fill="#fb7185" fontSize="10" fontStyle="italic" fontWeight="bold" fontFamily="serif">
+                    I<tspan fontSize="7.5" dy="1.5">2</tspan>
+                  </text>
 
-                  {/* Exit wire */}
-                  <line x1="195" y1="32" x2="235" y2="32" stroke="#818cf8" strokeWidth="2" strokeLinecap="round"/>
+                  <line x1="185" y1="25" x2="185" y2="90" stroke="#818cf8" strokeWidth="1.8"/>
+                  <rect x="176" y="42" width="18" height="24" rx="2" fill="#020617" stroke="#818cf8" strokeWidth="1.8"/>
+                  <text x="202" y="56" fill="#818cf8" fontSize="10.5" fontStyle="italic" fontWeight="bold" fontFamily="serif">
+                    R<tspan fontSize="7.5" dy="1.5">2</tspan>
+                  </text>
+
+                  {/* Bottom Wire and Node B */}
+                  <line x1="38" y1="90" x2="185" y2="90" stroke="#818cf8" strokeWidth="2"/>
+                  <circle cx="38" cy="90" r="3" fill="#818cf8"/>
+                  <text x="30" y="93" textAnchor="end" fill="#94a3b8" fontSize="10.5" fontWeight="bold" fontFamily="serif">B</text>
+                  <circle cx="105" cy="90" r="2.5" fill="#818cf8"/>
+                  <text x="105" y="103" textAnchor="middle" fill="#94a3b8" fontSize="10.5" fontWeight="bold" fontFamily="serif">B</text>
                 </svg>
               </div>
 
-              <div className="p-3 rounded-xl bg-black/60 text-center font-mono text-indigo-300 font-bold text-xs border border-indigo-500/20">
-                <LatexMath math="I_1 = I \cdot \frac{R_2}{R_1 + R_2} \quad \text{et} \quad I_2 = I \cdot \frac{R_1}{R_1 + R_2}" />
+              {/* Main Formula */}
+              <div className="p-3 rounded-xl bg-black/60 text-center font-mono text-indigo-300 font-bold text-xs border border-indigo-500/30">
+                <LatexMath math="I_2 = \frac{G_2}{G_1 + G_2} \cdot I = \frac{R_1}{R_1 + R_2} \cdot I" />
               </div>
 
-              {/* Démonstration PDC */}
+              {/* Démonstration PDC Détaillée */}
               <CollapsibleProof
-                title="Démonstration du Pont Diviseur de Courant"
-                subtitle="Attention : la résistance opposée se trouve au numérateur !"
+                title="Démonstration : Preuve du Diviseur de Courant"
+                subtitle="Par égalité de la tension commune aux bornes des branches"
                 color="indigo"
                 badge="Démonstration"
               >
-                <div className="space-y-2 text-slate-300 font-sans text-[11px]">
-                  <p>1. La tension commune aux deux branches vaut : <LatexMath math="U = R_{eq} \cdot I = \left(\frac{R_1 R_2}{R_1 + R_2}\right) \cdot I" />.</p>
-                  <p>2. Le courant dans la branche 1 s&apos;écrit alors : <LatexMath math="I_1 = \frac{U}{R_1} = \frac{1}{R_1} \cdot \left(\frac{R_1 R_2}{R_1 + R_2}\right) \cdot I = I \cdot \frac{R_2}{R_1 + R_2}" />.</p>
-                  <p className="text-[10px] text-indigo-300">💡 <strong>Formule générale avec conductances :</strong> <LatexMath math="I_k = I \cdot \frac{G_k}{\sum G_j}" />.</p>
+                <div className="space-y-2.5 text-slate-300 font-sans text-[11px]">
+                  <div className="p-2.5 rounded-lg bg-black/40 border border-slate-800">
+                    <span className="text-indigo-400 font-bold">1. Conductances et résistance équivalente :</span>
+                    <div className="text-center font-mono text-indigo-300 pt-1">
+                      <LatexMath math="\frac{1}{R_{eq}} = \frac{1}{R_1} + \frac{1}{R_2} \iff G_{eq} = G_1 + G_2" />
+                    </div>
+                  </div>
+
+                  <div className="p-2.5 rounded-lg bg-black/40 border border-slate-800">
+                    <span className="text-indigo-400 font-bold">2. Tension commune aux bornes du circuit :</span>
+                    <div className="text-center font-mono text-indigo-300 pt-1">
+                      <LatexMath math="U = R_{eq} \cdot I \quad \text{et} \quad U = R_2 \cdot I_2" />
+                    </div>
+                  </div>
+
+                  <div className="p-2.5 rounded-lg bg-black/40 border border-slate-800">
+                    <span className="text-indigo-400 font-bold">3. Égalité des tensions :</span>
+                    <div className="text-center font-mono text-indigo-300 pt-1">
+                      <LatexMath math="R_{eq} \cdot I = R_2 \cdot I_2 \implies I_2 = \frac{R_{eq}}{R_2} \cdot I" />
+                    </div>
+                  </div>
+
+                  <div className="p-2.5 rounded-lg bg-indigo-950/40 border border-indigo-500/30 text-indigo-200">
+                    <span className="font-bold text-indigo-400">4. Forme avec les Conductances <LatexMath math="G = \frac{1}{R}" /> :</span>
+                    <div className="text-center font-mono font-bold text-indigo-300 pt-1">
+                      <LatexMath math="I_2 = \frac{\frac{1}{R_2}}{\frac{1}{R_{eq}}} \cdot I = \frac{G_2}{G_{eq}} \cdot I = \frac{G_2}{G_1 + G_2} \cdot I" />
+                    </div>
+                  </div>
+
+                  <div className="p-2.5 rounded-lg bg-indigo-950/40 border border-indigo-500/30 text-indigo-200">
+                    <span className="font-bold text-indigo-400">5. Forme avec les Résistances (Attention à la résistance opposée !) :</span>
+                    <div className="text-center font-mono font-bold text-indigo-300 pt-1">
+                      <LatexMath math="I_2 = \frac{R_1}{R_1 + R_2} \cdot I \quad \text{et} \quad I_1 = \frac{R_2}{R_1 + R_2} \cdot I" />
+                    </div>
+                  </div>
                 </div>
               </CollapsibleProof>
             </div>
 
           </div>
         </div>
-
-        {/* ── SOUS-SECTION B: LES THÉORÈMES DES RÉSEAUX LINÉAIRES ── */}
-        <div className="space-y-4 pt-4 border-t border-slate-800">
-          <div className="flex items-center gap-2 text-xs font-bold text-cyan-400 uppercase tracking-wider">
-            <Cpu className="w-4 h-4" /> B. Les Grands Théorèmes des Réseaux Linéaires
-          </div>
-
-          {/* 1. Superposition */}
-          <CollapsibleProof
-            title="Théorème 1 : Théorème de Superposition"
-            subtitle="Linéarité des équations & principe d'extinction des sources indépendantes"
-            color="cyan"
-            badge="Théorème Fondamental"
-          >
-            <div className="space-y-3 text-slate-300 font-sans text-[11px]">
-              <p className="leading-relaxed">
-                Dans un réseau linéaire constitué de dipôles passifs et de plusieurs sources indépendantes, la tension ou l&apos;intensité dans une branche est la <strong>somme algébrique</strong> des grandeurs produites par chaque source agissant seule, les autres étant éteintes (passivées).
-              </p>
-              <div className="p-3 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 text-center font-mono font-bold text-xs">
-                <LatexMath math="u_{\text{total}} = \sum_{k=1}^{n} u_{(E_k \text{ seule})} \quad \text{et} \quad i_{\text{total}} = \sum_{k=1}^{n} i_{(E_k \text{ seule})}" />
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 font-mono text-[11px] pt-1">
-                <div className="p-2.5 rounded-lg bg-black/50 border border-slate-800">
-                  <span className="text-cyan-400 font-bold">Éteindre source de tension :</span> <LatexMath math="E=0\text{ V} \implies \text{Court-circuit (Fil)}" />
-                </div>
-                <div className="p-2.5 rounded-lg bg-black/50 border border-slate-800">
-                  <span className="text-indigo-400 font-bold">Éteindre source de courant :</span> <LatexMath math="\eta=0\text{ A} \implies \text{Circuit ouvert}" />
-                </div>
-              </div>
-            </div>
-          </CollapsibleProof>
-
-          {/* 2. Thévenin */}
-          <CollapsibleProof
-            title="Théorème 2 : Théorème de Thévenin"
-            subtitle="Modélisation globale d'un réseau dipolaire vu de deux bornes A et B"
-            color="amber"
-            badge="Modèle (Eth, Rth)"
-          >
-            <div className="space-y-3 text-slate-300 font-sans text-[11px]">
-              <p className="leading-relaxed">
-                Tout réseau linéaire vu entre deux bornes A et B est rigoureusement équivalent à un générateur de Thévenin unique constitué d&apos;une source idéale <LatexMath math="E_{th}" /> en série avec une résistance <LatexMath math="R_{th}" /> :
-              </p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-[11px] font-mono pt-1">
-                <div className="p-3 rounded-xl bg-black/50 border border-amber-500/20 space-y-1.5">
-                  <span className="font-sans font-bold text-amber-400">1. Calcul de Eth :</span>
-                  <p className="font-sans text-[11px] text-slate-300">Tension à vide mesurée entre A et B sans aucune charge connectée :</p>
-                  <div className="text-center text-amber-300 font-bold"><LatexMath math="E_{th} = U_{AB,\text{vide}}" /></div>
-                </div>
-                <div className="p-3 rounded-xl bg-black/50 border border-amber-500/20 space-y-1.5">
-                  <span className="font-sans font-bold text-amber-400">2. Calcul de Rth :</span>
-                  <p className="font-sans text-[11px] text-slate-300">Résistance équivalente vue entre A et B après extinction de toutes les sources indépendantes :</p>
-                  <div className="text-center text-amber-300 font-bold"><LatexMath math="R_{th} = R_{AB,\text{éteint}}" /></div>
-                </div>
-              </div>
-            </div>
-          </CollapsibleProof>
-
-          {/* 3. Norton */}
-          <CollapsibleProof
-            title="Théorème 3 : Théorème de Norton"
-            subtitle="Modélisation duale par une source de courant en parallèle"
-            color="indigo"
-            badge="Modèle (IN, RN)"
-          >
-            <div className="space-y-3 text-slate-300 font-sans text-[11px]">
-              <p className="leading-relaxed">
-                Tout réseau linéaire vu entre deux bornes A et B est équivalent à un générateur de Norton constitué d&apos;une source idéale de courant <LatexMath math="I_N" /> en parallèle avec une résistance <LatexMath math="R_N = R_{th}" /> :
-              </p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-[11px] font-mono pt-1">
-                <div className="p-3 rounded-xl bg-black/50 border border-indigo-500/20 space-y-1.5">
-                  <span className="font-sans font-bold text-indigo-400">1. Calcul de IN (Courant de court-circuit) :</span>
-                  <p className="font-sans text-[11px] text-slate-300">Courant traversant un fil reliant directement A et B :</p>
-                  <div className="text-center text-indigo-300 font-bold"><LatexMath math="I_N = I_{cc} = \frac{E_{th}}{R_{th}}" /></div>
-                </div>
-                <div className="p-3 rounded-xl bg-black/50 border border-indigo-500/20 space-y-1.5">
-                  <span className="font-sans font-bold text-indigo-400">2. Calcul de RN :</span>
-                  <p className="font-sans text-[11px] text-slate-300">Identique à la résistance de Thévenin :</p>
-                  <div className="text-center text-indigo-300 font-bold"><LatexMath math="R_N = R_{th} = R_{AB,\text{éteint}}" /></div>
-                </div>
-              </div>
-            </div>
-          </CollapsibleProof>
-
-          {/* 4. Millman */}
-          <CollapsibleProof
-            title="Théorème 4 : Théorème de Millman"
-            subtitle="Loi des nœuds exprimée en termes de potentiels et de conductances"
-            color="emerald"
-            badge="Méthode Rapide"
-          >
-            <div className="space-y-3 text-slate-300 font-sans text-[11px]">
-              <p className="leading-relaxed">
-                Pour un nœud A relié à <LatexMath math="n" /> branches composées chacune d&apos;un potentiel <LatexMath math="V_k" /> à travers une résistance <LatexMath math="R_k" /> et de <LatexMath math="p" /> sources de courant incidentes <LatexMath math="\eta_j" /> :
-              </p>
-              <div className="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-center font-mono font-bold text-xs">
-                <LatexMath math="V_A = \frac{\sum_{k=1}^{n} \frac{V_k}{R_k} + \sum_{j=1}^{p} \eta_j}{\sum_{k=1}^{n} \frac{1}{R_k}} = \frac{\sum G_k V_k + \sum \eta_j}{\sum G_k}" />
-              </div>
-              <p className="text-[11px] text-slate-400 leading-snug">
-                ⚠️ <strong>Convention de signe :</strong> Les courants de source <LatexMath math="\eta_j" /> sont comptés positivement s&apos;ils <strong>entrent</strong> dans le nœud A, négativement s&apos;ils en sortent.
-              </p>
-            </div>
-          </CollapsibleProof>
-        </div>
       </section>
 
-      {/* ── PARTIE 4: TRANSFERT MAXIMAL DE PUISSANCE & ADAPTATION ── */}
+      {/* ── PARTIE 4: LES GRANDS THÉORÈMES DES RÉSEAUX LINÉAIRES ── */}
       <section className="bg-card/90 border border-border/80 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 shadow-sm w-full max-w-full overflow-x-hidden space-y-6">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-500/10 text-rose-600 dark:text-rose-400 text-[11px] font-extrabold mb-1">
-          <TrendingUp className="w-3.5 h-3.5" />
-          <span>Partie 4 • Optimisation Énergétique</span>
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 text-[11px] font-extrabold mb-1">
+          <Cpu className="w-3.5 h-3.5" />
+          <span>Partie 4 • Théorèmes des Réseaux</span>
         </div>
 
         <h2 className="text-lg sm:text-lg font-black text-foreground leading-tight">
-          4. Transfert Maximal de Puissance & Adaptation d&apos;Impédance
+          4. Les Grands Théorèmes des Réseaux Linéaires
+        </h2>
+
+        <p className="text-[11px] text-muted-foreground leading-relaxed">
+          Les théorèmes de Superposition, Thévenin, Norton et Millman constituent les méthodes les plus puissantes pour modéliser, simplifier et calculer analytiquement les grandeurs électriques dans n&apos;importe quel réseau linéaire complexe.
+        </p>
+
+        {/* Five Methods Interactive Simulator & Step-by-Step Solver */}
+        <FiveMethodsCircuitLab />
+      </section>
+
+      {/* ── PARTIE 5: TRANSFERT MAXIMAL DE PUISSANCE & ADAPTATION ── */}
+      <section className="bg-card/90 border border-border/80 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 shadow-sm w-full max-w-full overflow-x-hidden space-y-6">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-500/10 text-rose-600 dark:text-rose-400 text-[11px] font-extrabold mb-1">
+          <TrendingUp className="w-3.5 h-3.5" />
+          <span>Partie 5 • Optimisation Énergétique</span>
+        </div>
+
+        <h2 className="text-lg sm:text-lg font-black text-foreground leading-tight">
+          5. Transfert Maximal de Puissance & Adaptation d&apos;Impédance
         </h2>
 
         <p className="text-[11px] text-muted-foreground leading-relaxed">
@@ -1493,15 +1558,15 @@ export default function Chap2GenerateursLoisKirchhoff() {
         </div>
       </section>
 
-      {/* ── PARTIE 5: LABORATOIRE 3D INTERACTIF ── */}
+      {/* ── PARTIE 6: LABORATOIRE 3D INTERACTIF ── */}
       <section className="bg-card/90 border border-border/80 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 shadow-sm w-full max-w-full overflow-x-hidden space-y-4">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 text-[11px] font-extrabold mb-1">
           <Cpu className="w-3.5 h-3.5" />
-          <span>Partie 5 • Simulation & Expérimentation</span>
+          <span>Partie 6 • Simulation & Expérimentation</span>
         </div>
 
         <h2 className="text-lg sm:text-lg font-black text-foreground leading-tight">
-          5. Laboratoire 3D : Réseau Linéaire, Thévenin, Norton & Transfert de Puissance
+          6. Laboratoire 3D : Réseau Linéaire, Thévenin, Norton & Transfert de Puissance
         </h2>
 
         <p className="text-[11px] text-muted-foreground leading-relaxed">
@@ -1512,15 +1577,15 @@ export default function Chap2GenerateursLoisKirchhoff() {
         <NetworkThevenin3DCanvas />
       </section>
 
-      {/* ── PARTIE 6: AUTO-ÉVALUATION & QCM ── */}
+      {/* ── PARTIE 7: AUTO-ÉVALUATION & QCM ── */}
       <section className="bg-card/90 border border-border/80 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 shadow-sm w-full max-w-full overflow-x-hidden space-y-6">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 text-indigo-400 text-[11px] font-extrabold mb-1 border border-indigo-500/20">
           <BookOpen className="w-3.5 h-3.5" />
-          <span>Partie 6 • Validation & Auto-Évaluation</span>
+          <span>Partie 7 • Validation & Auto-Évaluation</span>
         </div>
 
         <h2 className="text-lg sm:text-lg font-black text-foreground leading-tight">
-          6. QCM d&apos;Auto-Évaluation du Chapitre 2
+          7. QCM d&apos;Auto-Évaluation du Chapitre 2
         </h2>
 
         <p className="text-[11px] text-muted-foreground leading-relaxed">
