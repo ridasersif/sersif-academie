@@ -25,6 +25,7 @@ import {
 import LatexMath from "@/components/ui/LatexMath";
 
 // Dynamic 3D Simulation Canvas for Thévenin / Norton
+const KirchhoffLaws3DCanvas = dynamic(() => import('../components/KirchhoffLaws3DCanvas'), { ssr: false });
 const NetworkThevenin3DCanvas = dynamic(
   () => import("../components/NetworkThevenin3DCanvas"),
   { ssr: false }
@@ -84,7 +85,7 @@ function CollapsibleProof({
           <span className={`inline-block text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border ${colors.badge}`}>
             {badge}
           </span>
-          <h4 className="text-xs sm:text-sm font-bold text-foreground">{title}</h4>
+          <h4 className="text-[11px] sm:text-[11px] font-bold text-foreground">{title}</h4>
           {subtitle && <p className="text-[11px] text-muted-foreground">{subtitle}</p>}
         </div>
         <div className="p-1.5 rounded-lg bg-slate-800/60 border border-slate-700/80 text-slate-300 shrink-0">
@@ -93,7 +94,7 @@ function CollapsibleProof({
       </button>
 
       {isOpen && (
-        <div className="px-4 pb-4 pt-2 border-t border-border/30 text-xs text-foreground/90 space-y-2.5 leading-relaxed animate-in fade-in duration-200">
+        <div className="px-4 pb-4 pt-2 border-t border-border/30 text-[11px] text-foreground/90 space-y-2.5 leading-relaxed animate-in fade-in duration-200">
           {children}
         </div>
       )}
@@ -195,13 +196,13 @@ function Chap2QuickQuiz() {
   return (
     <div className="p-4 sm:p-6 rounded-2xl bg-card/80 border border-border/80 space-y-5 shadow-sm">
       <div className="flex items-center justify-between flex-wrap gap-2 border-b border-border/60 pb-3">
-        <div className="flex items-center gap-2 text-indigo-400 font-bold text-sm">
+        <div className="flex items-center gap-2 text-indigo-400 font-bold text-[11px]">
           <HelpCircle className="w-4 h-4" />
           <span>QCM d&apos;Auto-Évaluation • Lois de Kirchhoff & Théorèmes (6 Questions)</span>
         </div>
         {showResults && (
           <span
-            className={`text-xs font-mono font-bold px-3 py-1 rounded-full border shadow-sm ${
+            className={`text-[11px] font-mono font-bold px-3 py-1 rounded-full border shadow-sm ${
               score >= 5
                 ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/30"
                 : score >= 3
@@ -221,14 +222,14 @@ function Chap2QuickQuiz() {
             className="p-4 rounded-xl bg-slate-950/50 border border-border/60 space-y-3 shadow-inner"
           >
             <div className="space-y-1">
-              <p className="text-xs sm:text-sm font-semibold text-foreground leading-snug flex items-start gap-2">
-                <span className="px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 font-mono font-bold text-xs shrink-0">
+              <p className="text-[11px] sm:text-[11px] font-semibold text-foreground leading-snug flex items-start gap-2">
+                <span className="px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 font-mono font-bold text-[11px] shrink-0">
                   Q{qIdx + 1}
                 </span>
                 <span>{item.q}</span>
               </p>
               {item.qMath && (
-                <div className="pl-8 text-xs text-cyan-400 font-mono">
+                <div className="pl-8 text-[11px] text-cyan-400 font-mono">
                   <LatexMath math={item.qMath} />
                 </div>
               )}
@@ -259,7 +260,7 @@ function Chap2QuickQuiz() {
                   <button
                     key={optIdx}
                     onClick={() => setSelectedAnswers((prev) => ({ ...prev, [qIdx]: optIdx }))}
-                    className={`p-3 rounded-xl border text-left text-xs transition-all flex items-center justify-between cursor-pointer gap-2 ${btnStyle}`}
+                    className={`p-3 rounded-xl border text-left text-[11px] transition-all flex items-center justify-between cursor-pointer gap-2 ${btnStyle}`}
                   >
                     <div className="flex items-center gap-2.5">
                       <span className={`w-5 h-5 rounded-md border text-[10px] font-bold flex items-center justify-center shrink-0 ${badgeStyle}`}>
@@ -294,7 +295,7 @@ function Chap2QuickQuiz() {
       <div className="flex justify-end pt-2">
         <button
           onClick={() => setShowResults(!showResults)}
-          className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition-all shadow-md shadow-indigo-600/25 cursor-pointer flex items-center gap-2"
+          className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-[11px] font-bold transition-all shadow-md shadow-indigo-600/25 cursor-pointer flex items-center gap-2"
         >
           <CheckCircle2 className="w-4 h-4" />
           {showResults ? "Réinitialiser les Réponses" : "Valider & Corriger mes Réponses"}
@@ -310,30 +311,30 @@ export default function Chap2GenerateursLoisKirchhoff() {
     <div className="space-y-6 sm:space-y-8 w-full max-w-full overflow-x-hidden pb-12">
       {/* ── HEADER ── */}
       <header className="space-y-2 sm:space-y-4">
-        <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 text-xs font-bold mb-2">
+        <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 text-[11px] font-bold mb-2">
           <Zap size={14} />
           <span>Chapitre 2 • Électrocinétique dans l&apos;ARQS</span>
         </div>
-        <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-foreground tracking-tight">
+        <h1 className="text-lg sm:text-lg md:text-lg font-extrabold text-foreground tracking-tight">
           Générateurs Réels, Lois de Kirchhoff & Théorèmes des Réseaux
         </h1>
-        <p className="text-muted-foreground text-sm sm:text-base leading-relaxed max-w-3xl">
+        <p className="text-muted-foreground text-[11px] sm:text-[11px] leading-relaxed max-w-3xl">
           Maîtrisez la topologie des circuits électriques dans l&apos;ARQS, les lois de Kirchhoff (KCL, KVL), les modèles linéaires de Thévenin et Norton, le théorème de superposition, la loi de Millman et le transfert maximal de puissance (adaptation de charge).
         </p>
       </header>
 
       {/* ── PARTIE 1: TOPOLOGIE DES RÉSEAUX & LOIS DE KIRCHHOFF ── */}
       <section className="bg-card/90 border border-border/80 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 shadow-sm w-full max-w-full overflow-x-hidden space-y-6">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400 text-xs font-extrabold mb-1">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400 text-[11px] font-extrabold mb-1">
           <Workflow className="w-3.5 h-3.5" />
           <span>Partie 1 • Topologie & Lois Fondamentales</span>
         </div>
 
-        <h2 className="text-xl sm:text-2xl font-black text-foreground leading-tight">
+        <h2 className="text-lg sm:text-lg font-black text-foreground leading-tight">
           1. Topologie des Réseaux et Lois de Kirchhoff dans l&apos;ARQS
         </h2>
 
-        <p className="text-sm text-muted-foreground leading-relaxed">
+        <p className="text-[11px] text-muted-foreground leading-relaxed">
           Dans le cadre de l&apos;<strong>Approximation des Régimes Quasi-Stationnaires (ARQS)</strong>, les temps de propagation des signaux électromagnétiques sont négligeables devant les échelles de temps caractéristiques du circuit. En conséquence, il n&apos;y a aucune accumulation de charge dans les conducteurs et le potentiel électrique est défini de manière univoque en tout point.
         </p>
 
@@ -341,7 +342,7 @@ export default function Chap2GenerateursLoisKirchhoff() {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 my-4">
           <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800 space-y-1.5">
             <span className="text-[10px] font-mono uppercase tracking-wider text-cyan-400 font-bold">1. Branche (B)</span>
-            <h4 className="text-xs font-bold text-slate-200">Portion à Courant Unique</h4>
+            <h4 className="text-[11px] font-bold text-slate-200">Portion à Courant Unique</h4>
             <p className="text-[11px] text-muted-foreground leading-relaxed">
               Ensemble de dipôles montés en série entre deux nœuds consécutifs, parcourus par la même intensité <LatexMath math="i(t)" />.
             </p>
@@ -349,7 +350,7 @@ export default function Chap2GenerateursLoisKirchhoff() {
 
           <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800 space-y-1.5">
             <span className="text-[10px] font-mono uppercase tracking-wider text-amber-400 font-bold">2. Nœud (N)</span>
-            <h4 className="text-xs font-bold text-slate-200">Jonction de Conducteurs</h4>
+            <h4 className="text-[11px] font-bold text-slate-200">Jonction de Conducteurs</h4>
             <p className="text-[11px] text-muted-foreground leading-relaxed">
               Point de connexion où se rejoignent au moins <strong>trois branches</strong> (ou deux branches non triviales).
             </p>
@@ -357,7 +358,7 @@ export default function Chap2GenerateursLoisKirchhoff() {
 
           <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800 space-y-1.5">
             <span className="text-[10px] font-mono uppercase tracking-wider text-emerald-400 font-bold">3. Maille (M)</span>
-            <h4 className="text-xs font-bold text-slate-200">Boucle Fermée</h4>
+            <h4 className="text-[11px] font-bold text-slate-200">Boucle Fermée</h4>
             <p className="text-[11px] text-muted-foreground leading-relaxed">
               Succession de branches formant un contour fermé orienté ne passant qu&apos;une seule fois par un même nœud.
             </p>
@@ -369,17 +370,17 @@ export default function Chap2GenerateursLoisKirchhoff() {
           {/* KCL */}
           <div className="p-5 rounded-2xl bg-cyan-950/20 border border-cyan-500/30 space-y-3 shadow-md">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-extrabold text-cyan-400 uppercase tracking-wider flex items-center gap-1.5">
+              <span className="text-[11px] font-extrabold text-cyan-400 uppercase tracking-wider flex items-center gap-1.5">
                 <Zap className="w-4 h-4" /> Loi des Nœuds (KCL)
               </span>
               <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-cyan-500/10 text-cyan-300 border border-cyan-500/20">
                 Conservation de la Charge
               </span>
             </div>
-            <div className="p-3 rounded-xl bg-black/60 text-center font-mono text-cyan-300 font-bold text-sm border border-cyan-500/20">
+            <div className="p-3 rounded-xl bg-black/60 text-center font-mono text-cyan-300 font-bold text-[11px] border border-cyan-500/20">
               <LatexMath math="\sum_{k=1}^{n} \epsilon_k i_k(t) = 0 \iff \sum i_{\text{entrants}} = \sum i_{\text{sortants}}" />
             </div>
-            <p className="text-xs text-slate-300 leading-relaxed">
+            <p className="text-[11px] text-slate-300 leading-relaxed">
               En vertu de l&apos;ARQS, aucune charge nette ne peut s&apos;accumuler en un nœud sans créer un champ répulsif gigantesque. Le flux total de courant incident est strictement nul à chaque instant.
             </p>
           </div>
@@ -387,17 +388,17 @@ export default function Chap2GenerateursLoisKirchhoff() {
           {/* KVL */}
           <div className="p-5 rounded-2xl bg-amber-950/20 border border-amber-500/30 space-y-3 shadow-md">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-extrabold text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
+              <span className="text-[11px] font-extrabold text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
                 <Layers className="w-4 h-4" /> Loi des Mailles (KVL)
               </span>
               <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-amber-500/10 text-amber-300 border border-amber-500/20">
                 Unicité du Potentiel
               </span>
             </div>
-            <div className="p-3 rounded-xl bg-black/60 text-center font-mono text-amber-300 font-bold text-sm border border-amber-500/20">
+            <div className="p-3 rounded-xl bg-black/60 text-center font-mono text-amber-300 font-bold text-[11px] border border-amber-500/20">
               <LatexMath math="\sum_{k=1}^{m} \epsilon_k u_k(t) = 0 \iff \oint_{\mathcal{M}} \vec{E} \cdot \mathrm{d}\vec{\ell} = 0" />
             </div>
-            <p className="text-xs text-slate-300 leading-relaxed">
+            <p className="text-[11px] text-slate-300 leading-relaxed">
               La circulation du champ électrostatique <LatexMath math="\vec{E} = -\vec{\nabla}V" /> le long de tout contour fermé est nulle. La somme algébrique des différences de potentiel le long d&apos;une maille orientée s&apos;annule.
             </p>
           </div>
@@ -405,13 +406,13 @@ export default function Chap2GenerateursLoisKirchhoff() {
 
         {/* Topological Rule for Equations Count */}
         <div className="p-4 rounded-xl bg-indigo-500/10 border border-indigo-500/20 space-y-2">
-          <h4 className="text-xs font-bold uppercase text-indigo-400 flex items-center gap-1.5">
+          <h4 className="text-[11px] font-bold uppercase text-indigo-400 flex items-center gap-1.5">
             <Sparkles className="w-4 h-4" /> Méthode Systématique : Nombre d&apos;Équations Indépendantes
           </h4>
-          <p className="text-xs text-slate-300 leading-relaxed">
+          <p className="text-[11px] text-slate-300 leading-relaxed">
             Pour un réseau à <LatexMath math="B" /> branches et <LatexMath math="N" /> nœuds comportant <LatexMath math="B" /> intensités inconnues :
           </p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 font-mono text-xs text-center text-indigo-300 font-bold pt-1">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 font-mono text-[11px] text-center text-indigo-300 font-bold pt-1">
             <div className="p-2 rounded bg-black/50 border border-indigo-500/20">
               <LatexMath math="N - 1 \quad \text{Lois des Nœuds indépendantes}" />
             </div>
@@ -420,20 +421,28 @@ export default function Chap2GenerateursLoisKirchhoff() {
             </div>
           </div>
         </div>
+
+        {/* Laboratoire 3D KCL/KVL */}
+        <div className="mt-6 space-y-3">
+          <h4 className="text-[11px] font-bold uppercase text-foreground flex items-center gap-1.5">
+            <Sparkles className="w-4 h-4 text-cyan-400" /> Simulateur 3D : Expérimentation des Lois
+          </h4>
+          <KirchhoffLaws3DCanvas />
+        </div>
       </section>
 
       {/* ── PARTIE 2: GÉNÉRATEURS RÉELS & MODÈLES LINÉAIRES ── */}
       <section className="bg-card/90 border border-border/80 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 shadow-sm w-full max-w-full overflow-x-hidden space-y-6">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-extrabold mb-1">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[11px] font-extrabold mb-1">
           <Zap className="w-3.5 h-3.5" />
           <span>Partie 2 • Modélisation des Sources</span>
         </div>
 
-        <h2 className="text-xl sm:text-2xl font-black text-foreground leading-tight">
+        <h2 className="text-lg sm:text-lg font-black text-foreground leading-tight">
           2. Générateurs Réels & Modèles de Thévenin / Norton
         </h2>
 
-        <p className="text-sm text-muted-foreground leading-relaxed">
+        <p className="text-[11px] text-muted-foreground leading-relaxed">
           Une source réelle d&apos;énergie électrique n&apos;est jamais parfaite : le passage du courant interne dissipe une partie de l&apos;énergie sous forme de chaleur. On la modélise par l&apos;association d&apos;une source idéale et d&apos;une résistance interne <LatexMath math="r" />.
         </p>
 
@@ -442,17 +451,17 @@ export default function Chap2GenerateursLoisKirchhoff() {
           {/* Thévenin Generator */}
           <div className="p-5 rounded-2xl bg-slate-900/90 border border-cyan-500/30 space-y-3 shadow-md">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-extrabold text-cyan-400 uppercase tracking-wider">
+              <span className="text-[11px] font-extrabold text-cyan-400 uppercase tracking-wider">
                 Modèle de Thévenin (Tension)
               </span>
               <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-cyan-500/10 text-cyan-300 border border-cyan-500/20">
                 Série (E, r)
               </span>
             </div>
-            <div className="p-3 rounded-xl bg-black/60 text-center font-mono text-cyan-300 font-bold text-sm border border-cyan-500/20">
+            <div className="p-3 rounded-xl bg-black/60 text-center font-mono text-cyan-300 font-bold text-[11px] border border-cyan-500/20">
               <LatexMath math="u(i) = E - r \cdot i" />
             </div>
-            <ul className="text-xs text-slate-300 space-y-1.5 pl-1 leading-relaxed">
+            <ul className="text-[11px] text-slate-300 space-y-1.5 pl-1 leading-relaxed">
               <li>• <strong>Tension à vide (<LatexMath math="i = 0" />) :</strong> <LatexMath math="u_0 = E" /> (f.é.m en Volts).</li>
               <li>• <strong>Courant de court-circuit (<LatexMath math="u = 0" />) :</strong> <LatexMath math="I_{cc} = \frac{E}{r}" />.</li>
               <li>• <strong>Pente de la caractéristique :</strong> <LatexMath math="\frac{\mathrm{d}u}{\mathrm{d}i} = -r < 0" />.</li>
@@ -462,17 +471,17 @@ export default function Chap2GenerateursLoisKirchhoff() {
           {/* Norton Generator */}
           <div className="p-5 rounded-2xl bg-slate-900/90 border border-indigo-500/30 space-y-3 shadow-md">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-extrabold text-indigo-400 uppercase tracking-wider">
+              <span className="text-[11px] font-extrabold text-indigo-400 uppercase tracking-wider">
                 Modèle de Norton (Courant)
               </span>
               <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-300 border border-indigo-500/20">
                 Parallèle (η, r)
               </span>
             </div>
-            <div className="p-3 rounded-xl bg-black/60 text-center font-mono text-indigo-300 font-bold text-sm border border-indigo-500/20">
+            <div className="p-3 rounded-xl bg-black/60 text-center font-mono text-indigo-300 font-bold text-[11px] border border-indigo-500/20">
               <LatexMath math="i(u) = \eta - \frac{u}{r}" />
             </div>
-            <ul className="text-xs text-slate-300 space-y-1.5 pl-1 leading-relaxed">
+            <ul className="text-[11px] text-slate-300 space-y-1.5 pl-1 leading-relaxed">
               <li>• <strong>Courant de court-circuit (<LatexMath math="u = 0" />) :</strong> <LatexMath math="i = \eta" /> (c.e.m en Ampères).</li>
               <li>• <strong>Tension à vide (<LatexMath math="i = 0" />) :</strong> <LatexMath math="u_0 = r \cdot \eta" />.</li>
               <li>• <strong>Conductance interne :</strong> <LatexMath math="g = \frac{1}{r}" />.</li>
@@ -481,14 +490,14 @@ export default function Chap2GenerateursLoisKirchhoff() {
         </div>
 
         {/* Thévenin <-> Norton Equivalence Box */}
-        <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 space-y-2 text-xs">
+        <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 space-y-2 text-[11px]">
           <h4 className="font-extrabold uppercase text-emerald-400 flex items-center gap-1.5">
             <RefreshCw className="w-4 h-4" /> Formules d&apos;Équivalence Thévenin ⟺ Norton
           </h4>
           <p className="text-slate-300 leading-relaxed">
             Les deux représentations sont rigoureusement interchangeables du point de vue des bornes extérieures :
           </p>
-          <div className="p-2.5 rounded-lg bg-black/60 border border-emerald-500/30 text-center text-emerald-300 font-mono font-bold text-sm">
+          <div className="p-2.5 rounded-lg bg-black/60 border border-emerald-500/30 text-center text-emerald-300 font-mono font-bold text-[11px]">
             <LatexMath math="\eta_N = \frac{E_{th}}{r_{th}} \quad \iff \quad E_{th} = r_N \cdot \eta_N \quad \text{avec} \quad r_N = r_{th}" />
           </div>
         </div>
@@ -496,16 +505,16 @@ export default function Chap2GenerateursLoisKirchhoff() {
 
       {/* ── PARTIE 3: THÉORÈMES DES RÉSEAUX LINÉAIRES ── */}
       <section className="bg-card/90 border border-border/80 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 shadow-sm w-full max-w-full overflow-x-hidden space-y-6">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 text-xs font-extrabold mb-1">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 text-[11px] font-extrabold mb-1">
           <Cpu className="w-3.5 h-3.5" />
           <span>Partie 3 • Boîte à Outils Fondamentale</span>
         </div>
 
-        <h2 className="text-xl sm:text-2xl font-black text-foreground leading-tight">
+        <h2 className="text-lg sm:text-lg font-black text-foreground leading-tight">
           3. Théorèmes des Réseaux : Superposition, Thévenin, Norton & Millman
         </h2>
 
-        <p className="text-sm text-muted-foreground leading-relaxed">
+        <p className="text-[11px] text-muted-foreground leading-relaxed">
           Pour résoudre des circuits complexes à plusieurs mailles sans poser des systèmes d&apos;équations matriciels lourds, les quatre théorèmes fondamentaux permettent de simplifier n&apos;importe quel réseau linéaire.
         </p>
 
@@ -516,7 +525,7 @@ export default function Chap2GenerateursLoisKirchhoff() {
           color="cyan"
           badge="Théorème Fondamental"
         >
-          <div className="space-y-2 text-slate-300 font-sans text-xs">
+          <div className="space-y-2 text-slate-300 font-sans text-[11px]">
             <p className="leading-relaxed">
               Dans un réseau linéaire constitué de dipôles passifs et de plusieurs sources indépendantes, la tension ou l&apos;intensité dans une branche est la <strong>somme algébrique</strong> des grandeurs produites par chaque source agissant seule, les autres étant éteintes (passivées).
             </p>
@@ -541,11 +550,11 @@ export default function Chap2GenerateursLoisKirchhoff() {
           color="amber"
           badge="Modèle (Eth, Rth)"
         >
-          <div className="space-y-2 text-slate-300 font-sans text-xs">
+          <div className="space-y-2 text-slate-300 font-sans text-[11px]">
             <p className="leading-relaxed">
               Tout réseau linéaire vu entre deux bornes A et B est rigoureusement équivalent à un générateur de Thévenin unique constitué d&apos;une source idéale <LatexMath math="E_{th}" /> en série avec une résistance <LatexMath math="R_{th}" /> :
             </p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-mono pt-1">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] font-mono pt-1">
               <div className="p-2.5 rounded bg-black/50 border border-amber-500/20 space-y-1">
                 <span className="font-sans font-bold text-amber-400">1. Calcul de Eth :</span>
                 <p className="font-sans text-[11px] text-slate-300">Tension à vide mesurée entre A et B sans aucune charge connectée :</p>
@@ -567,11 +576,11 @@ export default function Chap2GenerateursLoisKirchhoff() {
           color="emerald"
           badge="Méthode Rapide"
         >
-          <div className="space-y-2 text-slate-300 font-sans text-xs">
+          <div className="space-y-2 text-slate-300 font-sans text-[11px]">
             <p className="leading-relaxed">
               Pour un nœud A relié à <LatexMath math="n" /> branches composées chacune d&apos;un potentiel <LatexMath math="V_k" /> à travers une résistance <LatexMath math="R_k" /> et de <LatexMath math="p" /> sources de courant incidentes <LatexMath math="\eta_j" /> :
             </p>
-            <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-center font-mono font-bold text-sm">
+            <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-center font-mono font-bold text-[11px]">
               <LatexMath math="V_A = \frac{\sum_{k=1}^{n} \frac{V_k}{R_k} + \sum_{j=1}^{p} \eta_j}{\sum_{k=1}^{n} \frac{1}{R_k}} = \frac{\sum G_k V_k + \sum \eta_j}{\sum G_k}" />
             </div>
             <p className="text-[11px] text-slate-400 leading-snug">
@@ -583,26 +592,26 @@ export default function Chap2GenerateursLoisKirchhoff() {
 
       {/* ── PARTIE 4: TRANSFERT MAXIMAL DE PUISSANCE & ADAPTATION ── */}
       <section className="bg-card/90 border border-border/80 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 shadow-sm w-full max-w-full overflow-x-hidden space-y-6">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-500/10 text-rose-600 dark:text-rose-400 text-xs font-extrabold mb-1">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-500/10 text-rose-600 dark:text-rose-400 text-[11px] font-extrabold mb-1">
           <TrendingUp className="w-3.5 h-3.5" />
           <span>Partie 4 • Optimisation Énergétique</span>
         </div>
 
-        <h2 className="text-xl sm:text-2xl font-black text-foreground leading-tight">
+        <h2 className="text-lg sm:text-lg font-black text-foreground leading-tight">
           4. Transfert Maximal de Puissance & Adaptation d&apos;Impédance
         </h2>
 
-        <p className="text-sm text-muted-foreground leading-relaxed">
+        <p className="text-[11px] text-muted-foreground leading-relaxed">
           Lorsqu&apos;un générateur réel de Thévenin <LatexMath math="(E_{th}, R_{th})" /> alimente une résistance de charge variable <LatexMath math="R_c" />, quelle valeur de <LatexMath math="R_c" /> permet de lui transférer le maximum d&apos;énergie utile ?
         </p>
 
         {/* Proof Card */}
         <div className="p-5 rounded-2xl bg-slate-950 border border-rose-500/30 space-y-3 shadow-lg">
-          <h4 className="text-xs font-extrabold uppercase text-rose-400 tracking-wider flex items-center gap-2">
+          <h4 className="text-[11px] font-extrabold uppercase text-rose-400 tracking-wider flex items-center gap-2">
             <Flame className="w-4 h-4" /> Démonstration Mathématique de l&apos;Adaptation
           </h4>
 
-          <div className="space-y-2 text-xs text-slate-300 font-mono">
+          <div className="space-y-2 text-[11px] text-slate-300 font-mono">
             <p className="font-sans text-slate-200">
               <strong>1. Courant circulant dans la charge :</strong> <LatexMath math="i(R_c) = \frac{E_{th}}{R_{th} + R_c}" />
             </p>
@@ -626,13 +635,13 @@ export default function Chap2GenerateursLoisKirchhoff() {
 
         {/* Efficiency Alert */}
         <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 space-y-2">
-          <h4 className="text-xs font-bold uppercase text-amber-400 flex items-center gap-1.5">
+          <h4 className="text-[11px] font-bold uppercase text-amber-400 flex items-center gap-1.5">
             <ShieldAlert className="w-4 h-4" /> Rendement Énergétique à l&apos;Adaptation (50%)
           </h4>
-          <p className="text-xs text-slate-300 leading-relaxed">
+          <p className="text-[11px] text-slate-300 leading-relaxed">
             À l&apos;adaptation de puissance (<LatexMath math="R_c = R_{th}" />), la moitié de la puissance totale fournie par la source est perdue par effet Joule dans sa propre résistance interne <LatexMath math="R_{th}" /> :
           </p>
-          <div className="p-2 rounded bg-black/50 text-center font-mono text-amber-300 font-bold text-xs">
+          <div className="p-2 rounded bg-black/50 text-center font-mono text-amber-300 font-bold text-[11px]">
             <LatexMath math="\eta = \frac{P_{\text{utile}}}{P_{\text{fournie}}} = \frac{R_c I^2}{(R_{th} + R_c) I^2} = \frac{R_{th}}{2 R_{th}} = 50\%" />
           </div>
           <p className="text-[11px] text-slate-400">
@@ -645,16 +654,16 @@ export default function Chap2GenerateursLoisKirchhoff() {
 
       {/* ── PARTIE 5: LABORATOIRE 3D INTERACTIF ── */}
       <section className="bg-card/90 border border-border/80 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 shadow-sm w-full max-w-full overflow-x-hidden space-y-4">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 text-xs font-extrabold mb-1">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 text-[11px] font-extrabold mb-1">
           <Cpu className="w-3.5 h-3.5" />
           <span>Partie 5 • Simulation & Expérimentation</span>
         </div>
 
-        <h2 className="text-xl sm:text-2xl font-black text-foreground leading-tight">
+        <h2 className="text-lg sm:text-lg font-black text-foreground leading-tight">
           5. Laboratoire 3D : Réseau Linéaire, Thévenin, Norton & Transfert de Puissance
         </h2>
 
-        <p className="text-sm text-muted-foreground leading-relaxed">
+        <p className="text-[11px] text-muted-foreground leading-relaxed">
           Basculez entre le <strong>Réseau Complet (Pont Diviseur)</strong> et ses équivalents rigoureux de <strong>Thévenin</strong> et <strong>Norton</strong>. Observez en direct sur le graphique 2D le point de puissance maximale à l&apos;adaptation de charge <LatexMath math="R_c = R_{th}" />.
         </p>
 
@@ -664,16 +673,16 @@ export default function Chap2GenerateursLoisKirchhoff() {
 
       {/* ── PARTIE 6: AUTO-ÉVALUATION & QCM ── */}
       <section className="bg-card/90 border border-border/80 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 shadow-sm w-full max-w-full overflow-x-hidden space-y-6">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 text-indigo-400 text-xs font-extrabold mb-1 border border-indigo-500/20">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 text-indigo-400 text-[11px] font-extrabold mb-1 border border-indigo-500/20">
           <BookOpen className="w-3.5 h-3.5" />
           <span>Partie 6 • Validation & Auto-Évaluation</span>
         </div>
 
-        <h2 className="text-xl sm:text-2xl font-black text-foreground leading-tight">
+        <h2 className="text-lg sm:text-lg font-black text-foreground leading-tight">
           6. QCM d&apos;Auto-Évaluation du Chapitre 2
         </h2>
 
-        <p className="text-sm text-muted-foreground leading-relaxed">
+        <p className="text-[11px] text-muted-foreground leading-relaxed">
           Testez votre maîtrise des lois de Kirchhoff, des équivalences Thévenin/Norton, du théorème de Millman et du transfert maximal de puissance.
         </p>
 
