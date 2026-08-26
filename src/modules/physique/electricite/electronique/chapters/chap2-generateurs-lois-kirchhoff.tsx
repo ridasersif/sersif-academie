@@ -956,83 +956,221 @@ export default function Chap2GenerateursLoisKirchhoff() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             
             {/* Association Série */}
-            <div className="p-4 rounded-xl bg-slate-900/60 border border-cyan-500/20 space-y-3 shadow-sm flex flex-col justify-between">
+            <div className="p-5 rounded-2xl bg-slate-900/80 border border-cyan-500/30 space-y-4 shadow-md flex flex-col justify-between">
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-[11px] font-bold text-cyan-400 uppercase tracking-wider">Association en Série</span>
-                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-cyan-500/10 text-cyan-300 border border-cyan-500/20">Même courant <LatexMath math="i" /></span>
+                  <span className="text-xs font-extrabold text-cyan-400 uppercase tracking-wider">Association en Série</span>
+                  <span className="text-[10px] font-mono px-2.5 py-0.5 rounded-full bg-cyan-500/15 text-cyan-300 border border-cyan-500/30 font-bold">Même courant <LatexMath math="i" /></span>
                 </div>
                 <p className="text-[11px] text-slate-300 leading-relaxed">
-                  Deux dipôles sont en série lorsqu&apos;ils sont traversés par le <strong>même courant</strong>. La tension totale est la somme des tensions élémentaires.
+                  Deux dipôles sont en série lorsqu&apos;ils sont traversés successivement par le <strong>même courant électrique</strong>. La tension globale est la somme des tensions individuelles.
                 </p>
               </div>
 
-              {/* SVG Série */}
-              <div className="w-full bg-slate-950/80 py-2.5 px-3 rounded-lg border border-slate-800 flex justify-center items-center">
-                <svg viewBox="0 0 240 50" className="w-full max-w-[220px] h-auto" overflow="visible">
-                  <line x1="15" y1="25" x2="45" y2="25" stroke="#22d3ee" strokeWidth="2" strokeLinecap="round"/>
-                  <rect x="45" y="16" width="35" height="18" rx="2" fill="#020617" stroke="#22d3ee" strokeWidth="1.8"/>
-                  <text x="62.5" y="29" textAnchor="middle" fill="#22d3ee" fontSize="10" fontWeight="bold" fontFamily="monospace">R₁</text>
-                  
-                  <line x1="80" y1="25" x2="110" y2="25" stroke="#22d3ee" strokeWidth="2" strokeLinecap="round"/>
-                  
-                  <rect x="110" y="16" width="35" height="18" rx="2" fill="#020617" stroke="#22d3ee" strokeWidth="1.8"/>
-                  <text x="127.5" y="29" textAnchor="middle" fill="#22d3ee" fontSize="10" fontWeight="bold" fontFamily="monospace">R₂</text>
-                  
-                  <line x1="145" y1="25" x2="225" y2="25" stroke="#22d3ee" strokeWidth="2" strokeLinecap="round"/>
-                  
-                  <circle cx="15" cy="25" r="3" fill="#22d3ee"/>
-                  <text x="15" y="12" textAnchor="middle" fill="#94a3b8" fontSize="9.5" fontWeight="bold">A</text>
-                  <circle cx="225" cy="25" r="3" fill="#22d3ee"/>
-                  <text x="225" y="12" textAnchor="middle" fill="#94a3b8" fontSize="9.5" fontWeight="bold">B</text>
+              {/* SVG Série Agrandie et Détaillée */}
+              <div className="w-full bg-slate-950/90 py-3.5 px-4 rounded-xl border border-slate-800 flex justify-center items-center">
+                <svg viewBox="0 0 280 75" className="w-full max-w-[270px] h-auto" overflow="visible">
+                  <defs>
+                    <marker id="ser-i-arr" markerWidth="5" markerHeight="5" refX="4" refY="2.5" orient="auto">
+                      <polygon points="0 0, 5 2.5, 0 5" fill="#38bdf8"/>
+                    </marker>
+                    <marker id="ser-u-arr" markerWidth="5" markerHeight="5" refX="4" refY="2.5" orient="auto">
+                      <polygon points="0 0, 5 2.5, 0 5" fill="#22d3ee"/>
+                    </marker>
+                    <marker id="ser-utot-arr" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                      <polygon points="0 0, 6 3, 0 6" fill="#facc15"/>
+                    </marker>
+                  </defs>
+
+                  {/* Wire & Resistors */}
+                  <line x1="20" y1="35" x2="65" y2="35" stroke="#22d3ee" strokeWidth="2.2" strokeLinecap="round"/>
+                  {/* Current Arrow i */}
+                  <line x1="25" y1="35" x2="48" y2="35" stroke="#38bdf8" strokeWidth="2" markerEnd="url(#ser-i-arr)"/>
+                  <text x="36" y="27" textAnchor="middle" fill="#38bdf8" fontSize="9.5" fontWeight="bold" fontFamily="monospace">i</text>
+
+                  {/* R1 Box */}
+                  <rect x="65" y="24" width="46" height="22" rx="3" fill="#020617" stroke="#22d3ee" strokeWidth="2"/>
+                  <text x="88" y="38.5" textAnchor="middle" fill="#22d3ee" fontSize="11" fontWeight="bold" fontFamily="monospace">R₁</text>
+
+                  <line x1="111" y1="35" x2="150" y2="35" stroke="#22d3ee" strokeWidth="2.2" strokeLinecap="round"/>
+
+                  {/* R2 Box */}
+                  <rect x="150" y="24" width="46" height="22" rx="3" fill="#020617" stroke="#22d3ee" strokeWidth="2"/>
+                  <text x="173" y="38.5" textAnchor="middle" fill="#22d3ee" fontSize="11" fontWeight="bold" fontFamily="monospace">R₂</text>
+
+                  <line x1="196" y1="35" x2="260" y2="35" stroke="#22d3ee" strokeWidth="2.2" strokeLinecap="round"/>
+
+                  {/* Nodes A and B */}
+                  <circle cx="20" cy="35" r="3.5" fill="#22d3ee"/>
+                  <text x="20" y="20" textAnchor="middle" fill="#94a3b8" fontSize="10.5" fontWeight="bold">A</text>
+                  <circle cx="260" cy="35" r="3.5" fill="#22d3ee"/>
+                  <text x="260" y="20" textAnchor="middle" fill="#94a3b8" fontSize="10.5" fontWeight="bold">B</text>
+
+                  {/* Partial Voltage Arrows */}
+                  <line x1="65" y1="12" x2="111" y2="12" stroke="#22d3ee" strokeWidth="1.4" markerEnd="url(#ser-u-arr)"/>
+                  <text x="88" y="7" textAnchor="middle" fill="#22d3ee" fontSize="9" fontWeight="bold" fontFamily="monospace">u₁</text>
+
+                  <line x1="150" y1="12" x2="196" y2="12" stroke="#22d3ee" strokeWidth="1.4" markerEnd="url(#ser-u-arr)"/>
+                  <text x="173" y="7" textAnchor="middle" fill="#22d3ee" fontSize="9" fontWeight="bold" fontFamily="monospace">u₂</text>
+
+                  {/* Total Voltage u_AB Arrow */}
+                  <line x1="20" y1="62" x2="260" y2="62" stroke="#facc15" strokeWidth="1.6" markerEnd="url(#ser-utot-arr)"/>
+                  <text x="140" y="56" textAnchor="middle" fill="#facc15" fontSize="9.5" fontWeight="bold" fontFamily="monospace">u_AB = u₁ + u₂</text>
                 </svg>
               </div>
 
-              <div className="p-2 rounded bg-black/60 text-center font-mono text-cyan-300 font-bold text-xs border border-cyan-500/20">
-                <LatexMath math="R_{eq} = \sum R_k = R_1 + R_2 + \dots + R_n" />
+              {/* Main Formula */}
+              <div className="p-3 rounded-xl bg-black/60 text-center font-mono text-cyan-300 font-bold text-xs border border-cyan-500/30">
+                <LatexMath math="R_{eq} = \sum_{k=1}^{n} R_k = R_1 + R_2 + \dots + R_n" />
               </div>
+
+              {/* Step-by-Step Proof */}
+              <CollapsibleProof
+                title="Démonstration : Preuve de la formule en série"
+                subtitle="Par additivité des tensions et factorisation de l'intensité commune"
+                color="cyan"
+                badge="Démonstration"
+              >
+                <div className="space-y-2.5 text-slate-300 font-sans text-[11px]">
+                  <div className="p-2 rounded-lg bg-black/40 border border-slate-800">
+                    <span className="text-cyan-400 font-bold">1. Loi des mailles (Additivité des tensions) :</span>
+                    <div className="text-center font-mono text-cyan-300 pt-1">
+                      <LatexMath math="u_{AB} = u_1 + u_2" />
+                    </div>
+                  </div>
+
+                  <div className="p-2 rounded-lg bg-black/40 border border-slate-800">
+                    <span className="text-cyan-400 font-bold">2. Application de la loi d&apos;Ohm à chaque conducteur :</span>
+                    <div className="text-center font-mono text-cyan-300 pt-1">
+                      <LatexMath math="u_1 = R_1 \cdot i \quad \text{et} \quad u_2 = R_2 \cdot i" />
+                    </div>
+                  </div>
+
+                  <div className="p-2 rounded-lg bg-black/40 border border-slate-800">
+                    <span className="text-cyan-400 font-bold">3. Factorisation par le courant commun <LatexMath math="i" /> :</span>
+                    <div className="text-center font-mono text-cyan-300 pt-1">
+                      <LatexMath math="u_{AB} = R_1 \cdot i + R_2 \cdot i = (R_1 + R_2) \cdot i" />
+                    </div>
+                  </div>
+
+                  <div className="p-2 rounded-lg bg-cyan-950/40 border border-cyan-500/30 text-cyan-200">
+                    <span className="font-bold text-cyan-400">4. Identification avec le dipôle équivalent <LatexMath math="u_{AB} = R_{eq} \cdot i" /> :</span>
+                    <div className="text-center font-mono font-bold text-cyan-300 pt-1">
+                      <LatexMath math="R_{eq} = R_1 + R_2 \quad \implies \quad R_{eq} = \sum_{k=1}^n R_k" />
+                    </div>
+                  </div>
+                </div>
+              </CollapsibleProof>
             </div>
 
             {/* Association Parallèle */}
-            <div className="p-4 rounded-xl bg-slate-900/60 border border-indigo-500/20 space-y-3 shadow-sm flex flex-col justify-between">
+            <div className="p-5 rounded-2xl bg-slate-900/80 border border-indigo-500/30 space-y-4 shadow-md flex flex-col justify-between">
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-[11px] font-bold text-indigo-400 uppercase tracking-wider">Association en Parallèle</span>
-                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-300 border border-indigo-500/20">Même tension <LatexMath math="u" /></span>
+                  <span className="text-xs font-extrabold text-indigo-400 uppercase tracking-wider">Association en Parallèle</span>
+                  <span className="text-[10px] font-mono px-2.5 py-0.5 rounded-full bg-indigo-500/15 text-indigo-300 border border-indigo-500/30 font-bold">Même tension <LatexMath math="u" /></span>
                 </div>
                 <p className="text-[11px] text-slate-300 leading-relaxed">
-                  Deux dipôles sont en parallèle lorsqu&apos;ils sont soumis à la <strong>même tension</strong>. Les conductances s&apos;additionnent directement.
+                  Deux dipôles sont en parallèle lorsqu&apos;ils sont connectés aux deux <strong>mêmes nœuds</strong> (même tension à leurs bornes). Les intensités s&apos;additionnent.
                 </p>
               </div>
 
-              {/* SVG Parallèle */}
-              <div className="w-full bg-slate-950/80 py-2 px-3 rounded-lg border border-slate-800 flex justify-center items-center">
-                <svg viewBox="0 0 240 60" className="w-full max-w-[220px] h-auto" overflow="visible">
-                  <line x1="20" y1="18" x2="220" y2="18" stroke="#818cf8" strokeWidth="1.8" strokeLinecap="round"/>
-                  <line x1="20" y1="42" x2="220" y2="42" stroke="#818cf8" strokeWidth="1.8" strokeLinecap="round"/>
-                  
-                  {/* Branch 1 */}
-                  <line x1="80" y1="18" x2="80" y2="42" stroke="#818cf8" strokeWidth="1.8"/>
-                  <rect x="72" y="22" width="16" height="16" rx="2" fill="#020617" stroke="#818cf8" strokeWidth="1.6"/>
-                  <text x="80" y="33.5" textAnchor="middle" fill="#818cf8" fontSize="8.5" fontWeight="bold" fontFamily="monospace">R₁</text>
-                  
-                  {/* Branch 2 */}
-                  <line x1="160" y1="18" x2="160" y2="42" stroke="#818cf8" strokeWidth="1.8"/>
-                  <rect x="152" y="22" width="16" height="16" rx="2" fill="#020617" stroke="#818cf8" strokeWidth="1.6"/>
-                  <text x="160" y="33.5" textAnchor="middle" fill="#818cf8" fontSize="8.5" fontWeight="bold" fontFamily="monospace">R₂</text>
-                  
-                  <circle cx="20" cy="18" r="3" fill="#818cf8"/>
-                  <text x="20" y="10" textAnchor="middle" fill="#94a3b8" fontSize="9" fontWeight="bold">A</text>
-                  <circle cx="20" cy="42" r="3" fill="#818cf8"/>
-                  <text x="20" y="54" textAnchor="middle" fill="#94a3b8" fontSize="9" fontWeight="bold">B</text>
+              {/* SVG Parallèle Agrandie et Détaillée */}
+              <div className="w-full bg-slate-950/90 py-3 px-4 rounded-xl border border-slate-800 flex justify-center items-center">
+                <svg viewBox="0 0 280 80" className="w-full max-w-[270px] h-auto" overflow="visible">
+                  <defs>
+                    <marker id="par-i-arr" markerWidth="5" markerHeight="5" refX="4" refY="2.5" orient="auto">
+                      <polygon points="0 0, 5 2.5, 0 5" fill="#818cf8"/>
+                    </marker>
+                    <marker id="par-ibr-arr" markerWidth="5" markerHeight="5" refX="4" refY="2.5" orient="auto">
+                      <polygon points="0 0, 5 2.5, 0 5" fill="#a5b4fc"/>
+                    </marker>
+                    <marker id="par-u-arr" markerWidth="5" markerHeight="5" refX="4" refY="2.5" orient="auto">
+                      <polygon points="0 0, 5 2.5, 0 5" fill="#facc15"/>
+                    </marker>
+                  </defs>
+
+                  {/* Main entry wire with current i */}
+                  <line x1="15" y1="20" x2="60" y2="20" stroke="#818cf8" strokeWidth="2.2" strokeLinecap="round"/>
+                  <line x1="20" y1="20" x2="45" y2="20" stroke="#818cf8" strokeWidth="2" markerEnd="url(#par-i-arr)"/>
+                  <text x="32" y="12" textAnchor="middle" fill="#818cf8" fontSize="9.5" fontWeight="bold" fontFamily="monospace">i</text>
+
+                  {/* Upper and Lower Rails */}
+                  <line x1="60" y1="20" x2="220" y2="20" stroke="#818cf8" strokeWidth="2" strokeLinecap="round"/>
+                  <line x1="60" y1="60" x2="220" y2="60" stroke="#818cf8" strokeWidth="2" strokeLinecap="round"/>
+
+                  {/* Branch 1 (R1) */}
+                  <line x1="105" y1="20" x2="105" y2="60" stroke="#818cf8" strokeWidth="1.8"/>
+                  <line x1="105" y1="20" x2="105" y2="26" stroke="#a5b4fc" strokeWidth="1.8" markerEnd="url(#par-ibr-arr)"/>
+                  <text x="117" y="28" textAnchor="middle" fill="#a5b4fc" fontSize="9" fontWeight="bold" fontFamily="monospace">i₁</text>
+                  <rect x="94" y="30" width="22" height="20" rx="2.5" fill="#020617" stroke="#818cf8" strokeWidth="1.8"/>
+                  <text x="105" y="44" textAnchor="middle" fill="#818cf8" fontSize="9.5" fontWeight="bold" fontFamily="monospace">R₁</text>
+
+                  {/* Branch 2 (R2) */}
+                  <line x1="175" y1="20" x2="175" y2="60" stroke="#818cf8" strokeWidth="1.8"/>
+                  <line x1="175" y1="20" x2="175" y2="26" stroke="#a5b4fc" strokeWidth="1.8" markerEnd="url(#par-ibr-arr)"/>
+                  <text x="187" y="28" textAnchor="middle" fill="#a5b4fc" fontSize="9" fontWeight="bold" fontFamily="monospace">i₂</text>
+                  <rect x="164" y="30" width="22" height="20" rx="2.5" fill="#020617" stroke="#818cf8" strokeWidth="1.8"/>
+                  <text x="175" y="44" textAnchor="middle" fill="#818cf8" fontSize="9.5" fontWeight="bold" fontFamily="monospace">R₂</text>
+
+                  {/* Exit wire */}
+                  <line x1="220" y1="60" x2="265" y2="60" stroke="#818cf8" strokeWidth="2.2" strokeLinecap="round"/>
+
+                  {/* Nodes A and B */}
+                  <circle cx="60" cy="20" r="3.5" fill="#818cf8"/>
+                  <text x="60" y="10" textAnchor="middle" fill="#94a3b8" fontSize="10.5" fontWeight="bold">A</text>
+                  <circle cx="60" cy="60" r="3.5" fill="#818cf8"/>
+                  <text x="60" y="74" textAnchor="middle" fill="#94a3b8" fontSize="10.5" fontWeight="bold">B</text>
+
+                  {/* Voltage Arrow between A and B */}
+                  <line x1="48" y1="58" x2="48" y2="22" stroke="#facc15" strokeWidth="1.5" markerEnd="url(#par-u-arr)"/>
+                  <text x="36" y="42" textAnchor="middle" fill="#facc15" fontSize="9" fontWeight="bold" fontFamily="monospace">u_AB</text>
                 </svg>
               </div>
 
-              <div className="p-2 rounded bg-black/60 text-center font-mono text-indigo-300 font-bold text-xs border border-indigo-500/20">
+              {/* Main Formula */}
+              <div className="p-3 rounded-xl bg-black/60 text-center font-mono text-indigo-300 font-bold text-xs border border-indigo-500/30">
                 <LatexMath math="G_{eq} = \sum G_k \iff \frac{1}{R_{eq}} = \frac{1}{R_1} + \frac{1}{R_2} \implies R_{eq} = \frac{R_1 R_2}{R_1 + R_2}" />
               </div>
-            </div>
 
+              {/* Step-by-Step Proof */}
+              <CollapsibleProof
+                title="Démonstration : Preuve de la formule en parallèle"
+                subtitle="Par additivité des intensités (loi des nœuds) et passage aux conductances"
+                color="indigo"
+                badge="Démonstration"
+              >
+                <div className="space-y-2.5 text-slate-300 font-sans text-[11px]">
+                  <div className="p-2 rounded-lg bg-black/40 border border-slate-800">
+                    <span className="text-indigo-400 font-bold">1. Loi des nœuds au point A (Somme des courants) :</span>
+                    <div className="text-center font-mono text-indigo-300 pt-1">
+                      <LatexMath math="i = i_1 + i_2" />
+                    </div>
+                  </div>
+
+                  <div className="p-2 rounded-lg bg-black/40 border border-slate-800">
+                    <span className="text-indigo-400 font-bold">2. Expression de <LatexMath math="i_1" /> et <LatexMath math="i_2" /> (Même tension <LatexMath math="u_{AB}" />) :</span>
+                    <div className="text-center font-mono text-indigo-300 pt-1">
+                      <LatexMath math="i_1 = \frac{u_{AB}}{R_1} = G_1 \cdot u_{AB} \quad \text{et} \quad i_2 = \frac{u_{AB}}{R_2} = G_2 \cdot u_{AB}" />
+                    </div>
+                  </div>
+
+                  <div className="p-2 rounded-lg bg-black/40 border border-slate-800">
+                    <span className="text-indigo-400 font-bold">3. Factorisation par la tension commune <LatexMath math="u_{AB}" /> :</span>
+                    <div className="text-center font-mono text-indigo-300 pt-1">
+                      <LatexMath math="i = u_{AB} \left(\frac{1}{R_1} + \frac{1}{R_2}\right) = (G_1 + G_2) \cdot u_{AB}" />
+                    </div>
+                  </div>
+
+                  <div className="p-2 rounded-lg bg-indigo-950/40 border border-indigo-500/30 text-indigo-200">
+                    <span className="font-bold text-indigo-400">4. Formule explicite pour 2 résistances (Mise au même dénominateur) :</span>
+                    <div className="text-center font-mono font-bold text-indigo-300 pt-1">
+                      <LatexMath math="\frac{1}{R_{eq}} = \frac{R_1 + R_2}{R_1 \cdot R_2} \iff R_{eq} = \frac{R_1 \cdot R_2}{R_1 + R_2} = \frac{\text{Produit}}{\text{Somme}}" />
+                    </div>
+                  </div>
+                </div>
+              </CollapsibleProof>
+            </div>
           </div>
 
           {/* 2. Pont Diviseur de Tension (PDT) & Pont Diviseur de Courant (PDC) */}
