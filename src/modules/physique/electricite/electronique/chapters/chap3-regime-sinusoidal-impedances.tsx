@@ -1826,15 +1826,15 @@ export default function Chap3RegimeSinusoidalImpedances() {
             <Cpu className="w-5 h-5" />
           </div>
           <div>
-            <span className="text-[10px] font-mono text-cyan-400 uppercase font-bold tracking-wider block">Partie 5 • Simulation 3D</span>
+            <span className="text-[10px] font-mono text-cyan-400 uppercase font-bold tracking-wider block">Partie 5 • Laboratoire Interactif</span>
             <h2 className="text-lg sm:text-2xl font-black text-foreground">
-              5. Laboratoire 3D : Plan de Fresnel Tournant & Formes d&apos;Onde Synchronisées
+              5. Laboratoire Interactif : Plan de Fresnel Tournant & Oscilloscope Synchronisé
             </h2>
           </div>
         </div>
 
         <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
-          Manipulez les dipôles <LatexMath math="R, L, C" /> et le circuit <LatexMath math="RLC" /> série. Observez en temps réel la rotation des vecteurs de Fresnel <LatexMath math="\vec{U}_m" /> et <LatexMath math="\vec{I}_m" /> dans le plan complexe 3D ainsi que le déphasage temporel synchronisé.
+          Explorez le comportement des dipôles <LatexMath math="R, L, C" /> et du circuit <LatexMath math="RLC" /> série. Observez en direct la rotation des vecteurs de Fresnel <LatexMath math="\vec{U}_m" /> et <LatexMath math="\vec{I}_m" />, les projections instantanées et les formes d&apos;onde synchronisées avec déphasage exact.
         </p>
 
         {/* 3D Simulation Canvas */}
