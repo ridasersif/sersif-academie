@@ -21,6 +21,10 @@ import {
   Flame,
   ShieldAlert,
   Radio,
+  Award,
+  Sliders,
+  Scale,
+  Waves,
 } from "lucide-react";
 import LatexMath from "@/components/ui/LatexMath";
 
@@ -101,88 +105,165 @@ function CollapsibleProof({
   );
 }
 
-/* ── Interactive QCM Component with Pure LaTeX Formatting ── */
+/* ── Interactive QCM Component with Pure LaTeX Formatting (12 Questions) ── */
 function Chap4QuickQuiz() {
   const [selectedAnswers, setSelectedAnswers] = useState<Record<number, number>>({});
   const [showResults, setShowResults] = useState(false);
 
   const questions = [
     {
-      q: "Dans un circuit RLC série, à quelle pulsation a lieu la résonance en intensité (courant I) ?",
-      qMath: "\\text{Pulsation de résonance en courant } \\omega_r",
+      q: "Dans un circuit RLC série, à quelle pulsation exacte ω a lieu la résonance en intensité (courant I maximal) ?",
+      qMath: "\\omega_0 \\text{ (Pulsation propre de résonance en intensité)}",
       optionsMath: [
-        "\\omega_r = \\omega_0 = \\frac{1}{\\sqrt{LC}} \\quad (\\text{Toujours})",
-        "\\omega_r = \\omega_0 \\sqrt{1 - \\frac{1}{2Q^2}}",
-        "\\omega_r = \\omega_0 \\sqrt{1 - \\frac{1}{4Q^2}}",
-        "\\omega_r = Q \\cdot \\omega_0",
+        "\\omega_0 = \\frac{1}{\\sqrt{LC}}",
+        "\\omega_0 = \\sqrt{\\frac{L}{C}}",
+        "\\omega_0 = \\frac{R}{2L}",
+        "\\omega_0 = \\frac{1}{R C}",
       ],
       correct: 0,
-      explanation: "L'impédance Z(ω) = R + j(Lω - 1/Cω) est minimale quand la partie imaginaire s'annule (Lω = 1/Cω), soit toujours exactement à ω = ω0, quelle que soit la valeur de Q.",
-      expMath: "\\omega_r = \\omega_0 = \\frac{1}{\\sqrt{LC}} \\implies I_{m,\\max} = \\frac{E_m}{R}",
+      explanation: "L'impédance complexe Z = R + j(Lω - 1/(Cω)) a un module minimal lorsque sa partie imaginaire s'annule : Lω - 1/(Cω) = 0 <=> ω₀ = 1/√(LC).",
+      expMath: "\\Im(\\underline{Z}) = 0 \\iff L\\omega_0 = \\frac{1}{C\\omega_0} \\iff \\omega_0 = \\frac{1}{\\sqrt{LC}}",
     },
     {
-      q: "Quelle est la condition impérative pour observer un pic de résonance en tension aux bornes du condensateur Uc ?",
-      qMath: "\\text{Condition d'existence de la résonance en tension}",
+      q: "Que vaut la valeur maximale du courant efficace I_max à la résonance d'intensité sous tension d'alimentation efficace E ?",
+      qMath: "I_{\\max}(\\omega_0) \\text{ dans le circuit RLC série}",
       optionsMath: [
-        "Q > 1",
-        "Q > \\frac{1}{\\sqrt{2}} \\approx 0.707",
-        "Q < \\frac{1}{2}",
-        "Q > 2",
-      ],
-      correct: 1,
-      explanation: "L'annulation de la dérivée du dénominateur d'amplitude de Uc impose 1 - 1/(2Q²) > 0, soit Q > 1/√2 ≈ 0.707.",
-      expMath: "Q > \\frac{1}{\\sqrt{2}} \\iff \\omega_r = \\omega_0 \\sqrt{1 - \\frac{1}{2Q^2}} < \\omega_0",
-    },
-    {
-      q: "Quelle est la largeur de la bande passante à -3 dB (Δω) en intensité dans le circuit RLC série ?",
-      qMath: "\\Delta\\omega = \\omega_2 - \\omega_1 \\text{ (Bande passante)}",
-      optionsMath: [
-        "\\Delta\\omega = \\frac{\\omega_0}{Q} = \\frac{R}{L}",
-        "\\Delta\\omega = Q \\cdot \\omega_0",
-        "\\Delta\\omega = \\frac{\\omega_0}{2Q}",
-        "\\Delta\\omega = \\frac{R}{C}",
+        "I_{\\max} = \\frac{E}{R}",
+        "I_{\\max} = \\frac{E}{L\\omega_0}",
+        "I_{\\max} = \\frac{E}{R + L\\omega_0}",
+        "I_{\\max} = \\frac{Q E}{R}",
       ],
       correct: 0,
-      explanation: "La bande passante à mi-puissance / à -3 dB vaut Δω = ω0 / Q = R / L. Plus Q est grand, plus le pic est étroit et sélectif.",
-      expMath: "\\Delta\\omega = \\frac{\\omega_0}{Q} = \\frac{R}{L} \\iff Q = \\frac{\\omega_0}{\\Delta\\omega}",
+      explanation: "À la résonance d'intensité, l'impédance est purement résistive Z(ω₀) = R, d'où le courant maximal I_max = E / R.",
+      expMath: "Z_{\\min} = R \\implies I_{\\max} = \\frac{E}{R}",
     },
     {
-      q: "À la résonance en courant (ω = ω0), que vaut le déphasage φ entre la tension d'entrée e(t) et le courant i(t) ?",
-      qMath: "\\phi = \\phi_u - \\phi_i \\quad (\\text{à } \\omega = \\omega_0)",
+      q: "Quel est le déphasage φ = φ_u - φ_i entre la tension d'alimentation et le courant à la résonance d'intensité ?",
+      qMath: "\\phi(\\omega_0) \\text{ à la résonance d'intensité}",
       optionsMath: [
+        "\\phi = 0 \\quad (\\text{Tension et courant en phase})",
         "\\phi = +\\frac{\\pi}{2}",
-        "\\phi = 0 \\quad (\\text{En phase, circuit purement résistif})",
         "\\phi = -\\frac{\\pi}{2}",
         "\\phi = \\pi",
       ],
-      correct: 1,
-      explanation: "À ω = ω0, les impédances de L et C se compensent exactement (jLω0 + 1/(jCω0) = 0). L'impédance totale est purement réelle Z = R, donc la tension et le courant sont en phase.",
+      correct: 0,
+      explanation: "Puisque Z(ω₀) = R est un réel pur, l'argument de l'impédance est nul (φ = 0). Le circuit se comporte comme une résistance pure.",
     },
     {
-      q: "Lorsque le facteur de qualité est très élevé (Q ≫ 1), quelle est l'amplitude de la tension Uc à la résonance ?",
-      qMath: "\\text{Phénomène de Surtension}",
+      q: "Comment s'exprime le facteur de qualité Q d'un circuit RLC série en fonction de R, L et C ?",
+      qMath: "Q \\text{ (Facteur de qualité du circuit RLC série)}",
       optionsMath: [
-        "U_{C,m} \\approx E_m",
-        "U_{C,m} \\approx Q \\cdot E_m \\gg E_m",
-        "U_{C,m} \\approx \\frac{E_m}{Q}",
-        "U_{C,m} \\to 0",
+        "Q = \\frac{L\\omega_0}{R} = \\frac{1}{R C \\omega_0} = \\frac{1}{R}\\sqrt{\\frac{L}{C}}",
+        "Q = \\frac{R}{L\\omega_0} = R \\sqrt{\\frac{C}{L}}",
+        "Q = R C \\omega_0",
+        "Q = \\frac{\\sqrt{LC}}{R}",
       ],
-      correct: 1,
-      explanation: "À fort facteur de qualité Q, l'amplitude aux bornes du condensateur vaut U_C ≈ Q·Em, ce qui peut provoquer un claquage du composant (surtension dangereuse).",
-      expMath: "U_{C,m}(\\omega_r) \\approx Q \\cdot E_m",
+      correct: 0,
+      explanation: "Le facteur de qualité mesure le rapport entre l'énergie emmagasinée et l'énergie dissipée par période : Q = Lω₀/R = (1/R)√(L/C).",
+      expMath: "Q = \\frac{L\\omega_0}{R} = \\frac{1}{R C \\omega_0} = \\frac{1}{R}\\sqrt{\\frac{L}{C}}",
     },
     {
-      q: "À la résonance en intensité, que vaut la puissance active moyenne P absorbée par le circuit RLC série ?",
-      qMath: "P(\\omega_0) \\text{ (Puissance moyenne maximale)}",
+      q: "Quelle est la largeur de la bande passante à -3 dB (en pulsation Δω) de la résonance en intensité ?",
+      qMath: "\\Delta\\omega = \\omega_2 - \\omega_1 \\text{ à } I = \\frac{I_{\\max}}{\\sqrt{2}}",
       optionsMath: [
-        "P(\\omega_0) = 0",
-        "P(\\omega_0) = \\frac{E_m^2}{2R} = \\frac{E_{\\text{eff}}^2}{R}",
-        "P(\\omega_0) = \\frac{E_m^2}{2 L \\omega_0}",
-        "P(\\omega_0) = Q \\cdot \\frac{E_m^2}{R}",
+        "\\Delta\\omega = \\frac{\\omega_0}{Q} = \\frac{R}{L}",
+        "\\Delta\\omega = Q \\cdot \\omega_0",
+        "\\Delta\\omega = \\frac{R}{2L}",
+        "\\Delta\\omega = \\frac{1}{R C}",
       ],
-      correct: 1,
-      explanation: "À la résonance, I_eff = E_eff / R et cos(φ) = 1, d'où P_max = E_eff · I_eff = E_eff² / R = Em² / (2R).",
-      expMath: "P_{\\max} = \\frac{1}{2} R I_{m,\\max}^2 = \\frac{E_m^2}{2 R}",
+      correct: 0,
+      explanation: "La bande passante à -3 dB est définie par I(ω) ≥ I_max / √2. L'écart entre les pulsations de coupure est exactement Δω = ω₀/Q = R/L.",
+      expMath: "\\Delta\\omega = \\frac{\\omega_0}{Q} = \\frac{R}{L} \\quad \\text{et} \\quad \\Delta f = \\frac{\\Delta\\omega}{2\\pi} = \\frac{f_0}{Q}",
+    },
+    {
+      q: "Quelle est la condition nécessaire et suffisante pour qu'il existe une résonance en tension aux bornes du condensateur u_C(t) ?",
+      qMath: "\\text{Condition de résonance en charge / tension } U_C",
+      optionsMath: [
+        "Q > \\frac{1}{\\sqrt{2}} \\approx 0.707",
+        "Q > 1",
+        "Q > \\frac{1}{2}",
+        "La résonance existe toujours pour tout Q > 0",
+      ],
+      correct: 0,
+      explanation: "La dérivée de U_C(ω) ne s'annule pour une pulsation réelle positive que si 1 - 1/(2Q²) > 0, soit Q > 1/√2 ≈ 0.707. Si Q ≤ 1/√2, U_C décroît de façon monotone.",
+      expMath: "\\frac{\\mathrm{d}U_C}{\\mathrm{d}\\omega} = 0 \\iff \\omega_r = \\omega_0 \\sqrt{1 - \\frac{1}{2Q^2}} \\quad (\\text{Possible si } Q > \\frac{1}{\\sqrt{2}})",
+    },
+    {
+      q: "Lorsque la résonance en tension a lieu sur le condensateur (Q > 1/√2), comment se situe la pulsation de résonance ω_r par rapport à la pulsation propre ω_0 ?",
+      qMath: "\\omega_r \\text{ comparée à } \\omega_0",
+      optionsMath: [
+        "\\omega_r < \\omega_0 \\quad (\\text{Légèrement inférieure à } \\omega_0)",
+        "\\omega_r = \\omega_0",
+        "\\omega_r > \\omega_0",
+        "\\omega_r = 2 \\omega_0",
+      ],
+      correct: 0,
+      explanation: "Puisque ω_r = ω₀ √(1 - 1/(2Q²)), le terme sous la racine est strictement inférieur à 1, donc la résonance en tension sur le condensateur se produit toujours à une pulsation inférieure à ω₀.",
+      expMath: "\\omega_r = \\omega_0 \\sqrt{1 - \\frac{1}{2Q^2}} < \\omega_0",
+    },
+    {
+      q: "Pour un facteur de qualité élevé (Q ≫ 1), quelle est la valeur maximale atteinte par la tension aux bornes du condensateur U_C,max ?",
+      qMath: "\\text{Phénomène de surtension à la résonance}",
+      optionsMath: [
+        "U_{C,\\max} \\approx Q \\cdot E",
+        "U_{C,\\max} = E",
+        "U_{C,\\max} = \\frac{E}{Q}",
+        "U_{C,\\max} = Q^2 \\cdot E",
+      ],
+      correct: 0,
+      explanation: "Pour Q ≫ 1, U_C,max = (Q·E) / √(1 - 1/(4Q²)) ≈ Q·E. Si E = 10 V et Q = 100, la tension aux bornes du condensateur peut atteindre 1000 V (phénomène de surtension dangereux).",
+      expMath: "U_{C,\\max} = \\frac{Q E}{\\sqrt{1 - \\frac{1}{4Q^2}}} \\approx Q E \\quad (\\text{pour } Q \\gg 1)",
+    },
+    {
+      q: "À quelle pulsation a lieu la résonance en tension aux bornes de la bobine idéale u_L(t) ?",
+      qMath: "\\omega_{r,L} \\text{ (Résonance en tension de l'inductance)}",
+      optionsMath: [
+        "\\omega_{r,L} = \\frac{\\omega_0}{\\sqrt{1 - \\frac{1}{2Q^2}}} > \\omega_0",
+        "\\omega_{r,L} = \\omega_0 \\sqrt{1 - \\frac{1}{2Q^2}} < \\omega_0",
+        "\\omega_{r,L} = \\omega_0",
+        "\\omega_{r,L} = Q \\omega_0",
+      ],
+      correct: 0,
+      explanation: "Par dualité, la tension aux bornes de la bobine U_L(ω) résonne à une pulsation légèrement supérieure à ω₀ : ω_r,L = ω₀ / √(1 - 1/(2Q²)) pour Q > 1/√2.",
+    },
+    {
+      q: "Quelle est l'expression de la puissance active moyenne P(ω) absorbée par le circuit RLC série en fonction de P_max, Q et x = ω/ω_0 ?",
+      qMath: "P(x) \\text{ (Courbe de résonance énergétique de Lorentz)}",
+      optionsMath: [
+        "P(x) = \\frac{P_{\\max}}{1 + Q^2 \\left(x - \\frac{1}{x}\\right)^2}",
+        "P(x) = P_{\\max} \\left[1 + Q^2 \\left(x - \\frac{1}{x}\\right)^2\\right]",
+        "P(x) = \\frac{P_{\\max}}{\\sqrt{1 + Q^2 \\left(x - \\frac{1}{x}\\right)^2}}",
+        "P(x) = P_{\\max} \\cdot Q \\left(x - \\frac{1}{x}\\right)",
+      ],
+      correct: 0,
+      explanation: "La puissance moyenne active absorbée est P = R I² = R (I_max / √(1 + Q²(x - 1/x)²))² = P_max / [1 + Q²(x - 1/x)²]. C'est une courbe lorentzienne.",
+      expMath: "P(\\omega) = \\frac{P_{\\max}}{1 + Q^2 \\left(\\frac{\\omega}{\\omega_0} - \\frac{\\omega_0}{\\omega}\\right)^2} \\quad \\text{avec } P_{\\max} = \\frac{E^2}{R}",
+    },
+    {
+      q: "Que vaut l'énergie électromagnétique totale E_tot emmagasinée dans le circuit RLC série à la résonance ω = ω_0 ?",
+      qMath: "\\mathcal{E}_{\\text{tot}}(t) = \\frac{1}{2} L i^2(t) + \\frac{1}{2} C u_C^2(t)",
+      optionsMath: [
+        "\\mathcal{E}_{\\text{tot}} = \\frac{1}{2} L I_m^2 = \\text{Constante dans le temps}",
+        "\\mathcal{E}_{\\text{tot}}(t) \\text{ oscille à la pulsation } 2\\omega_0",
+        "\\mathcal{E}_{\\text{tot}} = 0 \\text{ car L et C s'annulent}",
+        "\\mathcal{E}_{\\text{tot}} = \\frac{1}{2} R I_m^2",
+      ],
+      correct: 0,
+      explanation: "À la résonance, le courant et la tension aux bornes du condensateur sont en quadrature de phase exacte (sinus et cosinus). La somme des énergies 1/2 Li² + 1/2 Cu_C² est rigoureusement constante à chaque instant :",
+      expMath: "\\mathcal{E}_{\\text{tot}}(t) = \\frac{1}{2} L I_m^2 \\cos^2(\\omega_0 t) + \\frac{1}{2} C (Q E_m)^2 \\sin^2(\\omega_0 t) = \\frac{1}{2} L I_m^2 = \\text{Cste}",
+    },
+    {
+      q: "Dans un récepteur radio à circuit RLC accordé sur f_0 = 1 MHz avec une bande passante audio Δf = 10 kHz, quel doit être le facteur de qualité Q du circuit ?",
+      qMath: "\\text{Application numérique : Sélectivité radio}",
+      optionsMath: [
+        "Q = \\frac{f_0}{\\Delta f} = \\frac{10^6}{10^4} = 100",
+        "Q = \\frac{\\Delta f}{f_0} = 0.01",
+        "Q = \\sqrt{f_0 \\cdot \\Delta f} = 1000",
+        "Q = 10",
+      ],
+      correct: 0,
+      explanation: "Le facteur de qualité nécessaire pour filtrer la station radio avec la sélectivité demandée est Q = f₀ / Δf = 1 000 000 / 10 000 = 100.",
+      expMath: "Q = \\frac{f_0}{\\Delta f} = \\frac{10^6\\text{ Hz}}{10^4\\text{ Hz}} = 100",
     },
   ];
 
@@ -195,16 +276,16 @@ function Chap4QuickQuiz() {
   return (
     <div className="p-4 sm:p-6 rounded-2xl bg-card/80 border border-border/80 space-y-5 shadow-sm">
       <div className="flex items-center justify-between flex-wrap gap-2 border-b border-border/60 pb-3">
-        <div className="flex items-center gap-2 text-indigo-400 font-bold text-sm">
+        <div className="flex items-center gap-2 text-indigo-400 font-bold text-xs sm:text-sm">
           <HelpCircle className="w-4 h-4" />
-          <span>QCM d&apos;Auto-Évaluation • Circuit RLC Série & Résonances (6 Questions)</span>
+          <span>QCM d&apos;Auto-Évaluation • Circuit RLC Série, Résonances & Réponses Fréquentielles (12 Questions)</span>
         </div>
         {showResults && (
           <span
             className={`text-xs font-mono font-bold px-3 py-1 rounded-full border shadow-sm ${
-              score >= 5
+              score >= 10
                 ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/30"
-                : score >= 3
+                : score >= 6
                 ? "bg-amber-500/10 text-amber-400 border-amber-500/30"
                 : "bg-rose-500/10 text-rose-400 border-rose-500/30"
             }`}
@@ -235,7 +316,7 @@ function Chap4QuickQuiz() {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
-              {(item.optionsMath || []).map((opt, optIdx) => {
+              {(item.optionsMath || item.optionsText || []).map((opt, optIdx) => {
                 const isSelected = selectedAnswers[qIdx] === optIdx;
                 const isCorrect = item.correct === optIdx;
 
@@ -266,7 +347,7 @@ function Chap4QuickQuiz() {
                         {optionLabels[optIdx]}
                       </span>
                       <span className="leading-snug font-sans">
-                        <LatexMath math={opt} />
+                        {item.optionsMath ? <LatexMath math={opt} /> : <span>{opt}</span>}
                       </span>
                     </div>
                     {showResults && isCorrect && <Check className="w-4 h-4 text-emerald-400 shrink-0" />}
@@ -307,90 +388,73 @@ function Chap4QuickQuiz() {
 /* ── MAIN CHAPTER 4 COMPONENT ── */
 export default function Chap4CircuitRLCResonances() {
   return (
-    <div className="space-y-6 sm:space-y-8 w-full max-w-full overflow-x-hidden pb-12">
+    <div className="space-y-6 sm:space-y-8 w-full max-w-full overflow-x-hidden pb-12 font-sans">
       {/* ── HEADER ── */}
       <header className="space-y-2 sm:space-y-4">
         <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 text-xs font-bold mb-2">
-          <Activity size={14} />
-          <span>Chapitre 4 • Circuits du 2nd Ordre & Résonances</span>
+          <Waves size={14} />
+          <span>Chapitre 4 • Circuits Résonants & Réponses Fréquentielles</span>
         </div>
         <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-foreground tracking-tight">
-          Circuit RLC Série, Résonances & Réponses Fréquentielles
+          Circuit RLC Série, Résonances & Facteur de Qualité
         </h1>
         <p className="text-muted-foreground text-sm sm:text-base leading-relaxed max-w-3xl">
-          Maîtrisez la forme canonique différentielle du circuit <LatexMath math="RLC" /> série, la résonance en intensité <LatexMath math="I(\omega)" />, la résonance en tension <LatexMath math="U_C(\omega)" />, la bande passante à <LatexMath math="-3\text{ dB}" />, le facteur de qualité <LatexMath math="Q" /> et le phénomène de surtension.
+          Étude analytique approfondie du circuit <LatexMath math="RLC" /> série en régime sinusoïdal forcé : impédance canonique, résonance en intensité, bande passante à <LatexMath math="-3\text{ dB}" />, phénomène de surtension aux bornes du condensateur, bilan énergétique et applications industrielles (filtrage et récepteurs radio).
         </p>
       </header>
 
-      {/* ── PARTIE 1: ÉQUATION DIFFÉRENTIELLE & FORME CANONIQUE ── */}
+      {/* ── PARTIE 1: MISE EN ÉQUATION & IMPÉDANCE DU RLC SÉRIE ── */}
       <section className="bg-card/90 border border-border/80 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 shadow-sm w-full max-w-full overflow-x-hidden space-y-6">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400 text-xs font-extrabold mb-1">
           <Workflow className="w-3.5 h-3.5" />
-          <span>Partie 1 • Mise en Équation Canonique</span>
+          <span>Partie 1 • Modélisation Canonique</span>
         </div>
 
         <h2 className="text-xl sm:text-2xl font-black text-foreground leading-tight">
-          1. Équation Différentielle Canonique du Circuit RLC Série
+          1. Mise en Équation & Impédance Canonique du Circuit RLC Série
         </h2>
 
         <p className="text-sm text-muted-foreground leading-relaxed">
-          Considérons un circuit série constitué d&apos;une résistance <LatexMath math="R" />, d&apos;une bobine <LatexMath math="L" /> et d&apos;un condensateur <LatexMath math="C" />, alimenté par une tension sinusoïdale <LatexMath math="e(t) = E_m \cos(\omega t)" />.
+          Considérons un circuit <LatexMath math="RLC" /> série excité par une source de tension sinusoïdale idéale <LatexMath math="e(t) = E_m \cos(\omega t) = \sqrt{2} E \cos(\omega t)" />.
         </p>
 
-        {/* Differential Equation Box */}
-        <div className="p-5 rounded-2xl bg-slate-900/90 border border-cyan-500/30 space-y-3 shadow-md">
-          <div className="flex items-center justify-between">
+        {/* Canonical Forms Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-4">
+          <div className="p-5 rounded-2xl bg-slate-900/90 border border-cyan-500/30 space-y-3 shadow-md">
             <span className="text-xs font-extrabold text-cyan-400 uppercase tracking-wider">
-              Loi des Mailles Temporelle
+              1. Impédance Complexe Canonique
             </span>
-            <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-cyan-500/10 text-cyan-300 border border-cyan-500/20">
-              uR + uL + uC = e(t)
+            <div className="p-3 rounded-xl bg-black/60 text-center font-mono text-cyan-300 font-bold text-sm border border-cyan-500/20">
+              <LatexMath math="\underline{Z} = R + j\left(L\omega - \frac{1}{C\omega}\right) = R\left[1 + j Q \left(x - \frac{1}{x}\right)\right]" />
+            </div>
+            <ul className="text-xs text-slate-300 space-y-1.5 pl-1 leading-relaxed">
+              <li>• <LatexMath math="x = \frac{\omega}{\omega_0}" /> : Pulsation réduite sans dimension.</li>
+              <li>• <LatexMath math="\omega_0 = \frac{1}{\sqrt{LC}}" /> : Pulsation propre du circuit.</li>
+              <li>• <LatexMath math="Q = \frac{L\omega_0}{R} = \frac{1}{R C \omega_0} = \frac{1}{R}\sqrt{\frac{L}{C}}" /> : Facteur de qualité.</li>
+            </ul>
+          </div>
+
+          <div className="p-5 rounded-2xl bg-slate-900/90 border border-indigo-500/30 space-y-3 shadow-md">
+            <span className="text-xs font-extrabold text-indigo-400 uppercase tracking-wider">
+              2. Module et Déphasage
             </span>
-          </div>
-          <div className="p-3 rounded-xl bg-black/60 text-center font-mono text-cyan-300 font-bold text-sm border border-cyan-500/20">
-            <LatexMath math="L \frac{\mathrm{d}^2 u_C}{\mathrm{d}t^2} + R \frac{\mathrm{d}u_C}{\mathrm{d}t} + \frac{1}{C} u_C(t) = \frac{1}{C} e(t)" />
-          </div>
-          <p className="text-xs text-slate-300 leading-relaxed">
-            En divisant par <LatexMath math="L" />, on obtient la <strong>forme canonique universelle du second ordre</strong> :
-          </p>
-          <div className="p-3 rounded-xl bg-indigo-500/10 border border-indigo-500/30 text-center font-mono text-indigo-300 font-bold text-sm">
-            <LatexMath math="\frac{\mathrm{d}^2 u_C}{\mathrm{d}t^2} + \frac{\omega_0}{Q} \frac{\mathrm{d}u_C}{\mathrm{d}t} + \omega_0^2 u_C(t) = \omega_0^2 e(t)" />
-          </div>
-        </div>
-
-        {/* Canonical Parameters 3-Col Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 my-4">
-          <div className="p-4 rounded-xl bg-slate-950 border border-cyan-500/30 space-y-1.5">
-            <span className="text-[10px] font-mono uppercase text-cyan-400 font-bold">1. Pulsation Propre</span>
-            <div className="p-2 rounded bg-black/50 text-center font-mono text-cyan-300 font-bold text-xs">
-              <LatexMath math="\omega_0 = \frac{1}{\sqrt{LC}}" />
+            <div className="p-3 rounded-xl bg-black/60 text-center font-mono text-indigo-300 font-bold text-sm border border-indigo-500/20">
+              <LatexMath math="|\underline{Z}| = R \sqrt{1 + Q^2 \left(x - \frac{1}{x}\right)^2}, \quad \tan\phi = Q \left(x - \frac{1}{x}\right)" />
             </div>
-            <p className="text-[11px] text-slate-300 leading-snug">Pulsation d&apos;oscillation libre non amortie en <LatexMath math="\text{rad}\cdot\text{s}^{-1}" />.</p>
-          </div>
-
-          <div className="p-4 rounded-xl bg-slate-950 border border-amber-500/30 space-y-1.5">
-            <span className="text-[10px] font-mono uppercase text-amber-400 font-bold">2. Facteur de Qualité</span>
-            <div className="p-2 rounded bg-black/50 text-center font-mono text-amber-300 font-bold text-xs">
-              <LatexMath math="Q = \frac{L\omega_0}{R} = \frac{1}{RC\omega_0} = \frac{1}{R}\sqrt{\frac{L}{C}}" />
-            </div>
-            <p className="text-[11px] text-slate-300 leading-snug">Sans dimension. Mesure la sélectivité et le faible amortissement.</p>
-          </div>
-
-          <div className="p-4 rounded-xl bg-slate-950 border border-emerald-500/30 space-y-1.5">
-            <span className="text-[10px] font-mono uppercase text-emerald-400 font-bold">3. Facteur d&apos;Amortissement</span>
-            <div className="p-2 rounded bg-black/50 text-center font-mono text-emerald-300 font-bold text-xs">
-              <LatexMath math="\xi = \frac{1}{2Q} = \frac{R}{2}\sqrt{\frac{C}{L}}" />
-            </div>
-            <p className="text-[11px] text-slate-300 leading-snug">Régime pseudopériodique si <LatexMath math="\xi < 1 \iff Q > 1/2" />.</p>
+            <ul className="text-xs text-slate-300 space-y-1.5 pl-1 leading-relaxed">
+              <li>• <LatexMath math="x < 1" /> (<LatexMath math="\omega < \omega_0" />) : <LatexMath math="\phi < 0" /> (Comportement capacitif).</li>
+              <li>• <LatexMath math="x = 1" /> (<LatexMath math="\omega = \omega_0" />) : <LatexMath math="\phi = 0" /> (Comportement purement résistif).</li>
+              <li>• <LatexMath math="x > 1" /> (<LatexMath math="\omega > \omega_0" />) : <LatexMath math="\phi > 0" /> (Comportement inductif).</li>
+            </ul>
           </div>
         </div>
       </section>
 
-      {/* ── PARTIE 2: RÉSONANCE EN INTENSITÉ & BANDE PASSANTE ── */}
+      {/* ── PARTIE 2: RÉSONANCE EN INTENSITÉ (COURANT) ── */}
       <section className="bg-card/90 border border-border/80 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 shadow-sm w-full max-w-full overflow-x-hidden space-y-6">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-extrabold mb-1">
-          <TrendingUp className="w-3.5 h-3.5" />
-          <span>Partie 2 • Résonance en Courant I(ω)</span>
+          <Activity className="w-3.5 h-3.5" />
+          <span>Partie 2 • Résonance en Courant</span>
         </div>
 
         <h2 className="text-xl sm:text-2xl font-black text-foreground leading-tight">
@@ -398,164 +462,247 @@ export default function Chap4CircuitRLCResonances() {
         </h2>
 
         <p className="text-sm text-muted-foreground leading-relaxed">
-          En notation complexe avec la pulsation réduite <LatexMath math="x = \frac{\omega}{\omega_0}" />, l&apos;impédance complexe du circuit <LatexMath math="RLC" /> série s&apos;écrit :
+          Le courant efficace traversant le circuit <LatexMath math="RLC" /> série s&apos;exprime par la loi d&apos;Ohm :
         </p>
-        <div className="p-3 rounded-xl bg-black/60 border border-emerald-500/30 text-center font-mono text-emerald-300 font-bold text-sm">
-          <LatexMath math="\underline{Z}(x) = R + j\left(L\omega - \frac{1}{C\omega}\right) = R\left[1 + j Q\left(x - \frac{1}{x}\right)\right]" />
+        <div className="p-3.5 rounded-xl bg-black/60 border border-emerald-500/30 text-center font-mono text-emerald-300 font-bold text-sm">
+          <LatexMath math="I(x) = \frac{E}{|\underline{Z}(x)|} = \frac{E/R}{\sqrt{1 + Q^2 \left(x - \frac{1}{x}\right)^2}} = \frac{I_{\max}}{\sqrt{1 + Q^2 \left(x - \frac{1}{x}\right)^2}}" />
         </div>
 
-        {/* Current Amplitude Card */}
-        <div className="p-5 rounded-2xl bg-slate-950 border border-emerald-500/30 space-y-3 shadow-lg">
-          <h4 className="text-xs font-extrabold uppercase text-emerald-400 tracking-wider flex items-center gap-2">
-            <Sparkles className="w-4 h-4" /> Propriétés Fondamentales de la Résonance en Courant
-          </h4>
-
-          <div className="space-y-2 text-xs text-slate-300 font-mono">
-            <p className="font-sans text-slate-200">
-              <strong>1. Amplitude du courant :</strong>
-            </p>
-            <div className="p-2 rounded bg-black/60 text-center text-cyan-300 font-bold">
-              <LatexMath math="I_m(x) = \frac{E_m}{|\underline{Z}(x)|} = \frac{E_m/R}{\sqrt{1 + Q^2\left(x - \frac{1}{x}\right)^2}}" />
+        {/* Intensity resonance features */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 my-3">
+          <div className="p-4 rounded-xl bg-slate-900/90 border border-emerald-500/30 space-y-1.5">
+            <span className="text-xs font-bold text-emerald-400 uppercase">1. Maximum Strict</span>
+            <div className="p-2 rounded bg-black/50 text-center font-mono text-emerald-300 font-bold text-xs">
+              <LatexMath math="I_{\max} = \frac{E}{R} \quad \text{pour } \omega = \omega_0" />
             </div>
-            <ul className="font-sans text-slate-300 space-y-1 pl-1 text-[11px] leading-relaxed">
-              <li>• <strong>Pulsation de résonance :</strong> <LatexMath math="\omega_r = \omega_0" /> (indépendamment de <LatexMath math="Q" /> !).</li>
-              <li>• <strong>Courant maximal :</strong> <LatexMath math="I_{m,\max} = \frac{E_m}{R}" /> (le circuit est purement résistif, <LatexMath math="\phi = 0" />).</li>
-              <li>• <strong>Bande passante à -3 dB :</strong> <LatexMath math="\Delta\omega = \omega_2 - \omega_1 = \frac{\omega_0}{Q} = \frac{R}{L}" />.</li>
-              <li>• <strong>Définition de la sélectivité :</strong> <LatexMath math="Q = \frac{\omega_0}{\Delta\omega}" /> (plus <LatexMath math="Q" /> est élevé, plus le pic est aigu).</li>
-            </ul>
+            <p className="text-[11px] text-slate-300">L&apos;effet inductif compense exactement l&apos;effet capacitif : <LatexMath math="L\omega_0 = \frac{1}{C\omega_0}" />.</p>
+          </div>
+
+          <div className="p-4 rounded-xl bg-slate-900/90 border border-cyan-500/30 space-y-1.5">
+            <span className="text-xs font-bold text-cyan-400 uppercase">2. Déphasage Nul</span>
+            <div className="p-2 rounded bg-black/50 text-center font-mono text-cyan-300 font-bold text-xs">
+              <LatexMath math="\phi(\omega_0) = 0 \quad (\text{En Phase})" />
+            </div>
+            <p className="text-[11px] text-slate-300">Tension et intensité oscillent en phase parfaite, facteur de puissance <LatexMath math="\cos\phi = 1" />.</p>
+          </div>
+
+          <div className="p-4 rounded-xl bg-slate-900/90 border border-amber-500/30 space-y-1.5">
+            <span className="text-xs font-bold text-amber-400 uppercase">3. Bande Passante</span>
+            <div className="p-2 rounded bg-black/50 text-center font-mono text-amber-300 font-bold text-xs">
+              <LatexMath math="\Delta\omega = \frac{\omega_0}{Q} = \frac{R}{L}" />
+            </div>
+            <p className="text-[11px] text-slate-300">Plus <LatexMath math="Q" /> est grand, plus le pic est aigu et sélectif (filtrage haute sélectivité).</p>
           </div>
         </div>
+
+        {/* Proof of Bandwidth */}
+        <CollapsibleProof
+          title="Démonstration Complète de la Bande Passante & des Fréquences de Coupure"
+          subtitle="Calcul des pulsations de coupure à -3 dB telles que I = I_max / √2"
+          color="emerald"
+          badge="Démonstration Concours"
+        >
+          <div className="space-y-2.5 text-slate-300 font-sans text-xs leading-relaxed">
+            <p>
+              Les pulsations de coupure <LatexMath math="\omega_1" /> et <LatexMath math="\omega_2" /> vérifient la condition de puissance moitié :
+            </p>
+            <div className="p-2 rounded bg-black/50 text-center font-mono text-emerald-300 font-bold">
+              <LatexMath math="I(x) = \frac{I_{\max}}{\sqrt{2}} \iff Q\left|x - \frac{1}{x}\right| = 1 \iff x - \frac{1}{x} = \pm \frac{1}{Q}" />
+            </div>
+            <p>
+              En résolvant les deux équations du second degré <LatexMath math="x^2 \mp \frac{1}{Q} x - 1 = 0" />, on obtient les deux racines physiques positives :
+            </p>
+            <div className="p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-center font-mono text-emerald-300 font-bold">
+              <LatexMath math="x_1, x_2 = \sqrt{1 + \frac{1}{4Q^2}} \mp \frac{1}{2Q} \implies \Delta x = x_2 - x_1 = \frac{1}{Q} \implies \Delta\omega = \frac{\omega_0}{Q} = \frac{R}{L}" />
+            </div>
+            <p>
+              On note également la relation remarquable de moyenne géométrique : <LatexMath math="\omega_1 \cdot \omega_2 = \omega_0^2" />.
+            </p>
+          </div>
+        </CollapsibleProof>
       </section>
 
-      {/* ── PARTIE 3: RÉSONANCE EN TENSION UC & SURTENSION ── */}
+      {/* ── PARTIE 3: RÉSONANCE EN TENSION SUR LE CONDENSATEUR (SURTENSION) ── */}
       <section className="bg-card/90 border border-border/80 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 shadow-sm w-full max-w-full overflow-x-hidden space-y-6">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 text-xs font-extrabold mb-1">
-          <Gauge className="w-3.5 h-3.5" />
-          <span>Partie 3 • Résonance en Tension & Surtension</span>
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-500/10 text-rose-600 dark:text-rose-400 text-xs font-extrabold mb-1">
+          <Zap className="w-3.5 h-3.5" />
+          <span>Partie 3 • Phénomène de Surtension</span>
         </div>
 
         <h2 className="text-xl sm:text-2xl font-black text-foreground leading-tight">
-          3. Résonance en Tension aux Bornes du Condensateur (<LatexMath math="U_C" />) & Phénomène de Surtension
+          3. Résonance en Tension aux Bornes de C & Phénomène de Surtension
         </h2>
 
         <p className="text-sm text-muted-foreground leading-relaxed">
-          Contrairement au courant dont le pic a toujours lieu à <LatexMath math="\omega_0" />, la tension aux bornes du condensateur <LatexMath math="u_C(t)" /> présente des propriétés très spécifiques.
+          La tension complexe aux bornes du condensateur s&apos;obtient par le pont diviseur de tension :
         </p>
+        <div className="p-3.5 rounded-xl bg-black/60 border border-rose-500/30 text-center font-mono text-rose-300 font-bold text-sm">
+          <LatexMath math="\underline{U}_C(x) = \frac{\frac{1}{j C \omega}}{\underline{Z}} \underline{E} = \frac{\underline{E}}{1 - x^2 + j \frac{x}{Q}} \implies U_C(x) = \frac{E}{\sqrt{(1 - x^2)^2 + \frac{x^2}{Q^2}}}" />
+        </div>
 
-        {/* Transfer Function Proof */}
+        {/* Condition of Resonance Alert */}
+        <div className="p-4 rounded-2xl bg-slate-900/90 border border-rose-500/40 space-y-3">
+          <div className="flex items-center gap-2 text-rose-400 font-extrabold text-xs uppercase tracking-wider">
+            <ShieldAlert className="w-4 h-4" />
+            <span>Condition d&apos;Existence de la Résonance en Tension :</span>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+            <div className="p-3 rounded-xl bg-black/60 border border-rose-500/30 text-center font-mono text-rose-300 font-bold">
+              <LatexMath math="Q > \frac{1}{\sqrt{2}} \approx 0.707 \quad (\text{Condition Obligatoire})" />
+            </div>
+            <div className="p-3 rounded-xl bg-black/60 border border-rose-500/30 text-center font-mono text-rose-300 font-bold">
+              <LatexMath math="\omega_r = \omega_0 \sqrt{1 - \frac{1}{2Q^2}} < \omega_0" />
+            </div>
+          </div>
+          <p className="text-xs text-slate-300 leading-relaxed">
+            • Si <LatexMath math="Q \le \frac{1}{\sqrt{2}}" /> : Il n&apos;y a <strong>aucune résonance</strong>. La tension <LatexMath math="U_C(\omega)" /> décroît de façon monotone depuis <LatexMath math="E" /> jusqu&apos;à 0.
+            <br />
+            • Si <LatexMath math="Q > \frac{1}{\sqrt{2}}" /> : Il existe un pic de résonance qui se produit à une pulsation <LatexMath math="\omega_r < \omega_0" />.
+          </p>
+        </div>
+
+        {/* Overvoltage proof */}
         <CollapsibleProof
-          title="Démonstration : Condition d'Existence de la Résonance en Tension"
-          subtitle="Étude de la fonction de transfert et décalage de la pulsation de résonance"
-          color="amber"
-          badge="Démonstration Concours CPGE"
+          title="Démonstration de la Surtension Maximale"
+          subtitle="Calcul de la valeur crête Uc,max et risque de claquage diélectrique"
+          color="rose"
+          badge="Phénomène Critique"
         >
-          <div className="space-y-2 text-slate-300 font-sans text-xs">
-            <p className="leading-relaxed">
-              <strong>1. Fonction de transfert :</strong> Par le pont diviseur de tension :
+          <div className="space-y-2.5 text-slate-300 font-sans text-xs leading-relaxed">
+            <p>
+              En remplaçant <LatexMath math="x_r^2 = 1 - \frac{1}{2Q^2}" /> dans l&apos;expression de <LatexMath math="U_C" />, on obtient la valeur maximale :
             </p>
-            <div className="p-2 rounded bg-black/60 text-center font-mono text-amber-300 font-bold">
-              <LatexMath math="\underline{H}_C(jx) = \frac{\underline{U}_C}{\underline{E}} = \frac{\frac{1}{jC\omega}}{R + jL\omega + \frac{1}{jC\omega}} = \frac{1}{1 - x^2 + j\frac{x}{Q}}" />
+            <div className="p-2.5 rounded-xl bg-rose-500/10 border border-rose-500/30 text-center font-mono text-rose-300 font-bold text-sm">
+              <LatexMath math="U_{C,\max} = \frac{Q E}{\sqrt{1 - \frac{1}{4Q^2}}} \approx Q \cdot E \quad (\text{pour } Q \gg 1)" />
             </div>
-            <p className="leading-relaxed">
-              <strong>2. Recherche du maximum du module :</strong> L&apos;amplitude <LatexMath math="U_{C,m}(x) = \frac{E_m}{\sqrt{(1-x^2)^2 + \frac{x^2}{Q^2}}}" /> est maximale lorsque le polynôme <LatexMath math="f(u) = (1-u)^2 + \frac{u}{Q^2}" /> (avec <LatexMath math="u = x^2" />) est minimal :
-            </p>
-            <div className="p-2 rounded bg-black/60 text-center font-mono text-amber-300">
-              <LatexMath math="f'(u) = 2(u-1) + \frac{1}{Q^2} = 0 \iff u_r = x_r^2 = 1 - \frac{1}{2Q^2}" />
-            </div>
-            <div className="p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-center font-bold text-amber-300">
-              <LatexMath math="\text{Condition de résonance : } Q > \frac{1}{\sqrt{2}} \approx 0.707 \implies \omega_r = \omega_0 \sqrt{1 - \frac{1}{2Q^2}} < \omega_0" />
+            <div className="p-2.5 rounded bg-black/50 border border-slate-800 text-[11px] text-amber-300">
+              ⚠️ <strong>Application Sécurité :</strong> Si un générateur injecte <LatexMath math="E = 12\text{ V}" /> dans un circuit à <LatexMath math="Q = 50" />, la tension sur le condensateur grimpe à <LatexMath math="U_{C,\max} \approx 600\text{ V}" /> ! Ce phénomène peut provoquer le claquage destructif du diélectrique ou une électrocution.
             </div>
           </div>
         </CollapsibleProof>
-
-        {/* Overvoltage Alert */}
-        <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/20 space-y-2">
-          <h4 className="text-xs font-bold uppercase text-rose-400 flex items-center gap-1.5">
-            <ShieldAlert className="w-4 h-4" /> Phénomène de Surtension (<LatexMath math="U_{C,m} \approx Q \cdot E_m" />)
-          </h4>
-          <p className="text-xs text-slate-300 leading-relaxed">
-            À fort facteur de qualité (<LatexMath math="Q \gg 1" />), l&apos;amplitude de la tension aux bornes du condensateur atteint :
-          </p>
-          <div className="p-2 rounded bg-black/50 text-center font-mono text-rose-300 font-bold text-xs">
-            <LatexMath math="U_{C,m}(\omega_r) = \frac{E_m}{\frac{1}{Q}\sqrt{1 - \frac{1}{4Q^2}}} \approx Q \cdot E_m \gg E_m" />
-          </div>
-          <p className="text-[11px] text-slate-400">
-            ⚠️ <strong>Danger pratique :</strong> Avec <LatexMath math="E_m = 10\text{ V}" /> et <LatexMath math="Q = 50" />, la tension sur le condensateur peut atteindre <LatexMath math="500\text{ V}" />, entraînant le claquage diélectrique instantané du composant !
-          </p>
-        </div>
       </section>
 
-      {/* ── PARTIE 4: BILAN DE PUISSANCE EN RSF ── */}
+      {/* ── PARTIE 4: BILAN ÉNERGÉTIQUE & PUISSANCE ABSORBÉE ── */}
       <section className="bg-card/90 border border-border/80 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 shadow-sm w-full max-w-full overflow-x-hidden space-y-6">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 text-indigo-400 text-xs font-extrabold mb-1 border border-indigo-500/20">
-          <Flame className="w-3.5 h-3.5" />
-          <span>Partie 4 • Bilan Énergétique à la Résonance</span>
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 text-xs font-extrabold mb-1">
+          <TrendingUp className="w-3.5 h-3.5" />
+          <span>Partie 4 • Bilan Énergétique</span>
         </div>
 
         <h2 className="text-xl sm:text-2xl font-black text-foreground leading-tight">
-          4. Puissance Active & Bilan Énergétique à la Résonance
+          4. Puissance Moyenne Absorbée & Échange Énergétique L-C
         </h2>
 
         <p className="text-sm text-muted-foreground leading-relaxed">
-          Seule la résistance <LatexMath math="R" /> dissipe de la puissance active moyenne en continu. Les éléments réactifs <LatexMath math="L" /> et <LatexMath math="C" /> échangent de l&apos;énergie entre eux sans consommation active moyenne.
+          Seule la résistance <LatexMath math="R" /> dissipe de la puissance active en moyenne temporelle. La puissance active absorbée par le circuit s&apos;écrit :
         </p>
 
-        {/* Power curve and formulas */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-4">
-          <div className="p-4 rounded-xl bg-slate-900/90 border border-indigo-500/30 space-y-2">
-            <span className="text-xs font-bold text-indigo-300 uppercase">Puissance Active Absorbée</span>
-            <div className="p-2.5 rounded bg-black/60 text-center font-mono text-indigo-300 font-bold text-xs">
-              <LatexMath math="P(x) = \frac{1}{2} R I_m^2(x) = \frac{P_{\max}}{1 + Q^2\left(x - \frac{1}{x}\right)^2}" />
-            </div>
-            <p className="text-[11px] text-slate-300">
-              Pic maximal : <LatexMath math="P_{\max} = \frac{E_m^2}{2R} = \frac{E_{\text{eff}}^2}{R}" /> atteint à <LatexMath math="\omega = \omega_0" />.
-            </p>
-          </div>
-
-          <div className="p-4 rounded-xl bg-slate-900/90 border border-cyan-500/30 space-y-2">
-            <span className="text-xs font-bold text-cyan-300 uppercase">Bande Passante à Mi-Puissance</span>
-            <div className="p-2.5 rounded bg-black/60 text-center font-mono text-cyan-300 font-bold text-xs">
-              <LatexMath math="P(\omega_1) = P(\omega_2) = \frac{P_{\max}}{2} \iff I_m = \frac{I_{m,\max}}{\sqrt{2}}" />
-            </div>
-            <p className="text-[11px] text-slate-300">
-              Les fréquences de coupure à <LatexMath math="-3\text{ dB}" /> correspondent exactement à la réduction de moitié de la puissance active absorbée.
-            </p>
-          </div>
+        <div className="p-3.5 rounded-xl bg-black/60 border border-amber-500/30 text-center font-mono text-amber-300 font-bold text-sm">
+          <LatexMath math="P(x) = R I^2(x) = \frac{P_{\max}}{1 + Q^2 \left(x - \frac{1}{x}\right)^2} \quad \text{avec } P_{\max} = \frac{E^2}{R}" />
         </div>
+
+        {/* Energy oscillation proof */}
+        <CollapsibleProof
+          title="Conservation de l'Énergie Totale à la Résonance"
+          subtitle="Échange perpétuel entre énergie magnétique et énergie électrostatique"
+          color="amber"
+          badge="Bilan Thermodynamique"
+        >
+          <div className="space-y-2.5 text-slate-300 font-sans text-xs leading-relaxed">
+            <p>
+              À la résonance <LatexMath math="\omega = \omega_0" />, le courant et la tension <LatexMath math="u_C(t)" /> sont en quadrature de phase parfaite :
+            </p>
+            <div className="p-2 rounded bg-black/50 text-center font-mono text-amber-300">
+              <LatexMath math="i(t) = I_m \cos(\omega_0 t) \quad \text{et} \quad u_C(t) = Q E_m \sin(\omega_0 t)" />
+            </div>
+            <p>
+              L&apos;énergie totale emmagasinée dans la bobine et le condensateur est rigoureusement constante :
+            </p>
+            <div className="p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-center font-mono text-amber-300 font-bold">
+              <LatexMath math="\mathcal{E}_{\text{tot}}(t) = \frac{1}{2} L i^2(t) + \frac{1}{2} C u_C^2(t) = \frac{1}{2} L I_m^2 = \text{Constante}" />
+            </div>
+          </div>
+        </CollapsibleProof>
       </section>
 
-      {/* ── PARTIE 5: LABORATOIRE 3D INTERACTIF ── */}
+      {/* ── PARTIE 5: GRAND EXERCICE CONCOURS GUIDÉ ── */}
+      <section className="bg-card/90 border border-border/80 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 shadow-sm w-full max-w-full overflow-x-hidden space-y-6">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 text-cyan-400 text-xs font-extrabold mb-1 border border-cyan-500/20">
+          <Award className="w-3.5 h-3.5" />
+          <span>Partie 5 • Grand Exercice Concours Guidé</span>
+        </div>
+
+        <h2 className="text-xl sm:text-2xl font-black text-foreground leading-tight">
+          5. Exercice Concours : Dimensionnement d&apos;un Récepteur Radio RLC
+        </h2>
+
+        <p className="text-sm text-muted-foreground leading-relaxed">
+          On souhaite concevoir l&apos;étage d&apos;entrée d&apos;un récepteur radio pour capter une station émettant à <LatexMath math="f_0 = 1.0\text{ MHz}" /> avec une bande passante audio <LatexMath math="\Delta f = 10\text{ kHz}" />. La bobine d&apos;accord a une inductance <LatexMath math="L = 100\text{ }\mu\text{H}" />.
+        </p>
+
+        <CollapsibleProof
+          title="Résolution Guidée & Calculs Numériques Pas-à-Pas"
+          subtitle="Détermination de la capacité C, de la résistance R et du gain en tension"
+          color="cyan"
+          badge="Solution Complète"
+        >
+          <div className="space-y-3 text-slate-300 font-sans text-xs leading-relaxed">
+            <div className="p-3 rounded-xl bg-black/50 border border-slate-800 space-y-1">
+              <span className="text-cyan-300 font-bold block">1. Calcul du facteur de qualité Q :</span>
+              <div className="p-1.5 rounded bg-slate-900 text-center font-mono text-cyan-300 font-bold">
+                <LatexMath math="Q = \frac{f_0}{\Delta f} = \frac{10^6\text{ Hz}}{10^4\text{ Hz}} = 100" />
+              </div>
+            </div>
+
+            <div className="p-3 rounded-xl bg-black/50 border border-slate-800 space-y-1">
+              <span className="text-amber-300 font-bold block">2. Calcul de la capacité d&apos;accord C :</span>
+              <div className="p-1.5 rounded bg-slate-900 text-center font-mono text-amber-300 font-bold">
+                <LatexMath math="C = \frac{1}{L (2\pi f_0)^2} = \frac{1}{100 \times 10^{-6} \times (2\pi \times 10^6)^2} \approx 253.3\text{ pF}" />
+              </div>
+            </div>
+
+            <div className="p-3 rounded-xl bg-black/50 border border-slate-800 space-y-1">
+              <span className="text-emerald-300 font-bold block">3. Calcul de la résistance totale maximale R :</span>
+              <div className="p-1.5 rounded bg-slate-900 text-center font-mono text-emerald-300 font-bold">
+                <LatexMath math="R = \frac{L \omega_0}{Q} = \frac{100 \times 10^{-6} \times 2\pi \times 10^6}{100} \approx 6.28\text{ }\Omega" />
+              </div>
+            </div>
+          </div>
+        </CollapsibleProof>
+      </section>
+
+      {/* ── PARTIE 6: LABORATOIRE 3D INTERACTIF ── */}
       <section className="bg-card/90 border border-border/80 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 shadow-sm w-full max-w-full overflow-x-hidden space-y-4">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 text-xs font-extrabold mb-1">
           <Cpu className="w-3.5 h-3.5" />
-          <span>Partie 5 • Simulation 3D & Réponses Fréquentielles</span>
+          <span>Partie 6 • Laboratoire Virtuel 3D & Simulateur de Résonance</span>
         </div>
 
         <h2 className="text-xl sm:text-2xl font-black text-foreground leading-tight">
-          5. Laboratoire 3D : Banc d&apos;Essai RLC Série & Courbes de Résonance
+          6. Laboratoire Interactif 3D : Réponses Fréquentielles du Circuit RLC Série
         </h2>
 
         <p className="text-sm text-muted-foreground leading-relaxed">
-          Variez la pulsation d&apos;excitation <LatexMath math="\omega" /> et les paramètres <LatexMath math="R, L, C" />. Observez en temps réel le pic de résonance en intensité <LatexMath math="I(\omega)" />, la bande passante <LatexMath math="\Delta\omega" /> et la surtension sur le condensateur.
+          Explorez en direct la résonance en intensité <LatexMath math="I(\omega)" />, la surtension aux bornes du condensateur <LatexMath math="U_C(\omega)" /> et la puissance absorbée <LatexMath math="P(\omega)" />. Modifiez <LatexMath math="R, L, C" /> et observez l&apos;impact instantané sur le facteur de qualité <LatexMath math="Q" /> et la bande passante.
         </p>
 
         {/* 3D Simulation Canvas */}
         <RLCResonance3DCanvas />
       </section>
 
-      {/* ── PARTIE 6: AUTO-ÉVALUATION & QCM ── */}
+      {/* ── PARTIE 7: AUTO-ÉVALUATION & QCM ── */}
       <section className="bg-card/90 border border-border/80 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 shadow-sm w-full max-w-full overflow-x-hidden space-y-6">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 text-indigo-400 text-xs font-extrabold mb-1 border border-indigo-500/20">
           <BookOpen className="w-3.5 h-3.5" />
-          <span>Partie 6 • Validation & Auto-Évaluation</span>
+          <span>Partie 7 • Validation & Auto-Évaluation</span>
         </div>
 
         <h2 className="text-xl sm:text-2xl font-black text-foreground leading-tight">
-          6. QCM d&apos;Auto-Évaluation du Chapitre 4
+          7. QCM d&apos;Auto-Évaluation du Chapitre 4 (12 Questions)
         </h2>
 
         <p className="text-sm text-muted-foreground leading-relaxed">
-          Testez votre compréhension du circuit RLC série, des résonances en courant et en tension, de la bande passante et du phénomène de surtension.
+          Validez votre compréhension des résonances, de la bande passante, du phénomène de surtension et des bilans d&apos;énergie dans les circuits <LatexMath math="RLC" /> série.
         </p>
 
         {/* Pure LaTeX QCM */}
