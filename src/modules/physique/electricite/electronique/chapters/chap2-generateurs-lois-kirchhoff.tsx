@@ -714,40 +714,142 @@ export default function Chap2GenerateursLoisKirchhoff() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-4">
             {/* Thévenin Generator */}
-            <div className="p-5 rounded-2xl bg-slate-900/90 border border-cyan-500/30 space-y-3 shadow-md">
-              <div className="flex items-center justify-between">
-                <span className="text-[11px] font-extrabold text-cyan-400 uppercase tracking-wider">
-                  Modèle de Thévenin
-                </span>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-cyan-500/10 text-cyan-300 border border-cyan-500/20">
-                  Série (E, r)
-                </span>
+            <div className="p-5 rounded-2xl bg-slate-900/90 border border-cyan-500/30 space-y-3 shadow-md flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-extrabold text-cyan-400 uppercase tracking-wider">
+                    Modèle de Thévenin
+                  </span>
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-cyan-500/10 text-cyan-300 border border-cyan-500/20">
+                    Série (E, r)
+                  </span>
+                </div>
+                <p className="text-[10px] text-slate-400 mt-1">Source de tension idéale <LatexMath math="E" /> + résistance interne <LatexMath math="r" /> en <strong>série</strong>.</p>
               </div>
-              <p className="text-[10px] text-slate-400">Modélisation : Source de tension idéale + résistance <LatexMath math="r" /> en série.</p>
-              <div className="p-3 rounded-xl bg-black/60 text-center font-mono text-cyan-300 font-bold text-[11px] border border-cyan-500/20">
+
+              {/* Thévenin Schematic SVG */}
+              <div className="w-full bg-slate-950/80 py-3 px-3 rounded-xl border border-slate-800 flex justify-center items-center">
+                <svg viewBox="0 0 280 80" className="w-full max-w-[260px] h-auto" overflow="visible">
+                  <defs>
+                    <marker id="th-u-arrow" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                      <polygon points="0 0, 6 3, 0 6" fill="#facc15"/>
+                    </marker>
+                    <marker id="th-i-arrow" markerWidth="5" markerHeight="5" refX="4" refY="2.5" orient="auto">
+                      <polygon points="0 0, 5 2.5, 0 5" fill="#38bdf8"/>
+                    </marker>
+                  </defs>
+
+                  {/* Dashed boundary of Real Dipole */}
+                  <rect x="52" y="24" width="144" height="46" rx="6" fill="none" stroke="#22d3ee" strokeWidth="1.2" strokeDasharray="3,3" opacity="0.35"/>
+                  <text x="124" y="65" textAnchor="middle" fill="#06b6d4" fontSize="8" fontWeight="600" opacity="0.7">Générateur Réel</text>
+
+                  {/* Tension Arrow u_AB above */}
+                  <line x1="30" y1="12" x2="245" y2="12" stroke="#facc15" strokeWidth="1.6" markerEnd="url(#th-u-arrow)" strokeLinecap="round"/>
+                  <text x="137" y="8" textAnchor="middle" fill="#facc15" fontSize="10" fontWeight="bold" fontFamily="monospace">u = E - r·i</text>
+
+                  {/* Main Wires */}
+                  <line x1="20" y1="44" x2="68" y2="44" stroke="#22d3ee" strokeWidth="2.2" strokeLinecap="round"/>
+                  <line x1="98" y1="44" x2="130" y2="44" stroke="#22d3ee" strokeWidth="2.2" strokeLinecap="round"/>
+                  <line x1="172" y1="44" x2="255" y2="44" stroke="#22d3ee" strokeWidth="2.2" strokeLinecap="round"/>
+
+                  {/* Current i arrow on exit wire */}
+                  <line x1="210" y1="36" x2="232" y2="36" stroke="#38bdf8" strokeWidth="1.6" markerEnd="url(#th-i-arrow)" strokeLinecap="round"/>
+                  <text x="221" y="31" textAnchor="middle" fill="#38bdf8" fontSize="9" fontWeight="bold" fontFamily="monospace">i</text>
+
+                  {/* Ideal Voltage Source E */}
+                  <circle cx="83" cy="44" r="15" fill="#020617" stroke="#22d3ee" strokeWidth="2"/>
+                  <text x="83" y="48.5" textAnchor="middle" fill="#22d3ee" fontSize="12" fontWeight="bold" fontFamily="monospace">E</text>
+
+                  {/* Internal Resistor r (Series) */}
+                  <rect x="130" y="36" width="42" height="16" rx="2" fill="#020617" stroke="#22d3ee" strokeWidth="1.8"/>
+                  <text x="151" y="47.5" textAnchor="middle" fill="#22d3ee" fontSize="10" fontWeight="bold" fontFamily="monospace">r</text>
+
+                  {/* Terminals A and B */}
+                  <circle cx="20" cy="44" r="3.5" fill="#22d3ee"/>
+                  <text x="20" y="33" textAnchor="middle" fill="#94a3b8" fontSize="10" fontWeight="bold">A (+)</text>
+                  <circle cx="255" cy="44" r="3.5" fill="#22d3ee"/>
+                  <text x="255" y="33" textAnchor="middle" fill="#94a3b8" fontSize="10" fontWeight="bold">B (-)</text>
+                </svg>
+              </div>
+
+              <div className="p-2.5 rounded-xl bg-black/60 text-center font-mono text-cyan-300 font-bold text-[11px] border border-cyan-500/20">
                 <LatexMath math="u(i) = E - r \cdot i" />
               </div>
-              <ul className="text-[11px] text-slate-300 space-y-1.5 pl-1 leading-relaxed mt-2">
+              <ul className="text-[11px] text-slate-300 space-y-1 pl-1 leading-relaxed">
                 <li>• <strong>Tension à vide (<LatexMath math="i = 0" />) :</strong> <LatexMath math="u_0 = E" />.</li>
                 <li>• <strong>Courant de court-circuit (<LatexMath math="u = 0" />) :</strong> <LatexMath math="I_{cc} = \frac{E}{r}" />.</li>
               </ul>
             </div>
 
             {/* Norton Generator */}
-            <div className="p-5 rounded-2xl bg-slate-900/90 border border-indigo-500/30 space-y-3 shadow-md">
-              <div className="flex items-center justify-between">
-                <span className="text-[11px] font-extrabold text-indigo-400 uppercase tracking-wider">
-                  Modèle de Norton
-                </span>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-300 border border-indigo-500/20">
-                  Parallèle (η, r)
-                </span>
+            <div className="p-5 rounded-2xl bg-slate-900/90 border border-indigo-500/30 space-y-3 shadow-md flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-extrabold text-indigo-400 uppercase tracking-wider">
+                    Modèle de Norton
+                  </span>
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-300 border border-indigo-500/20">
+                    Parallèle (η, r)
+                  </span>
+                </div>
+                <p className="text-[10px] text-slate-400 mt-1">Source de courant idéale <LatexMath math="\eta" /> + résistance interne <LatexMath math="r" /> en <strong>parallèle</strong>.</p>
               </div>
-              <p className="text-[10px] text-slate-400">Modélisation : Source de courant idéale + résistance <LatexMath math="r" /> en parallèle.</p>
-              <div className="p-3 rounded-xl bg-black/60 text-center font-mono text-indigo-300 font-bold text-[11px] border border-indigo-500/20">
+
+              {/* Norton Schematic SVG */}
+              <div className="w-full bg-slate-950/80 py-3 px-3 rounded-xl border border-slate-800 flex justify-center items-center">
+                <svg viewBox="0 0 280 80" className="w-full max-w-[260px] h-auto" overflow="visible">
+                  <defs>
+                    <marker id="no-i-gen-arrow" markerWidth="5" markerHeight="5" refX="4" refY="2.5" orient="auto">
+                      <polygon points="0 0, 5 2.5, 0 5" fill="#818cf8"/>
+                    </marker>
+                    <marker id="no-out-i-arrow" markerWidth="5" markerHeight="5" refX="4" refY="2.5" orient="auto">
+                      <polygon points="0 0, 5 2.5, 0 5" fill="#a5b4fc"/>
+                    </marker>
+                    <marker id="no-u-arrow" markerWidth="5" markerHeight="5" refX="4" refY="2.5" orient="auto">
+                      <polygon points="0 0, 5 2.5, 0 5" fill="#facc15"/>
+                    </marker>
+                  </defs>
+
+                  {/* Dashed boundary of Real Dipole */}
+                  <rect x="52" y="14" width="138" height="58" rx="6" fill="none" stroke="#818cf8" strokeWidth="1.2" strokeDasharray="3,3" opacity="0.35"/>
+                  <text x="121" y="67" textAnchor="middle" fill="#818cf8" fontSize="8" fontWeight="600" opacity="0.7">Générateur Réel</text>
+
+                  {/* Top Rail (A) & Bottom Rail (B) */}
+                  <line x1="88" y1="24" x2="245" y2="24" stroke="#818cf8" strokeWidth="2" strokeLinecap="round"/>
+                  <line x1="88" y1="58" x2="245" y2="58" stroke="#818cf8" strokeWidth="2" strokeLinecap="round"/>
+
+                  {/* Current Source Branch (Left) */}
+                  <line x1="88" y1="24" x2="88" y2="58" stroke="#818cf8" strokeWidth="2"/>
+                  <circle cx="88" cy="41" r="13" fill="#020617" stroke="#818cf8" strokeWidth="1.8"/>
+                  {/* Arrow pointing UP */}
+                  <line x1="88" y1="48" x2="88" y2="33" stroke="#818cf8" strokeWidth="1.8" markerEnd="url(#no-i-gen-arrow)" strokeLinecap="round"/>
+                  <text x="68" y="44" textAnchor="middle" fill="#818cf8" fontSize="10" fontWeight="bold" fontFamily="monospace">η</text>
+
+                  {/* Parallel Resistor r Branch (Right) */}
+                  <line x1="152" y1="24" x2="152" y2="58" stroke="#818cf8" strokeWidth="2"/>
+                  <rect x="144" y="32" width="16" height="20" rx="2" fill="#020617" stroke="#818cf8" strokeWidth="1.8"/>
+                  <text x="152" y="45.5" textAnchor="middle" fill="#818cf8" fontSize="9" fontWeight="bold" fontFamily="monospace">r</text>
+
+                  {/* Output Current i arrow */}
+                  <line x1="200" y1="18" x2="225" y2="18" stroke="#a5b4fc" strokeWidth="1.5" markerEnd="url(#no-out-i-arrow)" strokeLinecap="round"/>
+                  <text x="212.5" y="14" textAnchor="middle" fill="#a5b4fc" fontSize="9" fontWeight="bold" fontFamily="monospace">i</text>
+
+                  {/* Voltage Arrow between Bornes A and B */}
+                  <line x1="262" y1="58" x2="262" y2="28" stroke="#facc15" strokeWidth="1.5" markerEnd="url(#no-u-arrow)" strokeLinecap="round"/>
+                  <text x="272" y="45" textAnchor="middle" fill="#facc15" fontSize="9" fontWeight="bold" fontFamily="monospace">u</text>
+
+                  {/* Terminals A and B */}
+                  <circle cx="245" cy="24" r="3.5" fill="#818cf8"/>
+                  <text x="245" y="14" textAnchor="middle" fill="#94a3b8" fontSize="10" fontWeight="bold">A</text>
+                  <circle cx="245" cy="58" r="3.5" fill="#818cf8"/>
+                  <text x="245" y="72" textAnchor="middle" fill="#94a3b8" fontSize="10" fontWeight="bold">B</text>
+                </svg>
+              </div>
+
+              <div className="p-2.5 rounded-xl bg-black/60 text-center font-mono text-indigo-300 font-bold text-[11px] border border-indigo-500/20">
                 <LatexMath math="i(u) = \eta - \frac{u}{r}" />
               </div>
-              <ul className="text-[11px] text-slate-300 space-y-1.5 pl-1 leading-relaxed mt-2">
+              <ul className="text-[11px] text-slate-300 space-y-1 pl-1 leading-relaxed">
                 <li>• <strong>Courant de court-circuit (<LatexMath math="u = 0" />) :</strong> <LatexMath math="i = \eta" />.</li>
                 <li>• <strong>Tension à vide (<LatexMath math="i = 0" />) :</strong> <LatexMath math="u_0 = r \cdot \eta" />.</li>
               </ul>
