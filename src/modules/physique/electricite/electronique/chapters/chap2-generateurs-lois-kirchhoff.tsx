@@ -857,16 +857,68 @@ export default function Chap2GenerateursLoisKirchhoff() {
           </div>
 
           {/* Thévenin <-> Norton Equivalence Box */}
-          <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 space-y-2 text-[11px] mt-2">
-            <h4 className="font-extrabold uppercase text-emerald-400 flex items-center gap-1.5">
-              <RefreshCw className="w-4 h-4" /> Équivalence Thévenin ⟺ Norton
-            </h4>
-            <p className="text-slate-300 leading-relaxed">
-              Les deux modèles sont rigoureusement interchangeables. On passe de l&apos;un à l&apos;autre via la loi d&apos;Ohm interne :
-            </p>
-            <div className="p-2.5 rounded-lg bg-black/60 border border-emerald-500/30 text-center text-emerald-300 font-mono font-bold text-[11px]">
-              <LatexMath math="E_{th} = r \cdot \eta \quad \text{et} \quad r_{th} = r_N = r" />
+          <div className="p-5 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 space-y-3 text-[11px] mt-2">
+            <div className="flex items-center justify-between">
+              <h4 className="font-extrabold uppercase text-emerald-400 flex items-center gap-2 text-xs">
+                <RefreshCw className="w-4 h-4" /> Formules d&apos;Équivalence Thévenin ⟺ Norton
+              </h4>
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-bold">
+                Dualité Tension / Courant
+              </span>
             </div>
+            
+            <p className="text-slate-300 leading-relaxed">
+              Les deux modèles sont rigoureusement interchangeables du point de vue des bornes extérieures :
+            </p>
+
+            <div className="p-3 rounded-xl bg-black/60 border border-emerald-500/30 text-center text-emerald-300 font-mono font-bold text-xs">
+              <LatexMath math="E_{th} = r \cdot \eta \quad \iff \quad \eta = \frac{E_{th}}{r} \quad \text{avec} \quad r_{th} = r_N = r" />
+            </div>
+
+            {/* Démonstration Pas-à-Pas */}
+            <CollapsibleProof
+              title="Démonstration : Preuve de l'équivalence Thévenin ⟺ Norton"
+              subtitle="Par identification des caractéristiques linéaires courant-tension"
+              color="emerald"
+              badge="Démonstration Mathématique"
+            >
+              <div className="space-y-3 text-slate-300 font-sans text-[11px]">
+                <p className="leading-relaxed">
+                  Pour que les deux dipôles soient rigoureusement équivalents, ils doivent posséder exactement la même caractéristique linéaire <LatexMath math="u(i)" /> entre leurs bornes :
+                </p>
+
+                <div className="space-y-2">
+                  <div className="p-2.5 rounded-lg bg-black/40 border border-slate-800 space-y-1">
+                    <span className="text-cyan-400 font-bold">1. Équation de Thévenin (Loi des mailles) :</span>
+                    <div className="text-center font-mono text-cyan-300 text-[11px]">
+                      <LatexMath math="u = E_{th} - r_{th} \cdot i" />
+                    </div>
+                  </div>
+
+                  <div className="p-2.5 rounded-lg bg-black/40 border border-slate-800 space-y-1">
+                    <span className="text-emerald-400 font-bold">2. Expression de l&apos;intensité <LatexMath math="i" /> en fonction de <LatexMath math="u" /> :</span>
+                    <div className="text-center font-mono text-emerald-300 text-[11px]">
+                      <LatexMath math="r_{th} \cdot i = E_{th} - u \implies i = \frac{E_{th}}{r_{th}} - \frac{u}{r_{th}}" />
+                    </div>
+                  </div>
+
+                  <div className="p-2.5 rounded-lg bg-black/40 border border-slate-800 space-y-1">
+                    <span className="text-indigo-400 font-bold">3. Comparaison avec la loi de Norton (Loi des nœuds) :</span>
+                    <div className="text-center font-mono text-indigo-300 text-[11px]">
+                      <LatexMath math="i = \eta_N - \frac{u}{r_N}" />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="p-2.5 rounded-lg bg-emerald-950/40 border border-emerald-500/30 text-slate-200">
+                  <p className="font-bold text-emerald-400 mb-1">Conclusion par identification terme à terme :</p>
+                  <ul className="space-y-1 pl-2 text-[10px] font-mono">
+                    <li>• Terme constant (courant de court-circuit) : <LatexMath math="\eta_N = \frac{E_{th}}{r_{th}} \iff E_{th} = r \cdot \eta_N" /></li>
+                    <li>• Pente (conductance interne) : <LatexMath math="\frac{1}{r_N} = \frac{1}{r_{th}} \iff r_N = r_{th} = r" /></li>
+                  </ul>
+                </div>
+              </div>
+            </CollapsibleProof>
           </div>
         </div>
       </section>
