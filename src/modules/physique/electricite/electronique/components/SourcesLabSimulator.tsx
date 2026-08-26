@@ -860,23 +860,23 @@ export default function SourcesLabSimulator() {
         {/* RIGHT: Digital HUD + Canvases (7 Cols) */}
         <div className="lg:col-span-7 p-4 flex flex-col justify-between space-y-3 bg-slate-950/80">
           
-          {/* Top HUD Digital Meters with LaTeX Headers */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-            <div className="p-2 rounded-xl bg-slate-900/80 border border-cyan-500/20 text-center">
-              <span className="text-[9px] text-slate-400 font-bold block">Tension <LatexMath math="u_{AB}" /></span>
-              <span className="text-xs sm:text-sm font-mono font-extrabold text-cyan-300">{u.toFixed(2)} V</span>
+          {/* Top HUD Digital Meters - Compact & Minimalist */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
+            <div className="py-1 px-2 rounded-lg bg-slate-900/90 border border-cyan-500/20 text-center flex flex-col justify-center">
+              <span className="text-[8.5px] text-slate-400 font-bold block leading-tight">Tension <LatexMath math="u_{AB}" /></span>
+              <span className="text-[11px] sm:text-xs font-mono font-extrabold text-cyan-300 leading-tight">{u.toFixed(2)} V</span>
             </div>
-            <div className="p-2 rounded-xl bg-slate-900/80 border border-indigo-500/20 text-center">
-              <span className="text-[9px] text-slate-400 font-bold block">Courant <LatexMath math="i" /></span>
-              <span className="text-xs sm:text-sm font-mono font-extrabold text-indigo-300">{i.toFixed(2)} A</span>
+            <div className="py-1 px-2 rounded-lg bg-slate-900/90 border border-indigo-500/20 text-center flex flex-col justify-center">
+              <span className="text-[8.5px] text-slate-400 font-bold block leading-tight">Courant <LatexMath math="i" /></span>
+              <span className="text-[11px] sm:text-xs font-mono font-extrabold text-indigo-300 leading-tight">{i.toFixed(2)} A</span>
             </div>
-            <div className="p-2 rounded-xl bg-slate-900/80 border border-emerald-500/20 text-center">
-              <span className="text-[9px] text-slate-400 font-bold block">Puissance <LatexMath math="P_L" /></span>
-              <span className="text-xs sm:text-sm font-mono font-extrabold text-emerald-300">{P_L.toFixed(1)} W</span>
+            <div className="py-1 px-2 rounded-lg bg-slate-900/90 border border-emerald-500/20 text-center flex flex-col justify-center">
+              <span className="text-[8.5px] text-slate-400 font-bold block leading-tight">Puissance <LatexMath math="P_L" /></span>
+              <span className="text-[11px] sm:text-xs font-mono font-extrabold text-emerald-300 leading-tight">{P_L.toFixed(1)} W</span>
             </div>
-            <div className="p-2 rounded-xl bg-slate-900/80 border border-amber-500/20 text-center">
-              <span className="text-[9px] text-slate-400 font-bold block">Rendement <LatexMath math="\rho" /></span>
-              <span className="text-xs sm:text-sm font-mono font-extrabold text-amber-300">{efficiency.toFixed(0)} %</span>
+            <div className="py-1 px-2 rounded-lg bg-slate-900/90 border border-amber-500/20 text-center flex flex-col justify-center">
+              <span className="text-[8.5px] text-slate-400 font-bold block leading-tight">Rendement <LatexMath math="\rho" /></span>
+              <span className="text-[11px] sm:text-xs font-mono font-extrabold text-amber-300 leading-tight">{efficiency.toFixed(0)} %</span>
             </div>
           </div>
 
