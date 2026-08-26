@@ -3,13 +3,11 @@
 
 import React, { useMemo, useState, useEffect } from "react";
 import {
-  Activity,
   Compass,
   Play,
   Pause,
   RotateCcw,
   Sparkles,
-  Zap,
 } from "lucide-react";
 import LatexMath from "@/components/ui/LatexMath";
 
@@ -22,12 +20,12 @@ export default function ImpedanceFresnel3DCanvas() {
   const [isPlaying, setIsPlaying] = useState(true);
   const [speedMultiplier, setSpeedMultiplier] = useState(1.0);
 
-  // Electrical Parameters
+  // Electrical Parameters (SI Units)
   const [voltageAmp, setVoltageAmp] = useState(12.0); // V
   const [frequency, setFrequency] = useState(1.0); // Hz
-  const [R, setR] = useState(6.0); // Ohms
-  const [L, setL] = useState(0.8); // Henry (normalized)
-  const [C, setC] = useState(0.25); // Farad (normalized)
+  const [R, setR] = useState(5.0); // Ohms
+  const [L, setL] = useState(0.8); // Henry
+  const [C, setC] = useState(0.025); // Farad (25 mF)
 
   const omega = useMemo(() => 2 * Math.PI * frequency, [frequency]);
 
@@ -44,15 +42,16 @@ export default function ImpedanceFresnel3DCanvas() {
     setFrequency(parseFloat(f0.toFixed(2)));
   };
 
-  /* ── 100% Strict Physical Calculations ── */
-  const { Z_mag, phaseAngle, currentAmp, activePower, reactivePower, cosPhi, stateBadge, badgeColor } =
+  /* ── 100% Strict Physical & Mathematical Calculations ── */
+  const { Z_mag, phaseAngle, currentAmp, activePower, reactivePower, cosPhi, stateBadge, badgeColor, formulaI } =
     useMemo(() => {
       let X = 0;
       let res = R;
       let phi = 0;
       let mag = 0;
-      let badge = "En phase";
+      let badge = "\\text{En phase}";
       let color = "text-emerald-300 bg-emerald-500/10 border-emerald-500/30";
+      let formI = "i(t) = I_m \\sin(\\omega t)";
 
       if (tab === "resistor") {
         // Pure Resistor: Z = R, phi = 0 strictly
@@ -62,6 +61,7 @@ export default function ImpedanceFresnel3DCanvas() {
         phi = 0;
         badge = "\\text{Purement Résistif} \\cdot \\phi = 0^\\circ \\text{ (En phase)}";
         color = "text-emerald-300 bg-emerald-500/10 border-emerald-500/30";
+        formI = "i(t) = Im · sin(ωt)";
       } else if (tab === "inductor") {
         // Pure Inductance: Z = L*omega, phi = +PI/2 (+90°) strictly
         res = 0;
@@ -70,19 +70,24 @@ export default function ImpedanceFresnel3DCanvas() {
         phi = Math.PI / 2; // +90° strictly
         badge = "\\text{Bobine Idéale} \\cdot \\phi = +90^\\circ \\text{ (Tension en avance)}";
         color = "text-amber-300 bg-amber-500/10 border-amber-500/30";
+        formI = "i(t) = Im · sin(ωt - 90°)";
       } else if (tab === "capacitor") {
         // Pure Capacitance: Z = 1/(C*omega), phi = -PI/2 (-90°) strictly
         res = 0;
         X = -1 / (C * omega);
         mag = Math.abs(X);
         phi = -Math.PI / 2; // -90° strictly
-        badge = "\\text{Condensateur Idéal} \\cdot \\phi = -90^\\circ \\text{ (Tension en retard)}";
+        badge = "\\text{Condensateur Idéal} \\cdot \\phi = -90^\\circ \\text{ (Courant en avance)}";
         color = "text-cyan-300 bg-cyan-500/10 border-cyan-500/30";
+        formI = "i(t) = Im · sin(ωt + 90°)";
       } else {
-        // RLC Series Circuit
+        // RLC Series Circuit: Z = R + j*(L*omega - 1/(C*omega))
         res = R;
-        X = L * omega - 1 / (C * omega);
+        const XL = L * omega;
+        const XC = 1 / (C * omega);
+        X = XL - XC;
         mag = Math.sqrt(res * res + X * X);
+        // phi is STRICTLY in (-pi/2, +pi/2) because res = R > 0
         phi = Math.atan2(X, res);
 
         const deg = Math.round((phi * 180) / Math.PI);
@@ -90,12 +95,15 @@ export default function ImpedanceFresnel3DCanvas() {
         if (diffF < 0.04) {
           badge = "\\text{🎯 Résonance (} f = f_0, \\ Z = R, \\ I_{\\max} \\text{)}";
           color = "text-purple-300 bg-purple-500/15 border-purple-500/40";
+          formI = "i(t) = Im · sin(ωt)";
         } else if (X > 0) {
-          badge = `\\text{Comportement Inductif} \\cdot \\phi = +${deg}^\\circ \\text{ (Avance)}`;
+          badge = `\\text{Comportement Inductif} \\cdot \\phi = +${deg}^\\circ \\text{ (Tension en avance)}`;
           color = "text-amber-300 bg-amber-500/10 border-amber-500/30";
+          formI = `i(t) = Im · sin(ωt - ${deg}°)`;
         } else {
-          badge = `\\text{Comportement Capacitif} \\cdot \\phi = ${deg}^\\circ \\text{ (Retard)}`;
+          badge = `\\text{Comportement Capacitif} \\cdot \\phi = ${deg}^\\circ \\text{ (Courant en avance)}`;
           color = "text-cyan-300 bg-cyan-500/10 border-cyan-500/30";
+          formI = `i(t) = Im · sin(ωt + ${Math.abs(deg)}°)`;
         }
       }
 
@@ -114,6 +122,7 @@ export default function ImpedanceFresnel3DCanvas() {
         cosPhi: Math.cos(phi),
         stateBadge: badge,
         badgeColor: color,
+        formulaI: formI,
       };
     }, [tab, R, L, C, omega, voltageAmp, frequency, f0]);
 
@@ -138,6 +147,7 @@ export default function ImpedanceFresnel3DCanvas() {
   }, [isPlaying, omega, speedMultiplier]);
 
   // Trigonometric angles of vectors (counter-clockwise rotation)
+  // phi = phi_u - phi_i => theta_u = timeAngle, theta_i = timeAngle - phi
   const uAngle = timeAngle;
   const iAngle = timeAngle - phaseAngle;
 
@@ -146,7 +156,7 @@ export default function ImpedanceFresnel3DCanvas() {
   const circleCY = 110;
   const maxCircleR = 75;
 
-  // Normalised vector lengths
+  // Normalised vector lengths (visually proportional)
   const lenU = Math.min(Math.max((voltageAmp / 24) * maxCircleR, 44), maxCircleR);
   const lenI = Math.min(Math.max((currentAmp / 5) * (maxCircleR * 0.85), 32), maxCircleR * 0.85);
 
@@ -166,11 +176,13 @@ export default function ImpedanceFresnel3DCanvas() {
   // Oscilloscope parameters (Right side: x = 235 to 635)
   const oscXStart = 235;
   const oscWidth = 395;
-  const oscMidY = circleCY; // Exactly aligned with the circle center!
-  const oscAmpU = Math.min((voltageAmp / 24) * maxCircleR, maxCircleR);
-  const oscAmpI = Math.min((currentAmp / 5) * (maxCircleR * 0.85), maxCircleR * 0.85);
+  const oscMidY = circleCY; // Exactly aligned with circle center!
+  const oscAmpU = lenU;
+  const oscAmpI = lenI;
 
-  // Oscilloscope Traveling Wave Points (Generating moving wave in real-time)
+  // Oscilloscope Traveling Wave Points (Time t runs from 0 to 2T to the right)
+  // u(t) = Um * sin(omega*t + timeAngle)
+  // i(t) = Im * sin(omega*t - phi + timeAngle)
   const wavePoints = 90;
   const ptsU: string[] = [];
   const ptsI: string[] = [];
@@ -178,21 +190,24 @@ export default function ImpedanceFresnel3DCanvas() {
   for (let i = 0; i <= wavePoints; i++) {
     const frac = i / wavePoints;
     const x = oscXStart + frac * oscWidth;
-    const thetaSpatial = timeAngle - frac * 4 * Math.PI;
-    const yU = oscMidY - Math.sin(thetaSpatial) * oscAmpU;
-    const yI = oscMidY - Math.sin(thetaSpatial - phaseAngle) * oscAmpI;
+    // thetaTime = frac * 4*PI + timeAngle
+    const thetaTime = frac * 4 * Math.PI + timeAngle;
+    const yU = oscMidY - Math.sin(thetaTime) * oscAmpU;
+    const yI = oscMidY - Math.sin(thetaTime - phaseAngle) * oscAmpI;
 
     ptsU.push(`${x.toFixed(1)},${yU.toFixed(1)}`);
     ptsI.push(`${x.toFixed(1)},${yI.toFixed(1)}`);
   }
 
-  // Live Pen coordinates at the entrance of the oscilloscope (x = oscXStart)
+  // Live Pen coordinates at the entrance of the oscilloscope (x = oscXStart, t = 0)
+  // At t=0: yU(0) = oscMidY - sin(timeAngle)*lenU === uTipY (PIXEL-PERFECT HORIZONTAL MATCH!)
+  // At t=0: yI(0) = oscMidY - sin(timeAngle - phi)*lenI === iTipY (PIXEL-PERFECT HORIZONTAL MATCH!)
   const livePenUX = oscXStart;
   const livePenUY = uTipY;
   const livePenIX = oscXStart;
   const livePenIY = iTipY;
 
-  // Instantaneous voltage and current
+  // Instantaneous voltage and current values
   const uInstant = voltageAmp * Math.sin(uAngle);
   const iInstant = currentAmp * Math.sin(iAngle);
 
@@ -286,11 +301,17 @@ export default function ImpedanceFresnel3DCanvas() {
             <line x1={circleCX - maxCircleR - 15} y1={circleCY} x2={circleCX + maxCircleR + 15} y2={circleCY} stroke="#475569" strokeWidth="1.4" />
             <line x1={circleCX} y1={circleCY - maxCircleR - 15} x2={circleCX} y2={circleCY + maxCircleR + 15} stroke="#475569" strokeWidth="1.4" />
 
-            {/* Axis Labels Placed Safely Far from Trajectories */}
+            {/* Vertical and Horizontal Axis Labels (Re & +j Im) */}
             <text x={circleCX + maxCircleR + 20} y={circleCY + 3.5} fill="#94a3b8" fontSize="9" fontWeight="bold" fontFamily="serif">Re</text>
-            <text x={circleCX} y={circleCY - maxCircleR - 18} fill="#94a3b8" fontSize="9" fontWeight="bold" textAnchor="middle" fontFamily="serif">+j</text>
+            <text x={circleCX} y={circleCY - maxCircleR - 18} fill="#94a3b8" fontSize="9" fontWeight="bold" textAnchor="middle" fontFamily="serif">+j (Im)</text>
 
-            {/* Phase Arc Between Vectors */}
+            {/* Vertical Projection to Imaginary Axis */}
+            <line x1={uTipX} y1={uTipY} x2={circleCX} y2={uTipY} stroke="#00f0ff" strokeWidth="1" strokeDasharray="2 2" opacity={0.5} />
+            <line x1={iTipX} y1={iTipY} x2={circleCX} y2={iTipY} stroke="#ff007f" strokeWidth="1" strokeDasharray="2 2" opacity={0.5} />
+            <circle cx={circleCX} cy={uTipY} r={2.5} fill="#00f0ff" />
+            <circle cx={circleCX} cy={iTipY} r={2.5} fill="#ff007f" />
+
+            {/* Phase Arc Between Vectors (Always minor acute angle <= 90 deg) */}
             {Math.abs(phaseAngle) > 0.05 && (
               <path
                 d={`M ${circleCX + Math.cos(iAngle) * 26} ${circleCY - Math.sin(iAngle) * 26} A 26 26 0 0 ${phaseAngle > 0 ? 0 : 1} ${circleCX + Math.cos(uAngle) * 26} ${circleCY - Math.sin(uAngle) * 26}`}
@@ -481,7 +502,7 @@ export default function ImpedanceFresnel3DCanvas() {
             <text x={oscXStart + oscWidth + 12} y={oscMidY + 3.5} fill="#94a3b8" fontSize="9" fontWeight="bold">t</text>
             <text x={oscXStart - 6} y={oscMidY - maxCircleR - 8} fill="#94a3b8" fontSize="9" fontWeight="bold" textAnchor="end">u, i</text>
 
-            {/* Traveling Wave u(t) (Neon Cyan with Drop Glow) */}
+            {/* Traveling Wave u(t) (Neon Cyan) */}
             <polyline
               fill="none"
               stroke="#00f0ff"
@@ -489,10 +510,9 @@ export default function ImpedanceFresnel3DCanvas() {
               points={ptsU.join(" ")}
               strokeLinecap="round"
               strokeLinejoin="round"
-              filter="url(#neonCyanGlow)"
             />
 
-            {/* Traveling Wave i(t) (Neon Magenta with Dashed Drop Glow) */}
+            {/* Traveling Wave i(t) (Neon Magenta Dashed) */}
             <polyline
               fill="none"
               stroke="#ff007f"
@@ -501,16 +521,15 @@ export default function ImpedanceFresnel3DCanvas() {
               points={ptsI.join(" ")}
               strokeLinecap="round"
               strokeLinejoin="round"
-              filter="url(#neonMagentaGlow)"
             />
 
             {/* Oscilloscope Digital HUD (Top Right Screen Pill) */}
-            <rect x={oscXStart + oscWidth - 155} y={oscMidY - maxCircleR - 4} width="150" height="32" rx="5" fill="#01070e" fillOpacity="0.9" stroke="#0e3a4f" strokeWidth="0.8" />
+            <rect x={oscXStart + oscWidth - 170} y={oscMidY - maxCircleR - 4} width="165" height="32" rx="5" fill="#01070e" fillOpacity="0.9" stroke="#0e3a4f" strokeWidth="0.8" />
             <text x={oscXStart + oscWidth - 10} y={oscMidY - maxCircleR + 9} fill="#00f0ff" fontSize="9.5" fontWeight="bold" fontFamily="monospace" textAnchor="end">
               CH1: u(t) = Um·sin(ωt)
             </text>
             <text x={oscXStart + oscWidth - 10} y={oscMidY - maxCircleR + 22} fill="#ff007f" fontSize="9.5" fontWeight="bold" fontFamily="monospace" textAnchor="end">
-              CH2: i(t) = Im·sin(ωt - φ)
+              CH2: {formulaI}
             </text>
           </g>
         </svg>
@@ -554,7 +573,7 @@ export default function ImpedanceFresnel3DCanvas() {
         </div>
       </div>
 
-      {/* ── INTERACTIVE PARAMETERS SLIDERS ── */}
+      {/* ── INTERACTIVE PARAMETERS SLIDERS (ALL 5 CONTROLS VISIBLE IN RLC MODE) ── */}
       <div className="p-3 bg-slate-900/90 rounded-2xl border border-slate-800/90 space-y-2.5">
         <div className="flex items-center justify-between flex-wrap gap-2 text-xs font-bold text-slate-300">
           <span>Paramètres Électriques Réglables :</span>
@@ -569,8 +588,9 @@ export default function ImpedanceFresnel3DCanvas() {
           )}
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-          {/* Voltage Um */}
+        {/* Dynamic Sliders Grid */}
+        <div className={`grid gap-3 text-xs ${tab === "rlc" ? "grid-cols-2 sm:grid-cols-3 lg:grid-cols-5" : "grid-cols-2 sm:grid-cols-4"}`}>
+          {/* Slider 1: Voltage Um */}
           <div className="space-y-1">
             <div className="flex justify-between text-[11px]">
               <span className="text-slate-400">Tension Um</span>
@@ -587,7 +607,7 @@ export default function ImpedanceFresnel3DCanvas() {
             />
           </div>
 
-          {/* Frequency f */}
+          {/* Slider 2: Frequency f */}
           <div className="space-y-1">
             <div className="flex justify-between text-[11px]">
               <span className="text-slate-400">Fréquence f</span>
@@ -604,7 +624,7 @@ export default function ImpedanceFresnel3DCanvas() {
             />
           </div>
 
-          {/* Resistance R */}
+          {/* Slider 3: Resistance R */}
           <div className="space-y-1">
             <div className="flex justify-between text-[11px]">
               <span className="text-slate-400">Résistance R</span>
@@ -624,29 +644,48 @@ export default function ImpedanceFresnel3DCanvas() {
             />
           </div>
 
-          {/* Inductance L or Capacitance C */}
-          <div className="space-y-1">
-            <div className="flex justify-between text-[11px]">
-              <span className="text-slate-400">{tab === "capacitor" ? "Capacité C" : "Inductance L"}</span>
-              <span className={`font-mono font-bold ${tab === "resistor" ? "text-slate-600" : "text-amber-400"}`}>
-                {tab === "resistor" ? "—" : tab === "capacitor" ? <LatexMath math={`${(C * 100).toFixed(0)}\\text{ mF}`} /> : <LatexMath math={`${(L * 100).toFixed(0)}\\text{ mH}`} />}
-              </span>
+          {/* Slider 4: Inductance L */}
+          {(tab === "rlc" || tab === "inductor" || tab === "resistor") && (
+            <div className="space-y-1">
+              <div className="flex justify-between text-[11px]">
+                <span className="text-slate-400">Inductance L</span>
+                <span className={`font-mono font-bold ${tab === "resistor" ? "text-slate-600" : "text-amber-400"}`}>
+                  {tab === "resistor" ? "—" : <LatexMath math={`${(L * 1000).toFixed(0)}\\text{ mH}`} />}
+                </span>
+              </div>
+              <input
+                type="range"
+                min="0.1"
+                max="2.0"
+                step="0.05"
+                value={L}
+                onChange={(e) => setL(parseFloat(e.target.value))}
+                disabled={tab === "resistor"}
+                className={`accent-amber-500 cursor-pointer w-full h-1.5 bg-slate-800 rounded-lg ${tab === "resistor" ? "opacity-25 cursor-not-allowed" : "opacity-100"}`}
+              />
             </div>
-            <input
-              type="range"
-              min="0.1"
-              max="2.0"
-              step="0.05"
-              value={tab === "capacitor" ? C : L}
-              onChange={(e) => {
-                const val = parseFloat(e.target.value);
-                if (tab === "capacitor") setC(val);
-                else setL(val);
-              }}
-              disabled={tab === "resistor"}
-              className={`accent-amber-500 cursor-pointer w-full h-1.5 bg-slate-800 rounded-lg ${tab === "resistor" ? "opacity-25 cursor-not-allowed" : "opacity-100"}`}
-            />
-          </div>
+          )}
+
+          {/* Slider 5: Capacitance C */}
+          {(tab === "rlc" || tab === "capacitor") && (
+            <div className="space-y-1">
+              <div className="flex justify-between text-[11px]">
+                <span className="text-slate-400">Capacité C</span>
+                <span className="font-mono font-bold text-cyan-400">
+                  <LatexMath math={`${(C * 1000).toFixed(0)}\\text{ mF}`} />
+                </span>
+              </div>
+              <input
+                type="range"
+                min="0.005"
+                max="0.100"
+                step="0.005"
+                value={C}
+                onChange={(e) => setC(parseFloat(e.target.value))}
+                className="accent-cyan-500 cursor-pointer w-full h-1.5 bg-slate-800 rounded-lg opacity-100"
+              />
+            </div>
+          )}
         </div>
       </div>
 
