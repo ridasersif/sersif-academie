@@ -21,6 +21,7 @@ import {
   Workflow,
   Sparkles,
   RefreshCw,
+  Sliders,
 } from "lucide-react";
 import LatexMath from "@/components/ui/LatexMath";
 
@@ -930,91 +931,366 @@ export default function Chap2GenerateursLoisKirchhoff() {
         </div>
       </section>
 
-      {/* ── PARTIE 3: THÉORÈMES DES RÉSEAUX LINÉAIRES ── */}
+      {/* ── PARTIE 3: OUTILS FONDAMENTAUX & THÉORÈMES DES RÉSEAUX ── */}
       <section className="bg-card/90 border border-border/80 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 shadow-sm w-full max-w-full overflow-x-hidden space-y-6">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 text-[11px] font-extrabold mb-1">
           <Cpu className="w-3.5 h-3.5" />
-          <span>Partie 3 • Boîte à Outils Fondamentale</span>
+          <span>Partie 3 • Outils Fondamentaux & Théorèmes</span>
         </div>
 
         <h2 className="text-lg sm:text-lg font-black text-foreground leading-tight">
-          3. Théorèmes des Réseaux : Superposition, Thévenin, Norton & Millman
+          3. Outils Fondamentaux & Théorèmes des Réseaux Linéaires
         </h2>
 
         <p className="text-[11px] text-muted-foreground leading-relaxed">
-          Pour résoudre des circuits complexes à plusieurs mailles sans poser des systèmes d&apos;équations matriciels lourds, les quatre théorèmes fondamentaux permettent de simplifier n&apos;importe quel réseau linéaire.
+          Avant d&apos;aborder les grands théorèmes des réseaux, la maîtrise des lois de réduction (associations de résistances) et des règles de division (tension et courant) constitue le socle indispensable pour simplifier n&apos;importe quel circuit sans calcul matriciel lourd.
         </p>
 
-        {/* 1. Superposition */}
-        <CollapsibleProof
-          title="Théorème 1 : Théorème de Superposition"
-          subtitle="Linéarité des équations & principe d'extinction des sources indépendantes"
-          color="cyan"
-          badge="Théorème Fondamental"
-        >
-          <div className="space-y-2 text-slate-300 font-sans text-[11px]">
-            <p className="leading-relaxed">
-              Dans un réseau linéaire constitué de dipôles passifs et de plusieurs sources indépendantes, la tension ou l&apos;intensité dans une branche est la <strong>somme algébrique</strong> des grandeurs produites par chaque source agissant seule, les autres étant éteintes (passivées).
-            </p>
-            <div className="p-2 rounded bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 text-center font-mono font-bold">
-              <LatexMath math="u_{\text{total}} = \sum_{k=1}^{n} u_{(E_k \text{ seule})} \quad \text{et} \quad i_{\text{total}} = \sum_{k=1}^{n} i_{(E_k \text{ seule})}" />
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 font-mono text-[11px] pt-1">
-              <div className="p-2 rounded bg-black/50 border border-slate-800">
-                <span className="text-cyan-400 font-bold">Éteindre source de tension :</span> <LatexMath math="E=0\text{ V} \implies \text{Fil (Court-circuit)}" />
-              </div>
-              <div className="p-2 rounded bg-black/50 border border-slate-800">
-                <span className="text-indigo-400 font-bold">Éteindre source de courant :</span> <LatexMath math="\eta=0\text{ A} \implies \text{Circuit ouvert}" />
-              </div>
-            </div>
+        {/* ── SOUS-SECTION A: LES OUTILS FONDAMENTAUX ── */}
+        <div className="space-y-5">
+          <div className="flex items-center gap-2 text-xs font-bold text-amber-400 uppercase tracking-wider border-b border-slate-800 pb-2">
+            <Sliders className="w-4 h-4" /> A. Les Outils Fondamentaux de Réduction
           </div>
-        </CollapsibleProof>
 
-        {/* 2. Thévenin */}
-        <CollapsibleProof
-          title="Théorème 2 : Théorème de Thévenin"
-          subtitle="Modélisation globale d'un réseau dipolaire vu de deux bornes A et B"
-          color="amber"
-          badge="Modèle (Eth, Rth)"
-        >
-          <div className="space-y-2 text-slate-300 font-sans text-[11px]">
-            <p className="leading-relaxed">
-              Tout réseau linéaire vu entre deux bornes A et B est rigoureusement équivalent à un générateur de Thévenin unique constitué d&apos;une source idéale <LatexMath math="E_{th}" /> en série avec une résistance <LatexMath math="R_{th}" /> :
-            </p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] font-mono pt-1">
-              <div className="p-2.5 rounded bg-black/50 border border-amber-500/20 space-y-1">
-                <span className="font-sans font-bold text-amber-400">1. Calcul de Eth :</span>
-                <p className="font-sans text-[11px] text-slate-300">Tension à vide mesurée entre A et B sans aucune charge connectée :</p>
-                <div className="text-center text-amber-300 font-bold"><LatexMath math="E_{th} = U_{AB,\text{vide}}" /></div>
+          {/* 1. Association des Résistances */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            
+            {/* Association Série */}
+            <div className="p-4 rounded-xl bg-slate-900/60 border border-cyan-500/20 space-y-3 shadow-sm flex flex-col justify-between">
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-bold text-cyan-400 uppercase tracking-wider">Association en Série</span>
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-cyan-500/10 text-cyan-300 border border-cyan-500/20">Même courant <LatexMath math="i" /></span>
+                </div>
+                <p className="text-[11px] text-slate-300 leading-relaxed">
+                  Deux dipôles sont en série lorsqu&apos;ils sont traversés par le <strong>même courant</strong>. La tension totale est la somme des tensions élémentaires.
+                </p>
               </div>
-              <div className="p-2.5 rounded bg-black/50 border border-amber-500/20 space-y-1">
-                <span className="font-sans font-bold text-amber-400">2. Calcul de Rth :</span>
-                <p className="font-sans text-[11px] text-slate-300">Résistance équivalente vue entre A et B après extinction de toutes les sources :</p>
-                <div className="text-center text-amber-300 font-bold"><LatexMath math="R_{th} = R_{AB,\text{éteint}}" /></div>
-              </div>
-            </div>
-          </div>
-        </CollapsibleProof>
 
-        {/* 3. Millman */}
-        <CollapsibleProof
-          title="Théorème 3 : Théorème de Millman"
-          subtitle="Loi des nœuds exprimée en termes de potentiels et de conductances"
-          color="emerald"
-          badge="Méthode Rapide"
-        >
-          <div className="space-y-2 text-slate-300 font-sans text-[11px]">
-            <p className="leading-relaxed">
-              Pour un nœud A relié à <LatexMath math="n" /> branches composées chacune d&apos;un potentiel <LatexMath math="V_k" /> à travers une résistance <LatexMath math="R_k" /> et de <LatexMath math="p" /> sources de courant incidentes <LatexMath math="\eta_j" /> :
-            </p>
-            <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-center font-mono font-bold text-[11px]">
-              <LatexMath math="V_A = \frac{\sum_{k=1}^{n} \frac{V_k}{R_k} + \sum_{j=1}^{p} \eta_j}{\sum_{k=1}^{n} \frac{1}{R_k}} = \frac{\sum G_k V_k + \sum \eta_j}{\sum G_k}" />
+              {/* SVG Série */}
+              <div className="w-full bg-slate-950/80 py-2.5 px-3 rounded-lg border border-slate-800 flex justify-center items-center">
+                <svg viewBox="0 0 240 50" className="w-full max-w-[220px] h-auto" overflow="visible">
+                  <line x1="15" y1="25" x2="45" y2="25" stroke="#22d3ee" strokeWidth="2" strokeLinecap="round"/>
+                  <rect x="45" y="16" width="35" height="18" rx="2" fill="#020617" stroke="#22d3ee" strokeWidth="1.8"/>
+                  <text x="62.5" y="29" textAnchor="middle" fill="#22d3ee" fontSize="10" fontWeight="bold" fontFamily="monospace">R₁</text>
+                  
+                  <line x1="80" y1="25" x2="110" y2="25" stroke="#22d3ee" strokeWidth="2" strokeLinecap="round"/>
+                  
+                  <rect x="110" y="16" width="35" height="18" rx="2" fill="#020617" stroke="#22d3ee" strokeWidth="1.8"/>
+                  <text x="127.5" y="29" textAnchor="middle" fill="#22d3ee" fontSize="10" fontWeight="bold" fontFamily="monospace">R₂</text>
+                  
+                  <line x1="145" y1="25" x2="225" y2="25" stroke="#22d3ee" strokeWidth="2" strokeLinecap="round"/>
+                  
+                  <circle cx="15" cy="25" r="3" fill="#22d3ee"/>
+                  <text x="15" y="12" textAnchor="middle" fill="#94a3b8" fontSize="9.5" fontWeight="bold">A</text>
+                  <circle cx="225" cy="25" r="3" fill="#22d3ee"/>
+                  <text x="225" y="12" textAnchor="middle" fill="#94a3b8" fontSize="9.5" fontWeight="bold">B</text>
+                </svg>
+              </div>
+
+              <div className="p-2 rounded bg-black/60 text-center font-mono text-cyan-300 font-bold text-xs border border-cyan-500/20">
+                <LatexMath math="R_{eq} = \sum R_k = R_1 + R_2 + \dots + R_n" />
+              </div>
             </div>
-            <p className="text-[11px] text-slate-400 leading-snug">
-              ⚠️ <strong>Convention de signe :</strong> Les courants de source <LatexMath math="\eta_j" /> sont comptés positivement s&apos;ils <strong>entrent</strong> dans le nœud A, négativement s&apos;ils en sortent.
-            </p>
+
+            {/* Association Parallèle */}
+            <div className="p-4 rounded-xl bg-slate-900/60 border border-indigo-500/20 space-y-3 shadow-sm flex flex-col justify-between">
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-bold text-indigo-400 uppercase tracking-wider">Association en Parallèle</span>
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-300 border border-indigo-500/20">Même tension <LatexMath math="u" /></span>
+                </div>
+                <p className="text-[11px] text-slate-300 leading-relaxed">
+                  Deux dipôles sont en parallèle lorsqu&apos;ils sont soumis à la <strong>même tension</strong>. Les conductances s&apos;additionnent directement.
+                </p>
+              </div>
+
+              {/* SVG Parallèle */}
+              <div className="w-full bg-slate-950/80 py-2 px-3 rounded-lg border border-slate-800 flex justify-center items-center">
+                <svg viewBox="0 0 240 60" className="w-full max-w-[220px] h-auto" overflow="visible">
+                  <line x1="20" y1="18" x2="220" y2="18" stroke="#818cf8" strokeWidth="1.8" strokeLinecap="round"/>
+                  <line x1="20" y1="42" x2="220" y2="42" stroke="#818cf8" strokeWidth="1.8" strokeLinecap="round"/>
+                  
+                  {/* Branch 1 */}
+                  <line x1="80" y1="18" x2="80" y2="42" stroke="#818cf8" strokeWidth="1.8"/>
+                  <rect x="72" y="22" width="16" height="16" rx="2" fill="#020617" stroke="#818cf8" strokeWidth="1.6"/>
+                  <text x="80" y="33.5" textAnchor="middle" fill="#818cf8" fontSize="8.5" fontWeight="bold" fontFamily="monospace">R₁</text>
+                  
+                  {/* Branch 2 */}
+                  <line x1="160" y1="18" x2="160" y2="42" stroke="#818cf8" strokeWidth="1.8"/>
+                  <rect x="152" y="22" width="16" height="16" rx="2" fill="#020617" stroke="#818cf8" strokeWidth="1.6"/>
+                  <text x="160" y="33.5" textAnchor="middle" fill="#818cf8" fontSize="8.5" fontWeight="bold" fontFamily="monospace">R₂</text>
+                  
+                  <circle cx="20" cy="18" r="3" fill="#818cf8"/>
+                  <text x="20" y="10" textAnchor="middle" fill="#94a3b8" fontSize="9" fontWeight="bold">A</text>
+                  <circle cx="20" cy="42" r="3" fill="#818cf8"/>
+                  <text x="20" y="54" textAnchor="middle" fill="#94a3b8" fontSize="9" fontWeight="bold">B</text>
+                </svg>
+              </div>
+
+              <div className="p-2 rounded bg-black/60 text-center font-mono text-indigo-300 font-bold text-xs border border-indigo-500/20">
+                <LatexMath math="G_{eq} = \sum G_k \iff \frac{1}{R_{eq}} = \frac{1}{R_1} + \frac{1}{R_2} \implies R_{eq} = \frac{R_1 R_2}{R_1 + R_2}" />
+              </div>
+            </div>
+
           </div>
-        </CollapsibleProof>
+
+          {/* 2. Pont Diviseur de Tension (PDT) & Pont Diviseur de Courant (PDC) */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+            {/* Pont Diviseur de Tension (PDT) */}
+            <div className="p-5 rounded-2xl bg-slate-900/90 border border-emerald-500/30 space-y-3 shadow-md flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-[11px] font-extrabold text-emerald-400 uppercase tracking-wider">
+                    Pont Diviseur de Tension (PDT)
+                  </span>
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-300 border border-emerald-500/20">
+                    Série non chargée
+                  </span>
+                </div>
+                <p className="text-[11px] text-slate-300 leading-relaxed">
+                  Permet de calculer directement la tension aux bornes d&apos;une résistance <LatexMath math="R_2" /> dans une branche série alimentée par une tension totale <LatexMath math="E" />.
+                </p>
+              </div>
+
+              {/* SVG PDT */}
+              <div className="w-full bg-slate-950/80 py-3 px-3 rounded-xl border border-slate-800 flex justify-center items-center">
+                <svg viewBox="0 0 250 65" className="w-full max-w-[230px] h-auto" overflow="visible">
+                  <defs>
+                    <marker id="pdt-u-arrow" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                      <polygon points="0 0, 6 3, 0 6" fill="#facc15"/>
+                    </marker>
+                    <marker id="pdt-u2-arrow" markerWidth="5" markerHeight="5" refX="4" refY="2.5" orient="auto">
+                      <polygon points="0 0, 5 2.5, 0 5" fill="#34d399"/>
+                    </marker>
+                  </defs>
+
+                  {/* Total Voltage Arrow E */}
+                  <line x1="25" y1="12" x2="225" y2="12" stroke="#facc15" strokeWidth="1.6" markerEnd="url(#pdt-u-arrow)" strokeLinecap="round"/>
+                  <text x="125" y="8" textAnchor="middle" fill="#facc15" fontSize="10" fontWeight="bold" fontFamily="monospace">E (Tension totale)</text>
+
+                  {/* Wires & Resistors */}
+                  <line x1="25" y1="36" x2="55" y2="36" stroke="#10b981" strokeWidth="2" strokeLinecap="round"/>
+                  <rect x="55" y="27" width="38" height="18" rx="2" fill="#020617" stroke="#10b981" strokeWidth="1.8"/>
+                  <text x="74" y="40" textAnchor="middle" fill="#34d399" fontSize="10" fontWeight="bold" fontFamily="monospace">R₁</text>
+
+                  <line x1="93" y1="36" x2="125" y2="36" stroke="#10b981" strokeWidth="2" strokeLinecap="round"/>
+                  <rect x="125" y="27" width="38" height="18" rx="2" fill="#020617" stroke="#10b981" strokeWidth="1.8"/>
+                  <text x="144" y="40" textAnchor="middle" fill="#34d399" fontSize="10" fontWeight="bold" fontFamily="monospace">R₂</text>
+
+                  <line x1="163" y1="36" x2="225" y2="36" stroke="#10b981" strokeWidth="2" strokeLinecap="round"/>
+
+                  {/* Arrow U2 across R2 */}
+                  <line x1="120" y1="56" x2="168" y2="56" stroke="#34d399" strokeWidth="1.5" markerEnd="url(#pdt-u2-arrow)" strokeLinecap="round"/>
+                  <text x="144" y="52" textAnchor="middle" fill="#34d399" fontSize="9" fontWeight="bold" fontFamily="monospace">U₂</text>
+
+                  <circle cx="25" cy="36" r="3" fill="#10b981"/>
+                  <circle cx="225" cy="36" r="3" fill="#10b981"/>
+                </svg>
+              </div>
+
+              <div className="p-3 rounded-xl bg-black/60 text-center font-mono text-emerald-300 font-bold text-xs border border-emerald-500/20">
+                <LatexMath math="U_2 = E \cdot \frac{R_2}{R_1 + R_2}" />
+              </div>
+
+              {/* Démonstration PDT */}
+              <CollapsibleProof
+                title="Démonstration du Pont Diviseur de Tension"
+                subtitle="Calcul direct par la loi d'Ohm en série"
+                color="emerald"
+                badge="Démonstration"
+              >
+                <div className="space-y-2 text-slate-300 font-sans text-[11px]">
+                  <p>1. Le courant commun traversant l&apos;association série s&apos;écrit : <LatexMath math="i = \frac{E}{R_1 + R_2}" />.</p>
+                  <p>2. La tension aux bornes de <LatexMath math="R_2" /> est donnée par la loi d&apos;Ohm : <LatexMath math="U_2 = R_2 \cdot i = R_2 \cdot \frac{E}{R_1 + R_2} = E \cdot \frac{R_2}{R_1 + R_2}" />.</p>
+                  <p className="text-[10px] text-amber-300">⚠️ <strong>Condition :</strong> Ce résultat n&apos;est valable que si <strong>aucun courant n&apos;est prélevé</strong> au point milieu (circuit non chargé).</p>
+                </div>
+              </CollapsibleProof>
+            </div>
+
+            {/* Pont Diviseur de Courant (PDC) */}
+            <div className="p-5 rounded-2xl bg-slate-900/90 border border-indigo-500/30 space-y-3 shadow-md flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-[11px] font-extrabold text-indigo-400 uppercase tracking-wider">
+                    Pont Diviseur de Courant (PDC)
+                  </span>
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-300 border border-indigo-500/20">
+                    Parallèle
+                  </span>
+                </div>
+                <p className="text-[11px] text-slate-300 leading-relaxed">
+                  Permet de calculer la fraction de courant total <LatexMath math="I" /> dérivée dans une branche d&apos;un dipôle constitué de deux résistances en parallèle.
+                </p>
+              </div>
+
+              {/* SVG PDC */}
+              <div className="w-full bg-slate-950/80 py-3 px-3 rounded-xl border border-slate-800 flex justify-center items-center">
+                <svg viewBox="0 0 250 65" className="w-full max-w-[230px] h-auto" overflow="visible">
+                  <defs>
+                    <marker id="pdc-i-arrow" markerWidth="5" markerHeight="5" refX="4" refY="2.5" orient="auto">
+                      <polygon points="0 0, 5 2.5, 0 5" fill="#818cf8"/>
+                    </marker>
+                    <marker id="pdc-i1-arrow" markerWidth="5" markerHeight="5" refX="4" refY="2.5" orient="auto">
+                      <polygon points="0 0, 5 2.5, 0 5" fill="#38bdf8"/>
+                    </marker>
+                  </defs>
+
+                  {/* Main current entry I */}
+                  <line x1="15" y1="32" x2="50" y2="32" stroke="#818cf8" strokeWidth="2" markerEnd="url(#pdc-i-arrow)" strokeLinecap="round"/>
+                  <text x="32" y="24" textAnchor="middle" fill="#818cf8" fontSize="9" fontWeight="bold" fontFamily="monospace">I</text>
+
+                  {/* Upper rail & Lower rail */}
+                  <line x1="55" y1="18" x2="195" y2="18" stroke="#818cf8" strokeWidth="1.8" strokeLinecap="round"/>
+                  <line x1="55" y1="46" x2="195" y2="46" stroke="#818cf8" strokeWidth="1.8" strokeLinecap="round"/>
+                  <line x1="55" y1="18" x2="55" y2="46" stroke="#818cf8" strokeWidth="1.8"/>
+                  <line x1="195" y1="18" x2="195" y2="46" stroke="#818cf8" strokeWidth="1.8"/>
+
+                  {/* Branch 1 (R1) */}
+                  <line x1="100" y1="18" x2="100" y2="46" stroke="#818cf8" strokeWidth="1.6"/>
+                  <rect x="92" y="24" width="16" height="16" rx="2" fill="#020617" stroke="#818cf8" strokeWidth="1.6"/>
+                  <text x="100" y="35.5" textAnchor="middle" fill="#818cf8" fontSize="8.5" fontWeight="bold" fontFamily="monospace">R₁</text>
+                  <line x1="100" y1="18" x2="100" y2="23" stroke="#38bdf8" strokeWidth="1.6" markerEnd="url(#pdc-i1-arrow)"/>
+                  <text x="112" y="24" textAnchor="middle" fill="#38bdf8" fontSize="8" fontWeight="bold" fontFamily="monospace">I₁</text>
+
+                  {/* Branch 2 (R2) */}
+                  <line x1="150" y1="18" x2="150" y2="46" stroke="#818cf8" strokeWidth="1.6"/>
+                  <rect x="142" y="24" width="16" height="16" rx="2" fill="#020617" stroke="#818cf8" strokeWidth="1.6"/>
+                  <text x="150" y="35.5" textAnchor="middle" fill="#818cf8" fontSize="8.5" fontWeight="bold" fontFamily="monospace">R₂</text>
+                  <line x1="150" y1="18" x2="150" y2="23" stroke="#38bdf8" strokeWidth="1.6" markerEnd="url(#pdc-i1-arrow)"/>
+                  <text x="162" y="24" textAnchor="middle" fill="#38bdf8" fontSize="8" fontWeight="bold" fontFamily="monospace">I₂</text>
+
+                  {/* Exit wire */}
+                  <line x1="195" y1="32" x2="235" y2="32" stroke="#818cf8" strokeWidth="2" strokeLinecap="round"/>
+                </svg>
+              </div>
+
+              <div className="p-3 rounded-xl bg-black/60 text-center font-mono text-indigo-300 font-bold text-xs border border-indigo-500/20">
+                <LatexMath math="I_1 = I \cdot \frac{R_2}{R_1 + R_2} \quad \text{et} \quad I_2 = I \cdot \frac{R_1}{R_1 + R_2}" />
+              </div>
+
+              {/* Démonstration PDC */}
+              <CollapsibleProof
+                title="Démonstration du Pont Diviseur de Courant"
+                subtitle="Attention : la résistance opposée se trouve au numérateur !"
+                color="indigo"
+                badge="Démonstration"
+              >
+                <div className="space-y-2 text-slate-300 font-sans text-[11px]">
+                  <p>1. La tension commune aux deux branches vaut : <LatexMath math="U = R_{eq} \cdot I = \left(\frac{R_1 R_2}{R_1 + R_2}\right) \cdot I" />.</p>
+                  <p>2. Le courant dans la branche 1 s&apos;écrit alors : <LatexMath math="I_1 = \frac{U}{R_1} = \frac{1}{R_1} \cdot \left(\frac{R_1 R_2}{R_1 + R_2}\right) \cdot I = I \cdot \frac{R_2}{R_1 + R_2}" />.</p>
+                  <p className="text-[10px] text-indigo-300">💡 <strong>Formule générale avec conductances :</strong> <LatexMath math="I_k = I \cdot \frac{G_k}{\sum G_j}" />.</p>
+                </div>
+              </CollapsibleProof>
+            </div>
+
+          </div>
+        </div>
+
+        {/* ── SOUS-SECTION B: LES THÉORÈMES DES RÉSEAUX LINÉAIRES ── */}
+        <div className="space-y-4 pt-4 border-t border-slate-800">
+          <div className="flex items-center gap-2 text-xs font-bold text-cyan-400 uppercase tracking-wider">
+            <Cpu className="w-4 h-4" /> B. Les Grands Théorèmes des Réseaux Linéaires
+          </div>
+
+          {/* 1. Superposition */}
+          <CollapsibleProof
+            title="Théorème 1 : Théorème de Superposition"
+            subtitle="Linéarité des équations & principe d'extinction des sources indépendantes"
+            color="cyan"
+            badge="Théorème Fondamental"
+          >
+            <div className="space-y-3 text-slate-300 font-sans text-[11px]">
+              <p className="leading-relaxed">
+                Dans un réseau linéaire constitué de dipôles passifs et de plusieurs sources indépendantes, la tension ou l&apos;intensité dans une branche est la <strong>somme algébrique</strong> des grandeurs produites par chaque source agissant seule, les autres étant éteintes (passivées).
+              </p>
+              <div className="p-3 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 text-center font-mono font-bold text-xs">
+                <LatexMath math="u_{\text{total}} = \sum_{k=1}^{n} u_{(E_k \text{ seule})} \quad \text{et} \quad i_{\text{total}} = \sum_{k=1}^{n} i_{(E_k \text{ seule})}" />
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 font-mono text-[11px] pt-1">
+                <div className="p-2.5 rounded-lg bg-black/50 border border-slate-800">
+                  <span className="text-cyan-400 font-bold">Éteindre source de tension :</span> <LatexMath math="E=0\text{ V} \implies \text{Court-circuit (Fil)}" />
+                </div>
+                <div className="p-2.5 rounded-lg bg-black/50 border border-slate-800">
+                  <span className="text-indigo-400 font-bold">Éteindre source de courant :</span> <LatexMath math="\eta=0\text{ A} \implies \text{Circuit ouvert}" />
+                </div>
+              </div>
+            </div>
+          </CollapsibleProof>
+
+          {/* 2. Thévenin */}
+          <CollapsibleProof
+            title="Théorème 2 : Théorème de Thévenin"
+            subtitle="Modélisation globale d'un réseau dipolaire vu de deux bornes A et B"
+            color="amber"
+            badge="Modèle (Eth, Rth)"
+          >
+            <div className="space-y-3 text-slate-300 font-sans text-[11px]">
+              <p className="leading-relaxed">
+                Tout réseau linéaire vu entre deux bornes A et B est rigoureusement équivalent à un générateur de Thévenin unique constitué d&apos;une source idéale <LatexMath math="E_{th}" /> en série avec une résistance <LatexMath math="R_{th}" /> :
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-[11px] font-mono pt-1">
+                <div className="p-3 rounded-xl bg-black/50 border border-amber-500/20 space-y-1.5">
+                  <span className="font-sans font-bold text-amber-400">1. Calcul de Eth :</span>
+                  <p className="font-sans text-[11px] text-slate-300">Tension à vide mesurée entre A et B sans aucune charge connectée :</p>
+                  <div className="text-center text-amber-300 font-bold"><LatexMath math="E_{th} = U_{AB,\text{vide}}" /></div>
+                </div>
+                <div className="p-3 rounded-xl bg-black/50 border border-amber-500/20 space-y-1.5">
+                  <span className="font-sans font-bold text-amber-400">2. Calcul de Rth :</span>
+                  <p className="font-sans text-[11px] text-slate-300">Résistance équivalente vue entre A et B après extinction de toutes les sources indépendantes :</p>
+                  <div className="text-center text-amber-300 font-bold"><LatexMath math="R_{th} = R_{AB,\text{éteint}}" /></div>
+                </div>
+              </div>
+            </div>
+          </CollapsibleProof>
+
+          {/* 3. Norton */}
+          <CollapsibleProof
+            title="Théorème 3 : Théorème de Norton"
+            subtitle="Modélisation duale par une source de courant en parallèle"
+            color="indigo"
+            badge="Modèle (IN, RN)"
+          >
+            <div className="space-y-3 text-slate-300 font-sans text-[11px]">
+              <p className="leading-relaxed">
+                Tout réseau linéaire vu entre deux bornes A et B est équivalent à un générateur de Norton constitué d&apos;une source idéale de courant <LatexMath math="I_N" /> en parallèle avec une résistance <LatexMath math="R_N = R_{th}" /> :
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-[11px] font-mono pt-1">
+                <div className="p-3 rounded-xl bg-black/50 border border-indigo-500/20 space-y-1.5">
+                  <span className="font-sans font-bold text-indigo-400">1. Calcul de IN (Courant de court-circuit) :</span>
+                  <p className="font-sans text-[11px] text-slate-300">Courant traversant un fil reliant directement A et B :</p>
+                  <div className="text-center text-indigo-300 font-bold"><LatexMath math="I_N = I_{cc} = \frac{E_{th}}{R_{th}}" /></div>
+                </div>
+                <div className="p-3 rounded-xl bg-black/50 border border-indigo-500/20 space-y-1.5">
+                  <span className="font-sans font-bold text-indigo-400">2. Calcul de RN :</span>
+                  <p className="font-sans text-[11px] text-slate-300">Identique à la résistance de Thévenin :</p>
+                  <div className="text-center text-indigo-300 font-bold"><LatexMath math="R_N = R_{th} = R_{AB,\text{éteint}}" /></div>
+                </div>
+              </div>
+            </div>
+          </CollapsibleProof>
+
+          {/* 4. Millman */}
+          <CollapsibleProof
+            title="Théorème 4 : Théorème de Millman"
+            subtitle="Loi des nœuds exprimée en termes de potentiels et de conductances"
+            color="emerald"
+            badge="Méthode Rapide"
+          >
+            <div className="space-y-3 text-slate-300 font-sans text-[11px]">
+              <p className="leading-relaxed">
+                Pour un nœud A relié à <LatexMath math="n" /> branches composées chacune d&apos;un potentiel <LatexMath math="V_k" /> à travers une résistance <LatexMath math="R_k" /> et de <LatexMath math="p" /> sources de courant incidentes <LatexMath math="\eta_j" /> :
+              </p>
+              <div className="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-center font-mono font-bold text-xs">
+                <LatexMath math="V_A = \frac{\sum_{k=1}^{n} \frac{V_k}{R_k} + \sum_{j=1}^{p} \eta_j}{\sum_{k=1}^{n} \frac{1}{R_k}} = \frac{\sum G_k V_k + \sum \eta_j}{\sum G_k}" />
+              </div>
+              <p className="text-[11px] text-slate-400 leading-snug">
+                ⚠️ <strong>Convention de signe :</strong> Les courants de source <LatexMath math="\eta_j" /> sont comptés positivement s&apos;ils <strong>entrent</strong> dans le nœud A, négativement s&apos;ils en sortent.
+              </p>
+            </div>
+          </CollapsibleProof>
+        </div>
       </section>
 
       {/* ── PARTIE 4: TRANSFERT MAXIMAL DE PUISSANCE & ADAPTATION ── */}
