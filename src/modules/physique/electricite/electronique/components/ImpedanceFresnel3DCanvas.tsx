@@ -138,8 +138,6 @@ export default function ImpedanceFresnel3DCanvas() {
   }, [isPlaying, omega, speedMultiplier]);
 
   // Trigonometric angles of vectors (counter-clockwise rotation)
-  // Voltage vector: angle = timeAngle
-  // Current vector: angle = timeAngle - phaseAngle
   const uAngle = timeAngle;
   const iAngle = timeAngle - phaseAngle;
 
@@ -149,8 +147,8 @@ export default function ImpedanceFresnel3DCanvas() {
   const maxCircleR = 75;
 
   // Normalised vector lengths
-  const lenU = Math.min(Math.max((voltageAmp / 24) * maxCircleR, 42), maxCircleR);
-  const lenI = Math.min(Math.max((currentAmp / 5) * (maxCircleR * 0.88), 32), maxCircleR * 0.88);
+  const lenU = Math.min(Math.max((voltageAmp / 24) * maxCircleR, 44), maxCircleR);
+  const lenI = Math.min(Math.max((currentAmp / 5) * (maxCircleR * 0.85), 32), maxCircleR * 0.85);
 
   // Vector Tips coordinates on Circle
   const uTipX = circleCX + Math.cos(uAngle) * lenU;
@@ -158,22 +156,28 @@ export default function ImpedanceFresnel3DCanvas() {
   const iTipX = circleCX + Math.cos(iAngle) * lenI;
   const iTipY = circleCY - Math.sin(iAngle) * lenI;
 
-  // Oscilloscope parameters (Right side: x = 230 to 630)
-  const oscXStart = 240;
-  const oscWidth = 390;
+  // Anti-collision label positioning: normal offsets perpendicular to vector
+  const uLabelX = uTipX + Math.cos(uAngle) * 12 - Math.sin(uAngle) * 12;
+  const uLabelY = uTipY - Math.sin(uAngle) * 12 - Math.cos(uAngle) * 12;
+
+  const iLabelX = iTipX + Math.cos(iAngle) * 12 + Math.sin(iAngle) * 12;
+  const iLabelY = iTipY - Math.sin(iAngle) * 12 + Math.cos(iAngle) * 12;
+
+  // Oscilloscope parameters (Right side: x = 235 to 635)
+  const oscXStart = 235;
+  const oscWidth = 395;
   const oscMidY = circleCY; // Exactly aligned with the circle center!
   const oscAmpU = Math.min((voltageAmp / 24) * maxCircleR, maxCircleR);
-  const oscAmpI = Math.min((currentAmp / 5) * (maxCircleR * 0.88), maxCircleR * 0.88);
+  const oscAmpI = Math.min((currentAmp / 5) * (maxCircleR * 0.85), maxCircleR * 0.85);
 
   // Oscilloscope Traveling Wave Points (Generating moving wave in real-time)
-  const wavePoints = 80;
+  const wavePoints = 90;
   const ptsU: string[] = [];
   const ptsI: string[] = [];
 
   for (let i = 0; i <= wavePoints; i++) {
     const frac = i / wavePoints;
     const x = oscXStart + frac * oscWidth;
-    // Phase shift along the x axis: theta(x, t) = timeAngle - frac * (3 * 2 * PI)
     const thetaSpatial = timeAngle - frac * 4 * Math.PI;
     const yU = oscMidY - Math.sin(thetaSpatial) * oscAmpU;
     const yI = oscMidY - Math.sin(thetaSpatial - phaseAngle) * oscAmpI;
@@ -192,8 +196,15 @@ export default function ImpedanceFresnel3DCanvas() {
   const uInstant = voltageAmp * Math.sin(uAngle);
   const iInstant = currentAmp * Math.sin(iAngle);
 
+  // Oscilloscope grid divisions (8 columns x 6 rows)
+  const gridCols = 8;
+  const gridRows = 6;
+  const colStep = oscWidth / gridCols;
+  const rowStep = (maxCircleR * 2) / gridRows;
+
   return (
     <div className="w-full bg-slate-950 border border-slate-800/90 rounded-3xl p-3 sm:p-5 shadow-2xl space-y-3 font-sans">
+      
       {/* ── TOP BAR : TITLE & STATE BADGE ── */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800/70 pb-2.5">
         <div className="flex items-center gap-2">
@@ -272,12 +283,12 @@ export default function ImpedanceFresnel3DCanvas() {
             <circle cx={circleCX} cy={circleCY} r={maxCircleR} fill="none" stroke="#334155" strokeWidth="1.2" />
 
             {/* Axes */}
-            <line x1={circleCX - maxCircleR - 10} y1={circleCY} x2={circleCX + maxCircleR + 10} y2={circleCY} stroke="#475569" strokeWidth="1.4" />
-            <line x1={circleCX} y1={circleCY - maxCircleR - 10} x2={circleCX} y2={circleCY + maxCircleR + 10} stroke="#475569" strokeWidth="1.4" />
+            <line x1={circleCX - maxCircleR - 15} y1={circleCY} x2={circleCX + maxCircleR + 15} y2={circleCY} stroke="#475569" strokeWidth="1.4" />
+            <line x1={circleCX} y1={circleCY - maxCircleR - 15} x2={circleCX} y2={circleCY + maxCircleR + 15} stroke="#475569" strokeWidth="1.4" />
 
-            {/* Axis Labels */}
-            <text x={circleCX + maxCircleR + 14} y={circleCY + 3.5} fill="#94a3b8" fontSize="8.5" fontWeight="bold">Re</text>
-            <text x={circleCX} y={circleCY - maxCircleR - 14} fill="#94a3b8" fontSize="8.5" fontWeight="bold" textAnchor="middle">+j</text>
+            {/* Axis Labels Placed Safely Far from Trajectories */}
+            <text x={circleCX + maxCircleR + 20} y={circleCY + 3.5} fill="#94a3b8" fontSize="9" fontWeight="bold" fontFamily="serif">Re</text>
+            <text x={circleCX} y={circleCY - maxCircleR - 18} fill="#94a3b8" fontSize="9" fontWeight="bold" textAnchor="middle" fontFamily="serif">+j</text>
 
             {/* Phase Arc Between Vectors */}
             {Math.abs(phaseAngle) > 0.05 && (
@@ -290,46 +301,78 @@ export default function ImpedanceFresnel3DCanvas() {
               />
             )}
 
-            {/* Voltage Vector U (Neon Cyan Arrow) */}
-            <line x1={circleCX} y1={circleCY} x2={uTipX} y2={uTipY} stroke="#06b6d4" strokeWidth="3.2" strokeLinecap="round" />
-            <polygon
-              points={`${uTipX},${uTipY} ${uTipX - Math.cos(uAngle - 0.3) * 11},${uTipY + Math.sin(uAngle - 0.3) * 11} ${uTipX - Math.cos(uAngle + 0.3) * 11},${uTipY + Math.sin(uAngle + 0.3) * 11}`}
-              fill="#06b6d4"
+            {/* Voltage Vector U (Crisp Sharp Arrow) */}
+            <line
+              x1={circleCX}
+              y1={circleCY}
+              x2={uTipX - Math.cos(uAngle) * 8}
+              y2={uTipY + Math.sin(uAngle) * 8}
+              stroke="#00f0ff"
+              strokeWidth="2.5"
+              strokeLinecap="round"
             />
-            {/* Label Um */}
+            <polygon
+              points={`
+                ${uTipX},${uTipY}
+                ${uTipX - Math.cos(uAngle - 0.35) * 11},${uTipY + Math.sin(uAngle - 0.35) * 11}
+                ${uTipX - Math.cos(uAngle) * 8},${uTipY + Math.sin(uAngle) * 8}
+                ${uTipX - Math.cos(uAngle + 0.35) * 11},${uTipY + Math.sin(uAngle + 0.35) * 11}
+              `}
+              fill="#00f0ff"
+            />
+            {/* Label Um with Crisp Halo */}
             <text
-              x={circleCX + Math.cos(uAngle) * (lenU + 14)}
-              y={circleCY - Math.sin(uAngle) * (lenU + 14) + 3}
-              fill="#67e8f9"
+              x={uLabelX}
+              y={uLabelY + 3}
+              fill="#00f0ff"
               fontSize="11"
               fontWeight="bold"
               textAnchor="middle"
               fontFamily="monospace"
+              stroke="#020617"
+              strokeWidth="3px"
+              paintOrder="stroke fill"
             >
               Um
             </text>
 
-            {/* Current Vector I (Neon Rose/Pink Arrow) */}
-            <line x1={circleCX} y1={circleCY} x2={iTipX} y2={iTipY} stroke="#f43f5e" strokeWidth="2.6" strokeLinecap="round" />
-            <polygon
-              points={`${iTipX},${iTipY} ${iTipX - Math.cos(iAngle - 0.35) * 9},${iTipY + Math.sin(iAngle - 0.35) * 9} ${iTipX - Math.cos(iAngle + 0.35) * 9},${iTipY + Math.sin(iAngle + 0.35) * 9}`}
-              fill="#f43f5e"
+            {/* Current Vector I (Crisp Sharp Arrow) */}
+            <line
+              x1={circleCX}
+              y1={circleCY}
+              x2={iTipX - Math.cos(iAngle) * 7.5}
+              y2={iTipY + Math.sin(iAngle) * 7.5}
+              stroke="#ff007f"
+              strokeWidth="2.2"
+              strokeLinecap="round"
             />
-            {/* Label Im */}
+            <polygon
+              points={`
+                ${iTipX},${iTipY}
+                ${iTipX - Math.cos(iAngle - 0.38) * 10},${iTipY + Math.sin(iAngle - 0.38) * 10}
+                ${iTipX - Math.cos(iAngle) * 7.5},${iTipY + Math.sin(iAngle) * 7.5}
+                ${iTipX - Math.cos(iAngle + 0.38) * 10},${iTipY + Math.sin(iAngle + 0.38) * 10}
+              `}
+              fill="#ff007f"
+            />
+            {/* Label Im with Crisp Halo */}
             <text
-              x={circleCX + Math.cos(iAngle) * (lenI + 13)}
-              y={circleCY - Math.sin(iAngle) * (lenI + 13) + 3}
-              fill="#fda4af"
+              x={iLabelX}
+              y={iLabelY + 3}
+              fill="#ff007f"
               fontSize="11"
               fontWeight="bold"
               textAnchor="middle"
               fontFamily="monospace"
+              stroke="#020617"
+              strokeWidth="3px"
+              paintOrder="stroke fill"
             >
               Im
             </text>
 
             {/* Center Origin Pivot */}
-            <circle cx={circleCX} cy={circleCY} r={4} fill="#38bdf8" />
+            <circle cx={circleCX} cy={circleCY} r={4} fill="#00f0ff" stroke="#020617" strokeWidth="1" />
           </g>
 
           {/* ════ PROJECTION LASER LINES CONNECTING VECTOR TIPS TO WAVE GENERATOR ════ */}
@@ -340,83 +383,134 @@ export default function ImpedanceFresnel3DCanvas() {
               y1={uTipY}
               x2={livePenUX}
               y2={livePenUY}
-              stroke="#06b6d4"
-              strokeWidth="1.5"
-              strokeDasharray="4 3"
-              opacity={0.85}
+              stroke="#00f0ff"
+              strokeWidth="1.4"
+              strokeDasharray="3 3"
+              opacity={0.8}
             />
             {/* Glowing Pen Head U */}
-            <circle cx={livePenUX} cy={livePenUY} r={4.5} fill="#06b6d4" />
-            <circle cx={livePenUX} cy={livePenUY} r={8} fill="none" stroke="#06b6d4" strokeWidth="1.2" opacity={0.6} />
+            <circle cx={livePenUX} cy={livePenUY} r={4} fill="#00f0ff" />
+            <circle cx={livePenUX} cy={livePenUY} r={6.5} fill="none" stroke="#00f0ff" strokeWidth="1" opacity={0.6} />
 
-            {/* Rose Laser Line from Vector I Tip to Live Pen I */}
+            {/* Magenta Laser Line from Vector I Tip to Live Pen I */}
             <line
               x1={iTipX}
               y1={iTipY}
               x2={livePenIX}
               y2={livePenIY}
-              stroke="#f43f5e"
-              strokeWidth="1.5"
-              strokeDasharray="4 3"
-              opacity={0.85}
+              stroke="#ff007f"
+              strokeWidth="1.4"
+              strokeDasharray="3 3"
+              opacity={0.8}
             />
             {/* Glowing Pen Head I */}
-            <circle cx={livePenIX} cy={livePenIY} r={4} fill="#f43f5e" />
-            <circle cx={livePenIX} cy={livePenIY} r={7} fill="none" stroke="#f43f5e" strokeWidth="1.2" opacity={0.6} />
+            <circle cx={livePenIX} cy={livePenIY} r={3.5} fill="#ff007f" />
+            <circle cx={livePenIX} cy={livePenIY} r={6} fill="none" stroke="#ff007f" strokeWidth="1" opacity={0.6} />
           </g>
 
-          {/* ════ RIGHT SECTION: SYNCHRONIZED TRAVELING WAVE OSCILLOSCOPE (x=240 to 630) ════ */}
+          {/* ════ RIGHT SECTION: REAL OSCILLOSCOPE SCREEN (x=235 to 630) ════ */}
           <g>
-            {/* Oscilloscope Grid */}
-            <line x1={oscXStart} y1={oscMidY - maxCircleR} x2={oscXStart + oscWidth} y2={oscMidY - maxCircleR} stroke="#0f343a" strokeWidth="0.8" />
-            <line x1={oscXStart} y1={oscMidY - maxCircleR / 2} x2={oscXStart + oscWidth} y2={oscMidY - maxCircleR / 2} stroke="#0f343a" strokeDasharray="3 3" strokeWidth="0.8" />
-            <line x1={oscXStart} y1={oscMidY} x2={oscXStart + oscWidth} y2={oscMidY} stroke="#134e56" strokeWidth="1.2" />
-            <line x1={oscXStart} y1={oscMidY + maxCircleR / 2} x2={oscXStart + oscWidth} y2={oscMidY + maxCircleR / 2} stroke="#0f343a" strokeDasharray="3 3" strokeWidth="0.8" />
-            <line x1={oscXStart} y1={oscMidY + maxCircleR} x2={oscXStart + oscWidth} y2={oscMidY + maxCircleR} stroke="#0f343a" strokeWidth="0.8" />
+            {/* Oscilloscope Phosphor Screen Dark Bezel */}
+            <rect
+              x={oscXStart}
+              y={oscMidY - maxCircleR - 8}
+              width={oscWidth}
+              height={maxCircleR * 2 + 16}
+              rx={8}
+              fill="#030d17"
+              stroke="#0d3349"
+              strokeWidth="1.5"
+            />
 
-            {/* Period Divisions (T, 2T) */}
-            <line x1={oscXStart + oscWidth * 0.5} y1={oscMidY - maxCircleR} x2={oscXStart + oscWidth * 0.5} y2={oscMidY + maxCircleR} stroke="#134e56" strokeWidth="1.2" />
-            <line x1={oscXStart + oscWidth} y1={oscMidY - maxCircleR} x2={oscXStart + oscWidth} y2={oscMidY + maxCircleR} stroke="#0f343a" strokeWidth="0.8" />
+            {/* Real Oscilloscope Full Graticule Grid (8 columns x 6 rows) */}
+            {Array.from({ length: gridCols + 1 }).map((_, idx) => {
+              const x = oscXStart + idx * colStep;
+              const isCenter = idx === gridCols / 2;
+              return (
+                <line
+                  key={`col-${idx}`}
+                  x1={x}
+                  y1={oscMidY - maxCircleR - 8}
+                  x2={x}
+                  y2={oscMidY + maxCircleR + 8}
+                  stroke={isCenter ? "#0e5a77" : "#082a3d"}
+                  strokeWidth={isCenter ? 1.2 : 0.8}
+                  strokeDasharray={isCenter ? undefined : "2 3"}
+                />
+              );
+            })}
 
-            {/* Axes */}
-            <line x1={oscXStart} y1={oscMidY} x2={oscXStart + oscWidth + 12} y2={oscMidY} stroke="#475569" strokeWidth="1.4" />
-            <line x1={oscXStart} y1={oscMidY + maxCircleR} x2={oscXStart} y2={oscMidY - maxCircleR - 8} stroke="#475569" strokeWidth="1.4" />
+            {Array.from({ length: gridRows + 1 }).map((_, idx) => {
+              const y = oscMidY - maxCircleR + idx * rowStep;
+              const isCenter = idx === gridRows / 2;
+              return (
+                <line
+                  key={`row-${idx}`}
+                  x1={oscXStart}
+                  y1={y}
+                  x2={oscXStart + oscWidth}
+                  y2={y}
+                  stroke={isCenter ? "#0e5a77" : "#082a3d"}
+                  strokeWidth={isCenter ? 1.2 : 0.8}
+                  strokeDasharray={isCenter ? undefined : "2 3"}
+                />
+              );
+            })}
 
-            {/* Axis Labels */}
-            <text x={oscXStart + oscWidth + 15} y={oscMidY + 3.5} fill="#94a3b8" fontSize="9" fontWeight="bold">t</text>
-            <text x={oscXStart - 5} y={oscMidY - maxCircleR - 8} fill="#94a3b8" fontSize="9" fontWeight="bold" textAnchor="end">u, i</text>
+            {/* Center Crosshair Subdivisions (Millimeter Ticks) */}
+            {Array.from({ length: 40 }).map((_, idx) => {
+              const x = oscXStart + (idx * oscWidth) / 40;
+              return (
+                <line
+                  key={`tick-x-${idx}`}
+                  x1={x}
+                  y1={oscMidY - (idx % 5 === 0 ? 3.5 : 1.5)}
+                  x2={x}
+                  y2={oscMidY + (idx % 5 === 0 ? 3.5 : 1.5)}
+                  stroke="#0e5a77"
+                  strokeWidth="1"
+                />
+              );
+            })}
 
-            <text x={oscXStart + oscWidth * 0.5} y={oscMidY + maxCircleR + 12} fill="#64748b" fontSize="8" textAnchor="middle">T</text>
-            <text x={oscXStart + oscWidth} y={oscMidY + maxCircleR + 12} fill="#64748b" fontSize="8" textAnchor="middle">2T</text>
+            {/* Period Division Markers T and 2T */}
+            <text x={oscXStart + oscWidth * 0.5} y={oscMidY + maxCircleR + 20} fill="#64748b" fontSize="8.5" textAnchor="middle" fontWeight="bold">T</text>
+            <text x={oscXStart + oscWidth} y={oscMidY + maxCircleR + 20} fill="#64748b" fontSize="8.5" textAnchor="middle" fontWeight="bold">2T</text>
 
-            {/* Traveling Wave u(t) (Cyan with Neon Glow) */}
+            {/* Axes Labels */}
+            <text x={oscXStart + oscWidth + 12} y={oscMidY + 3.5} fill="#94a3b8" fontSize="9" fontWeight="bold">t</text>
+            <text x={oscXStart - 6} y={oscMidY - maxCircleR - 8} fill="#94a3b8" fontSize="9" fontWeight="bold" textAnchor="end">u, i</text>
+
+            {/* Traveling Wave u(t) (Neon Cyan with Drop Glow) */}
             <polyline
               fill="none"
-              stroke="#06b6d4"
-              strokeWidth="2.4"
+              stroke="#00f0ff"
+              strokeWidth="2.5"
               points={ptsU.join(" ")}
               strokeLinecap="round"
               strokeLinejoin="round"
+              filter="url(#neonCyanGlow)"
             />
 
-            {/* Traveling Wave i(t) (Rose with Dashed Glow) */}
+            {/* Traveling Wave i(t) (Neon Magenta with Dashed Drop Glow) */}
             <polyline
               fill="none"
-              stroke="#f43f5e"
-              strokeWidth="2.0"
-              strokeDasharray="4 2"
+              stroke="#ff007f"
+              strokeWidth="2.2"
+              strokeDasharray="5 2.5"
               points={ptsI.join(" ")}
               strokeLinecap="round"
               strokeLinejoin="round"
+              filter="url(#neonMagentaGlow)"
             />
 
-            {/* Wave Legend Badges on Screen (Top Right) */}
-            <rect x={oscXStart + oscWidth - 150} y={oscMidY - maxCircleR - 2} width="150" height="34" rx="6" fill="#020617" fillOpacity="0.8" stroke="#1e293b" strokeWidth="0.8" />
-            <text x={oscXStart + oscWidth - 10} y={oscMidY - maxCircleR + 12} fill="#22d3ee" fontSize="9.5" fontWeight="bold" fontFamily="monospace" textAnchor="end">
-              u(t) = Um·sin(ωt)
+            {/* Oscilloscope Digital HUD (Top Right Screen Pill) */}
+            <rect x={oscXStart + oscWidth - 155} y={oscMidY - maxCircleR - 4} width="150" height="32" rx="5" fill="#01070e" fillOpacity="0.9" stroke="#0e3a4f" strokeWidth="0.8" />
+            <text x={oscXStart + oscWidth - 10} y={oscMidY - maxCircleR + 9} fill="#00f0ff" fontSize="9.5" fontWeight="bold" fontFamily="monospace" textAnchor="end">
+              CH1: u(t) = Um·sin(ωt)
             </text>
-            <text x={oscXStart + oscWidth - 10} y={oscMidY - maxCircleR + 25} fill="#fb7185" fontSize="9.5" fontWeight="bold" fontFamily="monospace" textAnchor="end">
-              i(t) = Im·sin(ωt - φ)
+            <text x={oscXStart + oscWidth - 10} y={oscMidY - maxCircleR + 22} fill="#ff007f" fontSize="9.5" fontWeight="bold" fontFamily="monospace" textAnchor="end">
+              CH2: i(t) = Im·sin(ωt - φ)
             </text>
           </g>
         </svg>
@@ -453,8 +547,8 @@ export default function ImpedanceFresnel3DCanvas() {
             <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
             <span><LatexMath math={`u(t) = ${uInstant.toFixed(1)}\\text{ V}`} /></span>
           </div>
-          <div className="flex items-center gap-1 text-rose-300">
-            <span className="w-2 h-2 rounded-full bg-rose-400 animate-ping"></span>
+          <div className="flex items-center gap-1 text-rose-400">
+            <span className="w-2 h-2 rounded-full bg-rose-500 animate-ping"></span>
             <span><LatexMath math={`i(t) = ${iInstant.toFixed(2)}\\text{ A}`} /></span>
           </div>
         </div>
@@ -567,7 +661,7 @@ export default function ImpedanceFresnel3DCanvas() {
 
         <div className="p-2 rounded-xl bg-slate-900/60 border border-slate-800 text-center">
           <span className="text-[10px] text-slate-400 block font-sans">Courant Crête</span>
-          <div className="text-rose-300 font-bold mt-0.5">
+          <div className="text-rose-400 font-bold mt-0.5">
             <LatexMath math={`I_m = ${currentAmp.toFixed(2)}\\text{ A}`} />
           </div>
         </div>
