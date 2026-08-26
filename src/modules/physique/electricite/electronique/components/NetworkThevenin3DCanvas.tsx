@@ -3,153 +3,254 @@
 
 import React, { Suspense, useMemo, useState } from "react";
 import { Canvas } from "@react-three/fiber";
-import { OrbitControls, Line, Html, ContactShadows, Box, Cylinder, Environment } from "@react-three/drei";
+import { OrbitControls, Html, ContactShadows, Box, Cylinder, Sphere, RoundedBox } from "@react-three/drei";
 import * as THREE from "three";
-import { Zap, Activity, CheckCircle2, LineChart, Sliders, RefreshCw, Cpu } from "lucide-react";
+import { Zap, Activity, CheckCircle2, LineChart, Sliders, RefreshCw, Cpu, Gauge, Sparkles, BookOpen } from "lucide-react";
 import LatexMath from "@/components/ui/LatexMath";
 
 type ViewMode = "full" | "thevenin" | "norton";
 
-/* ── 3D Resistor Component ── */
+/* ── Real 3D Solid Cylindrical Wire Segment ── */
+function Wire3D({
+  from,
+  to,
+  color = "#38bdf8",
+  radius = 0.045,
+}: {
+  from: [number, number, number];
+  to: [number, number, number];
+  color?: string;
+  radius?: number;
+}) {
+  const vFrom = useMemo(() => new THREE.Vector3(...from), [from]);
+  const vTo = useMemo(() => new THREE.Vector3(...to), [to]);
+  const distance = useMemo(() => vFrom.distanceTo(vTo), [vFrom, vTo]);
+  const mid = useMemo(() => new THREE.Vector3().addVectors(vFrom, vTo).multiplyScalar(0.5), [vFrom, vTo]);
+
+  const quaternion = useMemo(() => {
+    const up = new THREE.Vector3(0, 1, 0);
+    const dir = new THREE.Vector3().subVectors(vTo, vFrom).normalize();
+    return new THREE.Quaternion().setFromUnitVectors(up, dir);
+  }, [vFrom, vTo]);
+
+  if (distance < 0.001) return null;
+
+  return (
+    <group position={[mid.x, mid.y, mid.z]} quaternion={quaternion}>
+      <mesh>
+        <cylinderGeometry args={[radius, radius, distance, 16]} />
+        <meshStandardMaterial
+          color={color}
+          metalness={0.7}
+          roughness={0.2}
+          emissive={color}
+          emissiveIntensity={0.5}
+        />
+      </mesh>
+    </group>
+  );
+}
+
+/* ── 3D Wire Solder Node / Junction ── */
+function WireJunction({
+  position,
+  color = "#f59e0b",
+  radius = 0.07,
+}: {
+  position: [number, number, number];
+  color?: string;
+  radius?: number;
+}) {
+  return (
+    <mesh position={position}>
+      <sphereGeometry args={[radius, 16, 16]} />
+      <meshStandardMaterial color={color} metalness={0.85} roughness={0.15} emissive={color} emissiveIntensity={0.6} />
+    </mesh>
+  );
+}
+
+/* ── SMD Gold/Silver Solder Pad on Green PCB ── */
+function SolderPad({ position = [0, 0, 0] }: { position?: [number, number, number] }) {
+  return (
+    <group position={position}>
+      <Box args={[0.24, 0.02, 0.24]} position={[0, 0.01, 0]}>
+        <meshStandardMaterial color="#f59e0b" metalness={0.9} roughness={0.1} />
+      </Box>
+      <Sphere args={[0.065, 16, 16]} position={[0, 0.035, 0]}>
+        <meshStandardMaterial color="#e2e8f0" metalness={0.95} roughness={0.05} />
+      </Sphere>
+    </group>
+  );
+}
+
+/* ── 3D Resistor Component (Clean, No Floating Badges) ── */
 function Resistor3D({
   position = [0, 0, 0],
   rotation = [0, 0, 0],
-  resistanceValue,
-  label = "R",
   highlight = false,
 }: {
   position?: [number, number, number];
   rotation?: [number, number, number];
-  resistanceValue: number;
-  label?: string;
   highlight?: boolean;
 }) {
   return (
     <group position={position} rotation={rotation}>
-      {/* Resistor Cylinder */}
+      {/* Solder Pads on PCB */}
+      <SolderPad position={[-0.65, -0.15, 0]} />
+      <SolderPad position={[0.65, -0.15, 0]} />
+
+      {/* Resistor Ceramic Body */}
       <mesh rotation={[0, 0, Math.PI / 2]}>
-        <cylinderGeometry args={[0.22, 0.22, 1.4, 32]} />
+        <cylinderGeometry args={[0.2, 0.2, 0.95, 32]} />
         <meshStandardMaterial
-          color={highlight ? "#38bdf8" : "#d97706"}
-          roughness={0.3}
-          metalness={0.2}
-          emissive={highlight ? "#0284c7" : "#ea580c"}
-          emissiveIntensity={highlight ? 0.4 : 0.15}
+          color={highlight ? "#0284c7" : "#d97706"}
+          roughness={0.2}
+          metalness={0.15}
+          emissive={highlight ? "#38bdf8" : "#ea580c"}
+          emissiveIntensity={highlight ? 0.45 : 0.15}
         />
       </mesh>
 
-      {/* Color Rings */}
-      {[-0.4, -0.15, 0.15, 0.4].map((offset, i) => (
+      {/* Color Code Bands */}
+      {[-0.28, -0.1, 0.1, 0.28].map((offset, i) => (
         <mesh key={i} position={[offset, 0, 0]} rotation={[0, 0, Math.PI / 2]}>
-          <cylinderGeometry args={[0.225, 0.225, 0.08, 32]} />
+          <cylinderGeometry args={[0.205, 0.205, 0.065, 32]} />
           <meshStandardMaterial color={["#991b1b", "#000000", "#d97706", "#eab308"][i]} />
         </mesh>
       ))}
 
-      {/* Leads */}
-      <mesh position={[-1.0, 0, 0]} rotation={[0, 0, Math.PI / 2]}>
-        <cylinderGeometry args={[0.025, 0.025, 0.8, 16]} />
-        <meshStandardMaterial color="#94a3b8" metalness={0.9} roughness={0.1} />
+      {/* Bent Metallic Leads */}
+      <mesh position={[-0.55, 0, 0]} rotation={[0, 0, Math.PI / 2]}>
+        <cylinderGeometry args={[0.035, 0.035, 0.25, 16]} />
+        <meshStandardMaterial color="#cbd5e1" metalness={0.95} roughness={0.1} />
       </mesh>
-      <mesh position={[1.0, 0, 0]} rotation={[0, 0, Math.PI / 2]}>
-        <cylinderGeometry args={[0.025, 0.025, 0.8, 16]} />
-        <meshStandardMaterial color="#94a3b8" metalness={0.9} roughness={0.1} />
+      <mesh position={[-0.65, -0.075, 0]}>
+        <cylinderGeometry args={[0.035, 0.035, 0.15, 16]} />
+        <meshStandardMaterial color="#cbd5e1" metalness={0.95} roughness={0.1} />
       </mesh>
 
-      {/* 3D Label */}
-      <Html position={[0, 0.45, 0]} center className="pointer-events-none">
-        <div className="bg-slate-900/90 text-amber-300 font-mono text-[9px] font-bold px-1.5 py-0.5 rounded border border-amber-500/30 backdrop-blur whitespace-nowrap shadow">
-          {label} = {resistanceValue.toFixed(1)} Ω
-        </div>
-      </Html>
+      <mesh position={[0.55, 0, 0]} rotation={[0, 0, Math.PI / 2]}>
+        <cylinderGeometry args={[0.035, 0.035, 0.25, 16]} />
+        <meshStandardMaterial color="#cbd5e1" metalness={0.95} roughness={0.1} />
+      </mesh>
+      <mesh position={[0.65, -0.075, 0]}>
+        <cylinderGeometry args={[0.035, 0.035, 0.15, 16]} />
+        <meshStandardMaterial color="#cbd5e1" metalness={0.95} roughness={0.1} />
+      </mesh>
     </group>
   );
 }
 
-/* ── 3D Voltage Source Component ── */
+/* ── 3D Voltage Generator (Vibrant Laboratory Power Module) ── */
 function VoltageSource3D({
   position = [0, 0, 0],
-  voltage,
-  label = "E",
 }: {
   position?: [number, number, number];
-  voltage: number;
-  label?: string;
 }) {
   return (
     <group position={position}>
-      {/* Battery Cylinder */}
-      <mesh rotation={[0, 0, Math.PI / 2]}>
-        <cylinderGeometry args={[0.3, 0.3, 1.2, 32]} />
-        <meshStandardMaterial color="#3b82f6" metalness={0.6} roughness={0.2} emissive="#1d4ed8" emissiveIntensity={0.25} />
-      </mesh>
-      {/* Positive Terminal Cap */}
-      <mesh position={[0.65, 0, 0]} rotation={[0, 0, Math.PI / 2]}>
-        <cylinderGeometry args={[0.12, 0.12, 0.15, 16]} />
-        <meshStandardMaterial color="#e2e8f0" metalness={0.9} roughness={0.1} />
+      {/* Solder Pads on PCB */}
+      <SolderPad position={[0.6, -0.15, 0]} />
+      <SolderPad position={[-0.6, -0.15, 0]} />
+
+      {/* Vibrant High-Tech Brushed Blue/Silver Power Module */}
+      <RoundedBox args={[1.25, 0.65, 0.95]} radius={0.08} smoothness={4} position={[0, 0.18, 0]}>
+        <meshStandardMaterial color="#1d4ed8" metalness={0.7} roughness={0.2} emissive="#1e40af" emissiveIntensity={0.35} />
+      </RoundedBox>
+
+      {/* Metallic Top Plate */}
+      <Box args={[1.1, 0.04, 0.8]} position={[0, 0.52, 0]}>
+        <meshStandardMaterial color="#cbd5e1" metalness={0.95} roughness={0.1} />
+      </Box>
+
+      {/* Heat Sink Aluminum Fins */}
+      {[-0.3, -0.1, 0.1, 0.3].map((x, i) => (
+        <Box key={i} args={[0.05, 0.07, 0.65]} position={[x, 0.57, 0]}>
+          <meshStandardMaterial color="#94a3b8" metalness={0.95} roughness={0.1} />
+        </Box>
+      ))}
+
+      {/* Illuminated Power LED */}
+      <Sphere args={[0.065, 16, 16]} position={[-0.45, 0.55, 0.3]}>
+        <meshStandardMaterial color="#38bdf8" emissive="#38bdf8" emissiveIntensity={2.0} />
+      </Sphere>
+
+      {/* Red (+) Output Binding Post Terminal */}
+      <mesh position={[0.6, 0.18, 0]} rotation={[0, 0, Math.PI / 2]}>
+        <cylinderGeometry args={[0.09, 0.09, 0.22, 16]} />
+        <meshStandardMaterial color="#ef4444" metalness={0.8} roughness={0.15} emissive="#dc2626" emissiveIntensity={0.6} />
       </mesh>
 
-      {/* 3D Label */}
-      <Html position={[0, 0.5, 0]} center className="pointer-events-none">
-        <div className="bg-slate-900/90 text-cyan-300 font-mono text-[9px] font-bold px-2 py-0.5 rounded border border-cyan-500/30 backdrop-blur whitespace-nowrap shadow">
-          {label} = {voltage.toFixed(1)} V
-        </div>
-      </Html>
+      {/* Blue (-) Ground Binding Post Terminal */}
+      <mesh position={[-0.6, 0.18, 0]} rotation={[0, 0, Math.PI / 2]}>
+        <cylinderGeometry args={[0.09, 0.09, 0.22, 16]} />
+        <meshStandardMaterial color="#3b82f6" metalness={0.8} roughness={0.15} emissive="#2563eb" emissiveIntensity={0.6} />
+      </mesh>
     </group>
   );
 }
 
-/* ── 3D Voltmeter & Ammeter Dual Instrument ── */
-function DigitalMeters3D({
-  voltage,
-  current,
+/* ── 3D Norton Current Generator Module ── */
+function CurrentSource3D({
+  position = [0, 0, 0],
 }: {
-  voltage: number;
-  current: number;
+  position?: [number, number, number];
 }) {
   return (
-    <group position={[0, -1.2, 1.8]}>
-      {/* Voltmeter Case */}
-      <Box args={[1.6, 0.75, 0.8]} position={[-0.9, 0, 0]}>
-        <meshStandardMaterial color="#0f172a" roughness={0.4} metalness={0.8} />
-      </Box>
-      <Html position={[-0.9, 0.05, 0.42]} center transform>
-        <div className="bg-black/90 p-1.5 rounded border border-cyan-500/40 text-center font-mono shadow-inner w-[95px]">
-          <div className="text-[7.5px] text-slate-400 font-bold uppercase">Voltmètre U</div>
-          <div className="text-xs font-black text-cyan-400">{voltage.toFixed(2)} V</div>
-        </div>
-      </Html>
+    <group position={position}>
+      {/* Solder Pads on PCB */}
+      <SolderPad position={[0, -0.15, -0.5]} />
+      <SolderPad position={[0, -0.15, 0.5]} />
 
-      {/* Ammeter Case */}
-      <Box args={[1.6, 0.75, 0.8]} position={[0.9, 0, 0]}>
-        <meshStandardMaterial color="#0f172a" roughness={0.4} metalness={0.8} />
-      </Box>
-      <Html position={[0.9, 0.05, 0.42]} center transform>
-        <div className="bg-black/90 p-1.5 rounded border border-amber-500/40 text-center font-mono shadow-inner w-[95px]">
-          <div className="text-[7.5px] text-slate-400 font-bold uppercase">Ampèremètre I</div>
-          <div className="text-xs font-black text-amber-400">{current.toFixed(2)} A</div>
-        </div>
-      </Html>
+      {/* Vibrant Purple/Indigo IC Power Module */}
+      <RoundedBox args={[1.05, 0.65, 1.05]} radius={0.08} smoothness={4} position={[0, 0.18, 0]}>
+        <meshStandardMaterial color="#4f46e5" metalness={0.7} roughness={0.25} emissive="#4338ca" emissiveIntensity={0.35} />
+      </RoundedBox>
 
-      {/* Connecting Wires */}
-      <Line
-        points={[
-          new THREE.Vector3(-0.9, 0.35, 0.3),
-          new THREE.Vector3(-1.8, 0.8, 0.1),
-          new THREE.Vector3(-2.2, 0.2, 0),
-        ]}
-        color="#ef4444"
-        lineWidth={2.5}
-      />
-      <Line
-        points={[
-          new THREE.Vector3(0.9, 0.35, 0.3),
-          new THREE.Vector3(1.8, 0.8, 0.1),
-          new THREE.Vector3(2.2, 0.2, 0),
-        ]}
-        color="#3b82f6"
-        lineWidth={2.5}
-      />
+      {/* Metallic Top Plate */}
+      <Box args={[0.9, 0.04, 0.9]} position={[0, 0.52, 0]}>
+        <meshStandardMaterial color="#cbd5e1" metalness={0.95} roughness={0.1} />
+      </Box>
+
+      {/* Glowing Gold Current Ring Logo */}
+      <mesh position={[0, 0.55, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+        <ringGeometry args={[0.2, 0.28, 32]} />
+        <meshBasicMaterial color="#facc15" side={THREE.DoubleSide} />
+      </mesh>
+
+      {/* Top (+) Terminal Post */}
+      <mesh position={[0, 0.18, -0.5]} rotation={[Math.PI / 2, 0, 0]}>
+        <cylinderGeometry args={[0.09, 0.09, 0.22, 16]} />
+        <meshStandardMaterial color="#ef4444" metalness={0.8} roughness={0.15} emissive="#dc2626" emissiveIntensity={0.6} />
+      </mesh>
+
+      {/* Bottom (-) Terminal Post */}
+      <mesh position={[0, 0.18, 0.5]} rotation={[Math.PI / 2, 0, 0]}>
+        <cylinderGeometry args={[0.09, 0.09, 0.22, 16]} />
+        <meshStandardMaterial color="#3b82f6" metalness={0.8} roughness={0.15} emissive="#2563eb" emissiveIntensity={0.6} />
+      </mesh>
+    </group>
+  );
+}
+
+/* ── 3D Test Point Header Terminal (A / B) ── */
+function TestPoint3D({ position = [0, 0, 0], label = "A", color = "#f43f5e" }: { position?: [number, number, number]; label?: string; color?: string }) {
+  return (
+    <group position={position}>
+      {/* Test Pin Post */}
+      <Cylinder args={[0.05, 0.05, 0.35, 16]} position={[0, 0.15, 0]}>
+        <meshStandardMaterial color="#e2e8f0" metalness={0.95} roughness={0.05} />
+      </Cylinder>
+      {/* Glowing Terminal Ball */}
+      <Sphere args={[0.1, 16, 16]} position={[0, 0.32, 0]}>
+        <meshStandardMaterial color={color} emissive={color} emissiveIntensity={1.0} />
+      </Sphere>
+      {/* Clean Minimal Terminal Badge */}
+      <Html position={[0, 0.55, 0]} center className="pointer-events-none">
+        <span className="text-[12px] font-black font-mono text-white bg-black/90 px-2 py-0.5 rounded-full border border-white/40 shadow-lg">
+          {label}
+        </span>
+      </Html>
     </group>
   );
 }
@@ -206,14 +307,14 @@ function PowerTransferGraph({
   const maxPtY = padT + (1 - Math.min(maxPowerPossible / maxPowerAxis, 1.0)) * plotH;
 
   return (
-    <div className="w-full h-full flex flex-col justify-between p-2.5 sm:p-3 bg-slate-950/80 rounded-2xl border border-slate-800 shadow-inner">
+    <div className="w-full h-full flex flex-col justify-between p-3 bg-slate-950/90 rounded-2xl border border-slate-800 shadow-inner font-sans">
       {/* Header */}
-      <div className="flex items-center justify-between border-b border-slate-800/80 pb-1 gap-1">
+      <div className="flex items-center justify-between border-b border-slate-800/80 pb-1.5 gap-1">
         <span className="text-[10px] sm:text-[10.5px] font-bold text-slate-200 flex items-center gap-1 uppercase tracking-tight whitespace-nowrap">
-          <LineChart className="w-3 h-3 text-cyan-400 shrink-0" />
+          <LineChart className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
           <span>Transfert de Puissance P = f(Rc)</span>
         </span>
-        <span className="text-[8.5px] sm:text-[9px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 whitespace-nowrap">
+        <span className="text-[9px] font-mono px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 font-bold whitespace-nowrap">
           Adaptation : Rc = Rth
         </span>
       </div>
@@ -277,19 +378,19 @@ function PowerTransferGraph({
       </div>
 
       {/* Legend & Status Pill */}
-      <div className="space-y-1 pt-1 border-t border-slate-800/80">
-        <div className="flex items-center justify-between text-[10px] font-mono px-0.5 whitespace-nowrap gap-1">
-          <div className="flex items-center gap-1 text-amber-300">
-            <span className="w-2 h-0.5 rounded-full bg-amber-400 shrink-0"></span>
+      <div className="space-y-1.5 pt-1.5 border-t border-slate-800/80">
+        <div className="flex items-center justify-between text-[10.5px] font-mono px-1 whitespace-nowrap gap-1">
+          <div className="flex items-center gap-1.5 text-amber-300 font-bold">
+            <span className="w-2.5 h-1 rounded-full bg-amber-400 shrink-0"></span>
             <LatexMath math={`P(R_c) = ${powerRc.toFixed(2)}\\text{ W}`} />
           </div>
-          <div className="flex items-center gap-1 text-emerald-400">
-            <span className="w-2 h-0.5 rounded-full bg-emerald-400 shrink-0"></span>
+          <div className="flex items-center gap-1.5 text-emerald-400 font-bold">
+            <span className="w-2.5 h-1 rounded-full bg-emerald-400 shrink-0"></span>
             <LatexMath math={`P_{\\max} = ${maxPowerPossible.toFixed(2)}\\text{ W}`} />
           </div>
         </div>
 
-        <div className="text-[9px] sm:text-[9.5px] text-cyan-300 font-mono text-center bg-slate-900/90 py-0.5 px-1.5 rounded-xl border border-cyan-500/20 shadow-sm whitespace-nowrap overflow-x-auto">
+        <div className="text-[9.5px] text-cyan-300 font-mono text-center bg-slate-900/90 py-1 px-2 rounded-xl border border-cyan-500/20 shadow-sm whitespace-nowrap overflow-x-auto font-bold">
           <LatexMath math={`\\text{Rendement : } \\eta = \\frac{R_c}{R_{th} + R_c} = ${( (Rc / (Rth + Rc)) * 100 ).toFixed(1)}\\%`} />
         </div>
       </div>
@@ -322,7 +423,7 @@ export default function NetworkThevenin3DCanvas() {
   const powerRc = useMemo(() => voltageRc * currentRc, [voltageRc, currentRc]);
 
   return (
-    <div className="w-full bg-slate-950 border border-slate-800 rounded-3xl p-4 sm:p-6 shadow-2xl space-y-4">
+    <div className="w-full bg-slate-950 border border-slate-800 rounded-3xl p-4 sm:p-6 shadow-2xl space-y-4 font-sans">
       {/* ── TOP BAR: VIEW MODE SELECTOR (Réseau Complet vs Thévenin vs Norton) ── */}
       <div className="flex items-center justify-between flex-wrap gap-3 border-b border-slate-800 pb-3">
         <div className="flex items-center gap-2">
@@ -367,100 +468,216 @@ export default function NetworkThevenin3DCanvas() {
         </div>
       </div>
 
-      {/* ── MAIN 2-COLUMN VIEW (LEFT 3D CANVAS 60% + RIGHT 2D GRAPH 40%) ── */}
+      {/* ── MAIN 2-COLUMN VIEW (LEFT 3D CANVAS + RIGHT 2D GRAPH) ── */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-stretch">
         
         {/* LEFT COLUMN: 3D THREE.JS CANVAS (7 COLS) */}
-        <div className="lg:col-span-7 h-[300px] lg:h-[340px] relative rounded-2xl overflow-hidden border border-slate-800 shadow-inner bg-slate-950">
-          <Canvas camera={{ position: [0, 4.5, 6.5], fov: 38 }} className="w-full h-full" dpr={[1, 1.5]}>
+        <div className="lg:col-span-7 h-[340px] lg:h-[380px] relative rounded-2xl overflow-hidden border border-slate-800 shadow-inner bg-slate-950 flex flex-col justify-between">
+          <Canvas camera={{ position: [0, 5.0, 5.5], fov: 38 }} className="w-full h-full" dpr={[1, 1.5]}>
             <Suspense fallback={null}>
               <color attach="background" args={["#020617"]} />
-              <ambientLight intensity={0.9} />
-              <directionalLight position={[5, 10, 5]} intensity={1.6} />
-              <Environment preset="city" />
-              <OrbitControls enableZoom={true} maxPolarAngle={Math.PI / 2.1} autoRotate={false} />
+              <ambientLight intensity={1.1} />
+              <directionalLight position={[5, 10, 5]} intensity={2.0} />
+              <OrbitControls enableZoom={true} maxPolarAngle={Math.PI / 2.15} autoRotate={false} />
 
-              <group position={[0, 0.2, 0]}>
-                {/* ── SCENE: FULL CIRCUIT ── */}
+              <group position={[0, -0.1, 0]}>
+                
+                {/* ── AUTHENTIC GREEN ELECTRONIC PCB BOARD (Carte Verte Classique) ── */}
+                <RoundedBox args={[6.8, 0.16, 3.8]} radius={0.12} smoothness={4} position={[0, -0.08, 0]}>
+                  <meshStandardMaterial
+                    color="#047857"
+                    metalness={0.3}
+                    roughness={0.35}
+                    emissive="#064e3b"
+                    emissiveIntensity={0.25}
+                  />
+                </RoundedBox>
+
+                {/* Decorative Gold Border Trace on PCB */}
+                <Box args={[6.5, 0.02, 0.03]} position={[0, 0.01, -1.75]}>
+                  <meshStandardMaterial color="#f59e0b" metalness={0.9} roughness={0.1} />
+                </Box>
+                <Box args={[6.5, 0.02, 0.03]} position={[0, 0.01, 1.75]}>
+                  <meshStandardMaterial color="#f59e0b" metalness={0.9} roughness={0.1} />
+                </Box>
+                <Box args={[0.03, 0.02, 3.5]} position={[-3.25, 0.01, 0]}>
+                  <meshStandardMaterial color="#f59e0b" metalness={0.9} roughness={0.1} />
+                </Box>
+                <Box args={[0.03, 0.02, 3.5]} position={[3.25, 0.01, 0]}>
+                  <meshStandardMaterial color="#f59e0b" metalness={0.9} roughness={0.1} />
+                </Box>
+
+                {/* ── SCENE 1: FULL CIRCUIT ON GREEN PCB ── */}
                 {viewMode === "full" && (
                   <group>
-                    {/* Source E */}
-                    <VoltageSource3D position={[-2.4, 0, -1.0]} voltage={E} label="E" />
-                    {/* Resistor R1 (Series) */}
-                    <Resistor3D position={[-0.8, 0, -1.0]} resistanceValue={R1} label="R1" />
-                    {/* Resistor R2 (Parallel / Divider) */}
-                    <Resistor3D position={[0.8, 0, 0]} rotation={[0, Math.PI / 2, 0]} resistanceValue={R2} label="R2" />
-                    {/* Load Resistor Rc */}
-                    <Resistor3D position={[2.4, 0, 0]} rotation={[0, Math.PI / 2, 0]} resistanceValue={Rc} label="Rc" highlight={true} />
+                    {/* Source E Module */}
+                    <VoltageSource3D position={[-2.2, 0.15, 0]} />
 
-                    {/* Circuit Board Base Box */}
-                    <Box args={[6.2, 0.1, 3.2]} position={[0, -0.2, 0]}>
-                      <meshStandardMaterial color="#091e3a" metalness={0.6} roughness={0.4} transparent opacity={0.3} />
-                    </Box>
+                    {/* Resistor R1 (Series, horizontal along X) */}
+                    <Resistor3D position={[-0.4, 0.15, 0]} />
+
+                    {/* Resistor R2 (Parallel, vertical along Z) */}
+                    <Resistor3D position={[1.1, 0.15, 0]} rotation={[0, Math.PI / 2, 0]} />
+
+                    {/* Load Resistor Rc (Parallel, vertical along Z) */}
+                    <Resistor3D position={[2.4, 0.15, 0]} rotation={[0, Math.PI / 2, 0]} highlight={true} />
+
+                    {/* Test Points TP-A and TP-B */}
+                    <TestPoint3D position={[1.1, 0.15, -1.2]} label="A" color="#f43f5e" />
+                    <TestPoint3D position={[1.1, 0.15, 1.2]} label="B" color="#38bdf8" />
+
+                    {/* ── 3D SOLID CONNECTING WIRES ── */}
+                    {/* Wire 1: From Generator (+) [+0.6] to R1 left [-1.05] */}
+                    <Wire3D from={[-1.6, 0.15, 0]} to={[-1.05, 0.15, 0]} color="#f43f5e" radius={0.045} />
+                    <WireJunction position={[-1.6, 0.15, 0]} color="#f43f5e" />
+                    <WireJunction position={[-1.05, 0.15, 0]} color="#f43f5e" />
+
+                    {/* Wire 2: From R1 right [0.25] to junction [1.1, 0] */}
+                    <Wire3D from={[0.25, 0.15, 0]} to={[1.1, 0.15, 0]} color="#f43f5e" radius={0.045} />
+                    <WireJunction position={[0.25, 0.15, 0]} color="#f43f5e" />
+                    <WireJunction position={[1.1, 0.15, 0]} color="#f43f5e" />
+
+                    {/* Wire 3: From junction [1.1, 0] to R2 top lead [1.1, -0.65] and Node A [1.1, -1.2] */}
+                    <Wire3D from={[1.1, 0.15, 0]} to={[1.1, 0.15, -0.65]} color="#f43f5e" radius={0.045} />
+                    <Wire3D from={[1.1, 0.15, -0.65]} to={[1.1, 0.15, -1.2]} color="#f43f5e" radius={0.045} />
+                    <WireJunction position={[1.1, 0.15, -0.65]} color="#f43f5e" />
+
+                    {/* Wire 4: From Node A [1.1, -1.2] across to Rc top [2.4, -1.2] and down to Rc lead [2.4, -0.65] */}
+                    <Wire3D from={[1.1, 0.15, -1.2]} to={[2.4, 0.15, -1.2]} color="#f43f5e" radius={0.045} />
+                    <Wire3D from={[2.4, 0.15, -1.2]} to={[2.4, 0.15, -0.65]} color="#f43f5e" radius={0.045} />
+                    <WireJunction position={[2.4, 0.15, -1.2]} color="#f43f5e" />
+                    <WireJunction position={[2.4, 0.15, -0.65]} color="#f43f5e" />
+
+                    {/* Wire 5 (Ground Return): From Rc bottom [2.4, 0.65] to [2.4, 1.2] to Node B [1.1, 1.2] and R2 bottom [1.1, 0.65] */}
+                    <Wire3D from={[2.4, 0.15, 0.65]} to={[2.4, 0.15, 1.2]} color="#38bdf8" radius={0.045} />
+                    <Wire3D from={[2.4, 0.15, 1.2]} to={[1.1, 0.15, 1.2]} color="#38bdf8" radius={0.045} />
+                    <Wire3D from={[1.1, 0.15, 1.2]} to={[1.1, 0.15, 0.65]} color="#38bdf8" radius={0.045} />
+                    <WireJunction position={[2.4, 0.15, 0.65]} color="#38bdf8" />
+                    <WireJunction position={[2.4, 0.15, 1.2]} color="#38bdf8" />
+                    <WireJunction position={[1.1, 0.15, 0.65]} color="#38bdf8" />
+
+                    {/* Wire 6 (Back to Generator (-)): From Node B [1.1, 1.2] to [-2.8, 1.2] and up to Generator (-) [-2.8, 0] */}
+                    <Wire3D from={[1.1, 0.15, 1.2]} to={[-2.8, 0.15, 1.2]} color="#38bdf8" radius={0.045} />
+                    <Wire3D from={[-2.8, 0.15, 1.2]} to={[-2.8, 0.15, 0]} color="#38bdf8" radius={0.045} />
+                    <WireJunction position={[-2.8, 0.15, 1.2]} color="#38bdf8" />
+                    <WireJunction position={[-2.8, 0.15, 0]} color="#38bdf8" />
                   </group>
                 )}
 
-                {/* ── SCENE: THÉVENIN EQUIVALENT ── */}
+                {/* ── SCENE 2: THÉVENIN EQUIVALENT ON GREEN PCB ── */}
                 {viewMode === "thevenin" && (
                   <group>
                     {/* Thévenin Voltage Source Eth */}
-                    <VoltageSource3D position={[-1.8, 0, 0]} voltage={Eth} label="Eth" />
-                    {/* Thévenin Resistance Rth */}
-                    <Resistor3D position={[0, 0, 0]} resistanceValue={Rth} label="Rth" />
-                    {/* Load Resistor Rc */}
-                    <Resistor3D position={[2.0, 0, 0]} rotation={[0, Math.PI / 2, 0]} resistanceValue={Rc} label="Rc" highlight={true} />
+                    <VoltageSource3D position={[-1.8, 0.15, 0]} />
 
-                    <Html position={[0, 1.2, 0]} center className="pointer-events-none">
-                      <div className="bg-amber-500/10 text-amber-300 font-mono text-[10px] font-bold px-2.5 py-1 rounded-full border border-amber-500/30 backdrop-blur whitespace-nowrap shadow">
-                        Modèle de Thévenin : Dipôle (Eth, Rth) en série
-                      </div>
-                    </Html>
+                    {/* Thévenin Resistance Rth (Series) */}
+                    <Resistor3D position={[0.0, 0.15, 0]} />
+
+                    {/* Load Resistor Rc */}
+                    <Resistor3D position={[2.2, 0.15, 0]} rotation={[0, Math.PI / 2, 0]} highlight={true} />
+
+                    {/* Test Points TP-A and TP-B */}
+                    <TestPoint3D position={[2.2, 0.15, -1.2]} label="A" color="#f43f5e" />
+                    <TestPoint3D position={[2.2, 0.15, 1.2]} label="B" color="#38bdf8" />
+
+                    {/* ── 3D SOLID CONNECTING WIRES (CLEAN TOP ROUTE) ── */}
+                    {/* Wire 1: From Eth (+) [-1.2, 0] to Rth left [-0.65, 0] */}
+                    <Wire3D from={[-1.2, 0.15, 0]} to={[-0.65, 0.15, 0]} color="#f43f5e" radius={0.045} />
+                    <WireJunction position={[-1.2, 0.15, 0]} color="#f43f5e" />
+                    <WireJunction position={[-0.65, 0.15, 0]} color="#f43f5e" />
+
+                    {/* Wire 2: From Rth right [0.65, 0] -> [1.3, 0] -> [1.3, -1.2] -> Node A [2.2, -1.2] -> Rc top lead [2.2, -0.65] */}
+                    <Wire3D from={[0.65, 0.15, 0]} to={[1.3, 0.15, 0]} color="#f43f5e" radius={0.045} />
+                    <Wire3D from={[1.3, 0.15, 0]} to={[1.3, 0.15, -1.2]} color="#f43f5e" radius={0.045} />
+                    <Wire3D from={[1.3, 0.15, -1.2]} to={[2.2, 0.15, -1.2]} color="#f43f5e" radius={0.045} />
+                    <Wire3D from={[2.2, 0.15, -1.2]} to={[2.2, 0.15, -0.65]} color="#f43f5e" radius={0.045} />
+                    
+                    <WireJunction position={[0.65, 0.15, 0]} color="#f43f5e" />
+                    <WireJunction position={[1.3, 0.15, 0]} color="#f43f5e" />
+                    <WireJunction position={[1.3, 0.15, -1.2]} color="#f43f5e" />
+                    <WireJunction position={[2.2, 0.15, -1.2]} color="#f43f5e" />
+                    <WireJunction position={[2.2, 0.15, -0.65]} color="#f43f5e" />
+
+                    {/* Wire 3: From Rc bottom lead [2.2, 0.65] to Node B [2.2, 1.2] and back to Eth (-) [-2.4, 0] */}
+                    <Wire3D from={[2.2, 0.15, 0.65]} to={[2.2, 0.15, 1.2]} color="#38bdf8" radius={0.045} />
+                    <Wire3D from={[2.2, 0.15, 1.2]} to={[-2.4, 0.15, 1.2]} color="#38bdf8" radius={0.045} />
+                    <Wire3D from={[-2.4, 0.15, 1.2]} to={[-2.4, 0.15, 0]} color="#38bdf8" radius={0.045} />
+                    
+                    <WireJunction position={[2.2, 0.15, 0.65]} color="#38bdf8" />
+                    <WireJunction position={[2.2, 0.15, 1.2]} color="#38bdf8" />
+                    <WireJunction position={[-2.4, 0.15, 1.2]} color="#38bdf8" />
+                    <WireJunction position={[-2.4, 0.15, 0]} color="#38bdf8" />
                   </group>
                 )}
 
-                {/* ── SCENE: NORTON EQUIVALENT ── */}
+                {/* ── SCENE 3: NORTON EQUIVALENT ON GREEN PCB ── */}
                 {viewMode === "norton" && (
                   <group>
-                    {/* Norton Current Source Icon Box */}
-                    <group position={[-1.8, 0, 0]}>
-                      <Box args={[0.8, 0.8, 0.8]}>
-                        <meshStandardMaterial color="#6366f1" emissive="#4f46e5" emissiveIntensity={0.3} />
-                      </Box>
-                      <Html position={[0, 0.65, 0]} center className="pointer-events-none">
-                        <div className="bg-indigo-500/10 text-indigo-300 font-mono text-[9px] font-bold px-2 py-0.5 rounded border border-indigo-500/30 backdrop-blur whitespace-nowrap shadow">
-                          ηN = {etaN.toFixed(2)} A
-                        </div>
-                      </Html>
-                    </group>
+                    {/* Norton Current Source IN */}
+                    <CurrentSource3D position={[-1.6, 0.15, 0]} />
 
                     {/* Norton Resistance RN = Rth (Parallel) */}
-                    <Resistor3D position={[0.2, 0, 0]} rotation={[0, Math.PI / 2, 0]} resistanceValue={Rth} label="RN" />
-                    {/* Load Resistor Rc (Parallel) */}
-                    <Resistor3D position={[2.0, 0, 0]} rotation={[0, Math.PI / 2, 0]} resistanceValue={Rc} label="Rc" highlight={true} />
+                    <Resistor3D position={[0.3, 0.15, 0]} rotation={[0, Math.PI / 2, 0]} />
 
-                    <Html position={[0, 1.2, 0]} center className="pointer-events-none">
-                      <div className="bg-indigo-500/10 text-indigo-300 font-mono text-[10px] font-bold px-2.5 py-1 rounded-full border border-indigo-500/30 backdrop-blur whitespace-nowrap shadow">
-                        Modèle de Norton : Source de courant ηN en parallèle avec RN
-                      </div>
-                    </Html>
+                    {/* Load Resistor Rc */}
+                    <Resistor3D position={[2.2, 0.15, 0]} rotation={[0, Math.PI / 2, 0]} highlight={true} />
+
+                    {/* Test Points TP-A and TP-B */}
+                    <TestPoint3D position={[2.2, 0.15, -1.2]} label="A" color="#f43f5e" />
+                    <TestPoint3D position={[2.2, 0.15, 1.2]} label="B" color="#38bdf8" />
+
+                    {/* ── 3D SOLID CONNECTING WIRES ── */}
+                    {/* Top Bus Rail Trace (Connecting IN top, RN top, TP-A, and Rc top) */}
+                    <Wire3D from={[-1.6, 0.15, -0.5]} to={[-1.6, 0.15, -1.2]} color="#f43f5e" radius={0.045} />
+                    <Wire3D from={[-1.6, 0.15, -1.2]} to={[2.2, 0.15, -1.2]} color="#f43f5e" radius={0.045} />
+                    <Wire3D from={[0.3, 0.15, -0.65]} to={[0.3, 0.15, -1.2]} color="#f43f5e" radius={0.045} />
+                    <Wire3D from={[2.2, 0.15, -0.65]} to={[2.2, 0.15, -1.2]} color="#f43f5e" radius={0.045} />
+                    <WireJunction position={[-1.6, 0.15, -0.5]} color="#f43f5e" />
+                    <WireJunction position={[-1.6, 0.15, -1.2]} color="#f43f5e" />
+                    <WireJunction position={[0.3, 0.15, -0.65]} color="#f43f5e" />
+                    <WireJunction position={[2.2, 0.15, -0.65]} color="#f43f5e" />
+
+                    {/* Bottom Bus Rail Trace (Connecting IN bottom, RN bottom, TP-B, and Rc bottom) */}
+                    <Wire3D from={[-1.6, 0.15, 0.5]} to={[-1.6, 0.15, 1.2]} color="#38bdf8" radius={0.045} />
+                    <Wire3D from={[-1.6, 0.15, 1.2]} to={[2.2, 0.15, 1.2]} color="#38bdf8" radius={0.045} />
+                    <Wire3D from={[0.3, 0.15, 0.65]} to={[0.3, 0.15, 1.2]} color="#38bdf8" radius={0.045} />
+                    <Wire3D from={[2.2, 0.15, 0.65]} to={[2.2, 0.15, 1.2]} color="#38bdf8" radius={0.045} />
+                    <WireJunction position={[-1.6, 0.15, 0.5]} color="#38bdf8" />
+                    <WireJunction position={[-1.6, 0.15, 1.2]} color="#38bdf8" />
+                    <WireJunction position={[0.3, 0.15, 0.65]} color="#38bdf8" />
+                    <WireJunction position={[2.2, 0.15, 0.65]} color="#38bdf8" />
                   </group>
                 )}
-
-                {/* 3D Voltmeter & Ammeter Readout Instruments */}
-                <DigitalMeters3D voltage={voltageRc} current={currentRc} />
               </group>
 
-              <ContactShadows position={[0, -1.3, 0]} opacity={0.6} scale={7} blur={2.0} />
+              <ContactShadows position={[0, -0.4, 0]} opacity={0.6} scale={8} blur={2.2} />
             </Suspense>
           </Canvas>
 
-          <div className="absolute bottom-2.5 right-2.5 pointer-events-none text-[9.5px] text-slate-400 bg-slate-900/80 px-2 py-0.5 rounded border border-slate-800 backdrop-blur">
-            🖱️ 3D Interactif • Tourner / Zoomer
+          {/* Sleek On-Screen Multimeter Measurement Dock */}
+          <div className="absolute bottom-2.5 left-2.5 right-2.5 flex items-center justify-between gap-2 p-2 rounded-xl bg-black/85 border border-slate-800 backdrop-blur-md">
+            <div className="flex items-center gap-2 sm:gap-3">
+              {/* Voltmeter */}
+              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-cyan-950/60 border border-cyan-500/30 whitespace-nowrap">
+                <span className="text-[9px] text-cyan-400 font-bold uppercase">Voltmètre U :</span>
+                <span className="text-xs font-mono font-black text-cyan-300">{voltageRc.toFixed(2)} V</span>
+              </div>
+
+              {/* Ammeter */}
+              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-amber-950/60 border border-amber-500/30 whitespace-nowrap">
+                <span className="text-[9px] text-amber-400 font-bold uppercase">Ampèremètre I :</span>
+                <span className="text-xs font-mono font-black text-amber-300">{currentRc.toFixed(2)} A</span>
+              </div>
+            </div>
+
+            <div className="text-[9px] text-slate-400 font-mono hidden sm:block">
+              🖱️ 3D Interactif • Tourner / Zoomer
+            </div>
           </div>
         </div>
 
         {/* RIGHT COLUMN: 2D DYNAMIC RESPONSE GRAPH (5 COLS) */}
-        <div className="lg:col-span-5 h-[300px] lg:h-[340px]">
+        <div className="lg:col-span-5 h-[340px] lg:h-[380px]">
           <PowerTransferGraph
             Eth={Eth}
             Rth={Rth}
@@ -474,13 +691,13 @@ export default function NetworkThevenin3DCanvas() {
       </div>
 
       {/* ── BOTTOM PANEL: SLIDERS & PARAMETER CONTROLS ── */}
-      <div className="w-full bg-slate-900/80 border border-slate-800 p-3.5 rounded-2xl grid grid-cols-2 sm:grid-cols-4 gap-3 shadow-lg">
+      <div className="w-full bg-slate-900/80 border border-slate-800 p-4 rounded-2xl grid grid-cols-2 sm:grid-cols-4 gap-3.5 shadow-lg">
         
         {/* Slider E */}
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-col gap-1.5">
           <label className="text-[10px] text-slate-400 font-bold flex justify-between uppercase">
             <span>Tension E</span>
-            <span className="text-cyan-400 font-mono">{E.toFixed(1)} V</span>
+            <span className="text-cyan-400 font-mono font-bold">{E.toFixed(1)} V</span>
           </label>
           <input
             type="range"
@@ -494,10 +711,10 @@ export default function NetworkThevenin3DCanvas() {
         </div>
 
         {/* Slider R1 */}
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-col gap-1.5">
           <label className="text-[10px] text-slate-400 font-bold flex justify-between uppercase">
             <span>Résistance R1</span>
-            <span className="text-amber-400 font-mono">{R1.toFixed(1)} Ω</span>
+            <span className="text-amber-400 font-mono font-bold">{R1.toFixed(1)} Ω</span>
           </label>
           <input
             type="range"
@@ -511,10 +728,10 @@ export default function NetworkThevenin3DCanvas() {
         </div>
 
         {/* Slider R2 */}
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-col gap-1.5">
           <label className="text-[10px] text-slate-400 font-bold flex justify-between uppercase">
             <span>Résistance R2</span>
-            <span className="text-amber-400 font-mono">{R2.toFixed(1)} Ω</span>
+            <span className="text-amber-400 font-mono font-bold">{R2.toFixed(1)} Ω</span>
           </label>
           <input
             type="range"
@@ -528,7 +745,7 @@ export default function NetworkThevenin3DCanvas() {
         </div>
 
         {/* Slider Load Rc */}
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-col gap-1.5">
           <label className="text-[10px] text-slate-400 font-bold flex justify-between uppercase">
             <span>Charge Rc</span>
             <span className="text-emerald-400 font-mono font-black">{Rc.toFixed(1)} Ω</span>
@@ -547,7 +764,7 @@ export default function NetworkThevenin3DCanvas() {
       </div>
 
       {/* ── THEORETICAL VALUES SUMMARY BAR ── */}
-      <div className="flex items-center justify-between flex-wrap gap-2 px-3 py-2 rounded-xl bg-slate-900/60 border border-slate-800 text-[11px] font-mono text-slate-300">
+      <div className="flex items-center justify-between flex-wrap gap-2 px-3.5 py-2.5 rounded-xl bg-slate-900/60 border border-slate-800 text-[11px] font-mono text-slate-300">
         <div className="flex items-center gap-1 text-cyan-300">
           <LatexMath math={`E_{th} = \\frac{R_2}{R_1+R_2} E = ${Eth.toFixed(2)}\\text{ V}`} />
         </div>
@@ -555,12 +772,41 @@ export default function NetworkThevenin3DCanvas() {
           <LatexMath math={`R_{th} = \\frac{R_1 R_2}{R_1+R_2} = ${Rth.toFixed(2)}\\text{ }\\Omega`} />
         </div>
         <div className="flex items-center gap-1 text-indigo-300">
-          <LatexMath math={`\\eta_N = \\frac{E_{th}}{R_{th}} = ${etaN.toFixed(2)}\\text{ A}`} />
+          <LatexMath math={`I_N = \\frac{E_{th}}{R_{th}} = ${etaN.toFixed(2)}\\text{ A}`} />
         </div>
         <div className="flex items-center gap-1 text-emerald-300 font-bold">
           <LatexMath math={`P_{\\max}(R_c=R_{th}) = ${((Eth * Eth) / (4 * Rth)).toFixed(2)}\\text{ W}`} />
         </div>
       </div>
+
+      {/* ── PEDAGOGICAL EXPLANATION BOX ── */}
+      <div className="p-3.5 rounded-2xl bg-slate-900/40 border border-slate-800/80 text-xs text-slate-300 leading-relaxed space-y-2">
+        <div className="flex items-center gap-1.5 text-cyan-400 font-bold">
+          <BookOpen className="w-3.5 h-3.5" />
+          <span>Guide Pédagogique & Équivalences :</span>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-[11px]">
+          <div className="p-2 rounded-xl bg-black/40 border border-slate-800 space-y-1">
+            <span className="text-cyan-300 font-bold block">1. Réseau Réel (Pont) :</span>
+            <p className="text-slate-400">
+              La source <LatexMath math="E" /> alimente le pont <LatexMath math="R_1, R_2" />. La charge <LatexMath math="R_c" /> prélève la tension aux bornes de <LatexMath math="R_2" />.
+            </p>
+          </div>
+          <div className="p-2 rounded-xl bg-black/40 border border-slate-800 space-y-1">
+            <span className="text-amber-300 font-bold block">2. Modèle de Thévenin :</span>
+            <p className="text-slate-400">
+              Tout le réseau est remplacé par <LatexMath math="(E_{th}, R_{th})" /> en série. La tension et le courant sur <LatexMath math="R_c" /> sont rigoureusement identiques.
+            </p>
+          </div>
+          <div className="p-2 rounded-xl bg-black/40 border border-slate-800 space-y-1">
+            <span className="text-indigo-300 font-bold block">3. Modèle de Norton :</span>
+            <p className="text-slate-400">
+              Réseau équivalent à une source de courant <LatexMath math="I_N" /> en parallèle avec <LatexMath math="R_N" />. Même comportement sur la charge <LatexMath math="R_c" />.
+            </p>
+          </div>
+        </div>
+      </div>
+
     </div>
   );
 }

@@ -1511,6 +1511,101 @@ export default function Chap2GenerateursLoisKirchhoff() {
           Lorsqu&apos;un générateur réel de Thévenin <LatexMath math="(E_{th}, R_{th})" /> alimente une résistance de charge variable <LatexMath math="R_c" />, quelle valeur de <LatexMath math="R_c" /> permet de lui transférer le maximum d&apos;énergie utile ?
         </p>
 
+        {/* Visual Schematics: Circuit + Power Curve */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Circuit SVG: Source Thévenin + Charge Rc */}
+          <div className="p-4 rounded-2xl bg-slate-950/90 border border-rose-500/30 flex flex-col items-center justify-center space-y-2 shadow-inner">
+            <span className="text-[10.5px] font-mono text-rose-300 font-bold flex items-center gap-1.5">
+              <Flame className="w-3.5 h-3.5 text-rose-400" />
+              Circuit d&apos;Étude : Générateur de Thévenin et Charge Variable <LatexMath math="R_c" />
+            </span>
+            <svg viewBox="0 0 280 150" className="w-full max-w-[270px] h-auto text-xs">
+              {/* Loop wires */}
+              <path d="M 40 120 L 40 35 L 230 35 L 230 120 L 40 120" fill="none" stroke="#38bdf8" strokeWidth="2" />
+              
+              {/* Source Eth (Left) */}
+              <rect x="30" y="76" width="20" height="8" fill="#020617" />
+              <line x1="30" y1="75" x2="50" y2="75" stroke="#facc15" strokeWidth="2.5" />
+              <line x1="34" y1="85" x2="46" y2="85" stroke="#facc15" strokeWidth="3.5" />
+              <text x="22" y="83" fill="#facc15" fontSize="10" fontStyle="italic" fontWeight="bold" textAnchor="end">E<tspan fontSize="7" dy="2.5">th</tspan></text>
+
+              {/* Internal Resistor Rth */}
+              <rect x="75" y="29" width="36" height="12" fill="#020617" stroke="#38bdf8" strokeWidth="1.5" rx="2" />
+              <text x="93" y="24" fill="#38bdf8" fontSize="9.5" fontStyle="italic" fontWeight="bold" textAnchor="middle">R<tspan fontSize="7" dy="2.5">th</tspan></text>
+
+              {/* Current I Arrow */}
+              <path d="M 140 35 L 155 35 M 150 32 L 156 35 L 150 38" fill="#f43f5e" stroke="#f43f5e" strokeWidth="1.4" />
+              <text x="148" y="24" fill="#f43f5e" fontSize="9.5" fontStyle="italic" fontWeight="bold">i(R<tspan fontSize="6.5" dy="2">c</tspan>)</text>
+
+              {/* Terminals A and B */}
+              <circle cx="190" cy="35" r="3" fill="#f43f5e" />
+              <text x="190" y="22" fill="#f8fafc" fontSize="10" fontStyle="italic" fontWeight="bold" textAnchor="middle">A</text>
+              <circle cx="190" cy="120" r="3" fill="#64748b" />
+              <text x="190" y="135" fill="#f8fafc" fontSize="10" fontStyle="italic" fontWeight="bold" textAnchor="middle">B</text>
+
+              {/* Variable Load Resistor Rc (Right) */}
+              <rect x="224" y="60" width="12" height="34" fill="#020617" stroke="#fb7185" strokeWidth="1.8" rx="2" />
+              {/* Variable resistor diagonal arrow */}
+              <line x1="216" y1="98" x2="244" y2="56" stroke="#fb7185" strokeWidth="1.5" />
+              <polygon points="244,56 245,63 238,58" fill="#fb7185" />
+              <text x="256" y="80" fill="#fb7185" fontSize="10.5" fontStyle="italic" fontWeight="bold">R<tspan fontSize="7.5" dy="2.5">c</tspan></text>
+
+              {/* Voltage arrow Uc across Rc */}
+              <line x1="205" y1="110" x2="205" y2="45" stroke="#22c55e" strokeWidth="1.3" strokeDasharray="3,2" />
+              <polygon points="202,50 208,50 205,42" fill="#22c55e" />
+              <text x="195" y="80" fill="#22c55e" fontSize="9.5" fontStyle="italic" fontWeight="bold" textAnchor="end">U<tspan fontSize="7" dy="2.5">c</tspan></text>
+
+              {/* Thévenin dipôle box boundary */}
+              <rect x="15" y="18" width="155" height="114" fill="none" stroke="rgba(56, 189, 248, 0.25)" strokeDasharray="4,3" rx="8" />
+              <text x="25" y="126" fill="rgba(56, 189, 248, 0.6)" fontSize="8.5" fontStyle="italic">Générateur Réel</text>
+            </svg>
+            <p className="text-[10px] text-slate-400 text-center font-mono">
+              <LatexMath math="i = \frac{E_{th}}{R_{th} + R_c} \quad \implies \quad P = R_c \cdot i^2" />
+            </p>
+          </div>
+
+          {/* Power Curve Graph P(Rc) */}
+          <div className="p-4 rounded-2xl bg-slate-950/90 border border-rose-500/30 flex flex-col items-center justify-center space-y-2 shadow-inner">
+            <span className="text-[10.5px] font-mono text-rose-300 font-bold flex items-center gap-1.5">
+              <TrendingUp className="w-3.5 h-3.5 text-rose-400" />
+              Courbe de Puissance Transférée <LatexMath math="P(R_c)" />
+            </span>
+            <svg viewBox="0 0 280 150" className="w-full max-w-[270px] h-auto text-xs">
+              {/* Axes */}
+              <line x1="35" y1="125" x2="260" y2="125" stroke="#64748b" strokeWidth="1.5" />
+              <polygon points="260,125 254,122 254,128" fill="#64748b" />
+              <text x="260" y="138" fill="#94a3b8" fontSize="9.5" fontStyle="italic" textAnchor="end">R<tspan fontSize="7" dy="2">c</tspan></text>
+
+              <line x1="35" y1="125" x2="35" y2="15" stroke="#64748b" strokeWidth="1.5" />
+              <polygon points="35,15 32,21 38,21" fill="#64748b" />
+              <text x="28" y="20" fill="#94a3b8" fontSize="9.5" fontStyle="italic" textAnchor="end">P(R<tspan fontSize="7" dy="2">c</tspan>)</text>
+
+              {/* Grid dashed lines */}
+              <line x1="130" y1="125" x2="130" y2="40" stroke="rgba(244, 63, 94, 0.4)" strokeDasharray="3,3" strokeWidth="1.2" />
+              <line x1="35" y1="40" x2="130" y2="40" stroke="rgba(244, 63, 94, 0.4)" strokeDasharray="3,3" strokeWidth="1.2" />
+
+              {/* Power Bell Curve */}
+              <path d="M 35 125 C 60 120, 90 40, 130 40 C 170 40, 210 95, 255 110" fill="none" stroke="#f43f5e" strokeWidth="2.5" />
+
+              {/* Peak Point: Maximum Power */}
+              <circle cx="130" cy="40" r="5" fill="#f43f5e" className="animate-pulse" />
+              <circle cx="130" cy="40" r="2.5" fill="#ffffff" />
+              
+              {/* Max labels */}
+              <text x="130" y="138" fill="#fb7185" fontSize="9.5" fontStyle="italic" fontWeight="bold" textAnchor="middle">R<tspan fontSize="7" dy="2">c</tspan> = R<tspan fontSize="7" dy="2">th</tspan></text>
+              <text x="28" y="44" fill="#fb7185" fontSize="9.5" fontStyle="italic" fontWeight="bold" textAnchor="end">P<tspan fontSize="7" dy="2">max</tspan></text>
+
+              {/* Annotation */}
+              <rect x="145" y="25" width="95" height="24" fill="#020617" stroke="#f43f5e" strokeWidth="1" rx="4" />
+              <text x="192" y="36" fill="#fb7185" fontSize="8" fontStyle="italic" fontWeight="bold" textAnchor="middle">P<tspan fontSize="6" dy="1.5">max</tspan> = E<tspan fontSize="6" dy="1.5">th</tspan>² / (4R<tspan fontSize="6" dy="1.5">th</tspan>)</text>
+              <text x="192" y="45" fill="#94a3b8" fontSize="7" textAnchor="middle">(Adaptation d&apos;impédance)</text>
+            </svg>
+            <p className="text-[10px] text-rose-300 text-center font-mono">
+              <LatexMath math="R_c = R_{th} \implies P_{\max} = \frac{E_{th}^2}{4 R_{th}} \quad (\eta = 50\%)" />
+            </p>
+          </div>
+        </div>
+
         {/* Proof Card */}
         <div className="p-5 rounded-2xl bg-slate-950 border border-rose-500/30 space-y-3 shadow-lg">
           <h4 className="text-[11px] font-extrabold uppercase text-rose-400 tracking-wider flex items-center gap-2">

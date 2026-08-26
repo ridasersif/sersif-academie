@@ -901,15 +901,15 @@ export function FiveMethodsCircuitLab() {
                     {/* Sky Blue Wires */}
                     <path d="M 30 110 L 30 30 L 140 30 L 140 110 L 30 110 M 140 30 L 250 30 L 250 110 L 140 110" fill="none" stroke="#38bdf8" strokeWidth="2" />
                     
-                    {/* Source E1 */}
-                    <rect x="20" y="55" width="20" height="30" fill="#020617" />
+                    {/* Source E1 - Erase only small dielectric gap */}
+                    <rect x="20" y="66" width="20" height="8" fill="#020617" />
                     <line x1="20" y1="65" x2="40" y2="65" stroke="#facc15" strokeWidth="2.5" />
                     <line x1="24" y1="75" x2="36" y2="75" stroke="#facc15" strokeWidth="3.5" />
-                    <text x="14" y="73" fill="#facc15" fontSize="10" fontStyle="italic" fontWeight="bold" textAnchor="end">E₁</text>
+                    <text x="14" y="73" fill="#facc15" fontSize="10" fontStyle="italic" fontWeight="bold" textAnchor="end">E<tspan fontSize="7" dy="2.5">1</tspan></text>
 
                     {/* Resistor R1 */}
                     <rect x="65" y="24" width="36" height="12" fill="#020617" stroke="#38bdf8" strokeWidth="1.5" rx="2" />
-                    <text x="83" y="19" fill="#38bdf8" fontSize="9.5" fontStyle="italic" fontWeight="bold" textAnchor="middle">R₁</text>
+                    <text x="83" y="19" fill="#38bdf8" fontSize="9.5" fontStyle="italic" fontWeight="bold" textAnchor="middle">R<tspan fontSize="7" dy="2.5">1</tspan></text>
 
                     {/* Load Resistor R (Central) with Current I' */}
                     <rect x="134" y="55" width="12" height="34" fill="#020617" stroke="#c084fc" strokeWidth="1.6" rx="2" />
@@ -920,7 +920,7 @@ export function FiveMethodsCircuitLab() {
 
                     {/* Resistor R2 (Right branch) */}
                     <rect x="244" y="55" width="12" height="34" fill="#020617" stroke="#38bdf8" strokeWidth="1.5" rx="2" />
-                    <text x="238" y="75" fill="#38bdf8" fontSize="10" fontStyle="italic" fontWeight="bold" textAnchor="end">R₂</text>
+                    <text x="238" y="75" fill="#38bdf8" fontSize="10" fontStyle="italic" fontWeight="bold" textAnchor="end">R<tspan fontSize="7" dy="2.5">2</tspan></text>
 
                     {/* Nodes A and B */}
                     <circle cx="140" cy="30" r="3" fill="#f43f5e" />
@@ -941,18 +941,18 @@ export function FiveMethodsCircuitLab() {
                     <path d="M 30 110 L 30 30 L 190 30 L 190 110 L 30 110" fill="none" stroke="#38bdf8" strokeWidth="2" />
                     
                     {/* Source E1 */}
-                    <rect x="20" y="55" width="20" height="30" fill="#020617" />
+                    <rect x="20" y="66" width="20" height="8" fill="#020617" />
                     <line x1="20" y1="65" x2="40" y2="65" stroke="#facc15" strokeWidth="2.5" />
                     <line x1="24" y1="75" x2="36" y2="75" stroke="#facc15" strokeWidth="3.5" />
-                    <text x="14" y="73" fill="#facc15" fontSize="10" fontStyle="italic" fontWeight="bold" textAnchor="end">E₁</text>
+                    <text x="14" y="73" fill="#facc15" fontSize="10" fontStyle="italic" fontWeight="bold" textAnchor="end">E<tspan fontSize="7" dy="2.5">1</tspan></text>
 
                     {/* Resistor R1 */}
                     <rect x="80" y="24" width="36" height="12" fill="#020617" stroke="#38bdf8" strokeWidth="1.5" rx="2" />
-                    <text x="98" y="19" fill="#38bdf8" fontSize="9.5" fontStyle="italic" fontWeight="bold" textAnchor="middle">R₁</text>
+                    <text x="98" y="19" fill="#38bdf8" fontSize="9.5" fontStyle="italic" fontWeight="bold" textAnchor="middle">R<tspan fontSize="7" dy="2.5">1</tspan></text>
 
                     {/* Resistor Req */}
                     <rect x="184" y="55" width="12" height="34" fill="#020617" stroke="#f59e0b" strokeWidth="1.6" rx="2" />
-                    <text x="202" y="75" fill="#f59e0b" fontSize="10" fontStyle="italic" fontWeight="bold">R_éq</text>
+                    <text x="202" y="75" fill="#f59e0b" fontSize="10" fontStyle="italic" fontWeight="bold">R<tspan fontSize="7" dy="2.5">éq</tspan></text>
 
                     {/* Nodes A and B */}
                     <circle cx="190" cy="30" r="3" fill="#f43f5e" />
@@ -1019,7 +1019,7 @@ export function FiveMethodsCircuitLab() {
                     
                     {/* Resistor R1 (Left branch, with E1 shorted) */}
                     <rect x="24" y="55" width="12" height="34" fill="#020617" stroke="#38bdf8" strokeWidth="1.5" rx="2" />
-                    <text x="18" y="75" fill="#38bdf8" fontSize="10" fontStyle="italic" fontWeight="bold" textAnchor="end">R₁</text>
+                    <text x="18" y="75" fill="#38bdf8" fontSize="10" fontStyle="italic" fontWeight="bold" textAnchor="end">R<tspan fontSize="7" dy="2.5">1</tspan></text>
 
                     {/* Load Resistor R (Central) with Current I'' */}
                     <rect x="134" y="55" width="12" height="34" fill="#020617" stroke="#c084fc" strokeWidth="1.6" rx="2" />
@@ -1030,13 +1030,13 @@ export function FiveMethodsCircuitLab() {
 
                     {/* Resistor R2 */}
                     <rect x="175" y="24" width="36" height="12" fill="#020617" stroke="#38bdf8" strokeWidth="1.5" rx="2" />
-                    <text x="193" y="19" fill="#38bdf8" fontSize="9.5" fontStyle="italic" fontWeight="bold" textAnchor="middle">R₂</text>
+                    <text x="193" y="19" fill="#38bdf8" fontSize="9.5" fontStyle="italic" fontWeight="bold" textAnchor="middle">R<tspan fontSize="7" dy="2.5">2</tspan></text>
 
-                    {/* Source E2 (Right branch) */}
-                    <rect x="240" y="55" width="20" height="30" fill="#020617" />
+                    {/* Source E2 (Right branch) - Erase only small dielectric gap */}
+                    <rect x="240" y="66" width="20" height="8" fill="#020617" />
                     <line x1="240" y1="65" x2="260" y2="65" stroke="#facc15" strokeWidth="2.5" />
                     <line x1="244" y1="75" x2="256" y2="75" stroke="#facc15" strokeWidth="3.5" />
-                    <text x="268" y="73" fill="#facc15" fontSize="10" fontStyle="italic" fontWeight="bold">E₂</text>
+                    <text x="268" y="73" fill="#facc15" fontSize="10" fontStyle="italic" fontWeight="bold">E<tspan fontSize="7" dy="2.5">2</tspan></text>
 
                     {/* Nodes A and B */}
                     <circle cx="140" cy="30" r="3" fill="#f43f5e" />
@@ -1058,17 +1058,17 @@ export function FiveMethodsCircuitLab() {
                     
                     {/* Resistor R'eq */}
                     <rect x="44" y="55" width="12" height="34" fill="#020617" stroke="#f59e0b" strokeWidth="1.6" rx="2" />
-                    <text x="38" y="75" fill="#f59e0b" fontSize="10" fontStyle="italic" fontWeight="bold" textAnchor="end">R&apos;_éq</text>
+                    <text x="38" y="75" fill="#f59e0b" fontSize="10" fontStyle="italic" fontWeight="bold" textAnchor="end">R&apos;<tspan fontSize="7" dy="2.5">éq</tspan></text>
 
                     {/* Resistor R2 */}
                     <rect x="110" y="24" width="36" height="12" fill="#020617" stroke="#38bdf8" strokeWidth="1.5" rx="2" />
-                    <text x="128" y="19" fill="#38bdf8" fontSize="9.5" fontStyle="italic" fontWeight="bold" textAnchor="middle">R₂</text>
+                    <text x="128" y="19" fill="#38bdf8" fontSize="9.5" fontStyle="italic" fontWeight="bold" textAnchor="middle">R<tspan fontSize="7" dy="2.5">2</tspan></text>
 
                     {/* Source E2 */}
-                    <rect x="200" y="55" width="20" height="30" fill="#020617" />
+                    <rect x="200" y="66" width="20" height="8" fill="#020617" />
                     <line x1="200" y1="65" x2="220" y2="65" stroke="#facc15" strokeWidth="2.5" />
                     <line x1="204" y1="75" x2="216" y2="75" stroke="#facc15" strokeWidth="3.5" />
-                    <text x="228" y="73" fill="#facc15" fontSize="10" fontStyle="italic" fontWeight="bold">E₂</text>
+                    <text x="228" y="73" fill="#facc15" fontSize="10" fontStyle="italic" fontWeight="bold">E<tspan fontSize="7" dy="2.5">2</tspan></text>
 
                     {/* Nodes A and B */}
                     <circle cx="50" cy="30" r="3" fill="#f43f5e" />
@@ -1200,11 +1200,11 @@ export function FiveMethodsCircuitLab() {
                     
                     {/* Resistor R1 (Left) */}
                     <rect x="24" y="48" width="12" height="34" fill="#020617" stroke="#38bdf8" strokeWidth="1.5" rx="2" />
-                    <text x="18" y="68" fill="#38bdf8" fontSize="10" fontStyle="italic" fontWeight="bold" textAnchor="end">R₁</text>
+                    <text x="18" y="68" fill="#38bdf8" fontSize="10" fontStyle="italic" fontWeight="bold" textAnchor="end">R<tspan fontSize="7" dy="2.5">1</tspan></text>
 
                     {/* Resistor R2 (Right) */}
                     <rect x="224" y="48" width="12" height="34" fill="#020617" stroke="#38bdf8" strokeWidth="1.5" rx="2" />
-                    <text x="242" y="68" fill="#38bdf8" fontSize="10" fontStyle="italic" fontWeight="bold">R₂</text>
+                    <text x="242" y="68" fill="#38bdf8" fontSize="10" fontStyle="italic" fontWeight="bold">R<tspan fontSize="7" dy="2.5">2</tspan></text>
 
                     {/* Terminals A and B */}
                     <line x1="120" y1="30" x2="120" y2="45" stroke="#f43f5e" strokeWidth="2" />
@@ -1229,11 +1229,11 @@ export function FiveMethodsCircuitLab() {
                     
                     {/* Resistor R1 */}
                     <rect x="64" y="52" width="12" height="26" fill="#020617" stroke="#38bdf8" strokeWidth="1.5" rx="2" />
-                    <text x="58" y="68" fill="#38bdf8" fontSize="10" fontStyle="italic" fontWeight="bold" textAnchor="end">R₁</text>
+                    <text x="58" y="68" fill="#38bdf8" fontSize="10" fontStyle="italic" fontWeight="bold" textAnchor="end">R<tspan fontSize="7" dy="2.5">1</tspan></text>
 
                     {/* Resistor R2 */}
                     <rect x="164" y="52" width="12" height="26" fill="#020617" stroke="#38bdf8" strokeWidth="1.5" rx="2" />
-                    <text x="182" y="68" fill="#38bdf8" fontSize="10" fontStyle="italic" fontWeight="bold">R₂</text>
+                    <text x="182" y="68" fill="#38bdf8" fontSize="10" fontStyle="italic" fontWeight="bold">R<tspan fontSize="7" dy="2.5">2</tspan></text>
 
                     {/* Terminals A and B */}
                     <line x1="120" y1="40" x2="120" y2="25" stroke="#f43f5e" strokeWidth="2" />
@@ -1270,20 +1270,22 @@ export function FiveMethodsCircuitLab() {
 
               {/* SVG 3: Circuit à vide avec courant de maille */}
               <div className="p-3 rounded-xl bg-black/50 border border-slate-800 flex flex-col items-center justify-center space-y-2">
-                <span className="text-[10px] font-mono text-slate-400 font-bold">Circuit à vide : Boucle unique fermée parcourue par <LatexMath math="I_{\text{maille}}" /></span>
+                <span className="text-[10px] font-mono text-slate-400 font-bold">
+                  Circuit à vide : Boucle unique fermée parcourue par <LatexMath math="I_{\text{maille}}" />
+                </span>
                 <svg viewBox="0 0 300 150" className="w-full max-w-[280px] h-auto text-xs">
                   {/* Single closed loop */}
                   <path d="M 40 120 L 40 35 L 260 35 L 260 120 L 40 120" fill="none" stroke="#38bdf8" strokeWidth="2" />
                   
-                  {/* Source E1 (Left) */}
-                  <rect x="30" y="65" width="20" height="30" fill="#020617" />
+                  {/* Source E1 (Left) - Erase only small gap */}
+                  <rect x="30" y="76" width="20" height="8" fill="#020617" />
                   <line x1="30" y1="75" x2="50" y2="75" stroke="#facc15" strokeWidth="2.5" />
                   <line x1="34" y1="85" x2="46" y2="85" stroke="#facc15" strokeWidth="3.5" />
-                  <text x="24" y="83" fill="#facc15" fontSize="10" fontStyle="italic" fontWeight="bold" textAnchor="end">E₁</text>
+                  <text x="24" y="83" fill="#facc15" fontSize="10" fontStyle="italic" fontWeight="bold" textAnchor="end">E<tspan fontSize="7" dy="2.5">1</tspan></text>
 
                   {/* Resistor R1 */}
                   <rect x="75" y="29" width="34" height="12" fill="#020617" stroke="#38bdf8" strokeWidth="1.5" rx="2" />
-                  <text x="92" y="24" fill="#38bdf8" fontSize="9" fontStyle="italic" fontWeight="bold" textAnchor="middle">R₁</text>
+                  <text x="92" y="24" fill="#38bdf8" fontSize="9" fontStyle="italic" fontWeight="bold" textAnchor="middle">R<tspan fontSize="7" dy="2.5">1</tspan></text>
 
                   {/* Current Arrow on top wire */}
                   <path d="M 120 35 L 130 35 M 126 32 L 131 35 L 126 38" fill="#f43f5e" stroke="#f43f5e" strokeWidth="1.4" />
@@ -1291,13 +1293,13 @@ export function FiveMethodsCircuitLab() {
 
                   {/* Resistor R2 */}
                   <rect x="190" y="29" width="34" height="12" fill="#020617" stroke="#38bdf8" strokeWidth="1.5" rx="2" />
-                  <text x="207" y="24" fill="#38bdf8" fontSize="9" fontStyle="italic" fontWeight="bold" textAnchor="middle">R₂</text>
+                  <text x="207" y="24" fill="#38bdf8" fontSize="9" fontStyle="italic" fontWeight="bold" textAnchor="middle">R<tspan fontSize="7" dy="2.5">2</tspan></text>
 
-                  {/* Source E2 (Right) */}
-                  <rect x="250" y="65" width="20" height="30" fill="#020617" />
+                  {/* Source E2 (Right) - Erase only small gap */}
+                  <rect x="250" y="76" width="20" height="8" fill="#020617" />
                   <line x1="250" y1="75" x2="270" y2="75" stroke="#facc15" strokeWidth="2.5" />
                   <line x1="254" y1="85" x2="266" y2="85" stroke="#facc15" strokeWidth="3.5" />
-                  <text x="278" y="83" fill="#facc15" fontSize="10" fontStyle="italic" fontWeight="bold">E₂</text>
+                  <text x="278" y="83" fill="#facc15" fontSize="10" fontStyle="italic" fontWeight="bold">E<tspan fontSize="7" dy="2.5">2</tspan></text>
 
                   {/* Terminals A and B in middle */}
                   <circle cx="150" cy="35" r="3" fill="#f43f5e" />
@@ -1308,7 +1310,7 @@ export function FiveMethodsCircuitLab() {
                   {/* Voltage Arrow U_AB */}
                   <line x1="160" y1="110" x2="160" y2="45" stroke="#22c55e" strokeWidth="1.4" strokeDasharray="3,2" />
                   <polygon points="157,50 163,50 160,42" fill="#22c55e" />
-                  <text x="168" y="80" fill="#22c55e" fontSize="9.5" fontStyle="italic" fontWeight="bold">U_AB</text>
+                  <text x="168" y="80" fill="#22c55e" fontSize="10" fontStyle="italic" fontWeight="bold">U<tspan fontSize="7" dy="2.5">AB</tspan></text>
 
                   {/* Loop mesh orientation */}
                   <text x="100" y="80" fill="rgba(56, 189, 248, 0.5)" fontSize="9" fontStyle="italic">⟲ ∑Uᵢ = 0</text>
@@ -1375,13 +1377,13 @@ export function FiveMethodsCircuitLab() {
                     
                     {/* Resistor Rth */}
                     <rect x="34" y="55" width="12" height="34" fill="#020617" stroke="#38bdf8" strokeWidth="1.5" rx="2" />
-                    <text x="24" y="75" fill="#38bdf8" fontSize="9.5" fontStyle="italic" fontWeight="bold" textAnchor="end">R_th</text>
+                    <text x="24" y="75" fill="#38bdf8" fontSize="9.5" fontStyle="italic" fontWeight="bold" textAnchor="end">R<tspan fontSize="7" dy="2.5">th</tspan></text>
 
-                    {/* Source Eth */}
-                    <rect x="70" y="100" width="30" height="20" fill="#020617" />
+                    {/* Source Eth - Erase only small dielectric gap */}
+                    <rect x="81" y="100" width="8" height="20" fill="#020617" />
                     <line x1="80" y1="100" x2="80" y2="120" stroke="#facc15" strokeWidth="2.5" />
                     <line x1="90" y1="104" x2="90" y2="116" stroke="#facc15" strokeWidth="3.5" />
-                    <text x="85" y="93" fill="#facc15" fontSize="10" fontStyle="italic" fontWeight="bold" textAnchor="middle">E_th</text>
+                    <text x="85" y="93" fill="#facc15" fontSize="10" fontStyle="italic" fontWeight="bold" textAnchor="middle">E<tspan fontSize="7" dy="2.5">th</tspan></text>
 
                     {/* Load Resistor R */}
                     <rect x="154" y="55" width="12" height="34" fill="#020617" stroke="#c084fc" strokeWidth="1.6" rx="2" />
@@ -1448,91 +1450,516 @@ export function FiveMethodsCircuitLab() {
           </div>
         )}
 
-        {/* ── TAB 4: THÉORÈME DE NORTON ── */}
+        {/* ── TAB 4: THÉORÈME DE NORTON (WHITEBOARD STEP-BY-STEP) ── */}
         {activeTab === 'norton' && (
-          <div className="p-4 sm:p-5 rounded-2xl bg-slate-900/90 border border-indigo-500/30 space-y-4 animate-in fade-in duration-200 shadow-md">
-            <div className="flex items-center justify-between">
+          <div className="p-4 sm:p-5 rounded-2xl bg-slate-900/90 border border-indigo-500/30 space-y-4 animate-in fade-in duration-200 shadow-md font-sans">
+            
+            {/* Header */}
+            <div className="flex items-center justify-between border-b border-slate-800 pb-2.5">
               <span className="text-xs font-extrabold text-indigo-400 uppercase tracking-wider flex items-center gap-1.5">
                 <CheckCircle2 className="w-4 h-4 text-indigo-400" />
-                4°) Résolution par le Théorème de Norton
+                4°) Résolution par le Théorème de NORTON
               </span>
               <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 font-bold">
                 Modèle (IN, RN)
               </span>
             </div>
 
-            <div className="space-y-3 text-slate-300 text-xs leading-relaxed">
-              <p>
-                On remplace l&apos;ensemble du réseau vu par <LatexMath math="R" /> par une source de courant de court-circuit <LatexMath math="I_N" /> en parallèle avec <LatexMath math="R_N = R_{th}" /> :
+            {/* Principle Definition */}
+            <div className="p-3 rounded-xl bg-indigo-950/30 border border-indigo-500/20 text-slate-300 text-xs leading-relaxed space-y-1">
+              <span className="font-bold text-indigo-300 block">💡 Énoncé du Théorème de Norton :</span>
+              <p className="text-[11.5px]">
+                Tout dipôle linéaire vu entre deux bornes <LatexMath math="A" /> et <LatexMath math="B" /> est équivalent à un <strong>générateur de courant unique</strong> débitant un courant de court-circuit <LatexMath math="I_N = I_{cc}" /> en parallèle avec une résistance interne <LatexMath math="R_N = R_{th} = R_{AB\text{ (passivé)}}" />.
               </p>
+            </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-[11px]">
-                {/* Calcul IN */}
-                <div className="p-3 rounded-xl bg-slate-950/80 border border-indigo-500/20 space-y-1.5">
-                  <span className="font-bold text-indigo-300">1. Courant de court-circuit <LatexMath math="I_N" /> :</span>
-                  <p className="text-slate-300">
-                    En reliant A et B par un fil (court-circuit), chaque source débite directement dans sa propre résistance :
+            {/* Step 1: Calcul de RN */}
+            <div className="p-4 rounded-xl bg-slate-950/80 border border-indigo-500/30 space-y-3 shadow-inner">
+              <div className="flex items-center justify-between border-b border-slate-800 pb-1.5">
+                <span className="text-xs font-bold text-indigo-300 flex items-center gap-1.5">
+                  <span className="px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 text-[10px] font-mono font-bold">a)</span>
+                  Calcul de la Résistance de Norton <LatexMath math="R_N = R_{th} = R_{AB}" /> :
+                </span>
+                <span className="text-[10px] text-slate-400 font-mono">
+                  Sources éteintes (<LatexMath math="E_1 = E_2 = 0\text{ V}" />) & <LatexMath math="R" /> retirée
+                </span>
+              </div>
+
+              {/* Schematics Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {/* SVG 1: Circuit passivé */}
+                <div className="p-3 rounded-xl bg-black/50 border border-slate-800 flex flex-col items-center justify-center space-y-2">
+                  <span className="text-[10px] font-mono text-slate-400 font-bold">Circuit Passivé (<LatexMath math="E_1 = E_2 = 0" />)</span>
+                  <svg viewBox="0 0 260 130" className="w-full max-w-[240px] h-auto text-xs">
+                    {/* Wires */}
+                    <path d="M 30 100 L 30 30 L 120 30 M 120 30 L 230 30 L 230 100 L 30 100" fill="none" stroke="#38bdf8" strokeWidth="2" />
+                    
+                    {/* Resistor R1 */}
+                    <rect x="24" y="48" width="12" height="34" fill="#020617" stroke="#38bdf8" strokeWidth="1.5" rx="2" />
+                    <text x="18" y="68" fill="#38bdf8" fontSize="10" fontStyle="italic" fontWeight="bold" textAnchor="end">R<tspan fontSize="7" dy="2.5">1</tspan></text>
+
+                    {/* Resistor R2 */}
+                    <rect x="224" y="48" width="12" height="34" fill="#020617" stroke="#38bdf8" strokeWidth="1.5" rx="2" />
+                    <text x="242" y="68" fill="#38bdf8" fontSize="10" fontStyle="italic" fontWeight="bold">R<tspan fontSize="7" dy="2.5">2</tspan></text>
+
+                    {/* Terminals A and B */}
+                    <line x1="120" y1="30" x2="120" y2="45" stroke="#f43f5e" strokeWidth="2" />
+                    <circle cx="120" cy="45" r="3" fill="#f43f5e" />
+                    <text x="130" y="49" fill="#f8fafc" fontSize="10" fontStyle="italic" fontWeight="bold">A</text>
+
+                    <line x1="120" y1="100" x2="120" y2="85" stroke="#64748b" strokeWidth="2" />
+                    <circle cx="120" cy="85" r="3" fill="#64748b" />
+                    <text x="130" y="89" fill="#f8fafc" fontSize="10" fontStyle="italic" fontWeight="bold">B</text>
+                  </svg>
+                  <p className="text-[10px] text-slate-400 text-center">
+                    La charge <LatexMath math="R" /> est retirée.
                   </p>
-                  <div className="p-2 rounded bg-black/60 text-center font-mono text-indigo-300 font-bold">
-                    <LatexMath math={`I_N = \\frac{E_1}{R_1} + \\frac{E_2}{R_2} = ${calculations.IN.toFixed(3)}\\text{ A}`} />
-                  </div>
                 </div>
 
-                {/* Calcul RN */}
-                <div className="p-3 rounded-xl bg-slate-950/80 border border-indigo-500/20 space-y-1.5">
-                  <span className="font-bold text-indigo-300">2. Résistance de Norton <LatexMath math="R_N" /> :</span>
-                  <p className="text-slate-300">
-                    Identique à la résistance de Thévenin :
+                {/* SVG 2: Équivalence Parallèle */}
+                <div className="p-3 rounded-xl bg-black/50 border border-slate-800 flex flex-col items-center justify-center space-y-2">
+                  <span className="text-[10px] font-mono text-indigo-300 font-bold">Équivalence : <LatexMath math="R_1 \parallel R_2" /></span>
+                  <svg viewBox="0 0 240 130" className="w-full max-w-[220px] h-auto text-xs">
+                    {/* Parallel connection */}
+                    <path d="M 60 40 L 180 40 M 60 90 L 180 90 M 70 40 L 70 90 M 170 40 L 170 90" fill="none" stroke="#38bdf8" strokeWidth="2" />
+                    
+                    {/* Resistor R1 */}
+                    <rect x="64" y="52" width="12" height="26" fill="#020617" stroke="#38bdf8" strokeWidth="1.5" rx="2" />
+                    <text x="58" y="68" fill="#38bdf8" fontSize="10" fontStyle="italic" fontWeight="bold" textAnchor="end">R<tspan fontSize="7" dy="2.5">1</tspan></text>
+
+                    {/* Resistor R2 */}
+                    <rect x="164" y="52" width="12" height="26" fill="#020617" stroke="#38bdf8" strokeWidth="1.5" rx="2" />
+                    <text x="182" y="68" fill="#38bdf8" fontSize="10" fontStyle="italic" fontWeight="bold">R<tspan fontSize="7" dy="2.5">2</tspan></text>
+
+                    {/* Terminals A and B */}
+                    <line x1="120" y1="40" x2="120" y2="25" stroke="#f43f5e" strokeWidth="2" />
+                    <circle cx="120" cy="25" r="3" fill="#f43f5e" />
+                    <text x="132" y="28" fill="#f8fafc" fontSize="10" fontStyle="italic" fontWeight="bold">A</text>
+
+                    <line x1="120" y1="90" x2="120" y2="105" stroke="#64748b" strokeWidth="2" />
+                    <circle cx="120" cy="105" r="3" fill="#64748b" />
+                    <text x="132" y="108" fill="#f8fafc" fontSize="10" fontStyle="italic" fontWeight="bold">B</text>
+                  </svg>
+                  <p className="text-[10px] text-indigo-300 text-center font-mono">
+                    <LatexMath math="R_N = R_{th} = R_1 \parallel R_2" />
                   </p>
-                  <div className="p-2 rounded bg-black/60 text-center font-mono text-indigo-300 font-bold">
-                    <LatexMath math={`R_N = R_{th} = \\frac{R_1 R_2}{R_1 + R_2} = ${calculations.RN.toFixed(2)}\\text{ }\\Omega`} />
-                  </div>
                 </div>
               </div>
 
-              {/* Diviseur de courant */}
-              <div className="p-3 rounded-xl bg-indigo-950/40 border border-indigo-500/30 text-center font-mono font-bold text-indigo-300 text-xs">
-                <LatexMath math={`I = I_N \\cdot \\frac{R_N}{R_N + R} = \\left(\\frac{E_1}{R_1} + \\frac{E_2}{R_2}\\right) \\cdot \\frac{\\frac{R_1 R_2}{R_1 + R_2}}{\\frac{R_1 R_2}{R_1 + R_2} + R} = \\mathbf{${calculations.I.toFixed(3)}\\text{ A}}`} />
+              {/* Formule RN */}
+              <div className="p-2.5 rounded-xl bg-indigo-950/40 border border-indigo-500/30 text-center font-mono font-bold text-indigo-300 text-xs">
+                <LatexMath math="\mathbf{R_N = R_{th} = \frac{R_1 \cdot R_2}{R_1 + R_2}}" />
               </div>
             </div>
+
+            {/* Step 2: Calcul de IN = Icc */}
+            <div className="p-4 rounded-xl bg-slate-950/80 border border-indigo-500/30 space-y-3 shadow-inner">
+              <div className="flex items-center justify-between border-b border-slate-800 pb-1.5">
+                <span className="text-xs font-bold text-indigo-300 flex items-center gap-1.5">
+                  <span className="px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 text-[10px] font-mono font-bold">b)</span>
+                  Calcul du Courant de Norton <LatexMath math="I_N = I_{cc}" /> (Court-Circuit entre <LatexMath math="A" /> et <LatexMath math="B" />) :
+                </span>
+              </div>
+
+              {/* SVG 3: Circuit en court-circuit */}
+              <div className="p-3 rounded-xl bg-black/50 border border-slate-800 flex flex-col items-center justify-center space-y-2">
+                <span className="text-[10px] font-mono text-slate-400 font-bold">
+                  Circuit avec fil de court-circuit entre <LatexMath math="A" /> et <LatexMath math="B" /> (<LatexMath math="U_{AB} = 0\text{ V}" />)
+                </span>
+                <svg viewBox="0 0 300 150" className="w-full max-w-[280px] h-auto text-xs">
+                  {/* Two meshes with central short-circuit wire */}
+                  <path d="M 40 120 L 40 35 L 150 35 L 150 120 L 40 120 M 150 35 L 260 35 L 260 120 L 150 120" fill="none" stroke="#38bdf8" strokeWidth="2" />
+                  
+                  {/* Source E1 (Left) */}
+                  <rect x="30" y="76" width="20" height="8" fill="#020617" />
+                  <line x1="30" y1="75" x2="50" y2="75" stroke="#facc15" strokeWidth="2.5" />
+                  <line x1="34" y1="85" x2="46" y2="85" stroke="#facc15" strokeWidth="3.5" />
+                  <text x="24" y="83" fill="#facc15" fontSize="10" fontStyle="italic" fontWeight="bold" textAnchor="end">E<tspan fontSize="7" dy="2.5">1</tspan></text>
+
+                  {/* Resistor R1 (Top left) */}
+                  <rect x="65" y="29" width="34" height="12" fill="#020617" stroke="#38bdf8" strokeWidth="1.5" rx="2" />
+                  <text x="82" y="24" fill="#38bdf8" fontSize="9" fontStyle="italic" fontWeight="bold" textAnchor="middle">R<tspan fontSize="7" dy="2.5">1</tspan></text>
+
+                  {/* Current I1 Arrow */}
+                  <path d="M 115 35 L 125 35 M 121 32 L 126 35 L 121 38" fill="#38bdf8" stroke="#38bdf8" strokeWidth="1.4" />
+                  <text x="120" y="24" fill="#38bdf8" fontSize="9" fontStyle="italic" fontWeight="bold">I<tspan fontSize="7" dy="2.5">1</tspan></text>
+
+                  {/* Central Short-Circuit Wire with Current Icc = IN */}
+                  <line x1="150" y1="35" x2="150" y2="120" stroke="#f43f5e" strokeWidth="2.5" />
+                  <path d="M 150 70 L 150 80 M 147 77 L 150 82 L 153 77" fill="#f43f5e" stroke="#f43f5e" strokeWidth="1.6" />
+                  <text x="158" y="78" fill="#f43f5e" fontSize="9.5" fontStyle="italic" fontWeight="bold">I<tspan fontSize="7" dy="2.5">cc</tspan> = I<tspan fontSize="7" dy="2.5">N</tspan></text>
+
+                  {/* Resistor R2 (Top right) */}
+                  <rect x="200" y="29" width="34" height="12" fill="#020617" stroke="#38bdf8" strokeWidth="1.5" rx="2" />
+                  <text x="217" y="24" fill="#38bdf8" fontSize="9" fontStyle="italic" fontWeight="bold" textAnchor="middle">R<tspan fontSize="7" dy="2.5">2</tspan></text>
+
+                  {/* Current I2 Arrow (pointing to node A from right) */}
+                  <path d="M 185 35 L 175 35 M 179 32 L 174 35 L 179 38" fill="#38bdf8" stroke="#38bdf8" strokeWidth="1.4" />
+                  <text x="180" y="24" fill="#38bdf8" fontSize="9" fontStyle="italic" fontWeight="bold">I<tspan fontSize="7" dy="2.5">2</tspan></text>
+
+                  {/* Source E2 (Right) */}
+                  <rect x="250" y="76" width="20" height="8" fill="#020617" />
+                  <line x1="250" y1="75" x2="270" y2="75" stroke="#facc15" strokeWidth="2.5" />
+                  <line x1="254" y1="85" x2="266" y2="85" stroke="#facc15" strokeWidth="3.5" />
+                  <text x="278" y="83" fill="#facc15" fontSize="10" fontStyle="italic" fontWeight="bold">E<tspan fontSize="7" dy="2.5">2</tspan></text>
+
+                  {/* Terminals A and B in middle */}
+                  <circle cx="150" cy="35" r="3" fill="#f43f5e" />
+                  <text x="150" y="22" fill="#f8fafc" fontSize="10" fontStyle="italic" fontWeight="bold" textAnchor="middle">A</text>
+                  <circle cx="150" cy="120" r="3" fill="#64748b" />
+                  <text x="150" y="135" fill="#f8fafc" fontSize="10" fontStyle="italic" fontWeight="bold" textAnchor="middle">B</text>
+
+                  {/* Mesh annotations */}
+                  <text x="90" y="85" fill="rgba(56, 189, 248, 0.4)" fontSize="8.5" fontStyle="italic">Maille 1</text>
+                  <text x="210" y="85" fill="rgba(56, 189, 248, 0.4)" fontSize="8.5" fontStyle="italic">Maille 2</text>
+                </svg>
+              </div>
+
+              {/* Mathematical Whiteboard Steps */}
+              <div className="space-y-2 text-[11.5px] leading-relaxed">
+                <p>
+                  • <strong>Loi des Nœuds au point <LatexMath math="A" /> :</strong>
+                </p>
+                <div className="p-2 rounded-lg bg-black/60 text-center font-mono text-indigo-300 font-bold text-xs">
+                  <LatexMath math="I_1 + I_2 = I_{cc} = I_N" />
+                </div>
+
+                <p>
+                  • <strong>Loi des Mailles pour chaque branche isolée par le court-circuit :</strong>
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                  <div className="p-2 rounded bg-black/60 text-center font-mono text-slate-200">
+                    <LatexMath math="E_1 - R_1 I_1 = 0 \implies \mathbf{I_1 = \frac{E_1}{R_1}}" />
+                  </div>
+                  <div className="p-2 rounded bg-black/60 text-center font-mono text-slate-200">
+                    <LatexMath math="+ R_2 I_2 - E_2 = 0 \implies \mathbf{I_2 = \frac{E_2}{R_2}}" />
+                  </div>
+                </div>
+
+                <p>
+                  • <strong>Courant de court-circuit de Norton total <LatexMath math="I_N" /> :</strong>
+                </p>
+                <div className="p-2.5 rounded-lg bg-black/70 text-center font-mono text-indigo-200 text-xs space-y-1">
+                  <div>
+                    <LatexMath math="\mathbf{I_N = I_1 + I_2 = \frac{E_1}{R_1} + \frac{E_2}{R_2} = \frac{R_2 E_1 + R_1 E_2}{R_1 R_2}}" />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Step 3: Modèle Équivalent de Norton et Diviseur de Courant */}
+            <div className="p-4 rounded-xl bg-slate-950/80 border border-indigo-500/40 space-y-3 shadow-md">
+              <div className="flex items-center justify-between border-b border-slate-800 pb-1.5">
+                <span className="text-xs font-bold text-indigo-300 flex items-center gap-1.5">
+                  <span className="px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 text-[10px] font-mono font-bold">c)</span>
+                  Modèle Équivalent de Norton & Reconnexion de la Charge <LatexMath math="R" /> (Diviseur de Courant) :
+                </span>
+              </div>
+
+              {/* Schematics Grid & Final Calculation */}
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                {/* SVG 4: Circuit équivalent de Norton */}
+                <div className="md:col-span-5 p-3 rounded-xl bg-black/50 border border-slate-800 flex flex-col items-center justify-center space-y-2">
+                  <span className="text-[10px] font-mono text-indigo-300 font-bold">Générateur Équivalent de Norton</span>
+                  <svg viewBox="0 0 240 140" className="w-full max-w-[220px] h-auto text-xs">
+                    {/* Parallel Wires */}
+                    <path d="M 40 110 L 40 30 L 200 30 L 200 110 L 40 110 M 120 30 L 120 110" fill="none" stroke="#38bdf8" strokeWidth="2" />
+                    
+                    {/* Current Source IN (Circle with arrow) */}
+                    <circle cx="40" cy="70" r="14" fill="#020617" stroke="#facc15" strokeWidth="2" />
+                    <line x1="40" y1="56" x2="40" y2="84" stroke="#facc15" strokeWidth="2" />
+                    <polygon points="37,63 43,63 40,56" fill="#facc15" />
+                    <text x="18" y="73" fill="#facc15" fontSize="10" fontStyle="italic" fontWeight="bold" textAnchor="end">I<tspan fontSize="7" dy="2.5">N</tspan></text>
+
+                    {/* Current IN arrow on top wire */}
+                    <path d="M 60 30 L 75 30 M 70 27 L 76 30 L 70 33" fill="#facc15" stroke="#facc15" strokeWidth="1.4" />
+                    <text x="68" y="22" fill="#facc15" fontSize="9" fontStyle="italic" fontWeight="bold">I<tspan fontSize="7" dy="2.5">N</tspan></text>
+
+                    {/* Resistor RN (Middle) */}
+                    <rect x="114" y="53" width="12" height="34" fill="#020617" stroke="#38bdf8" strokeWidth="1.5" rx="2" />
+                    <text x="106" y="73" fill="#38bdf8" fontSize="9.5" fontStyle="italic" fontWeight="bold" textAnchor="end">R<tspan fontSize="7" dy="2.5">N</tspan></text>
+
+                    {/* Current I Arrow to Load R */}
+                    <path d="M 150 30 L 165 30 M 160 27 L 166 30 L 160 33" fill="#f43f5e" stroke="#f43f5e" strokeWidth="1.4" />
+                    <text x="158" y="22" fill="#f43f5e" fontSize="9.5" fontStyle="italic" fontWeight="bold">I</text>
+
+                    {/* Load Resistor R (Right) */}
+                    <rect x="194" y="53" width="12" height="34" fill="#020617" stroke="#c084fc" strokeWidth="1.6" rx="2" />
+                    <text x="214" y="73" fill="#c084fc" fontSize="10" fontStyle="italic" fontWeight="bold">R</text>
+
+                    {/* Nodes A and B */}
+                    <circle cx="200" cy="30" r="3" fill="#f43f5e" />
+                    <text x="200" y="20" fill="#f8fafc" fontSize="10" fontStyle="italic" fontWeight="bold" textAnchor="middle">A</text>
+                    <circle cx="200" cy="110" r="3" fill="#64748b" />
+                    <text x="200" y="125" fill="#f8fafc" fontSize="10" fontStyle="italic" fontWeight="bold" textAnchor="middle">B</text>
+                  </svg>
+                </div>
+
+                {/* Calculation Details */}
+                <div className="md:col-span-7 space-y-2 text-[11.5px]">
+                  <p className="text-slate-300">
+                    Par application du <strong>pont diviseur de courant</strong> :
+                  </p>
+                  <div className="p-2.5 rounded-lg bg-black/70 text-center font-mono text-indigo-200 text-xs space-y-1.5">
+                    <div>
+                      <LatexMath math="I = \frac{\frac{1}{R}}{\frac{1}{R} + \frac{1}{R_N}} \cdot I_N = \frac{1}{\cancel{R}} \cdot \frac{R_N \cdot \cancel{R}}{R_N + R} \cdot \left(\frac{E_1}{R_1} + \frac{E_2}{R_2}\right)" />
+                    </div>
+                    <div>
+                      <LatexMath math="I = \frac{\frac{R_1 R_2}{R_1 + R_2}}{\frac{R_1 R_2}{R_1 + R_2} + R} \cdot \frac{R_2 E_1 + R_1 E_2}{\cancel{R_1 R_2}} = \frac{\frac{\cancel{R_1 R_2}}{\cancel{R_1 + R_2}}}{\frac{R_1 R_2 + R(R_1 + R_2)}{\cancel{R_1 + R_2}}} \cdot \frac{R_2 E_1 + R_1 E_2}{\cancel{R_1 R_2}}" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Formule Finale Encadrée */}
+              <div className="p-3 rounded-xl bg-indigo-500/15 border-2 border-indigo-400 text-center font-mono text-indigo-200 font-black text-xs sm:text-sm shadow-md">
+                <LatexMath math="\mathbf{I = \frac{R_2 E_1 + R_1 E_2}{R_1 R_2 + R_1 R + R_2 R} = \frac{R_2 E_1 + R_1 E_2}{R_1 R_2 + R(R_1 + R_2)} = \frac{\frac{E_1}{R_1} + \frac{E_2}{R_2}}{1 + R\left(\frac{1}{R_1} + \frac{1}{R_2}\right)}}" />
+              </div>
+
+              {/* Application Numérique en direct avec les sliders */}
+              <div className="p-3 rounded-xl bg-black/70 border border-slate-800 text-[11px] font-mono space-y-1.5">
+                <div className="flex items-center justify-between border-b border-slate-800 pb-1">
+                  <span className="text-indigo-400 font-bold flex items-center gap-1.5">
+                    <Sparkles className="w-3.5 h-3.5" />
+                    Application Numérique en direct (Valeurs des Sliders) :
+                  </span>
+                  <span className="text-[10px] text-slate-400 font-mono">
+                    <LatexMath math={`R_N = ${calculations.RN.toFixed(2)}\\text{ }\\Omega`} />
+                  </span>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-slate-200 pt-0.5">
+                  <div className="p-2 rounded bg-slate-900/60 border border-slate-800 text-center">
+                    <LatexMath math={`I_N = \\frac{${E1}}{${R1}} + \\frac{${E2}}{${R2}} = \\mathbf{${calculations.IN.toFixed(3)}\\text{ A}}`} />
+                  </div>
+                  <div className="p-2 rounded bg-slate-900/60 border border-slate-800 text-center">
+                    <LatexMath math={`R_N = \\frac{${R1} \\times ${R2}}{${R1} + ${R2}} = \\mathbf{${calculations.RN.toFixed(2)}\\text{ }\\Omega}`} />
+                  </div>
+                </div>
+                <div className="p-2 rounded bg-indigo-950/40 border border-indigo-500/30 text-center text-indigo-300 font-bold">
+                  <LatexMath math={`I = I_N \\cdot \\frac{R_N}{R_N + R} = ${calculations.IN.toFixed(3)} \\times \\frac{${calculations.RN.toFixed(2)}}{${calculations.RN.toFixed(2)} + ${R}} = \\mathbf{${calculations.I.toFixed(3)}\\text{ A}}`} />
+                </div>
+              </div>
+            </div>
+
           </div>
         )}
 
-        {/* ── TAB 5: THÉORÈME DE MILLMAN ── */}
+        {/* ── TAB 5: THÉORÈME DE MILLMAN (WHITEBOARD STEP-BY-STEP) ── */}
         {activeTab === 'millman' && (
-          <div className="p-4 sm:p-5 rounded-2xl bg-slate-900/90 border border-purple-500/30 space-y-4 animate-in fade-in duration-200 shadow-md">
-            <div className="flex items-center justify-between">
+          <div className="p-4 sm:p-5 rounded-2xl bg-slate-900/90 border border-purple-500/30 space-y-4 animate-in fade-in duration-200 shadow-md font-sans">
+            
+            {/* Header */}
+            <div className="flex items-center justify-between border-b border-slate-800 pb-2.5">
               <span className="text-xs font-extrabold text-purple-400 uppercase tracking-wider flex items-center gap-1.5">
                 <Sparkles className="w-4 h-4 text-purple-400" />
-                5°) Résolution par le Théorème de Millman (Méthode la plus rapide)
+                5°) Résolution par le Théorème de MILLMAN
               </span>
               <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-purple-500/10 text-purple-300 border border-purple-500/20 font-bold">
-                Formule Directe
+                Modèle (EM, RM)
               </span>
             </div>
 
-            <div className="space-y-3 text-slate-300 text-xs leading-relaxed">
-              <p>
-                Le nœud A est connecté à 3 branches ayant pour potentiels distants <LatexMath math="E_1, E_2" /> et <LatexMath math="0\text{V}" /> à travers les résistances respectives <LatexMath math="R_1, R_2, R" /> :
+            {/* Principle Definition */}
+            <div className="p-3 rounded-xl bg-purple-950/30 border border-purple-500/20 text-slate-300 text-xs leading-relaxed space-y-1">
+              <span className="font-bold text-purple-300 block">💡 Énoncé du Théorème de Millman :</span>
+              <p className="text-[11.5px]">
+                Le dipôle actif alimentant la charge <LatexMath math="R" /> est transformé en un générateur équivalent de Millman de f.é.m. <LatexMath math="E_M = U_{AB}" /> et de résistance interne <LatexMath math="R_M = R_1 \parallel R_2" />.
               </p>
+            </div>
 
-              <div className="p-3 rounded-xl bg-slate-950/80 border border-purple-500/20 space-y-2">
-                <span className="font-bold text-purple-300">1. Application de la formule de Millman au nœud A :</span>
-                <div className="p-2.5 rounded bg-black/60 text-center font-mono text-purple-300 font-bold text-xs sm:text-sm">
-                  <LatexMath math={`V_A = \\frac{\\frac{E_1}{R_1} + \\frac{E_2}{R_2} + \\frac{0}{R}}{\\frac{1}{R_1} + \\frac{1}{R_2} + \\frac{1}{R}} = \\frac{G_1 E_1 + G_2 E_2}{G_1 + G_2 + G} = ${calculations.VA.toFixed(2)}\\text{ V}`} />
-                </div>
+            {/* Step 1: Circuit initial & Calcul de EM */}
+            <div className="p-4 rounded-xl bg-slate-950/80 border border-purple-500/30 space-y-3 shadow-inner">
+              <div className="flex items-center justify-between border-b border-slate-800 pb-1.5">
+                <span className="text-xs font-bold text-purple-300 flex items-center gap-1.5">
+                  <span className="px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 text-[10px] font-mono font-bold">1)</span>
+                  Calcul de la F.é.m. de Millman <LatexMath math="E_M = U_{AB}" /> :
+                </span>
+                <span className="text-[10px] text-slate-400 font-mono">
+                  Branches actives en parallèle
+                </span>
               </div>
 
-              {/* Déduction directe de I */}
-              <div className="p-3 rounded-xl bg-purple-950/40 border border-purple-500/30 text-center font-mono font-bold text-purple-300 text-xs space-y-1.5">
-                <div>
-                  <LatexMath math={`I = \\frac{V_A - 0}{R} = \\frac{V_A}{R} = \\frac{\\frac{E_1}{R_1} + \\frac{E_2}{R_2}}{R \\left(\\frac{1}{R_1} + \\frac{1}{R_2} + \\frac{1}{R}\\right)} = \\mathbf{${calculations.I.toFixed(3)}\\text{ A}}`} />
+              {/* Schematics Grid: 3 parallel vertical branches */}
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                <div className="md:col-span-6 p-3 rounded-xl bg-black/50 border border-slate-800 flex flex-col items-center justify-center space-y-2">
+                  <span className="text-[10px] font-mono text-slate-400 font-bold">
+                    Circuit à 3 branches verticales en dérivation
+                  </span>
+                  <svg viewBox="0 0 280 140" className="w-full max-w-[260px] h-auto text-xs">
+                    {/* Horizontal rails */}
+                    <path d="M 40 30 L 240 30 M 40 115 L 240 115 M 40 30 L 40 115 M 130 30 L 130 115 M 240 30 L 240 115" fill="none" stroke="#38bdf8" strokeWidth="2" />
+                    
+                    {/* Branch 1 (Left): R1 + E1 */}
+                    <rect x="34" y="42" width="12" height="26" fill="#020617" stroke="#38bdf8" strokeWidth="1.5" rx="2" />
+                    <text x="24" y="58" fill="#38bdf8" fontSize="9.5" fontStyle="italic" fontWeight="bold" textAnchor="end">R<tspan fontSize="7" dy="2.5">1</tspan></text>
+                    {/* Current I1 arrow */}
+                    <path d="M 40 76 L 40 70 M 37 73 L 40 68 L 43 73" fill="#38bdf8" stroke="#38bdf8" strokeWidth="1.3" />
+                    <text x="48" y="74" fill="#38bdf8" fontSize="8.5" fontStyle="italic">I<tspan fontSize="6.5" dy="2">1</tspan></text>
+                    {/* Source E1 */}
+                    <rect x="30" y="85" width="20" height="8" fill="#020617" />
+                    <line x1="30" y1="84" x2="50" y2="84" stroke="#facc15" strokeWidth="2.5" />
+                    <line x1="34" y1="94" x2="46" y2="94" stroke="#facc15" strokeWidth="3.5" />
+                    <text x="24" y="93" fill="#facc15" fontSize="10" fontStyle="italic" fontWeight="bold" textAnchor="end">E<tspan fontSize="7" dy="2.5">1</tspan></text>
+
+                    {/* Branch 2 (Middle): R2 + E2 */}
+                    <rect x="124" y="42" width="12" height="26" fill="#020617" stroke="#38bdf8" strokeWidth="1.5" rx="2" />
+                    <text x="114" y="58" fill="#38bdf8" fontSize="9.5" fontStyle="italic" fontWeight="bold" textAnchor="end">R<tspan fontSize="7" dy="2.5">2</tspan></text>
+                    {/* Current I2 arrow */}
+                    <path d="M 130 76 L 130 70 M 127 73 L 130 68 L 133 73" fill="#38bdf8" stroke="#38bdf8" strokeWidth="1.3" />
+                    <text x="138" y="74" fill="#38bdf8" fontSize="8.5" fontStyle="italic">I<tspan fontSize="6.5" dy="2">2</tspan></text>
+                    {/* Source E2 */}
+                    <rect x="120" y="85" width="20" height="8" fill="#020617" />
+                    <line x1="120" y1="84" x2="140" y2="84" stroke="#facc15" strokeWidth="2.5" />
+                    <line x1="124" y1="94" x2="136" y2="94" stroke="#facc15" strokeWidth="3.5" />
+                    <text x="114" y="93" fill="#facc15" fontSize="10" fontStyle="italic" fontWeight="bold" textAnchor="end">E<tspan fontSize="7" dy="2.5">2</tspan></text>
+
+                    {/* Branch 3 (Right): Load Resistor R */}
+                    <rect x="234" y="58" width="12" height="34" fill="#020617" stroke="#c084fc" strokeWidth="1.6" rx="2" />
+                    <text x="254" y="78" fill="#c084fc" fontSize="10" fontStyle="italic" fontWeight="bold">R</text>
+                    {/* Current I arrow */}
+                    <path d="M 240 40 L 240 50 M 237 47 L 240 52 L 243 47" fill="#f43f5e" stroke="#f43f5e" strokeWidth="1.4" />
+                    <text x="248" y="47" fill="#f43f5e" fontSize="9.5" fontStyle="italic" fontWeight="bold">I</text>
+
+                    {/* Terminals A and B */}
+                    <circle cx="240" cy="30" r="3.5" fill="#f43f5e" />
+                    <text x="252" y="28" fill="#f8fafc" fontSize="10" fontStyle="italic" fontWeight="bold">A</text>
+                    <circle cx="240" cy="115" r="3.5" fill="#64748b" />
+                    <text x="252" y="120" fill="#f8fafc" fontSize="10" fontStyle="italic" fontWeight="bold">B</text>
+                  </svg>
                 </div>
-                <p className="text-[10px] text-purple-300 font-sans font-normal">
-                  ⚡ En 1 seule ligne de calcul, on obtient directement la tension et le courant recherchés !
-                </p>
+
+                <div className="md:col-span-6 space-y-2 text-[11.5px] leading-relaxed text-slate-300">
+                  <p className="font-bold text-purple-300">• Formule de Millman pour la tension à vide <LatexMath math="E_M = U_{AB}" /> :</p>
+                  <div className="p-2.5 rounded-lg bg-black/70 text-center font-mono text-purple-200 text-xs space-y-1.5">
+                    <div>
+                      <LatexMath math="E_M = U_{AB} = \frac{\sum \frac{E_i}{R_i}}{\sum \frac{1}{R_i}} = \frac{\frac{E_1}{R_1} + \frac{E_2}{R_2}}{\frac{1}{R_1} + \frac{1}{R_2}}" />
+                    </div>
+                    <div>
+                      <LatexMath math="E_M = \frac{\frac{E_1 R_2 + E_2 R_1}{\cancel{R_1 R_2}}}{\frac{R_1 + R_2}{\cancel{R_1 R_2}}}" />
+                    </div>
+                    <div className="pt-1">
+                      <LatexMath math="\implies \mathbf{E_M = \frac{E_1 R_2 + E_2 R_1}{R_1 + R_2}}" />
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
+
+            {/* Step 2: Calcul de RM et Schéma Équivalent de Millman */}
+            <div className="p-4 rounded-xl bg-slate-950/80 border border-purple-500/30 space-y-3 shadow-inner">
+              <div className="flex items-center justify-between border-b border-slate-800 pb-1.5">
+                <span className="text-xs font-bold text-purple-300 flex items-center gap-1.5">
+                  <span className="px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 text-[10px] font-mono font-bold">2)</span>
+                  Calcul de <LatexMath math="R_M" /> & Circuit Équivalent de Millman :
+                </span>
+              </div>
+
+              {/* Schematics Grid: RM parallel + Final Equivalent Circuit */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {/* SVG 2: RM parallel equivalence */}
+                <div className="p-3 rounded-xl bg-black/50 border border-slate-800 flex flex-col items-center justify-center space-y-2">
+                  <span className="text-[10px] font-mono text-purple-300 font-bold">
+                    Résistance de Millman <LatexMath math="R_M = R_1 \parallel R_2" />
+                  </span>
+                  <svg viewBox="0 0 240 120" className="w-full max-w-[210px] h-auto text-xs">
+                    <path d="M 50 35 L 170 35 M 50 85 L 170 85 M 60 35 L 60 85 M 160 35 L 160 85" fill="none" stroke="#38bdf8" strokeWidth="2" />
+                    
+                    <rect x="54" y="47" width="12" height="26" fill="#020617" stroke="#38bdf8" strokeWidth="1.5" rx="2" />
+                    <text x="48" y="63" fill="#38bdf8" fontSize="10" fontStyle="italic" fontWeight="bold" textAnchor="end">R<tspan fontSize="7" dy="2.5">1</tspan></text>
+
+                    <rect x="154" y="47" width="12" height="26" fill="#020617" stroke="#38bdf8" strokeWidth="1.5" rx="2" />
+                    <text x="172" y="63" fill="#38bdf8" fontSize="10" fontStyle="italic" fontWeight="bold">R<tspan fontSize="7" dy="2.5">2</tspan></text>
+
+                    <circle cx="170" cy="35" r="3" fill="#f43f5e" />
+                    <text x="180" y="32" fill="#f8fafc" fontSize="10" fontStyle="italic" fontWeight="bold">A</text>
+                    <circle cx="170" cy="85" r="3" fill="#64748b" />
+                    <text x="180" y="96" fill="#f8fafc" fontSize="10" fontStyle="italic" fontWeight="bold">B</text>
+                  </svg>
+                  <div className="p-1.5 rounded bg-purple-950/40 text-center font-mono text-purple-300 text-xs font-bold w-full">
+                    <LatexMath math="\mathbf{R_M = \frac{R_1 \cdot R_2}{R_1 + R_2}}" />
+                  </div>
+                </div>
+
+                {/* SVG 3: Final Equivalent Millman circuit */}
+                <div className="p-3 rounded-xl bg-black/50 border border-slate-800 flex flex-col items-center justify-center space-y-2">
+                  <span className="text-[10px] font-mono text-purple-300 font-bold">
+                    Circuit Équivalent de Millman avec la charge <LatexMath math="R" />
+                  </span>
+                  <svg viewBox="0 0 240 120" className="w-full max-w-[220px] h-auto text-xs">
+                    <path d="M 40 95 L 40 25 L 180 25 L 180 95 L 40 95" fill="none" stroke="#38bdf8" strokeWidth="2" />
+                    
+                    {/* Source EM (Left) */}
+                    <rect x="30" y="52" width="20" height="8" fill="#020617" />
+                    <line x1="30" y1="51" x2="50" y2="51" stroke="#facc15" strokeWidth="2.5" />
+                    <line x1="34" y1="61" x2="46" y2="61" stroke="#facc15" strokeWidth="3.5" />
+                    <text x="24" y="59" fill="#facc15" fontSize="10" fontStyle="italic" fontWeight="bold" textAnchor="end">E<tspan fontSize="7" dy="2.5">M</tspan></text>
+
+                    {/* Current I arrow on top wire */}
+                    <path d="M 100 25 L 115 25 M 110 22 L 116 25 L 110 28" fill="#f43f5e" stroke="#f43f5e" strokeWidth="1.4" />
+                    <text x="110" y="18" fill="#f43f5e" fontSize="9.5" fontStyle="italic" fontWeight="bold" textAnchor="middle">I</text>
+
+                    {/* Resistor RM on bottom wire */}
+                    <rect x="95" y="89" width="36" height="12" fill="#020617" stroke="#38bdf8" strokeWidth="1.5" rx="2" />
+                    <text x="113" y="84" fill="#38bdf8" fontSize="9.5" fontStyle="italic" fontWeight="bold" textAnchor="middle">R<tspan fontSize="7" dy="2.5">M</tspan></text>
+
+                    {/* Load Resistor R (Right) */}
+                    <rect x="174" y="45" width="12" height="34" fill="#020617" stroke="#c084fc" strokeWidth="1.6" rx="2" />
+                    <text x="194" y="65" fill="#c084fc" fontSize="10" fontStyle="italic" fontWeight="bold">R</text>
+                  </svg>
+                  <p className="text-[10px] text-slate-400 text-center">
+                    Boucle série fermée alimentée par <LatexMath math="E_M" />.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Step 3: Calcul Final de I */}
+            <div className="p-4 rounded-xl bg-slate-950/80 border border-purple-500/40 space-y-3 shadow-md">
+              <div className="flex items-center justify-between border-b border-slate-800 pb-1.5">
+                <span className="text-xs font-bold text-purple-300 flex items-center gap-1.5">
+                  <span className="px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 text-[10px] font-mono font-bold">3)</span>
+                  Calcul du Courant <LatexMath math="I" /> (Formule de Pouillet) :
+                </span>
+              </div>
+
+              <div className="space-y-2 text-[11.5px] leading-relaxed">
+                <div className="p-2.5 rounded-lg bg-black/70 text-center font-mono text-purple-200 text-xs space-y-1.5">
+                  <div>
+                    <LatexMath math="I = \frac{E_M}{R + R_M} = \frac{\frac{E_1 R_2 + E_2 R_1}{R_1 + R_2}}{R + \frac{R_1 \cdot R_2}{R_1 + R_2}} = \frac{\frac{E_1 R_2 + E_2 R_1}{\cancel{R_1 + R_2}}}{\frac{R(R_1 + R_2) + R_1 R_2}{\cancel{R_1 + R_2}}}" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Formule Finale Encadrée */}
+              <div className="p-3 rounded-xl bg-purple-500/15 border-2 border-purple-400 text-center font-mono text-purple-200 font-black text-xs sm:text-sm shadow-md">
+                <LatexMath math="\mathbf{I = \frac{E_1 R_2 + E_2 R_1}{R \cdot R_1 + R \cdot R_2 + R_1 \cdot R_2} = \frac{R_2 E_1 + R_1 E_2}{R_1 R_2 + R(R_1 + R_2)} = \frac{\frac{E_1}{R_1} + \frac{E_2}{R_2}}{1 + R\left(\frac{1}{R_1} + \frac{1}{R_2}\right)}}" />
+              </div>
+
+              {/* Application Numérique en direct avec les sliders */}
+              <div className="p-3 rounded-xl bg-black/70 border border-slate-800 text-[11px] font-mono space-y-1.5">
+                <div className="flex items-center justify-between border-b border-slate-800 pb-1">
+                  <span className="text-purple-400 font-bold flex items-center gap-1.5">
+                    <Sparkles className="w-3.5 h-3.5" />
+                    Application Numérique en direct (Valeurs des Sliders) :
+                  </span>
+                  <span className="text-[10px] text-slate-400 font-mono">
+                    <LatexMath math={`R_M = ${calculations.Rth.toFixed(2)}\\text{ }\\Omega`} />
+                  </span>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-slate-200 pt-0.5">
+                  <div className="p-2 rounded bg-slate-900/60 border border-slate-800 text-center">
+                    <LatexMath math={`E_M = \\frac{${E1} \\times ${R2} + ${E2} \\times ${R1}}{${R1} + ${R2}} = \\mathbf{${calculations.Eth.toFixed(2)}\\text{ V}}`} />
+                  </div>
+                  <div className="p-2 rounded bg-slate-900/60 border border-slate-800 text-center">
+                    <LatexMath math={`R_M = \\frac{${R1} \\times ${R2}}{${R1} + ${R2}} = \\mathbf{${calculations.Rth.toFixed(2)}\\text{ }\\Omega}`} />
+                  </div>
+                </div>
+                <div className="p-2 rounded bg-purple-950/40 border border-purple-500/30 text-center text-purple-300 font-bold">
+                  <LatexMath math={`I = \\frac{E_M}{R + R_M} = \\frac{${calculations.Eth.toFixed(2)}}{${R} + ${calculations.Rth.toFixed(2)}} = \\mathbf{${calculations.I.toFixed(3)}\\text{ A}}`} />
+                </div>
+              </div>
+            </div>
+
           </div>
         )}
       </div>
