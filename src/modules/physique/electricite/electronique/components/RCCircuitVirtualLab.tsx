@@ -26,30 +26,35 @@ interface SavedTrace {
 export default function RCCircuitVirtualLab() {
   // ── 1. REAL-TIME PHYSICAL PARAMETERS (SLIDERS) ──
   const [E, setE] = useState<number>(10); // V (2 to 20)
-  const [R, setR] = useState<number>(200); // Ohm (50 to 1000)
-  const [C_uF, setC_uF] = useState<number>(100); // µF (20 to 500)
+  const [R, setR] = useState<number>(200); // Ohm (50 to 500)
+  const [C_uF, setC_uF] = useState<number>(100); // µF (20 to 400)
 
   // Switch Position: "charge" (Pos 1) | "decharge" (Pos 2)
   const [switchPos, setSwitchPos] = useState<"charge" | "decharge">("charge");
 
   // Advanced Pedagogical Toggles
-  const [showTangent, setShowTangent] = useState<boolean>(false);
+  const [showTangent, setShowTangent] = useState<boolean>(true);
   const [savedTraces, setSavedTraces] = useState<SavedTrace[]>([]);
 
-  // Simulation Controls: 10 seconds total window for exactly 5 Tau (1 Tau = 2.0s)
+  // Simulation Controls: Visual observable duration 8.0 seconds for the full 200ms physical window
   const [isRunning, setIsRunning] = useState<boolean>(false);
   const [simSpeed, setSimSpeed] = useState<number>(1); // 0.5x, 1x, 2x
-  const [elapsedSec, setElapsedSec] = useState<number>(0); // 0 to 10.0s
+  const [elapsedSimSec, setElapsedSimSec] = useState<number>(0); // 0 to 8.0s
   const [initialVoltage, setInitialVoltage] = useState<number>(0); // Voltage at switch flip moment
 
   // Physical calculations
   const C_F = useMemo(() => C_uF * 1e-6, [C_uF]);
-  const tauPhysMs = useMemo(() => (R * C_uF) / 1000, [R, C_uF]); // ms: R * C / 1000
+  const tauPhysMs = useMemo(() => (R * C_uF) / 1000, [R, C_uF]); // ms: R (Ohm) * C (uF) / 1000
   const I0_mA = useMemo(() => (E / R) * 1000, [E, R]); // mA
 
-  // Simulation constants: Entire screen is strictly 5 Tau (tauSimSec = 2.0s, total = 10.0s)
-  const tauSimSec = 2.0;
-  const maxExperimentTimeSec = 10.0; // 5 * tauSimSec
+  // ── FIXED LABORATORY OSCILLOSCOPE TIMEBASE (200 ms FULL SCREEN) ──
+  const T_WINDOW_MS = 200.0; // Fixed physical time window on screen
+  const TOTAL_SIM_SEC = 8.0; // Takes 8 seconds visually to scan the 200ms window
+
+  // Instantaneous physical time t (in ms) mapped from elapsed simulation seconds
+  const currentPhysTimeMs = useMemo(() => {
+    return Math.min((elapsedSimSec / TOTAL_SIM_SEC) * T_WINDOW_MS, T_WINDOW_MS);
+  }, [elapsedSimSec, TOTAL_SIM_SEC, T_WINDOW_MS]);
 
   // ── 2. REAL-TIME 60FPS ANIMATION LOOP ──
   const lastTimeRef = useRef<number | null>(null);
@@ -60,11 +65,11 @@ export default function RCCircuitVirtualLab() {
     const loop = (timestamp: number) => {
       if (lastTimeRef.current !== null && isRunning) {
         const dtSec = ((timestamp - lastTimeRef.current) / 1000) * simSpeed;
-        setElapsedSec((prev) => {
+        setElapsedSimSec((prev) => {
           const next = prev + dtSec;
-          if (next >= maxExperimentTimeSec) {
+          if (next >= TOTAL_SIM_SEC) {
             setIsRunning(false);
-            return maxExperimentTimeSec;
+            return TOTAL_SIM_SEC;
           }
           return next;
         });
@@ -81,31 +86,29 @@ export default function RCCircuitVirtualLab() {
     }
 
     return () => cancelAnimationFrame(animId);
-  }, [isRunning, simSpeed, maxExperimentTimeSec]);
+  }, [isRunning, simSpeed, TOTAL_SIM_SEC]);
 
-  // ── 3. INSTANTANEOUS PHYSICAL VALUES (EXACT PHYSICAL LAWS) ──
-  const { uC_t, i_t_mA, q_t_uC, energy_mJ, chargePercentage, activeChargesCount, physicalTimeMs } = useMemo(() => {
-    // Exact dimensionless progress parameter: theta = t / tau in [0, 5]
-    const theta = Math.min(elapsedSec / tauSimSec, 5.0);
-    const tPhysMs = theta * tauPhysMs;
+  // ── 3. INSTANTANEOUS PHYSICAL VALUES ACCORDING TO PHYSICAL TIME t ──
+  const { uC_t, i_t_mA, q_t_uC, energy_mJ, chargePercentage, activeChargesCount } = useMemo(() => {
+    const tMs = currentPhysTimeMs;
+    const tRatio = tauPhysMs > 0 ? tMs / tauPhysMs : 10; // t / tau
 
     let u = 0;
     let i = 0;
 
     if (switchPos === "charge") {
-      // uC(t) = E - (E - u0) * e^(-theta)
-      u = E - (E - initialVoltage) * Math.exp(-theta);
-      i = ((E - initialVoltage) / R) * Math.exp(-theta) * 1000;
+      // uC(t) = E - (E - u0) * e^(-t/tau)
+      u = E - (E - initialVoltage) * Math.exp(-tRatio);
+      i = ((E - initialVoltage) / R) * Math.exp(-tRatio) * 1000;
     } else {
-      // uC(t) = u0 * e^(-theta)
-      u = initialVoltage * Math.exp(-theta);
-      i = -(initialVoltage / R) * Math.exp(-theta) * 1000;
+      // uC(t) = u0 * e^(-t/tau)
+      u = initialVoltage * Math.exp(-tRatio);
+      i = -(initialVoltage / R) * Math.exp(-tRatio) * 1000;
     }
 
-    // Fix numerical epsilon near t=5tau in decharge
-    if (switchPos === "decharge" && theta >= 4.95) {
-      if (u < 0.08) u = 0.0;
-      if (Math.abs(i) < 0.1) i = 0.0;
+    if (switchPos === "decharge" && tRatio >= 5.0) {
+      if (u < 0.05) u = 0.0;
+      if (Math.abs(i) < 0.05) i = 0.0;
     }
 
     const q = C_uF * u; // µC
@@ -120,27 +123,26 @@ export default function RCCircuitVirtualLab() {
       energy_mJ: ene,
       chargePercentage: pct,
       activeChargesCount: numCharges,
-      physicalTimeMs: tPhysMs,
     };
-  }, [elapsedSec, tauSimSec, tauPhysMs, switchPos, E, initialVoltage, R, C_uF, C_F]);
+  }, [currentPhysTimeMs, tauPhysMs, switchPos, E, initialVoltage, R, C_uF, C_F]);
 
   // Switch Toggle Handler
   const handleToggleSwitch = (newPos: "charge" | "decharge") => {
     if (newPos === switchPos) return;
     setInitialVoltage(uC_t); // Continuity of charge uC(0+) = uC(0-)
     setSwitchPos(newPos);
-    setElapsedSec(0);
+    setElapsedSimSec(0);
     setIsRunning(true);
   };
 
   // Reset Button Handler
   const handleReset = () => {
     setIsRunning(false);
-    setElapsedSec(0);
+    setElapsedSimSec(0);
     setInitialVoltage(switchPos === "charge" ? 0 : E);
   };
 
-  // ── 4. OSCILLOSCOPE TRACING (DUAL-CHANNEL + SUPERPOSITION) ──
+  // ── 4. OSCILLOSCOPE TRACING (PHYSICAL TIME AXIS 0 to 200 ms) ──
   const oscW = 460;
   const oscH = 200;
   const padL = 38;
@@ -152,28 +154,28 @@ export default function RCCircuitVirtualLab() {
   const midY = padT + plotH / 2;
   const baseY = padT + plotH;
 
-  // Real-time active drawn path up to elapsedSec
+  // Real-time active drawn path on the 200ms physical time grid
   const { activePath_uC, activePath_i, curX, curY_uC, curY_i } = useMemo(() => {
     const totalSteps = 120;
     const pts_uC: string[] = [];
     const pts_i: string[] = [];
 
-    const effectiveTime = Math.max(elapsedSec, 0.01);
+    const effectiveTime = Math.max(currentPhysTimeMs, 0.1);
     const dt = effectiveTime / totalSteps;
 
     for (let s = 0; s <= totalSteps; s++) {
-      const tSec = s * dt;
-      const theta = tSec / tauSimSec; // Exactly in [0, 5]
-      const x = padL + (tSec / maxExperimentTimeSec) * plotW;
+      const tMs = s * dt;
+      const tRatio = tauPhysMs > 0 ? tMs / tauPhysMs : 10;
+      const x = padL + (tMs / T_WINDOW_MS) * plotW;
 
       let u = 0;
       let cur = 0;
       if (switchPos === "charge") {
-        u = E - (E - initialVoltage) * Math.exp(-theta);
-        cur = ((E - initialVoltage) / R) * Math.exp(-theta) * 1000;
+        u = E - (E - initialVoltage) * Math.exp(-tRatio);
+        cur = ((E - initialVoltage) / R) * Math.exp(-tRatio) * 1000;
       } else {
-        u = initialVoltage * Math.exp(-theta);
-        cur = -(initialVoltage / R) * Math.exp(-theta) * 1000;
+        u = initialVoltage * Math.exp(-tRatio);
+        cur = -(initialVoltage / R) * Math.exp(-tRatio) * 1000;
       }
 
       const y_uC = baseY - (u / (E || 1)) * plotH;
@@ -184,7 +186,7 @@ export default function RCCircuitVirtualLab() {
       pts_i.push(`${x.toFixed(1)},${y_i.toFixed(1)}`);
     }
 
-    const currentX = padL + (elapsedSec / maxExperimentTimeSec) * plotW;
+    const currentX = padL + (currentPhysTimeMs / T_WINDOW_MS) * plotW;
     const currentY_uC = baseY - (uC_t / (E || 1)) * plotH;
     const currentY_i = midY - (i_t_mA / (I0_mA || 1)) * (plotH / 2);
 
@@ -195,11 +197,12 @@ export default function RCCircuitVirtualLab() {
       curY_uC: currentY_uC,
       curY_i: currentY_i,
     };
-  }, [elapsedSec, tauSimSec, maxExperimentTimeSec, plotW, padL, switchPos, E, initialVoltage, R, baseY, plotH, midY, uC_t, i_t_mA, I0_mA]);
+  }, [currentPhysTimeMs, T_WINDOW_MS, tauPhysMs, plotW, padL, switchPos, E, initialVoltage, R, baseY, plotH, midY, uC_t, i_t_mA, I0_mA]);
 
-  // Tangent at t=0 coordinates: exactly cuts at the 1tau vertical grid marker (1/5th of plot width)
-  const tangentX_tau = padL + (1 / 5) * plotW;
-  const shouldShowTangent = showTangent && (elapsedSec >= tauSimSec || (!isRunning && elapsedSec > 0.2));
+  // Tangent at t=0 coordinates: X position depends directly on tauPhysMs!
+  // Slope = E / tau. At t = tau, u = E.
+  const tangentX_tau = Math.min(padL + (tauPhysMs / T_WINDOW_MS) * plotW, padL + plotW);
+  const shouldShowTangent = showTangent && (currentPhysTimeMs >= Math.min(tauPhysMs, T_WINDOW_MS) || (!isRunning && elapsedSimSec > 0.2));
 
   // Save current curve for superposition comparison (faded ghost color)
   const handleSaveTrace = () => {
@@ -235,7 +238,7 @@ export default function RCCircuitVirtualLab() {
             <Zap className="w-3.5 h-3.5" />
           </div>
           <h3 className="text-xs sm:text-sm font-bold text-white tracking-wide whitespace-nowrap">
-            Lab Circuit RC
+            Lab Circuit RC (Oscilloscope Calibré)
           </h3>
         </div>
 
@@ -284,7 +287,7 @@ export default function RCCircuitVirtualLab() {
             ) : (
               <>
                 <Play className="w-3 h-3 fill-current" />
-                <span>{elapsedSec === 0 ? "Lancer" : "Reprendre"}</span>
+                <span>{elapsedSimSec === 0 ? "Lancer" : "Reprendre"}</span>
               </>
             )}
           </button>
@@ -308,7 +311,7 @@ export default function RCCircuitVirtualLab() {
                 ? "bg-indigo-500/15 text-indigo-300 border-indigo-500/30 hover:bg-indigo-500/25"
                 : "opacity-40 cursor-not-allowed bg-slate-900 border-slate-800 text-slate-500"
             }`}
-            title="Mémoriser cette courbe pour comparer"
+            title="Mémoriser cette courbe pour comparer avec une autre valeur de R ou C"
           >
             <BookmarkPlus className="w-3 h-3" />
             <span>Garder</span>
@@ -344,7 +347,7 @@ export default function RCCircuitVirtualLab() {
         </div>
       </div>
 
-      {/* ── 2. COMPACT SLIDERS (E, R, C) & TANGENT TOGGLE ── */}
+      {/* ── 2. REAL-TIME SLIDERS (E, R, C) & TANGENT TOGGLE ── */}
       <div className="grid grid-cols-1 sm:grid-cols-12 gap-2.5 p-2.5 rounded-xl bg-slate-900/60 border border-slate-800/80 items-center text-[11px]">
         {/* Slider E */}
         <div className="sm:col-span-3 space-y-0.5">
@@ -381,7 +384,7 @@ export default function RCCircuitVirtualLab() {
           <input
             type="range"
             min="50"
-            max="1000"
+            max="500"
             step="25"
             value={R}
             onChange={(e) => {
@@ -404,7 +407,7 @@ export default function RCCircuitVirtualLab() {
           <input
             type="range"
             min="20"
-            max="500"
+            max="400"
             step="20"
             value={C_uF}
             onChange={(e) => {
@@ -428,7 +431,7 @@ export default function RCCircuitVirtualLab() {
           </label>
           <div className="text-[10px] font-mono text-cyan-300 flex items-center justify-between">
             <span>τ = RC =</span>
-            <span className="font-bold">{tauPhysMs.toFixed(1)} ms</span>
+            <span className="font-bold text-amber-300">{tauPhysMs.toFixed(1)} ms</span>
           </div>
         </div>
       </div>
@@ -463,7 +466,6 @@ export default function RCCircuitVirtualLab() {
                   <stop offset="0%" stopColor="#00f0ff" stopOpacity="0.85" />
                   <stop offset="100%" stopColor="#38bdf8" stopOpacity="0.35" />
                 </linearGradient>
-                {/* Arrow markers for current flow direction */}
                 <marker id="arr-cyan" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
                   <polygon points="0,1 5,3 0,5" fill="#00f0ff" />
                 </marker>
@@ -519,24 +521,16 @@ export default function RCCircuitVirtualLab() {
               {/* Direction Arrows on wires */}
               {switchPos === "charge" ? (
                 <g>
-                  {/* Top wire going right */}
                   <line x1="90" y1="35" x2="105" y2="35" stroke="#00f0ff" strokeWidth="2" markerEnd="url(#arr-cyan)" />
-                  {/* Center wire going down */}
                   <line x1="170" y1="116" x2="170" y2="128" stroke="#00f0ff" strokeWidth="2" markerEnd="url(#arr-cyan)" />
-                  {/* Bottom wire going left */}
                   <line x1="125" y1="205" x2="110" y2="205" stroke="#00f0ff" strokeWidth="2" markerEnd="url(#arr-cyan)" />
-                  {/* Left wire going up */}
                   <line x1="60" y1="90" x2="60" y2="75" stroke="#00f0ff" strokeWidth="2" markerEnd="url(#arr-cyan)" />
                 </g>
               ) : (
                 <g>
-                  {/* Center wire going up in discharge */}
                   <line x1="170" y1="128" x2="170" y2="116" stroke="#c084fc" strokeWidth="2" markerEnd="url(#arr-purple)" />
-                  {/* Top-right wire going right */}
                   <line x1="230" y1="35" x2="245" y2="35" stroke="#c084fc" strokeWidth="2" markerEnd="url(#arr-purple)" />
-                  {/* Right wire going down */}
                   <line x1="280" y1="110" x2="280" y2="125" stroke="#c084fc" strokeWidth="2" markerEnd="url(#arr-purple)" />
-                  {/* Bottom wire going left */}
                   <line x1="235" y1="205" x2="220" y2="205" stroke="#c084fc" strokeWidth="2" markerEnd="url(#arr-purple)" />
                 </g>
               )}
@@ -670,7 +664,7 @@ export default function RCCircuitVirtualLab() {
           </div>
         </div>
 
-        {/* ── RIGHT PANEL (6 COLS): SYNCHRONIZED OSCILLOSCOPE ── */}
+        {/* ── RIGHT PANEL (6 COLS): SYNCHRONIZED OSCILLOSCOPE (CALIBRATED 0 to 200 ms) ── */}
         <div className="lg:col-span-6 rounded-2xl bg-slate-900/80 border border-slate-800 p-3 space-y-2.5 flex flex-col justify-between shadow-xl">
           <div className="flex items-center justify-between text-xs font-bold border-b border-slate-800 pb-1.5">
             <div className="flex items-center gap-2.5 text-[11px]">
@@ -684,7 +678,7 @@ export default function RCCircuitVirtualLab() {
               </span>
             </div>
             <span className="font-mono text-[10px] text-amber-300 bg-amber-500/10 px-2 py-0.5 rounded-md border border-amber-500/20">
-              t = {physicalTimeMs.toFixed(1)} ms / {(5 * tauPhysMs).toFixed(1)} ms ({((elapsedSec / tauSimSec)).toFixed(1)}τ)
+              t = {currentPhysTimeMs.toFixed(1)} ms / {T_WINDOW_MS} ms
             </span>
           </div>
 
@@ -711,25 +705,50 @@ export default function RCCircuitVirtualLab() {
               <line x1={padL} y1={midY} x2={padL + plotW} y2={midY} stroke="#1e293b" strokeWidth="1" strokeDasharray="3 3" />
               <text x={padL - 4} y={midY + 3} fill="#64748b" fontSize="8.5" fontStyle="italic" textAnchor="end">0 mA</text>
 
-              {/* Vertical time division grid lines (1τ, 2τ, 3τ, 4τ, 5τ) */}
-              {[1, 2, 3, 4, 5].map((tUnit) => {
-                const posX = padL + (tUnit / 5) * plotW;
+              {/* 5 Calibrated Time Divisions: 40ms, 80ms, 120ms, 160ms, 200ms */}
+              {[1, 2, 3, 4, 5].map((div) => {
+                const posX = padL + (div / 5) * plotW;
+                const timeLabel = (div * (T_WINDOW_MS / 5)).toFixed(0);
                 return (
-                  <g key={tUnit}>
+                  <g key={div}>
                     <line x1={posX} y1={padT} x2={posX} y2={baseY} stroke="#1e293b" strokeWidth="0.8" strokeDasharray="2 2" />
-                    <text x={posX} y={baseY + 14} fill={tUnit === 1 ? "#fbbf24" : "#64748b"} fontSize="9.5" fontStyle="italic" textAnchor="middle">
-                      {tUnit}τ
+                    <text x={posX} y={baseY + 14} fill="#64748b" fontSize="9" fontStyle="italic" textAnchor="middle">
+                      {timeLabel} ms
                     </text>
                   </g>
                 );
               })}
+
+              {/* Dynamic Tau Position Line & Label on Time Axis */}
+              {tauPhysMs <= T_WINDOW_MS && (
+                <g>
+                  <line
+                    x1={tangentX_tau}
+                    y1={baseY - 6}
+                    x2={tangentX_tau}
+                    y2={baseY + 6}
+                    stroke="#fbbf24"
+                    strokeWidth="1.5"
+                  />
+                  <text
+                    x={tangentX_tau}
+                    y={baseY + 22}
+                    fill="#fbbf24"
+                    fontSize="8.5"
+                    fontWeight="bold"
+                    textAnchor="middle"
+                  >
+                    τ={tauPhysMs.toFixed(0)}ms
+                  </text>
+                </g>
+              )}
 
               {/* Voltage Asymptote E (10V) */}
               <line x1={padL} y1={padT} x2={padL + plotW} y2={padT} stroke="#00f0ff" strokeWidth="0.8" strokeDasharray="3 3" opacity="0.35" />
               <text x={padL - 4} y={padT + 4} fill="#00f0ff" fontSize="9.5" fontStyle="italic" fontWeight="bold" textAnchor="end">{E}V</text>
               <text x={padL - 4} y={baseY + 3} fill="#64748b" fontSize="8.5" fontStyle="italic" textAnchor="end">0V</text>
 
-              {/* ── SAVED SUPERPOSITION COMPARISON TRACES (DIMMED/FADED GHOST TRACES) ── */}
+              {/* ── SAVED SUPERPOSITION COMPARISON TRACES (DIMMED GHOST TRACES) ── */}
               {savedTraces.map((trace, idx) => (
                 <g key={trace.id} opacity={0.45}>
                   <path
@@ -740,7 +759,7 @@ export default function RCCircuitVirtualLab() {
                     strokeDasharray="4 3"
                   />
                   <text
-                    x={oscPadRightMarkerX(idx, plotW, padL)}
+                    x={padL + plotW - 75}
                     y={padT + 12 + idx * 11}
                     fill="#94a3b8"
                     fontSize="8"
@@ -751,12 +770,12 @@ export default function RCCircuitVirtualLab() {
                 </g>
               ))}
 
-              {/* ── TANGENT AT ORIGIN (APPEARS PROGRESSIVELY WHEN REACHING TAU OR FINISHED) ── */}
+              {/* ── TANGENT AT ORIGIN (SLOPE DEPENDS ON TAU) ── */}
               {shouldShowTangent && (
                 <g>
                   {switchPos === "charge" ? (
                     <>
-                      {/* Tangent line from (0,0) to (1tau, E) */}
+                      {/* Tangent line from (0,0) to (tau, E) */}
                       <line
                         x1={padL}
                         y1={baseY}
@@ -766,7 +785,7 @@ export default function RCCircuitVirtualLab() {
                         strokeWidth="1.4"
                         strokeDasharray="3 2"
                       />
-                      {/* Vertical dotted line from (1tau, E) to 1tau on axis */}
+                      {/* Vertical dotted line from (tau, E) to tau on axis */}
                       <line
                         x1={tangentX_tau}
                         y1={padT}
@@ -777,7 +796,7 @@ export default function RCCircuitVirtualLab() {
                         strokeDasharray="2 2"
                         opacity={0.8}
                       />
-                      {/* Intersection Point at (1tau, E) */}
+                      {/* Intersection Point at (tau, E) */}
                       <circle cx={tangentX_tau} cy={padT} r="3.5" fill="#f59e0b" />
                       <text x={tangentX_tau} y={padT - 5} fill="#f59e0b" fontSize="8.5" fontStyle="italic" fontWeight="bold" textAnchor="middle">
                         (τ, E)
@@ -785,7 +804,7 @@ export default function RCCircuitVirtualLab() {
                     </>
                   ) : (
                     <>
-                      {/* Tangent line in Decharge from (0,E) to (1tau, 0V) */}
+                      {/* Tangent line in Decharge from (0,E) to (tau, 0V) */}
                       <line
                         x1={padL}
                         y1={padT}
@@ -795,7 +814,7 @@ export default function RCCircuitVirtualLab() {
                         strokeWidth="1.4"
                         strokeDasharray="3 2"
                       />
-                      {/* Intersection Point on axis at (1tau, 0V) */}
+                      {/* Intersection Point on axis at (tau, 0V) */}
                       <circle cx={tangentX_tau} cy={baseY} r="3.5" fill="#f59e0b" />
                       <text x={tangentX_tau} y={baseY - 5} fill="#f59e0b" fontSize="8.5" fontStyle="italic" fontWeight="bold" textAnchor="middle">
                         t = τ
@@ -827,7 +846,7 @@ export default function RCCircuitVirtualLab() {
               />
 
               {/* Laser Head Points */}
-              {elapsedSec > 0.05 && (
+              {elapsedSimSec > 0.05 && (
                 <>
                   <circle cx={curX} cy={curY_uC} r="4" fill="#00f0ff" stroke="#ffffff" strokeWidth="1.2" />
                   <circle cx={curX} cy={curY_i} r="4" fill="#fb7185" stroke="#ffffff" strokeWidth="1.2" />
@@ -859,9 +878,4 @@ export default function RCCircuitVirtualLab() {
       </div>
     </div>
   );
-}
-
-// Helper for positioning superposition trace labels in SVG
-function oscPadRightMarkerX(idx: number, plotW: number, padL: number) {
-  return padL + plotW - 60;
 }
