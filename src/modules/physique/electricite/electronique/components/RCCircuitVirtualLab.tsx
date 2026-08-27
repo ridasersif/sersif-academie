@@ -8,31 +8,55 @@ import {
   RotateCcw,
   Zap,
   Gauge,
+  Sliders,
+  Layers,
+  Sparkles,
+  Trash2,
+  BookmarkPlus,
+  Eye,
 } from "lucide-react";
 import LatexMath from "@/components/ui/LatexMath";
 
+interface SavedTrace {
+  id: string;
+  path_uC: string;
+  path_i: string;
+  R: number;
+  C_uF: number;
+  E: number;
+  tauPhysMs: number;
+  color: string;
+}
+
 export default function RCCircuitVirtualLab() {
-  // ── 1. EXPERIMENTAL PARAMETERS ──
-  const [E] = useState<number>(10); // V
-  const [R] = useState<number>(200); // Ohm
-  const [C_uF] = useState<number>(100); // µF
+  // ── 1. REAL-TIME PHYSICAL PARAMETERS (SLIDERS) ──
+  const [E, setE] = useState<number>(10); // V (2 to 20)
+  const [R, setR] = useState<number>(200); // Ohm (50 to 1000)
+  const [C_uF, setC_uF] = useState<number>(100); // µF (20 to 500)
 
   // Switch Position: "charge" (Pos 1) | "decharge" (Pos 2)
   const [switchPos, setSwitchPos] = useState<"charge" | "decharge">("charge");
 
-  // Simulation Controls: Human observable pedagogical time (Tau = 2.0s -> 5 Tau = 10.0s)
+  // Advanced Pedagogical Toggles
+  const [showTangent, setShowTangent] = useState<boolean>(false);
+  const [savedTraces, setSavedTraces] = useState<SavedTrace[]>([]);
+
+  // Simulation Controls
   const [isRunning, setIsRunning] = useState<boolean>(false);
   const [simSpeed, setSimSpeed] = useState<number>(1); // 0.5x, 1x, 2x
-  const [elapsedSec, setElapsedSec] = useState<number>(0); // Elapsed time in seconds
+  const [elapsedSec, setElapsedSec] = useState<number>(0); // Current elapsed time in seconds
   const [initialVoltage, setInitialVoltage] = useState<number>(0); // Voltage at switch flip moment
 
-  // Scaled Pedagogical Time Constants
-  const tauVisualSec = 2.0; // 1 tau = 2.0s
-  const maxExperimentTimeSec = 10.0; // 5 tau = 10.0s
-
-  // Physical formulas
+  // Physical calculations
   const C_F = useMemo(() => C_uF * 1e-6, [C_uF]);
-  const I0_mA = useMemo(() => (E / R) * 1000, [E, R]); // 50 mA for 10V / 200 Ohm
+  const tauPhysMs = useMemo(() => (R * C_uF) / 1000, [R, C_uF]); // ms
+  const I0_mA = useMemo(() => (E / R) * 1000, [E, R]); // mA
+  const Qmax_uC = useMemo(() => C_uF * E, [C_uF, E]); // µC
+
+  // Scaled Visual Time Constant: Proportional to real (R * C)
+  // Baseline: 200 Ohm * 100 uF = 20ms -> tauVisual = 2.0s
+  const tauVisualSec = useMemo(() => 2.0 * ((R * C_uF) / 20000), [R, C_uF]);
+  const maxExperimentTimeSec = 10.0; // Total oscilloscope display window
 
   // ── 2. REAL-TIME 60FPS ANIMATION LOOP ──
   const lastTimeRef = useRef<number | null>(null);
@@ -64,11 +88,11 @@ export default function RCCircuitVirtualLab() {
     }
 
     return () => cancelAnimationFrame(animId);
-  }, [isRunning, simSpeed]);
+  }, [isRunning, simSpeed, maxExperimentTimeSec]);
 
-  // ── 3. INSTANTANEOUS PHYSICAL VALUES (CONTINUOUS 60FPS) ──
+  // ── 3. INSTANTANEOUS PHYSICAL VALUES ──
   const { uC_t, i_t_mA, q_t_uC, energy_mJ, chargePercentage, activeChargesCount } = useMemo(() => {
-    const tRatio = elapsedSec / tauVisualSec; // t / tau
+    const tRatio = elapsedSec / (tauVisualSec || 1); // t / tau
     let u = 0;
     let i = 0;
 
@@ -84,8 +108,7 @@ export default function RCCircuitVirtualLab() {
 
     const q = C_uF * u; // µC
     const ene = 0.5 * C_F * u * u * 1000; // mJ
-    const pct = Math.min(Math.max((u / E) * 100, 0), 100);
-    // Number of visual charges accumulated on plates (0 to 10)
+    const pct = Math.min(Math.max((u / (E || 1)) * 100, 0), 100);
     const numCharges = Math.min(Math.floor((pct / 100) * 10), 10);
 
     return {
@@ -101,7 +124,7 @@ export default function RCCircuitVirtualLab() {
   // Switch Toggle Handler
   const handleToggleSwitch = (newPos: "charge" | "decharge") => {
     if (newPos === switchPos) return;
-    setInitialVoltage(uC_t); // Maintain continuity of charge uC(0+) = uC(0-)
+    setInitialVoltage(uC_t); // Continuity of charge uC(0+) = uC(0-)
     setSwitchPos(newPos);
     setElapsedSec(0);
     setIsRunning(true);
@@ -114,7 +137,7 @@ export default function RCCircuitVirtualLab() {
     setInitialVoltage(switchPos === "charge" ? 0 : E);
   };
 
-  // ── 4. OSCILLOSCOPE TRACING (LIVE DUAL-CHANNEL) ──
+  // ── 4. OSCILLOSCOPE TRACING (DUAL-CHANNEL + SUPERPOSITION) ──
   const oscW = 460;
   const oscH = 200;
   const padL = 38;
@@ -126,42 +149,7 @@ export default function RCCircuitVirtualLab() {
   const midY = padT + plotH / 2;
   const baseY = padT + plotH;
 
-  // Generate full ghost/ideal preview trajectory
-  const { ghostPath_uC, ghostPath_i } = useMemo(() => {
-    const steps = 100;
-    const pts_uC: string[] = [];
-    const pts_i: string[] = [];
-
-    for (let s = 0; s <= steps; s++) {
-      const tSec = (s / steps) * maxExperimentTimeSec;
-      const tRatio = tSec / tauVisualSec;
-      const x = padL + (tSec / maxExperimentTimeSec) * plotW;
-
-      let u = 0;
-      let cur = 0;
-      if (switchPos === "charge") {
-        u = E - (E - initialVoltage) * Math.exp(-tRatio);
-        cur = ((E - initialVoltage) / R) * Math.exp(-tRatio) * 1000;
-      } else {
-        u = initialVoltage * Math.exp(-tRatio);
-        cur = -(initialVoltage / R) * Math.exp(-tRatio) * 1000;
-      }
-
-      const y_uC = baseY - (u / (E || 1)) * plotH;
-      pts_uC.push(`${x.toFixed(1)},${y_uC.toFixed(1)}`);
-
-      const maxI = (E / R) * 1000 || 1;
-      const y_i = midY - (cur / maxI) * (plotH / 2);
-      pts_i.push(`${x.toFixed(1)},${y_i.toFixed(1)}`);
-    }
-
-    return {
-      ghostPath_uC: `M ${pts_uC.join(" L ")}`,
-      ghostPath_i: `M ${pts_i.join(" L ")}`,
-    };
-  }, [maxExperimentTimeSec, tauVisualSec, padL, plotW, switchPos, E, initialVoltage, R, baseY, plotH, midY]);
-
-  // Generate real-time active drawn path up to elapsedSec
+  // Real-time active drawn path up to elapsedSec
   const { activePath_uC, activePath_i, curX, curY_uC, curY_i } = useMemo(() => {
     const totalSteps = 120;
     const pts_uC: string[] = [];
@@ -172,7 +160,7 @@ export default function RCCircuitVirtualLab() {
 
     for (let s = 0; s <= totalSteps; s++) {
       const tSec = s * dt;
-      const tRatio = tSec / tauVisualSec;
+      const tRatio = tSec / (tauVisualSec || 1);
       const x = padL + (tSec / maxExperimentTimeSec) * plotW;
 
       let u = 0;
@@ -206,7 +194,32 @@ export default function RCCircuitVirtualLab() {
     };
   }, [elapsedSec, tauVisualSec, maxExperimentTimeSec, plotW, padL, switchPos, E, initialVoltage, R, baseY, plotH, midY, uC_t, i_t_mA, I0_mA]);
 
-  // Current animation speed: slows down naturally as current i(t) approaches 0
+  // Tangent coordinates at t=0
+  const tangentX_tau = padL + (tauVisualSec / maxExperimentTimeSec) * plotW;
+
+  // Save current curve for superposition comparison
+  const handleSaveTrace = () => {
+    if (!activePath_uC) return;
+    const colors = ["#f59e0b", "#a855f7", "#3b82f6", "#10b981"];
+    const chosenColor = colors[savedTraces.length % colors.length];
+    const newTrace: SavedTrace = {
+      id: String(Date.now()),
+      path_uC: activePath_uC,
+      path_i: activePath_i,
+      R,
+      C_uF,
+      E,
+      tauPhysMs,
+      color: chosenColor,
+    };
+    setSavedTraces((prev) => [...prev, newTrace]);
+  };
+
+  const handleClearSavedTraces = () => {
+    setSavedTraces([]);
+  };
+
+  // Current animation speed
   const currentFraction = Math.abs(i_t_mA) / (I0_mA || 1);
   const isCurrentMoving = isRunning && currentFraction > 0.015;
   const particleSpeedDuration = currentFraction > 0.015 ? `${Math.max(1.0 / currentFraction, 0.8).toFixed(2)}s` : "0s";
@@ -287,6 +300,32 @@ export default function RCCircuitVirtualLab() {
             <span>Vider</span>
           </button>
 
+          {/* Superposition Compare Button */}
+          <button
+            onClick={handleSaveTrace}
+            disabled={!activePath_uC}
+            className={`px-2.5 py-1.5 rounded-xl border text-xs font-medium flex items-center gap-1.5 transition-colors cursor-pointer ${
+              activePath_uC
+                ? "bg-indigo-500/15 text-indigo-300 border-indigo-500/30 hover:bg-indigo-500/25"
+                : "opacity-40 cursor-not-allowed bg-slate-900 border-slate-800 text-slate-500"
+            }`}
+            title="Mémoriser cette courbe pour comparer"
+          >
+            <BookmarkPlus className="w-3.5 h-3.5" />
+            <span>Garder la courbe</span>
+          </button>
+
+          {/* Clear comparison traces if any */}
+          {savedTraces.length > 0 && (
+            <button
+              onClick={handleClearSavedTraces}
+              className="p-1.5 rounded-xl bg-slate-900 border border-rose-500/30 text-rose-400 hover:bg-rose-500/10 text-xs transition-colors cursor-pointer"
+              title="Effacer les courbes mémorisées"
+            >
+              <Trash2 className="w-3.5 h-3.5" />
+            </button>
+          )}
+
           {/* Speed Selector */}
           <div className="flex items-center p-0.5 rounded-xl bg-slate-900 border border-slate-800 text-[11px] font-mono">
             {[0.5, 1, 2].map((spd) => (
@@ -306,7 +345,96 @@ export default function RCCircuitVirtualLab() {
         </div>
       </div>
 
-      {/* ── 2. MAIN PANELS: CIRCUIT + CAPACITOR TANK + OSCILLOSCOPE ── */}
+      {/* ── 2. REAL-TIME INTERACTIVE SLIDERS (E, R, C) & TANGENT TOGGLE ── */}
+      <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 p-3 rounded-2xl bg-slate-900/60 border border-slate-800/80 items-center text-xs">
+        {/* Slider E */}
+        <div className="sm:col-span-3 space-y-1">
+          <div className="flex items-center justify-between font-bold">
+            <span className="text-slate-400 flex items-center gap-1">
+              <span>Générateur</span>
+              <LatexMath math="E" /> :
+            </span>
+            <span className="text-cyan-300 font-mono">{E} V</span>
+          </div>
+          <input
+            type="range"
+            min="2"
+            max="20"
+            step="1"
+            value={E}
+            onChange={(e) => {
+              setE(Number(e.target.value));
+              if (!isRunning) handleReset();
+            }}
+            className="w-full h-1 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-cyan-400"
+          />
+        </div>
+
+        {/* Slider R */}
+        <div className="sm:col-span-3 space-y-1">
+          <div className="flex items-center justify-between font-bold">
+            <span className="text-slate-400 flex items-center gap-1">
+              <span>Résistance</span>
+              <LatexMath math="R" /> :
+            </span>
+            <span className="text-rose-300 font-mono">{R} Ω</span>
+          </div>
+          <input
+            type="range"
+            min="50"
+            max="1000"
+            step="25"
+            value={R}
+            onChange={(e) => {
+              setR(Number(e.target.value));
+              if (!isRunning) handleReset();
+            }}
+            className="w-full h-1 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-rose-400"
+          />
+        </div>
+
+        {/* Slider C */}
+        <div className="sm:col-span-3 space-y-1">
+          <div className="flex items-center justify-between font-bold">
+            <span className="text-slate-400 flex items-center gap-1">
+              <span>Capacité</span>
+              <LatexMath math="C" /> :
+            </span>
+            <span className="text-purple-300 font-mono">{C_uF} µF</span>
+          </div>
+          <input
+            type="range"
+            min="20"
+            max="500"
+            step="20"
+            value={C_uF}
+            onChange={(e) => {
+              setC_uF(Number(e.target.value));
+              if (!isRunning) handleReset();
+            }}
+            className="w-full h-1 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-purple-400"
+          />
+        </div>
+
+        {/* Tangent Checkbox & Real Tau Info */}
+        <div className="sm:col-span-3 flex flex-col justify-center space-y-1.5 pl-0 sm:pl-2 border-t sm:border-t-0 sm:border-l border-slate-800">
+          <label className="flex items-center gap-2 cursor-pointer select-none text-slate-300 hover:text-white">
+            <input
+              type="checkbox"
+              checked={showTangent}
+              onChange={(e) => setShowTangent(e.target.checked)}
+              className="w-3.5 h-3.5 rounded bg-slate-900 border-slate-700 text-amber-500 focus:ring-amber-500/20 accent-amber-400 cursor-pointer"
+            />
+            <span className="text-xs font-semibold text-amber-300">Tangente à l&apos;origine</span>
+          </label>
+          <div className="text-[11px] font-mono text-cyan-300 flex items-center justify-between">
+            <span>τ = RC =</span>
+            <span className="font-bold">{tauPhysMs.toFixed(1)} ms</span>
+          </div>
+        </div>
+      </div>
+
+      {/* ── 3. MAIN PANELS: CIRCUIT + CAPACITOR TANK + OSCILLOSCOPE ── */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-stretch">
         {/* ── LEFT PANEL (6 COLS): CIRCUIT SCHEMATIC & CHARGE ACCUMULATION TANK ── */}
         <div className="lg:col-span-6 rounded-2xl bg-slate-900/80 border border-slate-800 p-3.5 space-y-3 flex flex-col justify-between shadow-xl">
@@ -449,7 +577,6 @@ export default function RCCircuitVirtualLab() {
               <text x="170" y="93" fill="#e0f2fe" fontSize="13" fontStyle="italic" fontWeight="bold" textAnchor="middle">R</text>
 
               {/* ── 4. CAPACITOR CHARGE TANK (RESERVOIR & PLATES) ── */}
-              {/* Dielectric tank interior */}
               <rect
                 x="142"
                 y="135"
@@ -461,7 +588,7 @@ export default function RCCircuitVirtualLab() {
                 strokeWidth="1"
               />
 
-              {/* Liquid Charge filling height proportional to chargePercentage */}
+              {/* Liquid Charge filling height */}
               <rect
                 x="143"
                 y={174 - (38 * chargePercentage) / 100}
@@ -477,16 +604,14 @@ export default function RCCircuitVirtualLab() {
               {/* Bottom Armature Plate (-q) */}
               <rect x="138" y="172" width="64" height="4" rx="2" fill="#00f0ff" stroke="#38bdf8" strokeWidth="0.8" />
 
-              {/* ── VISIBLE STACKED CHARGES (+) AND (-) ON PLATES ── */}
+              {/* Stacked Charges (+) and (-) */}
               {Array.from({ length: activeChargesCount }).map((_, idx) => {
                 const posX = 144 + idx * 5.6;
                 return (
                   <g key={idx}>
-                    {/* Positive charge dot on top plate */}
                     <circle cx={posX} cy="129" r="2.2" fill="#38bdf8" />
                     <text x={posX} y="130.5" fill="#020817" fontSize="5" fontWeight="bold" textAnchor="middle">+</text>
 
-                    {/* Negative charge dot on bottom plate */}
                     <circle cx={posX} cy="184" r="2.2" fill="#f43f5e" />
                     <text x={posX} y="185" fill="#ffffff" fontSize="6" fontWeight="bold" textAnchor="middle">−</text>
                   </g>
@@ -497,11 +622,10 @@ export default function RCCircuitVirtualLab() {
               <text x="210" y="177" fill="#38bdf8" fontSize="11" fontStyle="italic" fontWeight="bold">−q</text>
               <text x="130" y="158" fill="#00f0ff" fontSize="14" fontStyle="italic" fontWeight="bold" textAnchor="end">C</text>
 
-              {/* ── 5. REAL-TIME FLOWING ELECTRONS (SPEED PROPORTIONAL TO i(t)) ── */}
+              {/* Flowing Electrons */}
               {isCurrentMoving && (
                 <>
                   {switchPos === "charge" ? (
-                    // Clockwise entering stream: generator -> switch K -> R -> C -> back to generator
                     [0, 0.2, 0.4, 0.6, 0.8, 1.0].map((phase, idx) => (
                       <circle key={idx} r="2.8" fill="#fde047" stroke="#ffffff" strokeWidth="0.6">
                         <animateMotion
@@ -513,7 +637,6 @@ export default function RCCircuitVirtualLab() {
                       </circle>
                     ))
                   ) : (
-                    // Counter-Clockwise leaving stream: C -> R -> switch K -> bypass wire -> C
                     [0, 0.2, 0.4, 0.6, 0.8, 1.0].map((phase, idx) => (
                       <circle key={idx} r="2.8" fill="#fde047" stroke="#ffffff" strokeWidth="0.6">
                         <animateMotion
@@ -530,7 +653,7 @@ export default function RCCircuitVirtualLab() {
             </svg>
           </div>
 
-          {/* Reservoir Progress Gauge (Smooth Instantaneous 60fps) */}
+          {/* Reservoir Progress Gauge */}
           <div className="p-2.5 rounded-xl bg-slate-950 border border-slate-800 space-y-1.5">
             <div className="flex items-center justify-between text-xs font-bold">
               <span className="text-slate-300 flex items-center gap-1">
@@ -607,9 +730,81 @@ export default function RCCircuitVirtualLab() {
               <text x={padL - 4} y={padT + 4} fill="#00f0ff" fontSize="10" fontStyle="italic" fontWeight="bold" textAnchor="end">{E}V</text>
               <text x={padL - 4} y={baseY + 3} fill="#64748b" fontSize="9" fontStyle="italic" textAnchor="end">0V</text>
 
-              {/* ── GHOST / PREVIEW TRAJECTORIES (DIMMED) ── */}
-              <path d={ghostPath_uC} fill="none" stroke="#00f0ff" strokeWidth="1.2" strokeDasharray="3 3" opacity="0.25" />
-              <path d={ghostPath_i} fill="none" stroke="#fb7185" strokeWidth="1.2" strokeDasharray="3 3" opacity="0.25" />
+              {/* ── SAVED SUPERPOSITION COMPARISON TRACES ── */}
+              {savedTraces.map((trace, idx) => (
+                <g key={trace.id} opacity={0.65}>
+                  <path
+                    d={trace.path_uC}
+                    fill="none"
+                    stroke={trace.color}
+                    strokeWidth="1.8"
+                    strokeDasharray="4 3"
+                  />
+                  <text
+                    x={oscPadRightMarkerX(idx, plotW, padL)}
+                    y={padT + 12 + idx * 11}
+                    fill={trace.color}
+                    fontSize="8.5"
+                    fontFamily="monospace"
+                  >
+                    τ={trace.tauPhysMs.toFixed(1)}ms
+                  </text>
+                </g>
+              ))}
+
+              {/* ── 1. TANGENT AT ORIGIN (IF CHECKED) ── */}
+              {showTangent && (
+                <g>
+                  {switchPos === "charge" ? (
+                    <>
+                      {/* Tangent line from (0,0) to (tau, E) */}
+                      <line
+                        x1={padL}
+                        y1={baseY}
+                        x2={tangentX_tau}
+                        y2={padT}
+                        stroke="#f59e0b"
+                        strokeWidth="1.5"
+                        strokeDasharray="3 2"
+                      />
+                      {/* Vertical dotted line from (tau, E) to tau on axis */}
+                      <line
+                        x1={tangentX_tau}
+                        y1={padT}
+                        x2={tangentX_tau}
+                        y2={baseY}
+                        stroke="#f59e0b"
+                        strokeWidth="1"
+                        strokeDasharray="2 2"
+                        opacity={0.8}
+                      />
+                      {/* Intersection Point */}
+                      <circle cx={tangentX_tau} cy={padT} r="3.5" fill="#f59e0b" />
+                      <text x={tangentX_tau} y={padT - 6} fill="#f59e0b" fontSize="9" fontStyle="italic" fontWeight="bold" textAnchor="middle">
+                        (τ, E)
+                      </text>
+                    </>
+                  ) : (
+                    <>
+                      {/* Tangent line in Decharge from (0,E) to (tau, 0) */}
+                      <line
+                        x1={padL}
+                        y1={padT}
+                        x2={tangentX_tau}
+                        y2={baseY}
+                        stroke="#f59e0b"
+                        strokeWidth="1.5"
+                        strokeDasharray="3 2"
+                      />
+                      {/* Intersection Point on axis */}
+                      <circle cx={tangentX_tau} cy={baseY} r="3.5" fill="#f59e0b" />
+                      <text x={tangentX_tau} y={baseY - 6} fill="#f59e0b" fontSize="9" fontStyle="italic" fontWeight="bold" textAnchor="middle">
+                        t = τ
+                      </text>
+                    </>
+                  )}
+                </g>
+              )}
 
               {/* ── LIVE ACTIVE TRACED CURVE CH1: uC(t) (GLOWING CYAN) ── */}
               {activePath_uC && (
@@ -632,9 +827,13 @@ export default function RCCircuitVirtualLab() {
                 strokeDasharray="2 2"
               />
 
-              {/* Laser Head Points with Glowing Core */}
-              <circle cx={curX} cy={curY_uC} r="4.5" fill="#00f0ff" stroke="#ffffff" strokeWidth="1.5" />
-              <circle cx={curX} cy={curY_i} r="4.5" fill="#fb7185" stroke="#ffffff" strokeWidth="1.5" />
+              {/* Laser Head Points */}
+              {elapsedSec > 0.05 && (
+                <>
+                  <circle cx={curX} cy={curY_uC} r="4.5" fill="#00f0ff" stroke="#ffffff" strokeWidth="1.5" />
+                  <circle cx={curX} cy={curY_i} r="4.5" fill="#fb7185" stroke="#ffffff" strokeWidth="1.5" />
+                </>
+              )}
             </svg>
           </div>
 
@@ -661,4 +860,9 @@ export default function RCCircuitVirtualLab() {
       </div>
     </div>
   );
+}
+
+// Helper for positioning superposition trace labels in SVG
+function oscPadRightMarkerX(idx: number, plotW: number, padL: number) {
+  return padL + plotW - 65;
 }
