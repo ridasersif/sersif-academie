@@ -54,6 +54,11 @@ const RLCircuitVirtualLab = dynamic(
   { ssr: false }
 );
 
+const RLCCircuitVirtualLab = dynamic(
+  () => import("../components/RLCCircuitVirtualLab"),
+  { ssr: false }
+);
+
 /* ── INTERACTIVE PROOF MODAL COMPONENT (POPUP DIALOG) ── */
 interface ProofModalData {
   title: string;
@@ -400,7 +405,7 @@ function CollapsibleProof({
 }
 
 /* ── INLINE COLLAPSIBLE EQUATION CARD (MINIMALIST & SLEEK) ── */
-function CollapsibleEquationCard({
+function ProofCollapsibleCard({
   num,
   title,
   shortDesc,
@@ -408,6 +413,8 @@ function CollapsibleEquationCard({
   proofSteps,
   finalFormula,
   theme = "cyan",
+  defaultOpen = false,
+  extraContent,
 }: {
   num: string;
   title: string;
@@ -415,18 +422,88 @@ function CollapsibleEquationCard({
   formula: string;
   proofSteps: { step: string; desc: string; math?: string; note?: string }[];
   finalFormula: string;
-  theme?: "cyan" | "purple";
+  theme?: "cyan" | "purple" | "indigo" | "emerald" | "amber" | "rose";
+  defaultOpen?: boolean;
+  extraContent?: React.ReactNode;
 }) {
-  const [isOpen, setIsOpen] = useState(false);
-  const isCyan = theme === "cyan";
+  const [isOpen, setIsOpen] = useState(defaultOpen);
+
+  const themeMap = {
+    cyan: {
+      activeBorder: "border-cyan-500/50 ring-cyan-500/30 shadow-cyan-500/10",
+      badge: "bg-cyan-500/15 text-cyan-300 border-cyan-500/30",
+      titleHover: "group-hover:text-cyan-300",
+      formula: "text-cyan-300",
+      btnOpen: "bg-cyan-950/60 border-cyan-500/40 text-cyan-300 shadow-md shadow-cyan-500/20",
+      drawer: "border-cyan-500/20 bg-cyan-950/10",
+      sparkle: "text-cyan-400",
+      stepTitle: "text-cyan-300",
+      finalBox: "bg-cyan-950/40 border-cyan-500/40 text-cyan-200",
+    },
+    purple: {
+      activeBorder: "border-purple-500/50 ring-purple-500/30 shadow-purple-500/10",
+      badge: "bg-purple-500/15 text-purple-300 border-purple-500/30",
+      titleHover: "group-hover:text-purple-300",
+      formula: "text-purple-300",
+      btnOpen: "bg-purple-950/60 border-purple-500/40 text-purple-300 shadow-md shadow-purple-500/20",
+      drawer: "border-purple-500/20 bg-purple-950/10",
+      sparkle: "text-purple-400",
+      stepTitle: "text-purple-300",
+      finalBox: "bg-purple-950/40 border-purple-500/40 text-purple-200",
+    },
+    indigo: {
+      activeBorder: "border-indigo-500/50 ring-indigo-500/30 shadow-indigo-500/10",
+      badge: "bg-indigo-500/15 text-indigo-300 border-indigo-500/30",
+      titleHover: "group-hover:text-indigo-300",
+      formula: "text-indigo-300",
+      btnOpen: "bg-indigo-950/60 border-indigo-500/40 text-indigo-300 shadow-md shadow-indigo-500/20",
+      drawer: "border-indigo-500/20 bg-indigo-950/10",
+      sparkle: "text-indigo-400",
+      stepTitle: "text-indigo-300",
+      finalBox: "bg-indigo-950/40 border-indigo-500/40 text-indigo-200",
+    },
+    emerald: {
+      activeBorder: "border-emerald-500/50 ring-emerald-500/30 shadow-emerald-500/10",
+      badge: "bg-emerald-500/15 text-emerald-300 border-emerald-500/30",
+      titleHover: "group-hover:text-emerald-300",
+      formula: "text-emerald-300",
+      btnOpen: "bg-emerald-950/60 border-emerald-500/40 text-emerald-300 shadow-md shadow-emerald-500/20",
+      drawer: "border-emerald-500/20 bg-emerald-950/10",
+      sparkle: "text-emerald-400",
+      stepTitle: "text-emerald-300",
+      finalBox: "bg-emerald-950/40 border-emerald-500/40 text-emerald-200",
+    },
+    amber: {
+      activeBorder: "border-amber-500/50 ring-amber-500/30 shadow-amber-500/10",
+      badge: "bg-amber-500/15 text-amber-300 border-amber-500/30",
+      titleHover: "group-hover:text-amber-300",
+      formula: "text-amber-300",
+      btnOpen: "bg-amber-950/60 border-amber-500/40 text-amber-300 shadow-md shadow-amber-500/20",
+      drawer: "border-amber-500/20 bg-amber-950/10",
+      sparkle: "text-amber-400",
+      stepTitle: "text-amber-300",
+      finalBox: "bg-amber-950/40 border-amber-500/40 text-amber-200",
+    },
+    rose: {
+      activeBorder: "border-rose-500/50 ring-rose-500/30 shadow-rose-500/10",
+      badge: "bg-rose-500/15 text-rose-300 border-rose-500/30",
+      titleHover: "group-hover:text-rose-300",
+      formula: "text-rose-300",
+      btnOpen: "bg-rose-950/60 border-rose-500/40 text-rose-300 shadow-md shadow-rose-500/20",
+      drawer: "border-rose-500/20 bg-rose-950/10",
+      sparkle: "text-rose-400",
+      stepTitle: "text-rose-300",
+      finalBox: "bg-rose-950/40 border-rose-500/40 text-rose-200",
+    },
+  };
+
+  const st = themeMap[theme] || themeMap.cyan;
 
   return (
     <div
       className={`rounded-2xl border transition-all duration-200 overflow-hidden ${
         isOpen
-          ? isCyan
-            ? "bg-slate-900/95 border-cyan-500/50 shadow-xl shadow-cyan-500/10 ring-1 ring-cyan-500/30"
-            : "bg-slate-900/95 border-purple-500/50 shadow-xl shadow-purple-500/10 ring-1 ring-purple-500/30"
+          ? `bg-slate-900/95 shadow-xl ring-1 ${st.activeBorder}`
           : "bg-slate-950/70 border-slate-800/80 hover:border-slate-700 hover:bg-slate-900/60"
       }`}
     >
@@ -438,30 +515,18 @@ function CollapsibleEquationCard({
         <div className="space-y-1.5 flex-1 pr-1">
           <div className="flex items-center gap-2">
             <span
-              className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-mono font-bold shrink-0 ${
-                isCyan
-                  ? "bg-cyan-500/15 text-cyan-300 border border-cyan-500/30"
-                  : "bg-purple-500/15 text-purple-300 border border-purple-500/30"
-              }`}
+              className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-mono font-bold shrink-0 ${st.badge}`}
             >
               {num}
             </span>
-            <span
-              className={`font-bold text-xs sm:text-[13px] ${
-                isCyan ? "text-slate-200 group-hover:text-cyan-300" : "text-slate-200 group-hover:text-purple-300"
-              }`}
-            >
+            <span className={`font-bold text-xs sm:text-[13px] text-slate-200 ${st.titleHover}`}>
               {title}
             </span>
           </div>
 
           {shortDesc && <div className="text-slate-400 text-[11px] pl-7">{shortDesc}</div>}
 
-          <div
-            className={`font-mono font-bold text-center py-1 text-sm sm:text-base ${
-              isCyan ? "text-cyan-300" : "text-purple-300"
-            }`}
-          >
+          <div className={`font-mono font-bold text-center py-1 text-sm sm:text-base ${st.formula}`}>
             <LatexMath math={formula} />
           </div>
         </div>
@@ -469,9 +534,7 @@ function CollapsibleEquationCard({
         <div
           className={`p-2 rounded-xl border shrink-0 transition-all duration-200 ${
             isOpen
-              ? isCyan
-                ? "bg-cyan-950/60 border-cyan-500/40 text-cyan-300 shadow-md shadow-cyan-500/20"
-                : "bg-purple-950/60 border-purple-500/40 text-purple-300 shadow-md shadow-purple-500/20"
+              ? st.btnOpen
               : "bg-slate-900 border-slate-800 text-slate-400 group-hover:text-white group-hover:border-slate-700"
           }`}
         >
@@ -482,19 +545,17 @@ function CollapsibleEquationCard({
       {/* Expandable Step-by-Step Proof Drawer */}
       {isOpen && (
         <div
-          className={`px-4 sm:px-5 pb-5 pt-3 border-t space-y-3 text-xs animate-in fade-in slide-in-from-top-2 duration-200 ${
-            isCyan ? "border-cyan-500/20 bg-cyan-950/10" : "border-purple-500/20 bg-purple-950/10"
-          }`}
+          className={`px-4 sm:px-5 pb-5 pt-3 border-t space-y-3 text-xs animate-in fade-in slide-in-from-top-2 duration-200 ${st.drawer}`}
         >
           <div className="flex items-center gap-1.5 text-[11px] font-bold text-slate-300 uppercase tracking-wider">
-            <Sparkles className={`w-3.5 h-3.5 ${isCyan ? "text-cyan-400" : "text-purple-400"}`} />
+            <Sparkles className={`w-3.5 h-3.5 ${st.sparkle}`} />
             <span>Démonstration Pas-à-Pas :</span>
           </div>
 
           <div className="space-y-2.5">
             {proofSteps.map((s, idx) => (
               <div key={idx} className="p-3 rounded-xl bg-slate-950/90 border border-slate-800 space-y-1">
-                <span className={`font-bold block text-[11px] ${isCyan ? "text-cyan-300" : "text-purple-300"}`}>
+                <span className={`font-bold block text-[11px] ${st.stepTitle}`}>
                   {s.step}
                 </span>
                 <p className="text-slate-300 text-[11px] leading-relaxed">{s.desc}</p>
@@ -508,20 +569,18 @@ function CollapsibleEquationCard({
             ))}
           </div>
 
-          <div
-            className={`p-3 rounded-2xl border text-center font-mono font-bold text-xs sm:text-sm ${
-              isCyan
-                ? "bg-cyan-950/40 border-cyan-500/40 text-cyan-200"
-                : "bg-purple-950/40 border-purple-500/40 text-purple-200"
-            }`}
-          >
+          <div className={`p-3 rounded-2xl border text-center font-mono font-bold text-xs sm:text-sm ${st.finalBox}`}>
             <LatexMath math={finalFormula} />
           </div>
+
+          {extraContent && <div className="pt-2">{extraContent}</div>}
         </div>
       )}
     </div>
   );
 }
+
+const CollapsibleEquationCard = ProofCollapsibleCard;
 
 /* ── Interactive QCM Component (12 Questions) ── */
 function ChapTransitoiresQuickQuiz() {
@@ -2032,301 +2091,450 @@ export default function ChapRegimesTransitoiresRCRlRlc() {
         <RLCircuitVirtualLab />
       </section>
 
-      {/* ── 4. CIRCUIT RLC SÉRIE (2ND ORDRE) AVEC SCHÉMA SVG ── */}
-      <section className="space-y-4">
-        <div className="flex items-center gap-2.5 border-b border-slate-800 pb-2">
+      {/* ── 4. CIRCUIT RLC SÉRIE (2ND ORDRE) : ÉTUDE MÉTHODIQUE EN 3 ÉTAPES ── */}
+      <section className="space-y-6">
+        <div className="flex items-center gap-2.5 border-b border-indigo-500/40 pb-2">
           <div className="p-1.5 rounded-lg bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
             <Waves className="w-4 h-4" />
           </div>
-          <h2 className="text-base sm:text-lg font-bold text-white uppercase tracking-wider">
-            4. Circuit RLC Série Libre & Réponse Indicielle (2nd Ordre)
-          </h2>
+          <div>
+            <h2 className="text-base sm:text-lg font-bold text-white uppercase tracking-wider">
+              4. Circuit RLC Série Libre (Oscillations & Régimes du 2nd Ordre)
+            </h2>
+            <p className="text-xs text-slate-400">
+              Étude méthodique en 3 étapes : Équations Différentielles • 3 Régimes d&apos;Amortissement • Espace des Phases & Énergie
+            </p>
+          </div>
         </div>
 
-        {/* SVG Schematic for Circuit RLC */}
-        <div className="p-4 rounded-2xl bg-slate-900/90 border border-indigo-500/30 flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="w-full md:w-1/2">
-            <svg viewBox="0 0 340 180" className="w-full h-auto max-w-[340px] mx-auto font-sans">
-              <rect x="10" y="10" width="320" height="160" rx="12" fill="#020813" stroke="#0e3a4f" strokeWidth="1.2" />
-
-              {/* Wire Loops */}
-              <path d="M 50 90 L 50 40 L 105 40" fill="none" stroke="#6366f1" strokeWidth="2" />
-              <path d="M 155 40 L 195 40" fill="none" stroke="#6366f1" strokeWidth="2" />
-              <path d="M 245 40 L 290 40 L 290 85" fill="none" stroke="#6366f1" strokeWidth="2" />
-              <path d="M 290 115 L 290 140 L 50 140 L 50 110" fill="none" stroke="#6366f1" strokeWidth="2" />
-
-              {/* Generator E */}
-              <circle cx="50" cy="100" r="14" fill="#031d2e" stroke="#6366f1" strokeWidth="2" />
-              <text x="50" y="104" fill="#6366f1" fontSize="11" fontWeight="bold" textAnchor="middle">E</text>
-
-              {/* Switch K */}
-              <line x1="70" y1="40" x2="95" y2="25" stroke="#f59e0b" strokeWidth="2.5" strokeLinecap="round" />
-              <circle cx="70" cy="40" r="3" fill="#f59e0b" />
-              <circle cx="100" cy="40" r="3" fill="#f59e0b" />
-              <text x="85" y="20" fill="#f59e0b" fontSize="10" fontWeight="bold">K</text>
-
-              {/* Resistor R */}
-              <rect x="110" y="30" width="40" height="20" rx="3" fill="#1e1b4b" stroke="#818cf8" strokeWidth="2" />
-              <text x="130" y="44" fill="#c7d2fe" fontSize="10" fontWeight="bold" textAnchor="middle">R</text>
-
-              {/* Coil L */}
-              <path d="M 195 40 C 205 25, 215 25, 220 40 C 225 25, 235 25, 240 40" fill="none" stroke="#fbbf24" strokeWidth="2.5" />
-              <text x="217.5" y="20" fill="#fbbf24" fontSize="10" fontWeight="bold" textAnchor="middle">L</text>
-
-              {/* Capacitor C */}
-              <line x1="275" y1="92" x2="305" y2="92" stroke="#00f0ff" strokeWidth="2.5" />
-              <line x1="275" y1="108" x2="305" y2="108" stroke="#00f0ff" strokeWidth="2.5" />
-              <text x="315" y="104" fill="#00f0ff" fontSize="11" fontWeight="bold">C</text>
-            </svg>
-          </div>
-
-          <div className="w-full md:w-1/2 space-y-2 text-xs">
-            <span className="text-[11px] font-bold text-indigo-300 uppercase tracking-wider block">
-              Équation Différentielle Canonique du 2nd Ordre :
+        {/* ── ÉTAPE 1 : ÉQUATIONS DIFFÉRENTIELLES DU 2ND ORDRE ── */}
+        <div className="space-y-4 rounded-2xl bg-slate-900/60 border border-slate-800/80 p-4 sm:p-5 shadow-xl">
+          <div className="flex items-center gap-2 border-b border-slate-800 pb-2">
+            <span className="flex items-center justify-center w-6 h-6 rounded-full bg-indigo-500/20 text-indigo-300 text-xs font-bold border border-indigo-500/40">
+              1
             </span>
-            <div className="p-2.5 rounded-xl bg-slate-950 border border-slate-800 text-center font-mono text-indigo-200 font-bold space-y-1">
-              <div>
-                <LatexMath math="\frac{d^2 u_C}{dt^2} + 2\lambda \frac{du_C}{dt} + \omega_0^2 u_C(t) = \omega_0^2 E" />
-              </div>
-              <div className="text-cyan-300 text-[11px]">
-                <LatexMath math="\omega_0 = \frac{1}{\sqrt{LC}}, \quad \lambda = \frac{R}{2L}, \quad Q = \frac{1}{R}\sqrt{\frac{L}{C}}" />
-              </div>
-            </div>
+            <h3 className="text-sm font-bold text-indigo-300 uppercase tracking-wider">
+              Étape 1 : Équations Différentielles & Forme Canonique Normalisée
+            </h3>
           </div>
-        </div>
 
-        <div className="p-4 rounded-2xl bg-slate-900/80 border border-indigo-500/30 space-y-3 text-xs leading-relaxed">
-          {/* Les 3 Régimes */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-2">
-            {/* Pseudo-périodique */}
-            <div className="p-3.5 rounded-xl bg-cyan-950/20 border border-cyan-500/30 space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="font-bold text-cyan-300 text-xs">1. Pseudo-Périodique</span>
-                <span className="text-[10px] font-mono text-cyan-400 bg-cyan-500/10 px-1.5 py-0.5 rounded">
-                  <LatexMath math="Q > 0.5" />
-                </span>
+          {/* 2 Comparative SVG Schematics (Charge vs Décharge RLC) */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+            {/* Schematic Position 1: Charge Continue */}
+            <div className="p-3.5 rounded-xl bg-slate-950/80 border border-emerald-500/30 space-y-2.5">
+              <div className="flex items-center justify-between text-xs font-bold text-emerald-300">
+                <span>Position (1) : Charge du Condensateur</span>
+                <span className="text-[10px] font-mono bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">u_C = E</span>
               </div>
-              <p className="text-[11px] text-slate-300">
-                Condition : <LatexMath math="R < R_c = 2\sqrt{L/C}" /> (<LatexMath math="\Delta' < 0" />).
-              </p>
-              <div className="p-2 rounded-lg bg-slate-950 text-center font-mono text-cyan-300 text-[11px]">
-                <LatexMath math="u_C(t) = E + e^{-\lambda t} \left[ A \cos(\omega t) + B \sin(\omega t) \right]" />
-              </div>
-              <p className="text-[11px] text-slate-400">
-                Pseudo-pulsation : <LatexMath math="\omega = \sqrt{\omega_0^2 - \lambda^2}" />.
-              </p>
-            </div>
+              <svg viewBox="0 0 320 185" className="w-full h-auto max-w-[300px] mx-auto select-none font-sans">
+                <defs>
+                  <marker id="arr-emerald-schem" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+                    <polygon points="0,1 5,3 0,5" fill="#10b981" />
+                  </marker>
+                </defs>
+                <rect x="5" y="5" width="310" height="175" rx="10" fill="#020817" stroke="#064e3b" strokeWidth="1" />
 
-            {/* Critique */}
-            <div className="p-3.5 rounded-xl bg-indigo-950/20 border border-indigo-500/30 space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="font-bold text-indigo-300 text-xs">2. Régime Critique</span>
-                <span className="text-[10px] font-mono text-indigo-400 bg-indigo-500/10 px-1.5 py-0.5 rounded">
-                  <LatexMath math="Q = 0.5" />
-                </span>
-              </div>
-              <p className="text-[11px] text-slate-300">
-                Condition : <LatexMath math="R = R_c = 2\sqrt{L/C}" /> (<LatexMath math="\Delta' = 0" />).
-              </p>
-              <div className="p-2 rounded-lg bg-slate-950 text-center font-mono text-indigo-300 text-[11px]">
-                <LatexMath math="u_C(t) = E + (A + B t) e^{-\lambda t}" />
-              </div>
-              <p className="text-[11px] text-emerald-400 font-bold">
-                Retour à l&apos;équilibre le plus rapide possible sans aucun dépassement ni oscillation !
-              </p>
-            </div>
+                {/* Inactive Inductor Loop (Right) */}
+                <path d="M 190 35 L 270 35 L 270 85 M 270 120 L 270 165 L 160 165" fill="none" stroke="#334155" strokeWidth="1.2" strokeDasharray="3 3" />
+                
+                {/* Active Charge Loop (Left & Center) */}
+                <path d="M 50 110 L 50 35 L 130 35 M 160 50 L 160 60 M 160 90 L 160 120 M 160 135 L 160 165 L 50 165 L 50 130" fill="none" stroke="#10b981" strokeWidth="2.2" strokeLinecap="round" />
+                
+                {/* Direction Arrows on active wires (Clockwise) */}
+                <line x1="85" y1="35" x2="105" y2="35" stroke="#10b981" strokeWidth="2" markerEnd="url(#arr-emerald-schem)" />
+                <line x1="160" y1="100" x2="160" y2="112" stroke="#10b981" strokeWidth="2" markerEnd="url(#arr-emerald-schem)" />
+                <line x1="115" y1="165" x2="95" y2="165" stroke="#10b981" strokeWidth="2" markerEnd="url(#arr-emerald-schem)" />
+                <line x1="50" y1="85" x2="50" y2="70" stroke="#10b981" strokeWidth="2" markerEnd="url(#arr-emerald-schem)" />
 
-            {/* Apériodique */}
-            <div className="p-3.5 rounded-xl bg-rose-950/20 border border-rose-500/30 space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="font-bold text-rose-300 text-xs">3. Apériodique</span>
-                <span className="text-[10px] font-mono text-rose-400 bg-rose-500/10 px-1.5 py-0.5 rounded">
-                  <LatexMath math="Q < 0.5" />
-                </span>
-              </div>
-              <p className="text-[11px] text-slate-300">
-                Condition : <LatexMath math="R > R_c = 2\sqrt{L/C}" /> (<LatexMath math="\Delta' > 0" />).
-              </p>
-              <div className="p-2 rounded-lg bg-slate-950 text-center font-mono text-rose-300 text-[11px]">
-                <LatexMath math="u_C(t) = E + A_1 e^{r_1 t} + A_2 e^{r_2 t}" />
-              </div>
-              <p className="text-[11px] text-slate-400">
-                Fort amortissement sans oscillation, convergence lente gouvernée par <LatexMath math="r_1 = -\lambda + \sqrt{\lambda^2 - \omega_0^2}" />.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
+                {/* Generator E */}
+                <line x1="38" y1="112" x2="62" y2="112" stroke="#10b981" strokeWidth="2.8" strokeLinecap="round" />
+                <line x1="44" y1="122" x2="56" y2="122" stroke="#10b981" strokeWidth="4.5" strokeLinecap="round" />
+                <text x="28" y="110" fill="#34d399" fontSize="11" fontWeight="bold">+</text>
+                <text x="30" y="130" fill="#34d399" fontSize="13" fontWeight="bold">−</text>
+                <text x="70" y="120" fill="#34d399" fontSize="11" fontStyle="italic" fontWeight="bold">E</text>
 
-      {/* ── 5. PROBLÈME DE SYNTHÈSE RÉSOLU (EXERCICE DE L'IMAGE AVEC SCHÉMA DÉDIÉ) ── */}
-      <section className="space-y-4">
-        <div className="flex items-center gap-2.5 border-b border-purple-500/40 pb-2">
-          <div className="p-1.5 rounded-lg bg-purple-500/10 text-purple-400 border border-purple-500/20">
-            <Sparkles className="w-4 h-4" />
-          </div>
-          <h2 className="text-base sm:text-lg font-bold text-white uppercase tracking-wider">
-            5. Problème de Synthèse Résolu : Établissement d&apos;un Courant Alternatif dans un Circuit RL Série
-          </h2>
-        </div>
-
-        {/* SVG Circuit for the Specific Exercise */}
-        <div className="p-4 sm:p-6 rounded-2xl bg-gradient-to-br from-slate-900 via-purple-950/20 to-slate-950 border border-purple-500/30 space-y-4 text-xs leading-relaxed">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4 p-3 rounded-xl bg-purple-950/30 border border-purple-500/30">
-            <div className="w-full md:w-1/2">
-              <svg viewBox="0 0 340 180" className="w-full h-auto max-w-[340px] mx-auto font-sans">
-                <rect x="10" y="10" width="320" height="160" rx="12" fill="#020813" stroke="#581c87" strokeWidth="1.2" />
-
-                {/* Wire Loops */}
-                <path d="M 60 90 L 60 40 L 130 40" fill="none" stroke="#a855f7" strokeWidth="2" />
-                <path d="M 195 40 L 270 40 L 270 70" fill="none" stroke="#a855f7" strokeWidth="2" />
-                <path d="M 270 130 L 270 140 L 180 140" fill="none" stroke="#a855f7" strokeWidth="2" />
-                <path d="M 140 140 L 60 140 L 60 110" fill="none" stroke="#a855f7" strokeWidth="2" />
-
-                {/* Generator e(t) = E*cos(wt) */}
-                <circle cx="60" cy="100" r="15" fill="#1e1035" stroke="#c084fc" strokeWidth="2" />
-                <path d="M 52 100 Q 56 94, 60 100 T 68 100" fill="none" stroke="#c084fc" strokeWidth="1.8" />
-                {/* Voltage arrow e(t) */}
-                <line x1="38" y1="122" x2="38" y2="78" stroke="#c084fc" strokeWidth="1.5" />
-                <polygon points="38,78 35,84 41,84" fill="#c084fc" />
-                <text x="25" y="103" fill="#c084fc" fontSize="10" fontWeight="bold">e(t)</text>
+                {/* Switch K pos 1 */}
+                <circle cx="130" cy="35" r="3" fill="#10b981" />
+                <circle cx="190" cy="35" r="3" fill="#334155" />
+                <circle cx="160" cy="50" r="3" fill="#f8fafc" />
+                <line x1="160" y1="50" x2="130" y2="35" stroke="#10b981" strokeWidth="2.8" strokeLinecap="round" />
+                <text x="125" y="24" fill="#10b981" fontSize="9" fontWeight="bold">(1)</text>
+                <text x="195" y="24" fill="#64748b" fontSize="9" fontWeight="bold">(2)</text>
+                <text x="160" y="42" fill="#f8fafc" fontSize="10" fontStyle="italic" fontWeight="bold" textAnchor="middle">K</text>
 
                 {/* Resistor R */}
-                <rect x="140" y="30" width="45" height="20" rx="3" fill="#2e1065" stroke="#a855f7" strokeWidth="2" />
-                <text x="162.5" y="44" fill="#e9d5ff" fontSize="11" fontWeight="bold" textAnchor="middle">R</text>
+                <rect x="146" y="60" width="28" height="30" rx="3" fill="#1e1b4b" stroke="#10b981" strokeWidth="1.6" />
+                <text x="160" y="79" fill="#c7d2fe" fontSize="10" fontStyle="italic" fontWeight="bold" textAnchor="middle">R</text>
 
-                {/* Current arrow i(t) */}
-                <line x1="205" y1="32" x2="220" y2="32" stroke="#ff007f" strokeWidth="2" />
-                <polygon points="220,32 215,29 215,35" fill="#ff007f" />
-                <text x="212.5" y="22" fill="#ff007f" fontSize="10" fontWeight="bold">i(t)</text>
+                {/* Capacitor C */}
+                <g transform="translate(160, 120)">
+                  <line x1="-16" y1="0" x2="16" y2="0" stroke="#00f0ff" strokeWidth="3" strokeLinecap="round" />
+                  <line x1="-16" y1="15" x2="16" y2="15" stroke="#00f0ff" strokeWidth="3" strokeLinecap="round" />
+                  <text x="24" y="11" fill="#00f0ff" fontSize="11" fontStyle="italic" fontWeight="bold">C</text>
+                  <text x="-20" y="2" fill="#38bdf8" fontSize="8" fontWeight="bold" textAnchor="end">+q</text>
+                  <text x="-20" y="17" fill="#38bdf8" fontSize="8" fontWeight="bold" textAnchor="end">−q</text>
+                </g>
 
-                {/* Coil L */}
-                <path d="M 270 70 C 255 75, 255 85, 270 85 C 255 90, 255 100, 270 100 C 255 105, 255 115, 270 115 C 255 120, 255 130, 270 130" fill="none" stroke="#fbbf24" strokeWidth="2.5" />
-                <text x="290" y="104" fill="#fbbf24" fontSize="12" fontWeight="bold">L</text>
+                {/* Coil L isolated */}
+                <g transform="translate(270, 85)">
+                  <path d="M 0 0 C 14 2, 14 10, 0 11 C 14 13, 14 21, 0 22 C 14 24, 14 32, 0 33" fill="none" stroke="#475569" strokeWidth="2" strokeLinecap="round" />
+                  <text x="18" y="20" fill="#475569" fontSize="10" fontStyle="italic">L, r</text>
+                </g>
 
-                {/* Switch K on bottom branch */}
-                <line x1="140" y1="140" x2="168" y2="125" stroke="#f59e0b" strokeWidth="2.5" strokeLinecap="round" />
-                <circle cx="140" cy="140" r="3" fill="#f59e0b" />
-                <circle cx="175" cy="140" r="3" fill="#f59e0b" />
-                <text x="157.5" y="160" fill="#f59e0b" fontSize="10" fontWeight="bold" textAnchor="middle">K (t=0)</text>
+                {/* Moving Yellow Charge in Charging Loop */}
+                <circle r="2.4" fill="#fde047" stroke="#ffffff" strokeWidth="0.5">
+                  <animateMotion dur="2.2s" repeatCount="indefinite" path="M 50 110 L 50 35 L 130 35 L 160 50 L 160 120 M 160 135 L 160 165 L 50 165 L 50 130 Z" />
+                </circle>
               </svg>
             </div>
 
-            <div className="w-full md:w-1/2 space-y-2">
-              <span className="text-xs font-bold text-purple-300 uppercase tracking-wider block">
-                Énoncé Officiel du Problème :
-              </span>
-              <p className="text-slate-200">
-                Soit le circuit série constitué d&apos;un générateur de tension alternative <LatexMath math="e(t) = E \cos(\omega t)" />, d&apos;un interrupteur <LatexMath math="K" />, d&apos;une résistance <LatexMath math="R" /> et d&apos;une inductance pure <LatexMath math="L" />.
-              </p>
-              <p className="text-slate-300">
-                On ferme <LatexMath math="K" /> à <LatexMath math="t = 0" />. On suppose que la bobine n&apos;est parcourue par <strong>aucun courant à l&apos;instant initial</strong> (<LatexMath math="i(0) = 0" />).
-              </p>
-              <p className="text-cyan-300 font-bold">
-                👉 Établir l&apos;expression temporelle exacte de <LatexMath math="i(t)" /> pour tout <LatexMath math="t > 0" />.
-              </p>
+            {/* Schematic Position 2: Décharge RLC Libre */}
+            <div className="p-3.5 rounded-xl bg-slate-950/80 border border-indigo-500/30 space-y-2.5">
+              <div className="flex items-center justify-between text-xs font-bold text-indigo-300">
+                <span>Position (2) : Circuit RLC Libre (Oscillations)</span>
+                <span className="text-[10px] font-mono bg-indigo-500/10 px-2 py-0.5 rounded border border-indigo-500/20">Maille Libre {`{R, L, C}`}</span>
+              </div>
+              <svg viewBox="0 0 320 185" className="w-full h-auto max-w-[300px] mx-auto select-none font-sans">
+                <defs>
+                  <marker id="arr-indig-schem" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+                    <polygon points="0,1 5,3 0,5" fill="#818cf8" />
+                  </marker>
+                </defs>
+                <rect x="5" y="5" width="310" height="175" rx="10" fill="#020817" stroke="#312e81" strokeWidth="1" />
+
+                {/* Inactive Generator Loop */}
+                <path d="M 50 110 L 50 35 L 130 35 M 50 130 L 50 165 L 160 165" fill="none" stroke="#334155" strokeWidth="1.2" strokeDasharray="3 3" />
+                
+                {/* Active Connected RLC Loop */}
+                <path d="M 160 50 L 190 35 L 270 35 L 270 85 M 270 118 L 270 165 L 160 165 L 160 135 M 160 120 L 160 90 M 160 60 L 160 50" fill="none" stroke="#818cf8" strokeWidth="2.2" strokeLinecap="round" />
+                
+                {/* Oscillating Direction Arrows */}
+                <line x1="225" y1="35" x2="245" y2="35" stroke="#818cf8" strokeWidth="2" markerEnd="url(#arr-indig-schem)" />
+                <line x1="270" y1="135" x2="270" y2="150" stroke="#818cf8" strokeWidth="2" markerEnd="url(#arr-indig-schem)" />
+                <line x1="220" y1="165" x2="200" y2="165" stroke="#818cf8" strokeWidth="2" markerEnd="url(#arr-indig-schem)" />
+                <line x1="160" y1="110" x2="160" y2="95" stroke="#818cf8" strokeWidth="2" markerEnd="url(#arr-indig-schem)" />
+
+                {/* Generator isolated */}
+                <line x1="38" y1="112" x2="62" y2="112" stroke="#475569" strokeWidth="2.5" />
+                <line x1="44" y1="122" x2="56" y2="122" stroke="#475569" strokeWidth="4" />
+                <text x="70" y="120" fill="#64748b" fontSize="11" fontStyle="italic">E</text>
+
+                {/* Switch K pos 2 */}
+                <circle cx="130" cy="35" r="3" fill="#334155" />
+                <circle cx="190" cy="35" r="3" fill="#818cf8" />
+                <circle cx="160" cy="50" r="3" fill="#f8fafc" />
+                <line x1="160" y1="50" x2="190" y2="35" stroke="#818cf8" strokeWidth="2.8" strokeLinecap="round" />
+                <text x="125" y="24" fill="#64748b" fontSize="9" fontWeight="bold">(1)</text>
+                <text x="195" y="24" fill="#818cf8" fontSize="9" fontWeight="bold">(2)</text>
+                <text x="160" y="42" fill="#f8fafc" fontSize="10" fontStyle="italic" fontWeight="bold" textAnchor="middle">K</text>
+
+                {/* Resistor R */}
+                <rect x="146" y="60" width="28" height="30" rx="3" fill="#1e1b4b" stroke="#818cf8" strokeWidth="1.6" />
+                <text x="160" y="79" fill="#c7d2fe" fontSize="10" fontStyle="italic" fontWeight="bold" textAnchor="middle">R</text>
+
+                {/* Capacitor C */}
+                <g transform="translate(160, 120)">
+                  <line x1="-16" y1="0" x2="16" y2="0" stroke="#00f0ff" strokeWidth="3" strokeLinecap="round" />
+                  <line x1="-16" y1="15" x2="16" y2="15" stroke="#00f0ff" strokeWidth="3" strokeLinecap="round" />
+                  <text x="24" y="11" fill="#00f0ff" fontSize="11" fontStyle="italic" fontWeight="bold">C</text>
+                </g>
+
+                {/* Coil L Active */}
+                <g transform="translate(270, 85)">
+                  <path d="M 0 0 C 14 2, 14 10, 0 11 C 14 13, 14 21, 0 22 C 14 24, 14 32, 0 33" fill="none" stroke="#fbbf24" strokeWidth="2.6" strokeLinecap="round" />
+                  <text x="18" y="20" fill="#fbbf24" fontSize="11" fontStyle="italic" fontWeight="bold">L, r</text>
+                </g>
+
+                {/* Oscillating Yellow Electron cleanly looping through whole circuit */}
+                <circle r="2.4" fill="#fde047" stroke="#ffffff" strokeWidth="0.5">
+                  <animateMotion dur="2.4s" repeatCount="indefinite" path="M 160 50 L 190 35 L 270 35 L 270 85 M 270 118 L 270 165 L 160 165 L 160 135 M 160 120 L 160 90 M 160 60 L 160 50 Z" />
+                </circle>
+              </svg>
             </div>
           </div>
 
+          {/* Detailed Demonstrations with ProofCollapsibleCard (Same Style as RC & RL) */}
+          <div className="space-y-3 pt-1">
+            <ProofCollapsibleCard
+              num="A"
+              title="Équation Différentielle en Tension u_C(t)"
+              shortDesc="Loi des mailles en régime libre & passage à la forme canonique normalisée"
+              formula="\frac{d^2 u_C}{dt^2} + 2\lambda \frac{du_C}{dt} + \omega_0^2 u_C(t) = 0"
+              theme="indigo"
+              defaultOpen={true}
+              proofSteps={[
+                {
+                  step: "1. Application de la Loi des Mailles",
+                  desc: "À t >= 0 (Position 2), la somme algébrique des tensions dans la maille fermée {R, L, C} s'écrit :",
+                  math: "u_L(t) + u_R(t) + u_C(t) = 0",
+                },
+                {
+                  step: "2. Relations caractéristiques des dipôles en convention récepteur",
+                  desc: "On exprime chaque tension en fonction de u_C(t) et de ses dérivées temporelles :",
+                  math: "u_R = R_T \\cdot i(t) \\; (R_T = R + r), \\quad u_L = L \\frac{di}{dt}, \\quad i = C \\frac{du_C}{dt} \\implies \\frac{di}{dt} = C \\frac{d^2 u_C}{dt^2}",
+                },
+                {
+                  step: "3. Substitution et division par LC",
+                  desc: "En injectant ces relations dans la loi des mailles :",
+                  math: "L C \\frac{d^2 u_C}{dt^2} + R_T C \\frac{du_C}{dt} + u_C(t) = 0 \\iff \\frac{d^2 u_C}{dt^2} + \\frac{R_T}{L} \\frac{du_C}{dt} + \\frac{1}{LC} u_C(t) = 0",
+                },
+              ]}
+              finalFormula="\boxed{\frac{d^2 u_C}{dt^2} + 2\lambda \frac{du_C}{dt} + \omega_0^2 u_C(t) = 0} \quad \iff \quad \boxed{\frac{d^2 u_C}{dt^2} + \frac{\omega_0}{Q} \frac{du_C}{dt} + \omega_0^2 u_C(t) = 0}"
+              extraContent={
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 pt-1 text-[11px] text-slate-300">
+                  <div className="p-2.5 rounded-lg bg-slate-900/80 border border-slate-800 space-y-1">
+                    <span className="font-bold text-cyan-300 block">Pulsation Propre <LatexMath math="\omega_0" /> :</span>
+                    <div className="font-mono text-center"><LatexMath math="\omega_0 = \frac{1}{\sqrt{LC}} \quad (\text{rad/s})" /></div>
+                  </div>
+                  <div className="p-2.5 rounded-lg bg-slate-900/80 border border-slate-800 space-y-1">
+                    <span className="font-bold text-amber-300 block">Coeff. d&apos;Amortissement <LatexMath math="\lambda" /> :</span>
+                    <div className="font-mono text-center"><LatexMath math="\lambda = \frac{R_T}{2L} \quad (\text{s}^{-1})" /></div>
+                  </div>
+                  <div className="p-2.5 rounded-lg bg-slate-900/80 border border-slate-800 space-y-1">
+                    <span className="font-bold text-indigo-300 block">Facteur de Qualité <LatexMath math="Q" /> :</span>
+                    <div className="font-mono text-center"><LatexMath math="Q = \frac{\omega_0}{2\lambda} = \frac{1}{R_T}\sqrt{\frac{L}{C}}" /></div>
+                  </div>
+                  <div className="p-2.5 rounded-lg bg-slate-900/80 border border-slate-800 space-y-1">
+                    <span className="font-bold text-rose-300 block">Résistance Critique <LatexMath math="R_c" /> :</span>
+                    <div className="font-mono text-center"><LatexMath math="R_c = 2\sqrt{\frac{L}{C}} \quad (\Omega)" /></div>
+                  </div>
+                </div>
+              }
+            />
+
+            <ProofCollapsibleCard
+              num="B"
+              title="Équations Différentielles en Charge q(t) et en Courant i(t)"
+              shortDesc="Conservation intégrale de la forme canonique pour toutes les grandeurs"
+              formula="\frac{d^2 q}{dt^2} + 2\lambda \frac{dq}{dt} + \omega_0^2 q(t) = 0"
+              theme="purple"
+              proofSteps={[
+                {
+                  step: "1. Équation différentielle de la charge q(t)",
+                  desc: "Puisque q(t) = C · u_C(t), en multipliant l'équation en u_C(t) par C :",
+                  math: "q(t) = C \\cdot u_C(t) \\implies \\frac{d^2 q}{dt^2} + 2\\lambda \\frac{dq}{dt} + \\omega_0^2 q(t) = 0",
+                },
+                {
+                  step: "2. Équation différentielle de l'intensité i(t)",
+                  desc: "En dérivant l'équation en q(t) par rapport au temps sachant que i(t) = dq/dt :",
+                  math: "i(t) = \\frac{dq}{dt} \\implies \\frac{d^2 i}{dt^2} + 2\\lambda \\frac{di}{dt} + \\omega_0^2 i(t) = 0",
+                },
+              ]}
+              finalFormula="\boxed{\frac{d^2 q}{dt^2} + 2\lambda \frac{dq}{dt} + \omega_0^2 q = 0} \quad \text{et} \quad \boxed{\frac{d^2 i}{dt^2} + 2\lambda \frac{di}{dt} + \omega_0^2 i = 0}"
+            />
+          </div>
+        </div>
+
+        {/* ── ÉTAPE 2 : RÉSOLUTIONS ANALYTIQUES & LES 3 RÉGIMES D'AMORTISSEMENT ── */}
+        <div className="space-y-4 rounded-2xl bg-slate-900/60 border border-slate-800/80 p-4 sm:p-5 shadow-xl">
+          <div className="flex items-center gap-2 border-b border-slate-800 pb-2">
+            <span className="flex items-center justify-center w-6 h-6 rounded-full bg-indigo-500/20 text-indigo-300 text-xs font-bold border border-indigo-500/40">
+              2
+            </span>
+            <h3 className="text-sm font-bold text-indigo-300 uppercase tracking-wider">
+              Étape 2 : Équation Caractéristique & Résolution des 3 Régimes
+            </h3>
+          </div>
+
+          <div className="p-3.5 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-300 space-y-2 leading-relaxed">
+            <p>
+              On cherche des solutions sous la forme <LatexMath math="u_C(t) = A e^{r t}" />. L&apos;équation caractéristique associée s&apos;écrit :
+            </p>
+            <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-800 text-center font-mono text-indigo-300 font-bold">
+              <LatexMath math="r^2 + 2\lambda r + \omega_0^2 = 0 \quad \implies \quad \Delta' = \lambda^2 - \omega_0^2 = \omega_0^2 \left(\xi^2 - 1\right) = \omega_0^2 \left(\frac{1}{4Q^2} - 1\right)" />
+            </div>
+            <p className="text-[11px] text-slate-400">
+              Le comportement physique du circuit dépend exclusivement du signe du discriminant réduit <LatexMath math="\Delta'" /> (ou de la comparaison directe entre <LatexMath math="R_T" /> et <LatexMath math="R_c = 2\sqrt{L/C}" />).
+            </p>
+          </div>
+
+          {/* 3 ProofCollapsibleCards for the 3 Damping Regimes */}
           <div className="space-y-3">
-            <h3 className="font-bold text-white text-sm">Résolution Méthodique Complète Pas-à-Pas :</h3>
+            {/* Regime 1: Pseudo-Périodique */}
+            <ProofCollapsibleCard
+              num="1"
+              title="1. Régime Pseudo-Périodique (R_T < R_c ⟺ Q > 0.5)"
+              shortDesc="Faible amortissement, oscillations amorties à la pseudo-pulsation Ω"
+              formula="u_C(t) = E e^{-\lambda t} \left[ \cos(\Omega t) + \frac{\lambda}{\Omega} \sin(\Omega t) \right]"
+              theme="cyan"
+              defaultOpen={true}
+              proofSteps={[
+                {
+                  step: "1. Racines complexes conjuguées",
+                  desc: "Puisque Δ' < 0, le polynôme caractéristique admet deux racines complexes :",
+                  math: "r_{1,2} = -\\lambda \\pm j \\Omega \\quad \\text{avec} \\quad \\Omega = \\sqrt{\\omega_0^2 - \\lambda^2} = \\omega_0 \\sqrt{1 - \\frac{1}{4Q^2}}",
+                },
+                {
+                  step: "2. Forme générale de la solution temporelle",
+                  desc: "Combinaison linéaire des solutions oscillantes amorties :",
+                  math: "u_C(t) = e^{-\\lambda t} \\left[ A \\cos(\\Omega t) + B \\sin(\\Omega t) \\right] = U_m e^{-\\lambda t} \\cos(\\Omega t - \\phi)",
+                },
+                {
+                  step: "3. Détermination des constantes A et B par les conditions initiales",
+                  desc: "À t = 0+, u_C(0) = E et i(0) = C · du_C/dt(0) = 0 :",
+                  math: "u_C(0) = A = E, \\quad \\left.\\frac{du_C}{dt}\\right|_0 = -\\lambda A + \\Omega B = 0 \\implies B = \\frac{\\lambda}{\\Omega} E",
+                },
+              ]}
+              finalFormula="\boxed{u_C(t) = E \, e^{-\lambda t} \left[ \cos(\Omega t) + \frac{\lambda}{\Omega} \sin(\Omega t) \right]} \quad \text{avec} \quad T = \frac{2\pi}{\Omega}, \; \delta = \lambda T"
+            />
 
-            <div className="p-3.5 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
-              <span className="font-bold text-cyan-300 block">Étape 1 : Mise en équation différentielle</span>
-              <p className="text-slate-300">
-                La loi des mailles appliquée à la maille fermée pour <LatexMath math="t \ge 0" /> donne :
-              </p>
-              <div className="p-2 rounded-lg bg-slate-900 text-center font-mono text-cyan-300 font-bold">
-                <LatexMath math="L \frac{di}{dt} + R i(t) = E \cos(\omega t)" />
-              </div>
-            </div>
+            {/* Regime 2: Critique */}
+            <ProofCollapsibleCard
+              num="2"
+              title="2. Régime Critique (R_T = R_c ⟺ Q = 0.5)"
+              shortDesc="Amortissement critique optimal : retour à zéro le plus rapide sans oscillation"
+              formula="u_C(t) = E (1 + \omega_0 t) e^{-\omega_0 t}"
+              theme="emerald"
+              proofSteps={[
+                {
+                  step: "1. Racine double réelle négative",
+                  desc: "Puisque Δ' = 0, l'équation caractéristique admet une racine double :",
+                  math: "r_0 = -\\lambda = -\\omega_0 = -\\frac{R_c}{2L}",
+                },
+                {
+                  step: "2. Forme générale et identification des constantes",
+                  desc: "u_C(t) = (A + B · t) · e^(-ω₀ · t) avec u_C(0) = E et i(0) = 0 :",
+                  math: "u_C(0) = A = E, \\quad \\left.\\frac{du_C}{dt}\\right|_0 = B - \\omega_0 A = 0 \\implies B = \\omega_0 E",
+                },
+              ]}
+              finalFormula="\boxed{u_C(t) = E \, (1 + \omega_0 t) \, e^{-\omega_0 t}} \quad \text{(Temps de réponse minimal sans dépassement)}"
+            />
 
-            <div className="p-3.5 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
-              <span className="font-bold text-amber-300 block">Étape 2 : Structure de la solution générale</span>
-              <p className="text-slate-300">
-                Puisque l&apos;équation différentielle est linéaire, la solution générale <LatexMath math="i(t)" /> est la somme de la solution de l&apos;équation homogène <LatexMath math="i_h(t)" /> (régime transitoire) et d&apos;une solution particulière <LatexMath math="i_p(t)" /> (régime permanent forcé) :
-              </p>
-              <div className="p-2 rounded-lg bg-slate-900 text-center font-mono text-amber-300 font-bold">
-                <LatexMath math="i(t) = i_h(t) + i_p(t)" />
-              </div>
-            </div>
+            {/* Regime 3: Apériodique */}
+            <ProofCollapsibleCard
+              num="3"
+              title="3. Régime Apériodique (R_T > R_c ⟺ Q < 0.5)"
+              shortDesc="Fort amortissement : retour monotone lent gouverné par le pôle dominant"
+              formula="u_C(t) = \frac{E}{r_2 - r_1} \left( r_2 e^{r_1 t} - r_1 e^{r_2 t} \right)"
+              theme="rose"
+              proofSteps={[
+                {
+                  step: "1. Deux racines réelles négatives distinctes",
+                  desc: "Puisque Δ' > 0, l'équation caractéristique admet deux racines réelles :",
+                  math: "r_{1,2} = -\\lambda \\pm \\sqrt{\\lambda^2 - \\omega_0^2} \\quad \\text{avec} \\quad r_2 < r_1 < 0",
+                },
+                {
+                  step: "2. Forme générale et conditions initiales",
+                  desc: "u_C(t) = A · e^(r₁ · t) + B · e^(r₂ · t) avec u_C(0) = E et du_C/dt(0) = 0 :",
+                  math: "A + B = E, \\quad r_1 A + r_2 B = 0 \\implies A = \\frac{r_2 E}{r_2 - r_1}, \\quad B = -\\frac{r_1 E}{r_2 - r_1}",
+                },
+              ]}
+              finalFormula="\boxed{u_C(t) = \frac{E}{r_2 - r_1} \left( r_2 e^{r_1 t} - r_1 e^{r_2 t} \right)} \quad \text{(Décroissance lente par } e^{r_1 t}\text{)}"
+            />
+          </div>
+        </div>
 
-            <div className="p-3.5 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
-              <span className="font-bold text-emerald-300 block">Étape 3 : Recherche de la solution homogène ih(t)</span>
-              <p className="text-slate-300">
-                L&apos;équation sans second membre <LatexMath math="L \frac{di}{dt} + R i = 0 \implies \frac{di}{dt} + \frac{R}{L} i = 0" /> a pour solution :
-              </p>
-              <div className="p-2 rounded-lg bg-slate-900 text-center font-mono text-emerald-300 font-bold">
-                <LatexMath math="i_h(t) = A e^{-t/\tau} \quad \text{avec} \quad \tau = \frac{L}{R}" />
-              </div>
-            </div>
+        {/* ── ÉTAPE 3 : COURBES TEMPORELLES, ESPACE DES PHASES & BILAN ÉNERGÉTIQUE ── */}
+        <div className="space-y-4 rounded-2xl bg-slate-900/60 border border-slate-800/80 p-4 sm:p-5 shadow-xl">
+          <div className="flex items-center gap-2 border-b border-slate-800 pb-2">
+            <span className="flex items-center justify-center w-6 h-6 rounded-full bg-indigo-500/20 text-indigo-300 text-xs font-bold border border-indigo-500/40">
+              3
+            </span>
+            <h3 className="text-sm font-bold text-indigo-300 uppercase tracking-wider">
+              Étape 3 : Courbes Temporelles, Espace des Phases & Bilan Énergétique
+            </h3>
+          </div>
 
-            <div className="p-3.5 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
-              <span className="font-bold text-indigo-300 block">Étape 4 : Recherche de la solution particulière ip(t) par les Impédances Complexes</span>
-              <p className="text-slate-300">
-                En régime forcé permanent sinusoïdal (RSF), sous la tension <LatexMath math="\underline{e}(t) = E e^{j\omega t}" />, l&apos;impédance complexe du circuit RL série vaut :
-              </p>
-              <div className="p-2 rounded-lg bg-slate-900 text-center font-mono text-indigo-300 font-bold">
-                <LatexMath math="\underline{Z} = R + j L \omega = Z e^{j\phi} \quad \text{avec} \quad Z = \sqrt{R^2 + L^2\omega^2} \quad \text{et} \quad \tan\phi = \frac{L\omega}{R}" />
-              </div>
-              <p className="text-slate-300">
-                Le courant complexe particulier est donc <LatexMath math="\underline{i}_p(t) = \frac{\underline{e}(t)}{\underline{Z}} = \frac{E}{Z} e^{j(\omega t - \phi)}" />, dont la partie réelle est :
-              </p>
-              <div className="p-2 rounded-lg bg-slate-900 text-center font-mono text-indigo-300 font-bold">
-                <LatexMath math="i_p(t) = I_m \cos(\omega t - \phi) \quad \text{avec} \quad I_m = \frac{E}{\sqrt{R^2 + L^2\omega^2}}" />
-              </div>
-            </div>
-
-            <div className="p-3.5 rounded-xl bg-slate-950 border border-purple-500/40 space-y-2">
-              <span className="font-bold text-purple-300 block">Étape 5 : Détermination de la constante A par la condition initiale</span>
-              <p className="text-slate-300">
-                La solution complète s&apos;écrit : <LatexMath math="i(t) = A e^{-t/\tau} + I_m \cos(\omega t - \phi)" />.
-              </p>
-              <p className="text-slate-300">
-                Par continuité du courant dans la bobine à <LatexMath math="t = 0" /> : <LatexMath math="i(0) = 0" /> :
-              </p>
-              <div className="p-2 rounded-lg bg-slate-900 text-center font-mono text-purple-300 font-bold">
-                <LatexMath math="i(0) = A e^0 + I_m \cos(-\phi) = 0 \implies A + I_m \cos\phi = 0 \implies A = -I_m \cos\phi" />
-              </div>
-            </div>
-
-            {/* Formule Finale Encadrée */}
-            <div className="p-4 rounded-2xl bg-purple-950/40 border-2 border-purple-500 text-center space-y-2 shadow-2xl">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-purple-300 block">
-                🎯 Résultat Final Rigoureux :
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5 text-xs">
+            {/* Plot 1: Pseudo-périodique Curve */}
+            <div className="p-3.5 rounded-xl bg-slate-950 border border-cyan-500/30 space-y-2">
+              <span className="font-bold text-xs text-cyan-300 block text-center">
+                1. Allure Pseudo-Périodique (<LatexMath math="Q > 0.5" />)
               </span>
-              <div className="text-sm sm:text-base font-mono text-white font-black">
-                <LatexMath math="i(t) = I_m \left[ \cos(\omega t - \phi) - \cos\phi \cdot e^{-t/\tau} \right]" />
-              </div>
-              <div className="text-xs text-purple-200 font-mono pt-1">
-                <LatexMath math="\text{avec} \quad I_m = \frac{E}{\sqrt{R^2 + L^2\omega^2}}, \quad \tan\phi = \frac{L\omega}{R}, \quad \tau = \frac{L}{R}" />
-              </div>
+              <svg viewBox="0 0 200 130" className="w-full h-auto select-none font-sans">
+                <rect width="200" height="130" fill="#020817" rx="6" />
+                <line x1="20" y1="65" x2="190" y2="65" stroke="#334155" strokeWidth="1" strokeDasharray="2 2" />
+                <line x1="20" y1="120" x2="20" y2="10" stroke="#475569" strokeWidth="1" />
+                <text x="14" y="25" fill="#00f0ff" fontSize="8.5" fontStyle="italic" fontWeight="bold">+E</text>
+                <text x="14" y="110" fill="#00f0ff" fontSize="8.5" fontStyle="italic" fontWeight="bold">−E</text>
+                {/* Envelope */}
+                <path d="M 20 20 Q 80 55, 190 64" fill="none" stroke="#f59e0b" strokeWidth="1" strokeDasharray="3 2" opacity="0.6" />
+                <path d="M 20 110 Q 80 75, 190 66" fill="none" stroke="#f59e0b" strokeWidth="1" strokeDasharray="3 2" opacity="0.6" />
+                {/* Damped Oscillation Wave */}
+                <path d="M 20 20 C 35 25, 45 105, 60 100 C 75 95, 85 40, 100 45 C 115 50, 125 78, 140 75 C 155 72, 165 60, 180 62 L 190 65" fill="none" stroke="#00f0ff" strokeWidth="2.2" strokeLinecap="round" />
+                <text x="100" y="122" fill="#f59e0b" fontSize="8" fontWeight="bold" textAnchor="middle">T = 2π/Ω</text>
+              </svg>
+            </div>
+
+            {/* Plot 2: Critique vs Apériodique */}
+            <div className="p-3.5 rounded-xl bg-slate-950 border border-emerald-500/30 space-y-2">
+              <span className="font-bold text-emerald-300 block text-center">
+                2. Critique vs Apériodique
+              </span>
+              <svg viewBox="0 0 200 130" className="w-full h-auto select-none font-sans">
+                <rect width="200" height="130" fill="#020817" rx="6" />
+                <line x1="20" y1="110" x2="190" y2="110" stroke="#475569" strokeWidth="1" />
+                <line x1="20" y1="110" x2="20" y2="10" stroke="#475569" strokeWidth="1" />
+                <text x="14" y="24" fill="#10b981" fontSize="8.5" fontStyle="italic" fontWeight="bold">+E</text>
+                {/* Critique (fastest) */}
+                <path d="M 20 20 Q 40 105, 120 110 L 190 110" fill="none" stroke="#10b981" strokeWidth="2.4" strokeLinecap="round" />
+                <text x="75" y="65" fill="#10b981" fontSize="7.5" fontWeight="bold">Critique (Q=0.5)</text>
+                {/* Apériodique (slow) */}
+                <path d="M 20 20 Q 60 80, 190 106" fill="none" stroke="#f43f5e" strokeWidth="1.8" strokeDasharray="3 2" strokeLinecap="round" />
+                <text x="135" y="85" fill="#f43f5e" fontSize="7.5" fontWeight="bold">Apériodique</text>
+              </svg>
+            </div>
+
+            {/* Plot 3: Espace des Phases (uC, i) */}
+            <div className="p-3.5 rounded-xl bg-slate-950 border border-indigo-500/30 space-y-2">
+              <span className="font-bold text-xs text-indigo-300 block text-center">
+                3. Espace des Phases (<LatexMath math="u_C, i" />)
+              </span>
+              <svg viewBox="0 0 200 130" className="w-full h-auto select-none font-sans">
+                <rect width="200" height="130" fill="#020817" rx="6" />
+                <line x1="20" y1="65" x2="185" y2="65" stroke="#334155" strokeWidth="1" />
+                <line x1="100" y1="115" x2="100" y2="15" stroke="#334155" strokeWidth="1" />
+                <text x="185" y="62" fill="#00f0ff" fontSize="8" fontStyle="italic">u_C</text>
+                <text x="105" y="22" fill="#fb7185" fontSize="8" fontStyle="italic">i</text>
+                {/* Converging Phase Spiral */}
+                <path d="M 160 65 C 160 100, 50 100, 50 65 C 50 35, 140 35, 140 65 C 140 85, 70 85, 70 65 C 70 48, 120 48, 120 65 C 120 75, 85 75, 85 65 C 85 58, 105 58, 100 65" fill="none" stroke="#a855f7" strokeWidth="1.8" strokeLinecap="round" />
+                <circle cx="100" cy="65" r="2.5" fill="#fde047" />
+                <text x="105" y="80" fill="#a855f7" fontSize="7" fontWeight="bold">Attracteur (0,0)</text>
+              </svg>
             </div>
           </div>
+
+          {/* Bilan Énergétique avec ProofCollapsibleCard */}
+          <ProofCollapsibleCard
+            num="⚡"
+            title="Bilan Énergétique & Transferts Conservatifs / Dissipatifs"
+            shortDesc="Transfert oscillant continu entre C et L et dissipation irréversible par effet Joule"
+            formula="\frac{d\mathcal{E}_T}{dt} = -R_T \, i(t)^2 \le 0"
+            theme="amber"
+            defaultOpen={true}
+            proofSteps={[
+              {
+                step: "1. Énergie électromagnétique totale stockée",
+                desc: "Somme de l'énergie électrique dans le condensateur et de l'énergie magnétique dans la bobine :",
+                math: "\\mathcal{E}_T(t) = \\mathcal{E}_E(t) + \\mathcal{E}_M(t) = \\frac{1}{2} C u_C(t)^2 + \\frac{1}{2} L i(t)^2",
+              },
+              {
+                step: "2. Dérivation temporelle de l'énergie totale",
+                desc: "En appliquant la règle de dérivation d'une fonction composée :",
+                math: "\\frac{d\\mathcal{E}_T}{dt} = C u_C \\frac{du_C}{dt} + L i \\frac{di}{dt} = i \\left( u_C + L \\frac{di}{dt} \\right)",
+              },
+              {
+                step: "3. Utilisation de la loi des mailles (u_C + L di/dt = -R_T i)",
+                desc: "D'après la loi des mailles u_L + u_R + u_C = 0 => u_C + L di/dt = -R_T · i :",
+                math: "\\frac{d\\mathcal{E}_T}{dt} = i \\cdot \\left( -R_T \\cdot i \\right) = -R_T \\cdot i(t)^2 \\le 0",
+              },
+            ]}
+            finalFormula="\boxed{\frac{d\mathcal{E}_T}{dt} = -R_T \, i(t)^2 \le 0} \quad \implies \quad \mathcal{E}_T(t) \text{ décroît de façon strictement monotone par effet Joule.}"
+          />
         </div>
+
+        {/* ── LABORATOIRE VIRTUEL INTERACTIF DÉDIÉ AU CIRCUIT RLC ── */}
+        <RLCCircuitVirtualLab />
       </section>
 
-      {/* ── 6. LABORATOIRE INTERACTIF DE SIMULATION TEMPORELLE ── */}
-      <section className="space-y-4">
-        <div className="flex items-center gap-2.5 border-b border-slate-800 pb-2">
-          <div className="p-1.5 rounded-lg bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
-            <Sliders className="w-4 h-4" />
-          </div>
-          <h2 className="text-base sm:text-lg font-bold text-white uppercase tracking-wider">
-            6. Laboratoire Interactif : Simulateur des Régimes Transitoires (RC, RL, RLC)
-          </h2>
-        </div>
-
-        <RegimesTransitoiresSimulator />
-      </section>
-
-      {/* ── 7. AUTO-ÉVALUATION & QCM ── */}
+      {/* ── 5. AUTO-ÉVALUATION & QCM INTERACTIF (12 QUESTIONS) ── */}
       <section className="space-y-4">
         <div className="flex items-center gap-2.5 border-b border-slate-800 pb-2">
           <div className="p-1.5 rounded-lg bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
             <HelpCircle className="w-4 h-4" />
           </div>
           <h2 className="text-base sm:text-lg font-bold text-white uppercase tracking-wider">
-            7. Auto-Évaluation : QCM Interactif (12 Questions)
+            5. Auto-Évaluation : QCM Interactif (12 Questions)
           </h2>
         </div>
 

@@ -10,6 +10,7 @@ import {
   Gauge,
   Trash2,
   BookmarkPlus,
+  Flame,
 } from "lucide-react";
 import LatexMath from "@/components/ui/LatexMath";
 
@@ -44,6 +45,8 @@ export default function RLCircuitVirtualLab() {
   const L_H = useMemo(() => L_mH * 1e-3, [L_mH]);
   const tauPhysMs = useMemo(() => L_mH / R, [L_mH, R]); // ms: L (mH) / R (Ohm)
   const I0_mA = useMemo(() => (E / R) * 1000, [E, R]); // mA: E / R
+  const I0_A = useMemo(() => E / R, [E, R]);
+  const maxEnergyMag_mJ = useMemo(() => 0.5 * L_H * I0_A * I0_A * 1000, [L_H, I0_A]);
 
   // Initial current at moment of switch toggle
   const [initialCurrent, setInitialCurrent] = useState<number>(0);
@@ -94,8 +97,8 @@ export default function RLCircuitVirtualLab() {
     return () => cancelAnimationFrame(animId);
   }, [isRunning, simSpeed, TOTAL_SIM_SEC]);
 
-  // ── 3. INSTANTANEOUS PHYSICAL VALUES IN RL CIRCUIT ──
-  const { i_t_mA, uL_t, uR_t, energyMag_mJ, currentPercentage, magneticFieldIntensity } = useMemo(() => {
+  // ── 3. INSTANTANEOUS PHYSICAL VALUES & JOULE POWER ──
+  const { i_t_mA, uL_t, uR_t, energyMag_mJ, joulePower_mW, currentPercentage, magneticFieldIntensity } = useMemo(() => {
     const theta = currentTheta;
     let i_mA = 0;
     let u_L = 0;
@@ -109,11 +112,11 @@ export default function RLCircuitVirtualLab() {
       // In rupture, starting from initialCurrent (or full I0)
       const startCurrent = initialCurrent > 0 ? initialCurrent : I0_mA;
       i_mA = startCurrent * Math.exp(-theta);
-      // uL(t) = -R*i(t) = -E * (startCurrent / I0) * e^(-theta)
+      // uL(t) = -R*i(t) (strictly negative in rupture)
       u_L = -((R * startCurrent) / 1000) * Math.exp(-theta);
     }
 
-    // Clean bounds at 5 tau
+    // Clean numerical bounds at 5 tau
     if (switchPos === "rupture" && theta >= 4.95) {
       if (i_mA < 0.1) i_mA = 0.0;
       if (Math.abs(u_L) < 0.05) u_L = 0.0;
@@ -122,27 +125,28 @@ export default function RLCircuitVirtualLab() {
     const u_R = (R * i_mA) / 1000; // V
     const i_A = i_mA / 1000;
     const ene = 0.5 * L_H * i_A * i_A * 1000; // mJ
+    const p_joule = R * i_A * i_A * 1000; // mW
     const pct = Math.min(Math.max((i_mA / (I0_mA || 1)) * 100, 0), 100);
+    const magIntensity = maxEnergyMag_mJ > 0 ? Math.min(ene / maxEnergyMag_mJ, 1.0) : 0;
 
     return {
       i_t_mA: i_mA,
       uL_t: u_L,
       uR_t: u_R,
       energyMag_mJ: ene,
+      joulePower_mW: p_joule,
       currentPercentage: pct,
-      magneticFieldIntensity: pct / 100,
+      magneticFieldIntensity: magIntensity,
     };
-  }, [currentTheta, switchPos, I0_mA, initialCurrent, E, R, L_H]);
+  }, [currentTheta, switchPos, I0_mA, initialCurrent, E, R, L_H, maxEnergyMag_mJ]);
 
   // Switch Toggle Handler
   const handleToggleSwitch = (newPos: "etablissement" | "rupture") => {
     if (newPos === switchPos) return;
     if (newPos === "rupture") {
-      // If switching to rupture, take current i_t_mA (or full I0 if already established or reset)
       const cur = i_t_mA > 1 ? i_t_mA : I0_mA;
       setInitialCurrent(cur);
     } else {
-      // Switching to etablissement
       setInitialCurrent(i_t_mA < I0_mA * 0.95 ? i_t_mA : 0);
     }
     setSwitchPos(newPos);
@@ -157,7 +161,7 @@ export default function RLCircuitVirtualLab() {
     setInitialCurrent(switchPos === "etablissement" ? 0 : I0_mA);
   };
 
-  // ── 4. OSCILLOSCOPE TRACING (RL CH1: i(t) in Cyan, CH2: uL(t) in Rose) ──
+  // ── 4. OSCILLOSCOPE TRACING (CH1: i(t) Emerald, CH2: uL(t) Rose) ──
   const oscW = 460;
   const oscH = 200;
   const padL = 38;
@@ -282,7 +286,7 @@ export default function RLCircuitVirtualLab() {
             <Zap className="w-3.5 h-3.5" />
           </div>
           <h3 className="text-xs sm:text-sm font-bold text-white tracking-wide whitespace-nowrap">
-            Lab Circuit RL (Bobine & Régime 5τ)
+            Lab Circuit RL (Rupture & Roue Libre)
           </h3>
         </div>
 
@@ -480,7 +484,7 @@ export default function RLCircuitVirtualLab() {
         </div>
       </div>
 
-      {/* ── 3. MAIN PANELS: CIRCUIT + INDUCTOR MAGNETIC COIL + OSCILLOSCOPE ── */}
+      {/* ── 3. MAIN PANELS: CIRCUIT + DYNAMIC MAGNETIC COIL + OSCILLOSCOPE ── */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 items-stretch">
         {/* ── LEFT PANEL (6 COLS): CIRCUIT SCHEMATIC & MAGNETIC INDUCTION ── */}
         <div className="lg:col-span-6 rounded-2xl bg-slate-900/80 border border-slate-800 p-3 space-y-2.5 flex flex-col justify-between shadow-xl">
@@ -494,7 +498,7 @@ export default function RLCircuitVirtualLab() {
               <span>Circuit & Bobine Inductive</span>
             </span>
             <span className="text-[10px] font-mono text-emerald-300 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
-              {currentPercentage < 1 ? "Courant Nul (i=0)" : currentPercentage > 99 ? "Régime Permanent Établi" : switchPos === "etablissement" ? "Établissement du courant..." : "Rupture de courant..."}
+              {currentPercentage < 1 ? "Courant Éteint (i=0)" : currentPercentage > 99 ? "Régime Permanent Établi" : switchPos === "etablissement" ? "Établissement du courant..." : "Décharge / Extinction..."}
             </span>
           </div>
 
@@ -506,6 +510,9 @@ export default function RLCircuitVirtualLab() {
               style={{ fontFamily: "Cambria Math, 'Times New Roman', serif" }}
             >
               <defs>
+                <filter id="glow-coil" x="-30%" y="-30%" width="160%" height="160%">
+                  <feDropShadow dx="0" dy="0" stdDeviation="3" floodColor="#f59e0b" floodOpacity="0.8" />
+                </filter>
                 <marker id="arr-emerald" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
                   <polygon points="0,1 5,3 0,5" fill="#10b981" />
                 </marker>
@@ -548,11 +555,13 @@ export default function RLCircuitVirtualLab() {
                 strokeLinejoin="round"
               />
 
-              {/* Diode Symbol on Right Branch (Anode Bottom, Cathode Top) */}
+              {/* Diode Symbol on Right Branch (Anode Bottom, Cathode Top - Conducting in Rupture) */}
               <g transform="translate(280, 120)">
                 <polygon points="0,-8 -8,8 8,8" fill={switchPos === "rupture" ? "#f43f5e" : "#475569"} />
                 <line x1="-8" y1="-8" x2="8" y2="-8" stroke={switchPos === "rupture" ? "#f43f5e" : "#475569"} strokeWidth="1.8" />
-                <text x="14" y="4" fill={switchPos === "rupture" ? "#f43f5e" : "#64748b"} fontSize="9" fontStyle="italic" fontWeight="bold">Diode</text>
+                <text x="14" y="4" fill={switchPos === "rupture" ? "#f43f5e" : "#64748b"} fontSize="9" fontStyle="italic" fontWeight="bold">
+                  {switchPos === "rupture" ? "Passante" : "Bloquée"}
+                </text>
               </g>
 
               {/* ── 3. CENTRAL RL BRANCH ── */}
@@ -624,26 +633,28 @@ export default function RLCircuitVirtualLab() {
               />
               <text x="170" y="93" fill="#c7d2fe" fontSize="13" fontStyle="italic" fontWeight="bold" textAnchor="middle">R</text>
 
-              {/* ── 4. INDUCTOR BOBINE (L, r) WITH MAGNETIC FIELD LINES B ── */}
+              {/* ── 4. INDUCTOR BOBINE (L, r) WITH DYNAMIC MAGNETIC GLOW & FIELD LINES B ── */}
               <g transform="translate(170, 130)">
-                {/* Magnetic Field Glow Box */}
+                {/* Magnetic Field Box with Glow */}
                 <rect
-                  x="-28"
-                  y="0"
-                  width="56"
-                  height="48"
+                  x="-32"
+                  y="-2"
+                  width="64"
+                  height="52"
                   rx="6"
                   fill="#030712"
-                  stroke="#1e293b"
-                  strokeWidth="1"
+                  stroke={magneticFieldIntensity > 0.1 ? "#f59e0b" : "#1e293b"}
+                  strokeWidth={magneticFieldIntensity > 0.1 ? 1.2 : 0.8}
+                  filter={magneticFieldIntensity > 0.2 ? "url(#glow-coil)" : undefined}
                 />
 
-                {/* Magnetic Field Lines (B) glowing proportionally to i(t) */}
-                {magneticFieldIntensity > 0.05 && (
+                {/* Animated Magnetic Field Lines B proportional to magnetic energy */}
+                {magneticFieldIntensity > 0.02 && (
                   <g opacity={magneticFieldIntensity}>
-                    <ellipse cx="0" cy="24" rx="20" ry="16" fill="none" stroke="#fbbf24" strokeWidth="0.8" strokeDasharray="3 2" opacity="0.7" />
-                    <ellipse cx="0" cy="24" rx="14" ry="10" fill="none" stroke="#fbbf24" strokeWidth="0.9" opacity="0.9" />
-                    <text x="24" y="27" fill="#fbbf24" fontSize="8" fontStyle="italic" fontWeight="bold">B⃗</text>
+                    <ellipse cx="0" cy="24" rx="26" ry="20" fill="none" stroke="#fbbf24" strokeWidth="0.8" strokeDasharray="3 2" opacity="0.6" />
+                    <ellipse cx="0" cy="24" rx="18" ry="14" fill="none" stroke="#f59e0b" strokeWidth="1" strokeDasharray="4 2" opacity="0.8" />
+                    <ellipse cx="0" cy="24" rx="10" ry="8" fill="none" stroke="#fde047" strokeWidth="1.2" opacity="0.9" />
+                    <text x="25" y="27" fill="#fbbf24" fontSize="8" fontStyle="italic" fontWeight="bold">B⃗</text>
                   </g>
                 )}
 
@@ -656,7 +667,7 @@ export default function RLCircuitVirtualLab() {
                   strokeLinecap="round"
                 />
 
-                <text x="-32" y="28" fill="#fbbf24" fontSize="13" fontStyle="italic" fontWeight="bold" textAnchor="end">L</text>
+                <text x="-36" y="28" fill="#fbbf24" fontSize="13" fontStyle="italic" fontWeight="bold" textAnchor="end">L</text>
               </g>
 
               {/* Flowing Electrons */}
@@ -701,7 +712,7 @@ export default function RLCircuitVirtualLab() {
             </div>
             <div className="w-full h-1.5 rounded-full bg-slate-900 overflow-hidden border border-slate-800">
               <div
-                className={`h-full rounded-full ${
+                className={`h-full rounded-full transition-none ${
                   switchPos === "etablissement"
                     ? "bg-gradient-to-r from-emerald-500 via-teal-400 to-amber-400"
                     : "bg-gradient-to-r from-rose-500 via-pink-400 to-amber-400"
@@ -767,12 +778,15 @@ export default function RLCircuitVirtualLab() {
                 );
               })}
 
-              {/* Current Asymptote I0 (Top line padT) & Bottom line (baseY) */}
+              {/* Top line labels: I0 & +E */}
               <line x1={padL} y1={padT} x2={padL + plotW} y2={padT} stroke="#10b981" strokeWidth="0.8" strokeDasharray="3 3" opacity="0.35" />
-              <text x={padL - 4} y={padT + 4} fill="#10b981" fontSize="9.5" fontStyle="italic" fontWeight="bold" textAnchor="end">I₀</text>
-              <text x={padL - 4} y={baseY + 3} fill="#64748b" fontSize="8.5" fontStyle="italic" textAnchor="end">0</text>
+              <text x={padL - 4} y={padT + 4} fill="#10b981" fontSize="9" fontStyle="italic" fontWeight="bold" textAnchor="end">I₀ / +E</text>
 
-              {/* ── SAVED SUPERPOSITION COMPARISON TRACES ── */}
+              {/* Bottom line labels: 0(i) & -E(uL) */}
+              <line x1={padL} y1={baseY} x2={padL + plotW} y2={baseY} stroke="#f43f5e" strokeWidth="0.8" strokeDasharray="3 3" opacity="0.35" />
+              <text x={padL - 4} y={baseY + 3} fill="#f43f5e" fontSize="8.5" fontStyle="italic" textAnchor="end">0 / −E</text>
+
+              {/* ── SAVED SUPERPOSITION COMPARISON TRACES (DIMMED GHOST TRACES) ── */}
               {renderedSavedTraces.map((trace, idx) => (
                 <g key={trace.id} opacity={0.45}>
                   <path
@@ -794,12 +808,12 @@ export default function RLCircuitVirtualLab() {
                 </g>
               ))}
 
-              {/* ── TANGENT AT ORIGIN FOR CURRENT i(t) ── */}
+              {/* ── TANGENT AT ORIGIN FOR CURRENT i(t) & uL(t) ── */}
               {shouldShowTangent && (
                 <g>
                   {switchPos === "etablissement" ? (
                     <>
-                      {/* Tangent line from (0,0) to (1tau, I0) */}
+                      {/* Tangent line for i(t) from (0,0) to (1tau, I0) */}
                       <line
                         x1={padL}
                         y1={baseY}
@@ -827,7 +841,7 @@ export default function RLCircuitVirtualLab() {
                     </>
                   ) : (
                     <>
-                      {/* Tangent line in Rupture from (0,I0) to (1tau, 0) */}
+                      {/* Tangent line for i(t) in Rupture from (0,I0) to (1tau, 0) */}
                       <line
                         x1={padL}
                         y1={padT}
@@ -836,6 +850,17 @@ export default function RLCircuitVirtualLab() {
                         stroke="#f59e0b"
                         strokeWidth="1.4"
                         strokeDasharray="3 2"
+                      />
+                      {/* Tangent line for uL(t) in Rupture from (0,-E) to (1tau, 0V) */}
+                      <line
+                        x1={padL}
+                        y1={baseY}
+                        x2={tangentX_tau}
+                        y2={midY}
+                        stroke="#fb7185"
+                        strokeWidth="1.2"
+                        strokeDasharray="2 2"
+                        opacity={0.8}
                       />
                       <circle cx={tangentX_tau} cy={baseY} r="3.5" fill="#f59e0b" />
                       <text x={tangentX_tau} y={baseY - 5} fill="#f59e0b" fontSize="8.5" fontStyle="italic" fontWeight="bold" textAnchor="middle">
@@ -877,7 +902,7 @@ export default function RLCircuitVirtualLab() {
             </svg>
           </div>
 
-          {/* ── STYLIZED COMPACT INSTANTANEOUS PHYSICAL METRICS ── */}
+          {/* ── STYLIZED COMPACT INSTANTANEOUS PHYSICAL METRICS & JOULE POWER ── */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 text-center text-xs">
             <div className="p-1.5 rounded-lg bg-slate-950 border border-emerald-500/30 space-y-0.5">
               <span className="text-[9.5px] text-slate-400 block font-sans">Courant <LatexMath math="i(t)" /></span>
@@ -885,15 +910,20 @@ export default function RLCircuitVirtualLab() {
             </div>
             <div className="p-1.5 rounded-lg bg-slate-950 border border-rose-500/30 space-y-0.5">
               <span className="text-[9.5px] text-slate-400 block font-sans">Tension <LatexMath math="u_L(t)" /></span>
-              <span className="text-rose-300 font-bold font-mono text-xs">{uL_t.toFixed(2)} V</span>
-            </div>
-            <div className="p-1.5 rounded-lg bg-slate-950 border border-indigo-500/30 space-y-0.5">
-              <span className="text-[9.5px] text-slate-400 block font-sans">Tension <LatexMath math="u_R(t)" /></span>
-              <span className="text-indigo-300 font-bold font-mono text-xs">{uR_t.toFixed(2)} V</span>
+              <span className={`font-bold font-mono text-xs ${uL_t < 0 ? "text-rose-400" : "text-rose-300"}`}>
+                {uL_t.toFixed(2)} V
+              </span>
             </div>
             <div className="p-1.5 rounded-lg bg-slate-950 border border-amber-500/30 space-y-0.5">
-              <span className="text-[9.5px] text-slate-400 block font-sans">Énergie <LatexMath math="\mathcal{E}_L" /></span>
+              <span className="text-[9.5px] text-slate-400 block font-sans">Énergie <LatexMath math="\mathcal{E}_L(t)" /></span>
               <span className="text-amber-300 font-bold font-mono text-xs">{energyMag_mJ.toFixed(2)} mJ</span>
+            </div>
+            <div className="p-1.5 rounded-lg bg-slate-950 border border-orange-500/30 space-y-0.5">
+              <span className="text-[9.5px] text-slate-400 flex items-center justify-center gap-0.5 font-sans">
+                <Flame className="w-2.5 h-2.5 text-orange-400" />
+                <span>Effet Joule <LatexMath math="P_J" /></span>
+              </span>
+              <span className="text-orange-300 font-bold font-mono text-xs">{joulePower_mW.toFixed(1)} mW</span>
             </div>
           </div>
         </div>

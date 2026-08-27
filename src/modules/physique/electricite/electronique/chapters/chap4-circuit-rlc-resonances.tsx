@@ -316,7 +316,7 @@ function Chap4QuickQuiz() {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
-              {(item.optionsMath || item.optionsText || []).map((opt, optIdx) => {
+              {(item.optionsMath || (item as { optionsText?: string[] }).optionsText || []).map((opt, optIdx) => {
                 const isSelected = selectedAnswers[qIdx] === optIdx;
                 const isCorrect = item.correct === optIdx;
 
