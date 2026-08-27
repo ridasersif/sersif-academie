@@ -44,6 +44,11 @@ const RegimesTransitoiresSimulator = dynamic(
   { ssr: false }
 );
 
+const RCCircuitVirtualLab = dynamic(
+  () => import("../components/RCCircuitVirtualLab"),
+  { ssr: false }
+);
+
 /* ── INTERACTIVE PROOF MODAL COMPONENT (POPUP DIALOG) ── */
 interface ProofModalData {
   title: string;
@@ -1555,6 +1560,9 @@ export default function ChapRegimesTransitoiresRCRlRlc() {
             </div>
           </div>
         </div>
+
+        {/* ── LABORATOIRE VIRTUEL INTERACTIF DU CIRCUIT RC ── */}
+        <RCCircuitVirtualLab />
       </section>
 
       {/* ── 3. CIRCUIT RL SÉRIE (1ER ORDRE) AVEC SCHÉMA SVG ── */}
