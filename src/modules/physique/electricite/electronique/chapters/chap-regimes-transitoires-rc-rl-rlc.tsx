@@ -49,6 +49,11 @@ const RCCircuitVirtualLab = dynamic(
   { ssr: false }
 );
 
+const RLCircuitVirtualLab = dynamic(
+  () => import("../components/RLCircuitVirtualLab"),
+  { ssr: false }
+);
+
 /* ── INTERACTIVE PROOF MODAL COMPONENT (POPUP DIALOG) ── */
 interface ProofModalData {
   title: string;
@@ -1565,127 +1570,466 @@ export default function ChapRegimesTransitoiresRCRlRlc() {
         <RCCircuitVirtualLab />
       </section>
 
-      {/* ── 3. CIRCUIT RL SÉRIE (1ER ORDRE) AVEC SCHÉMA SVG ── */}
-      <section className="space-y-4">
-        <div className="flex items-center gap-2.5 border-b border-slate-800 pb-2">
-          <div className="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-            <Zap className="w-4 h-4" />
+      {/* ── 3. CIRCUIT RL SÉRIE (1ER ORDRE) : ÉTUDE MÉTHODIQUE EN 3 ÉTAPES ── */}
+      <section className="space-y-6">
+        {/* Section Header */}
+        <div className="flex items-center justify-between border-b border-slate-800 pb-2.5">
+          <div className="flex items-center gap-2.5">
+            <div className="p-2 rounded-xl bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 shadow-lg shadow-emerald-950/30">
+              <Zap className="w-5 h-5" />
+            </div>
+            <div>
+              <h2 className="text-base sm:text-lg font-bold text-white tracking-wide">
+                3. Circuit RL Série : Étude Méthodique en 3 Étapes
+              </h2>
+              <p className="text-xs text-slate-400">
+                Équations Différentielles • Solutions Analytiques • Courbes Temporelles • Laboratoire Virtuel
+              </p>
+            </div>
           </div>
-          <h2 className="text-base sm:text-lg font-bold text-white uppercase tracking-wider">
-            3. Circuit RL Série : Schéma, Établissement, Rupture & Surtension
-          </h2>
+          <span className="text-[11px] font-mono px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-300 border border-emerald-500/25">
+            1er Ordre • τ = L/R
+          </span>
         </div>
 
-        {/* SVG Schematic for Circuit RL */}
-        <div className="p-4 rounded-2xl bg-slate-900/90 border border-emerald-500/30 flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="w-full md:w-1/2">
-            <svg viewBox="0 0 340 180" className="w-full h-auto max-w-[340px] mx-auto font-sans">
-              {/* Mesh background */}
-              <rect x="10" y="10" width="320" height="160" rx="12" fill="#020813" stroke="#0e3a4f" strokeWidth="1.2" />
-
-              {/* Wire Loops */}
-              <path d="M 50 90 L 50 40 L 140 40" fill="none" stroke="#10b981" strokeWidth="2" />
-              <path d="M 200 40 L 290 40 L 290 70" fill="none" stroke="#10b981" strokeWidth="2" />
-              <path d="M 290 130 L 290 140 L 50 140 L 50 110" fill="none" stroke="#10b981" strokeWidth="2" />
-
-              {/* Generator E */}
-              <circle cx="50" cy="100" r="14" fill="#031d2e" stroke="#10b981" strokeWidth="2" />
-              <text x="50" y="104" fill="#10b981" fontSize="11" fontWeight="bold" textAnchor="middle">E</text>
-
-              {/* Switch K */}
-              <line x1="90" y1="40" x2="115" y2="25" stroke="#f59e0b" strokeWidth="2.5" strokeLinecap="round" />
-              <circle cx="90" cy="40" r="3" fill="#f59e0b" />
-              <circle cx="120" cy="40" r="3" fill="#f59e0b" />
-              <text x="105" y="20" fill="#f59e0b" fontSize="10" fontWeight="bold">K (t=0)</text>
-
-              {/* Current arrow i(t) */}
-              <line x1="125" y1="32" x2="138" y2="32" stroke="#ff007f" strokeWidth="2" />
-              <polygon points="138,32 133,29 133,35" fill="#ff007f" />
-              <text x="131" y="22" fill="#ff007f" fontSize="10" fontWeight="bold">i(t)</text>
-
-              {/* Resistor R */}
-              <rect x="150" y="30" width="45" height="20" rx="3" fill="#1e1b4b" stroke="#818cf8" strokeWidth="2" />
-              <text x="172.5" y="44" fill="#c7d2fe" fontSize="11" fontWeight="bold" textAnchor="middle">R</text>
-
-              {/* Coil L (Inductor with coils) */}
-              <path d="M 290 70 C 275 75, 275 85, 290 85 C 275 90, 275 100, 290 100 C 275 105, 275 115, 290 115 C 275 120, 275 130, 290 130" fill="none" stroke="#fbbf24" strokeWidth="2.5" />
-              <text x="310" y="104" fill="#fbbf24" fontSize="11" fontWeight="bold">L</text>
-              {/* Voltage uL arrow */}
-              <line x1="262" y1="125" x2="262" y2="75" stroke="#fbbf24" strokeWidth="1.2" />
-              <polygon points="262,75 259,80 265,80" fill="#fbbf24" />
-              <text x="250" y="103" fill="#fbbf24" fontSize="9" fontWeight="bold" textAnchor="end">uL(t)</text>
-            </svg>
-          </div>
-
-          <div className="w-full md:w-1/2 space-y-2 text-xs">
-            <span className="text-[11px] font-bold text-emerald-300 uppercase tracking-wider block">
-              Description du Montage RL Série :
+        {/* ── ÉTAPE 1 : ÉTABLISSEMENT DES ÉQUATIONS DIFFÉRENTIELLES ── */}
+        <div className="space-y-4 rounded-2xl bg-slate-900/60 border border-slate-800/80 p-4 sm:p-5 shadow-xl">
+          <div className="flex items-center gap-2 border-b border-slate-800 pb-2">
+            <span className="flex items-center justify-center w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-bold border border-emerald-500/40">
+              1
             </span>
-            <p className="text-slate-300 leading-relaxed">
-              Le circuit comporte une bobine d&apos;inductance pure <LatexMath math="L" /> et une résistance <LatexMath math="R" />. À <LatexMath math="t=0" />, la fermeture de l&apos;interrupteur <LatexMath math="K" /> applique l&apos;échelon <LatexMath math="E" />.
-            </p>
-            <div className="p-2.5 rounded-xl bg-slate-950 border border-slate-800 text-slate-300 space-y-1">
-              <span className="font-bold text-indigo-300 block">Loi des Mailles :</span>
-              <div className="font-mono text-emerald-300 text-center font-bold">
-                <LatexMath math="u_R(t) + u_L(t) = E \iff L \frac{di}{dt} + R i(t) = E" />
+            <h3 className="text-sm font-bold text-emerald-300 uppercase tracking-wider">
+              Étape 1 : Établissement des Équations Différentielles (Établissement & Rupture)
+            </h3>
+          </div>
+
+          <p className="text-xs text-slate-300 leading-relaxed">
+            Considérons un circuit comportant un générateur continu <LatexMath math="E" />, un conducteur ohmique de résistance <LatexMath math="R" /> et une bobine d&apos;inductance pure <LatexMath math="L" /> (ou réelle <LatexMath math="r+L" />). Un commutateur <LatexMath math="K" /> permet de basculer entre l&apos;échelon d&apos;établissement (position 1) et l&apos;extinction libre avec diode de roue libre (position 2).
+          </p>
+
+          {/* 2 Comparative SVG Schematics: Établissement (1) vs Rupture (2) */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Schematic Position 1: Établissement */}
+            <div className="p-3.5 rounded-xl bg-slate-950/80 border border-emerald-500/30 space-y-2.5">
+              <div className="flex items-center justify-between text-xs font-bold text-emerald-300">
+                <span>Position (1) : Établissement du Courant</span>
+                <span className="text-[10px] font-mono bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">Maille Générateur</span>
+              </div>
+              <svg viewBox="0 0 320 180" className="w-full h-auto max-w-[300px] mx-auto select-none font-sans">
+                <rect x="5" y="5" width="310" height="170" rx="10" fill="#020817" stroke="#064e3b" strokeWidth="1" />
+                {/* Active Loop (Left & Center) */}
+                <path d="M 50 110 L 50 35 L 130 35 L 160 50 L 160 70 M 160 100 L 160 120 M 160 155 L 160 165 L 50 165 L 50 130" fill="none" stroke="#10b981" strokeWidth="2.2" strokeLinecap="round" />
+                {/* Inactive Loop (Right) */}
+                <path d="M 190 35 L 270 35 L 270 165 L 160 165" fill="none" stroke="#334155" strokeWidth="1.2" strokeDasharray="3 3" />
+                {/* Generator E */}
+                <line x1="38" y1="112" x2="62" y2="112" stroke="#10b981" strokeWidth="2.5" />
+                <line x1="44" y1="122" x2="56" y2="122" stroke="#10b981" strokeWidth="4" />
+                <text x="30" y="110" fill="#34d399" fontSize="11" fontWeight="bold">+</text>
+                <text x="31" y="128" fill="#34d399" fontSize="13" fontWeight="bold">−</text>
+                <text x="70" y="120" fill="#34d399" fontSize="11" fontStyle="italic" fontWeight="bold">E</text>
+                {/* Switch K pos 1 */}
+                <circle cx="130" cy="35" r="3" fill="#10b981" />
+                <circle cx="190" cy="35" r="3" fill="#334155" />
+                <circle cx="160" cy="50" r="3" fill="#f8fafc" />
+                <line x1="160" y1="50" x2="130" y2="35" stroke="#10b981" strokeWidth="2.8" strokeLinecap="round" />
+                <text x="125" y="24" fill="#10b981" fontSize="9" fontWeight="bold">(1)</text>
+                <text x="195" y="24" fill="#64748b" fontSize="9" fontWeight="bold">(2)</text>
+                {/* Resistor R */}
+                <rect x="146" y="70" width="28" height="30" rx="3" fill="#1e1b4b" stroke="#818cf8" strokeWidth="1.6" />
+                <text x="160" y="89" fill="#c7d2fe" fontSize="11" fontStyle="italic" fontWeight="bold" textAnchor="middle">R</text>
+                {/* Inductor L */}
+                <g transform="translate(160, 120)">
+                  <path d="M 0 0 C 14 2, 14 11, 0 12 C 14 14, 14 23, 0 24 C 14 26, 14 34, 0 35" fill="none" stroke="#fbbf24" strokeWidth="2.6" strokeLinecap="round" />
+                  <text x="-16" y="22" fill="#fbbf24" fontSize="11" fontStyle="italic" fontWeight="bold" textAnchor="end">L</text>
+                </g>
+                {/* Diode symbol on right */}
+                <g transform="translate(270, 100)">
+                  <polygon points="0,-6 -6,6 6,6" fill="#475569" />
+                  <line x1="-6" y1="-6" x2="6" y2="-6" stroke="#475569" strokeWidth="1.5" />
+                </g>
+                {/* Moving Yellow Electrons */}
+                <circle r="2.2" fill="#fde047">
+                  <animateMotion dur="2s" repeatCount="indefinite" path="M 50 110 L 50 35 L 130 35 L 160 50 L 160 165 L 50 165 Z" />
+                </circle>
+              </svg>
+            </div>
+
+            {/* Schematic Position 2: Rupture */}
+            <div className="p-3.5 rounded-xl bg-slate-950/80 border border-rose-500/30 space-y-2.5">
+              <div className="flex items-center justify-between text-xs font-bold text-rose-300">
+                <span>Position (2) : Rupture & Diode de Roue Libre</span>
+                <span className="text-[10px] font-mono bg-rose-500/10 px-2 py-0.5 rounded border border-rose-500/20">Maille Libre Protégée</span>
+              </div>
+              <svg viewBox="0 0 320 180" className="w-full h-auto max-w-[300px] mx-auto select-none font-sans">
+                <defs>
+                  <marker id="arr-rose-schem" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+                    <polygon points="0,1 5,3 0,5" fill="#f43f5e" />
+                  </marker>
+                </defs>
+                <rect x="5" y="5" width="310" height="170" rx="10" fill="#020817" stroke="#4c0519" strokeWidth="1" />
+                {/* Inactive Loop (Left) */}
+                <path d="M 50 110 L 50 35 L 130 35 M 50 130 L 50 165 L 160 165" fill="none" stroke="#334155" strokeWidth="1.2" strokeDasharray="3 3" />
+                {/* Active Loop (Center & Right) */}
+                <path d="M 160 50 L 190 35 L 270 35 L 270 165 L 160 165 L 160 155 M 160 120 L 160 100 M 160 70 L 160 50" fill="none" stroke="#f43f5e" strokeWidth="2.2" strokeLinecap="round" />
+                
+                {/* Correct Clockwise Directional Arrows */}
+                {/* 1. Central branch: going DOWN through R & L */}
+                <line x1="160" y1="104" x2="160" y2="114" stroke="#f43f5e" strokeWidth="2" markerEnd="url(#arr-rose-schem)" />
+                {/* 2. Bottom wire: going RIGHT */}
+                <line x1="205" y1="165" x2="225" y2="165" stroke="#f43f5e" strokeWidth="2" markerEnd="url(#arr-rose-schem)" />
+                {/* 3. Right branch: going UP through Diode */}
+                <line x1="270" y1="135" x2="270" y2="120" stroke="#f43f5e" strokeWidth="2" markerEnd="url(#arr-rose-schem)" />
+                {/* 4. Top wire: going LEFT through switch K */}
+                <line x1="240" y1="35" x2="220" y2="35" stroke="#f43f5e" strokeWidth="2" markerEnd="url(#arr-rose-schem)" />
+
+                {/* Generator E isolated */}
+                <line x1="38" y1="112" x2="62" y2="112" stroke="#475569" strokeWidth="2.5" />
+                <line x1="44" y1="122" x2="56" y2="122" stroke="#475569" strokeWidth="4" />
+                <text x="70" y="120" fill="#64748b" fontSize="11" fontStyle="italic">E</text>
+                {/* Switch K pos 2 */}
+                <circle cx="130" cy="35" r="3" fill="#334155" />
+                <circle cx="190" cy="35" r="3" fill="#f43f5e" />
+                <circle cx="160" cy="50" r="3" fill="#f8fafc" />
+                <line x1="160" y1="50" x2="190" y2="35" stroke="#f43f5e" strokeWidth="2.8" strokeLinecap="round" />
+                <text x="125" y="24" fill="#64748b" fontSize="9" fontWeight="bold">(1)</text>
+                <text x="195" y="24" fill="#f43f5e" fontSize="9" fontWeight="bold">(2)</text>
+                {/* Resistor R */}
+                <rect x="146" y="70" width="28" height="30" rx="3" fill="#1e1b4b" stroke="#f43f5e" strokeWidth="1.6" />
+                <text x="160" y="89" fill="#c7d2fe" fontSize="11" fontStyle="italic" fontWeight="bold" textAnchor="middle">R</text>
+                {/* Inductor L */}
+                <g transform="translate(160, 120)">
+                  <path d="M 0 0 C 14 2, 14 11, 0 12 C 14 14, 14 23, 0 24 C 14 26, 14 34, 0 35" fill="none" stroke="#fbbf24" strokeWidth="2.6" strokeLinecap="round" />
+                  <text x="-16" y="22" fill="#fbbf24" fontSize="11" fontStyle="italic" fontWeight="bold" textAnchor="end">L</text>
+                </g>
+              </svg>
+            </div>
+          </div>
+
+          {/* Detailed Demonstrations */}
+          <div className="space-y-4 pt-1">
+            {/* Demonstration A: Établissement */}
+            <div className="p-4 rounded-xl bg-slate-950 border border-emerald-500/30 space-y-3">
+              <div className="flex items-center justify-between border-b border-slate-800/80 pb-2">
+                <span className="font-bold text-xs sm:text-sm text-emerald-300 flex items-center gap-1.5">
+                  <span>A. Équation Différentielle en Courant</span>
+                  <LatexMath math="i(t)" />
+                  <span>(Établissement)</span>
+                </span>
+                <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/20">
+                  <LatexMath math="\tau = L/R" /> • Maille Générateur
+                </span>
+              </div>
+
+              <div className="space-y-2 text-xs text-slate-300 leading-relaxed">
+                <p>
+                  <strong>1. Application de la Loi des Mailles :</strong> En orientant la maille dans le sens horaire à l&apos;instant <LatexMath math="t \ge 0" />, la somme algébrique des tensions donne :
+                </p>
+                <div className="p-2 rounded-lg bg-slate-900 border border-slate-800 text-center font-mono text-emerald-200 font-bold">
+                  <LatexMath math="E - u_R(t) - u_L(t) = 0 \iff u_L(t) + u_R(t) = E" />
+                </div>
+
+                <p>
+                  <strong>2. Relations caractéristiques des composants :</strong>
+                </p>
+                <ul className="list-disc list-inside space-y-1 pl-2 text-slate-400 text-[11.5px]">
+                  <li>Conducteur ohmique (Loi d&apos;Ohm) : <LatexMath math="u_R(t) = R \cdot i(t)" /></li>
+                  <li>Bobine inductive idéale (Loi de Faraday) : <LatexMath math="u_L(t) = L \frac{di}{dt}" /></li>
+                </ul>
+
+                <p>
+                  <strong>3. Mise sous forme canonique standard :</strong> En remplaçant dans la loi des mailles et en divisant chaque terme par <LatexMath math="R" /> :
+                </p>
+                <div className="p-2.5 rounded-lg bg-slate-900 border border-emerald-500/30 text-center font-mono text-emerald-300 font-bold space-y-1">
+                  <div>
+                    <LatexMath math="L \frac{di}{dt} + R i(t) = E \iff \frac{L}{R} \frac{di}{dt} + i(t) = \frac{E}{R}" />
+                  </div>
+                  <div className="text-sm text-emerald-400 pt-1">
+                    <LatexMath math="\boxed{\tau \frac{di}{dt} + i(t) = I_0} \quad \iff \quad \boxed{\frac{di}{dt} + \frac{1}{\tau} i(t) = \frac{I_0}{\tau}}" />
+                  </div>
+                </div>
+
+                <div className="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800 text-[11px] text-slate-400 space-y-1">
+                  <div>• <strong className="text-emerald-300">Constante de temps :</strong> <LatexMath math="\tau = \frac{L}{R}" /> (en secondes <LatexMath math="\text{s}" />), qui quantifie l&apos;inertie inductive du circuit.</div>
+                  <div>• <strong className="text-emerald-300">Courant permanent asymptotique :</strong> <LatexMath math="I_0 = \frac{E}{R}" /> (en Ampères <LatexMath math="\text{A}" />), atteint lorsque la bobine devient équivalente à un court-circuit (<LatexMath math="u_L \to 0" />).</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Demonstration B: Tension uL */}
+            <div className="p-4 rounded-xl bg-slate-950 border border-amber-500/30 space-y-3">
+              <div className="flex items-center justify-between border-b border-slate-800/80 pb-2">
+                <span className="font-bold text-xs sm:text-sm text-amber-300 flex items-center gap-1.5">
+                  <span>B. Équation Différentielle en Tension de la Bobine</span>
+                  <LatexMath math="u_L(t)" />
+                </span>
+                <span className="text-[10px] font-mono text-amber-400 bg-amber-500/10 px-2.5 py-0.5 rounded-full border border-amber-500/20">
+                  Équation Homogène
+                </span>
+              </div>
+
+              <div className="space-y-2 text-xs text-slate-300 leading-relaxed">
+                <p>
+                  <strong>1. Motivation expérimentale :</strong> À l&apos;oscilloscope, la voie 2 mesure directement la tension <LatexMath math="u_L(t)" />. Il est donc indispensable d&apos;obtenir son équation d&apos;évolution directe.
+                </p>
+                <p>
+                  <strong>2. Dérivation temporelle de la loi des mailles :</strong> En dérivant l&apos;égalité <LatexMath math="u_L(t) + R i(t) = E" /> par rapport au temps <LatexMath math="t" /> :
+                </p>
+                <div className="p-2 rounded-lg bg-slate-900 border border-slate-800 text-center font-mono text-amber-200 font-bold">
+                  <LatexMath math="\frac{d}{dt}[u_L(t)] + R \frac{d}{dt}[i(t)] = \frac{dE}{dt} = 0 \implies \frac{du_L}{dt} + R \frac{di}{dt} = 0" />
+                </div>
+
+                <p>
+                  <strong>3. Substitution de la dérivée du courant :</strong> Sachant que <LatexMath math="u_L(t) = L \frac{di}{dt} \iff \frac{di}{dt} = \frac{u_L(t)}{L}" /> :
+                </p>
+                <div className="p-2.5 rounded-lg bg-slate-900 border border-amber-500/30 text-center font-mono text-amber-300 font-bold">
+                  <LatexMath math="\frac{du_L}{dt} + R \left(\frac{u_L(t)}{L}\right) = 0 \iff \boxed{\frac{du_L}{dt} + \frac{1}{\tau} u_L(t) = 0}" />
+                </div>
+                <p className="text-[11px] text-slate-400">
+                  Il s&apos;agit d&apos;une équation différentielle <strong>sans second membre</strong> : la tension aux bornes de la bobine décroît donc exponentiellement depuis <LatexMath math="E" /> jusqu&apos;à <LatexMath math="0\text{ V}" />.
+                </p>
+              </div>
+            </div>
+
+            {/* Demonstration C: Rupture & Surtension */}
+            <div className="p-4 rounded-xl bg-slate-950 border border-rose-500/30 space-y-3">
+              <div className="flex items-center justify-between border-b border-slate-800/80 pb-2">
+                <span className="font-bold text-xs sm:text-sm text-rose-300 flex items-center gap-1.5">
+                  <span>C. Rupture du Courant & Phénomène de Surtension à l&apos;Ouverture</span>
+                </span>
+                <span className="text-[10px] font-mono text-rose-400 bg-rose-500/10 px-2.5 py-0.5 rounded-full border border-rose-500/20">
+                  Diode de Roue Libre
+                </span>
+              </div>
+
+              <div className="space-y-2 text-xs text-slate-300 leading-relaxed">
+                <p>
+                  <strong>1. Le danger de la rupture à vide (sans diode de protection) :</strong>
+                </p>
+                <p className="text-slate-400 text-[11.5px]">
+                  Si l&apos;on ouvre brutalement un circuit inductif, le courant tente de s&apos;annuler en un temps infinitésimal (<LatexMath math="\Delta t \to 0" />). La dérivée temporelle tend vers l&apos;infini négatif (<LatexMath math="\frac{di}{dt} \to -\infty" />), ce qui génère aux bornes de la bobine une <strong>surtension gigantesque</strong> :
+                </p>
+                <div className="p-2 rounded-lg bg-slate-900 border border-rose-500/30 text-center font-mono text-rose-300 font-bold">
+                  <LatexMath math="u_L(t) = L \frac{di}{dt} \ll -1000\text{ V} \quad (\text{Arc électrique destructeur \& claquage})" />
+                </div>
+
+                <p>
+                  <strong>2. Le rôle protecteur de la Diode de Roue Libre (Freewheeling Diode) :</strong>
+                </p>
+                <p className="text-slate-400 text-[11.5px]">
+                  Branchée en dérivation inverse sur la bobine, la diode est bloquée en position (1). À l&apos;ouverture (position 2), la surtension rend l&apos;anode plus positive que la cathode : la diode devient instantanément <strong>passante</strong>. Le courant peut continuer à circuler dans la maille fermée et s&apos;éteindre progressivement sans étincelle.
+                </p>
+
+                <p>
+                  <strong>3. Équation différentielle de la maille libre :</strong>
+                </p>
+                <div className="p-2.5 rounded-lg bg-slate-900 border border-rose-500/30 text-center font-mono text-rose-300 font-bold">
+                  <LatexMath math="u_L(t) + u_R(t) + u_D \approx 0 \implies L \frac{di}{dt} + R i(t) = 0 \iff \boxed{\frac{di}{dt} + \frac{1}{\tau} i(t) = 0}" />
+                </div>
+              </div>
+            </div>
+
+            {/* Demonstration D: Analyse dimensionnelle */}
+            <div className="p-4 rounded-xl bg-slate-950 border border-indigo-500/30 space-y-3">
+              <div className="flex items-center justify-between border-b border-slate-800/80 pb-2">
+                <span className="font-bold text-xs sm:text-sm text-indigo-300 flex items-center gap-1.5">
+                  <span>D. Analyse Dimensionnelle Rigoureuse SI de</span>
+                  <LatexMath math="\tau = L/R" />
+                </span>
+                <span className="text-[10px] font-mono text-indigo-400 bg-indigo-500/10 px-2.5 py-0.5 rounded-full border border-indigo-500/20">
+                  Homogène à un Temps
+                </span>
+              </div>
+
+              <div className="space-y-2 text-xs text-slate-300 leading-relaxed">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11.5px]">
+                  <div className="p-2 rounded-lg bg-slate-900 border border-slate-800 space-y-1">
+                    <span className="font-bold text-indigo-300 block">Par la Loi d&apos;Ohm :</span>
+                    <div className="font-mono text-center">
+                      <LatexMath math="u = R \cdot i \implies [R] = \frac{[U]}{[I]}" />
+                    </div>
+                  </div>
+                  <div className="p-2 rounded-lg bg-slate-900 border border-slate-800 space-y-1">
+                    <span className="font-bold text-indigo-300 block">Par la Loi de Faraday :</span>
+                    <div className="font-mono text-center">
+                      <LatexMath math="u = L \frac{di}{dt} \implies [L] = \frac{[U]}{[I]/[T]} = \frac{[U][T]}{[I]}" />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="p-2.5 rounded-lg bg-slate-900 border border-indigo-500/30 text-center font-mono text-indigo-200 font-bold">
+                  <LatexMath math="[\tau] = \left[\frac{L}{R}\right] = \frac{[L]}{[R]} = \frac{\frac{[U][T]}{[I]}}{\frac{[U]}{[I]}} = \frac{[U][T]}{[I]} \times \frac{[I]}{[U]} = [T] \equiv \text{seconde (s)}" />
+                </div>
+                <p className="text-[11px] text-slate-400">
+                  Le rapport <LatexMath math="L/R" /> est donc rigoureusement homogène à une durée temporelle et s&apos;exprime en <strong>secondes (s)</strong> dans le Système International.
+                </p>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs leading-relaxed">
-          {/* Établissement RL */}
-          <div className="p-4 rounded-2xl bg-slate-900/80 border border-emerald-500/20 space-y-3">
-            <div className="flex items-center justify-between">
-              <h3 className="font-bold text-emerald-300 uppercase tracking-wider">A. Établissement du Courant</h3>
-              <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-md border border-emerald-500/20">
-                <LatexMath math="\tau = L/R" />
-              </span>
-            </div>
-
-            <p className="text-slate-300">
-              Loi des mailles : <LatexMath math="u_R(t) + u_L(t) = E \implies R i(t) + L \frac{di}{dt} = E" />.
-            </p>
-
-            <div className="p-2.5 rounded-xl bg-slate-950 border border-emerald-500/30 text-center font-mono text-emerald-200 font-bold">
-              <LatexMath math="\tau \frac{di}{dt} + i(t) = I_0 \quad \text{avec} \quad \tau = \frac{L}{R}, \ I_0 = \frac{E}{R}" />
-            </div>
-
-            <div className="p-2.5 rounded-xl bg-slate-900/90 border border-slate-800 space-y-1.5">
-              <div className="text-center font-mono text-emerald-300 font-bold">
-                <LatexMath math="i(t) = \frac{E}{R} \left(1 - e^{-t/\tau}\right) \quad \text{et} \quad u_L(t) = E e^{-t/\tau}" />
-              </div>
-              <p className="text-slate-400 text-[11px]">
-                À <LatexMath math="t=0" />, la bobine s&apos;oppose à la variation de courant : elle se comporte comme un <strong>interrupteur ouvert</strong> (<LatexMath math="i(0)=0" />, <LatexMath math="u_L(0)=E" />). En régime permanent (<LatexMath math="t \to \infty" />), elle se comporte comme un <strong>court-circuit</strong> (<LatexMath math="u_L(\infty)=0" />, <LatexMath math="i(\infty)=E/R" />).
-              </p>
-            </div>
+        {/* ── ÉTAPE 2 : RÉSOLUTIONS ANALYTIQUES ── */}
+        <div className="space-y-4 rounded-2xl bg-slate-900/60 border border-slate-800/80 p-4 sm:p-5 shadow-xl">
+          <div className="flex items-center gap-2 border-b border-slate-800 pb-2">
+            <span className="flex items-center justify-center w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-bold border border-emerald-500/40">
+              2
+            </span>
+            <h3 className="text-sm font-bold text-emerald-300 uppercase tracking-wider">
+              Étape 2 : Résolutions Analytiques & Conditions Initiales
+            </h3>
           </div>
 
-          {/* Rupture & Diode de roue libre */}
-          <div className="p-4 rounded-2xl bg-slate-900/80 border border-rose-500/20 space-y-3">
-            <div className="flex items-center justify-between">
-              <h3 className="font-bold text-rose-300 uppercase tracking-wider">B. Rupture du Courant & Diode de Roue Libre</h3>
-              <span className="text-[10px] font-mono text-rose-400 bg-rose-500/10 px-2 py-0.5 rounded-md border border-rose-500/20">
-                <LatexMath math="u_L = -L\frac{di}{dt} \to \infty" />
-              </span>
-            </div>
-
-            <p className="text-slate-300">
-              Lors de l&apos;ouverture brutale du circuit, le courant tente de s&apos;annuler instantanément (<LatexMath math="\frac{di}{dt} \to -\infty" />). La bobine génère alors une <strong>surtension gigantesque</strong> :
-            </p>
-
-            <div className="p-2.5 rounded-xl bg-slate-950 border border-rose-500/30 text-center font-mono text-rose-300 font-bold">
-              <LatexMath math="u_L(t) = L \frac{di}{dt} \ll 0 \quad (\text{Surtension d'ouverture destructive})" />
-            </div>
-
-            <div className="p-2.5 rounded-xl bg-slate-950 border border-slate-800 space-y-1">
-              <span className="font-bold text-amber-300 block">Rôle Protecteur de la Diode de Roue Libre :</span>
-              <p className="text-slate-400">
-                Placée en parallèle inverse sur la bobine, elle devient passante dès l&apos;ouverture de l&apos;interrupteur, permettant au courant de continuer à circuler et de s&apos;éteindre progressivement sans créer d&apos;arc électrique destructeur.
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+            {/* Resolution Établissement */}
+            <div className="p-4 rounded-xl bg-slate-950 border border-emerald-500/30 space-y-2.5">
+              <div className="flex items-center justify-between">
+                <span className="font-bold text-emerald-300 uppercase tracking-wider">
+                  A. Résolution en Établissement
+                </span>
+                <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+                  <LatexMath math="i(0)=0" />
+                </span>
+              </div>
+              <p className="text-slate-300 leading-relaxed">
+                La solution générale s&apos;écrit <LatexMath math="i(t) = i_h(t) + i_p" /> où <LatexMath math="i_h(t) = K e^{-t/\tau}" /> et <LatexMath math="i_p = \frac{E}{R} = I_0" />.
               </p>
+              <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-800 text-center font-mono text-emerald-200 font-bold space-y-1">
+                <div>
+                  <LatexMath math="i(0^+) = i(0^-) = 0 \implies K + I_0 = 0 \implies K = -I_0" />
+                </div>
+                <div className="text-emerald-400 text-sm">
+                  <LatexMath math="i(t) = I_0 \left(1 - e^{-t/\tau}\right) = \frac{E}{R} \left(1 - e^{-t/\tau}\right)" />
+                </div>
+              </div>
+              <div className="p-2 rounded-lg bg-slate-900/60 border border-slate-800 text-[11px] text-slate-300 space-y-1 font-mono">
+                <div>• <LatexMath math="u_L(t) = L \frac{di}{dt} = E e^{-t/\tau}" /></div>
+                <div>• <LatexMath math="u_R(t) = R i(t) = E \left(1 - e^{-t/\tau}\right)" /></div>
+              </div>
+            </div>
+
+            {/* Resolution Rupture */}
+            <div className="p-4 rounded-xl bg-slate-950 border border-rose-500/30 space-y-2.5">
+              <div className="flex items-center justify-between">
+                <span className="font-bold text-rose-300 uppercase tracking-wider">
+                  B. Résolution en Rupture (Régime Libre)
+                </span>
+                <span className="text-[10px] font-mono text-rose-400 bg-rose-500/10 px-2 py-0.5 rounded border border-rose-500/20">
+                  <LatexMath math="i(0)=I_0" />
+                </span>
+              </div>
+              <p className="text-slate-300 leading-relaxed">
+                Avec la condition initiale <LatexMath math="i(0^+) = i(0^-) = I_0" /> (continuité du courant) :
+              </p>
+              <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-800 text-center font-mono text-rose-200 font-bold space-y-1">
+                <div className="text-rose-400 text-sm">
+                  <LatexMath math="i(t) = I_0 e^{-t/\tau} = \frac{E}{R} e^{-t/\tau}" />
+                </div>
+              </div>
+              <div className="p-2 rounded-lg bg-slate-900/60 border border-slate-800 text-[11px] text-slate-300 space-y-1 font-mono">
+                <div>• <LatexMath math="u_L(t) = -R i(t) = -E e^{-t/\tau}" /> <span className="text-rose-400">(Discontinuité négative)</span></div>
+                <div>• <LatexMath math="u_R(t) = R i(t) = E e^{-t/\tau}" /></div>
+              </div>
             </div>
           </div>
         </div>
+
+        {/* ── ÉTAPE 3 : COURBES TEMPORELLES & PROPRIÉTÉS GRAPHIQUES ── */}
+        <div className="space-y-4 rounded-2xl bg-slate-900/60 border border-slate-800/80 p-4 sm:p-5 shadow-xl">
+          <div className="flex items-center gap-2 border-b border-slate-800 pb-2">
+            <span className="flex items-center justify-center w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-bold border border-emerald-500/40">
+              3
+            </span>
+            <h3 className="text-sm font-bold text-emerald-300 uppercase tracking-wider">
+              Étape 3 : Courbes Temporelles & Propriétés Remarquables
+            </h3>
+          </div>
+
+          {/* 3 Authentic Mathematical SVG Plots */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* Plot 1: i(t) */}
+            <div className="p-3 rounded-xl bg-slate-950 border border-emerald-500/30 space-y-2">
+              <span className="font-bold text-xs text-emerald-300 block text-center">
+                1. Courant <LatexMath math="i(t)" /> (Établissement)
+              </span>
+              <svg viewBox="0 0 200 130" className="w-full h-auto select-none font-sans">
+                <rect width="200" height="130" fill="#020817" rx="6" />
+                <line x1="25" y1="110" x2="190" y2="110" stroke="#475569" strokeWidth="1" />
+                <line x1="25" y1="110" x2="25" y2="15" stroke="#475569" strokeWidth="1" />
+                <line x1="25" y1="30" x2="190" y2="30" stroke="#10b981" strokeWidth="0.8" strokeDasharray="3 3" opacity="0.4" />
+                <text x="18" y="34" fill="#10b981" fontSize="9" fontStyle="italic" fontWeight="bold">I₀</text>
+                {/* Tangent at origin */}
+                <line x1="25" y1="110" x2="58" y2="30" stroke="#f59e0b" strokeWidth="1" strokeDasharray="2 2" />
+                <line x1="58" y1="30" x2="58" y2="110" stroke="#f59e0b" strokeWidth="0.6" strokeDasharray="1 1" />
+                <text x="58" y="122" fill="#f59e0b" fontSize="8" fontWeight="bold" textAnchor="middle">1τ</text>
+                {/* Curve i(t) */}
+                <path d="M 25 110 Q 55 45, 190 31" fill="none" stroke="#10b981" strokeWidth="2.2" strokeLinecap="round" />
+                <circle cx="58" cy="59" r="2.5" fill="#10b981" />
+                <text x="75" y="62" fill="#10b981" fontSize="7.5" fontWeight="bold">63.2% I₀</text>
+              </svg>
+            </div>
+
+            {/* Plot 2: uL(t) */}
+            <div className="p-3 rounded-xl bg-slate-950 border border-rose-500/30 space-y-2">
+              <span className="font-bold text-xs text-rose-300 block text-center">
+                2. Tension Bobine <LatexMath math="u_L(t)" />
+              </span>
+              <svg viewBox="0 0 200 130" className="w-full h-auto select-none font-sans">
+                <rect width="200" height="130" fill="#020817" rx="6" />
+                <line x1="25" y1="110" x2="190" y2="110" stroke="#475569" strokeWidth="1" />
+                <line x1="25" y1="110" x2="25" y2="15" stroke="#475569" strokeWidth="1" />
+                <text x="18" y="34" fill="#f43f5e" fontSize="9" fontStyle="italic" fontWeight="bold">E</text>
+                {/* Tangent at origin */}
+                <line x1="25" y1="30" x2="58" y2="110" stroke="#f59e0b" strokeWidth="1" strokeDasharray="2 2" />
+                <text x="58" y="122" fill="#f59e0b" fontSize="8" fontWeight="bold" textAnchor="middle">1τ</text>
+                {/* Curve uL(t) */}
+                <path d="M 25 30 Q 55 95, 190 109" fill="none" stroke="#f43f5e" strokeWidth="2.2" strokeLinecap="round" />
+                <circle cx="58" cy="80" r="2.5" fill="#f43f5e" />
+                <text x="75" y="80" fill="#f43f5e" fontSize="7.5" fontWeight="bold">36.8% E</text>
+              </svg>
+            </div>
+
+            {/* Plot 3: i(t) en Rupture */}
+            <div className="p-3 rounded-xl bg-slate-950 border border-amber-500/30 space-y-2">
+              <span className="font-bold text-xs text-amber-300 block text-center">
+                3. Courant <LatexMath math="i(t)" /> (Rupture Libre)
+              </span>
+              <svg viewBox="0 0 200 130" className="w-full h-auto select-none font-sans">
+                <rect width="200" height="130" fill="#020817" rx="6" />
+                <line x1="25" y1="110" x2="190" y2="110" stroke="#475569" strokeWidth="1" />
+                <line x1="25" y1="110" x2="25" y2="15" stroke="#475569" strokeWidth="1" />
+                <text x="18" y="34" fill="#fbbf24" fontSize="9" fontStyle="italic" fontWeight="bold">I₀</text>
+                <line x1="25" y1="30" x2="58" y2="110" stroke="#f59e0b" strokeWidth="1" strokeDasharray="2 2" />
+                <text x="58" y="122" fill="#f59e0b" fontSize="8" fontWeight="bold" textAnchor="middle">1τ</text>
+                {/* Curve Rupture */}
+                <path d="M 25 30 Q 55 95, 190 109" fill="none" stroke="#fbbf24" strokeWidth="2.2" strokeLinecap="round" />
+                <circle cx="58" cy="80" r="2.5" fill="#fbbf24" />
+                <text x="75" y="80" fill="#fbbf24" fontSize="7.5" fontWeight="bold">36.8% I₀</text>
+              </svg>
+            </div>
+          </div>
+
+          {/* Key Metric Summary Cards */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center text-xs">
+            <div className="p-2 rounded-xl bg-slate-950 border border-emerald-500/30 space-y-0.5">
+              <span className="text-[10px] text-slate-400 block font-mono">À t = 1τ</span>
+              <span className="text-emerald-300 font-bold font-mono">63.2% de I₀</span>
+            </div>
+            <div className="p-2 rounded-xl bg-slate-950 border border-emerald-500/30 space-y-0.5">
+              <span className="text-[10px] text-slate-400 block font-mono">À t = 3τ</span>
+              <span className="text-emerald-300 font-bold font-mono">95.0% de I₀</span>
+            </div>
+            <div className="p-2 rounded-xl bg-slate-950 border border-emerald-500/30 space-y-0.5">
+              <span className="text-[10px] text-slate-400 block font-mono">À t = 5τ (Établi)</span>
+              <span className="text-emerald-300 font-bold font-mono">99.3% ≈ 100%</span>
+            </div>
+            <div className="p-2 rounded-xl bg-slate-950 border border-amber-500/30 space-y-0.5">
+              <span className="text-[10px] text-slate-400 block font-mono">Énergie Magnétique</span>
+              <span className="text-amber-300 font-bold font-mono">½ L I₀²</span>
+            </div>
+          </div>
+        </div>
+
+        {/* ── LABORATOIRE VIRTUEL INTERACTIF DU CIRCUIT RL ── */}
+        <RLCircuitVirtualLab />
       </section>
 
       {/* ── 4. CIRCUIT RLC SÉRIE (2ND ORDRE) AVEC SCHÉMA SVG ── */}
