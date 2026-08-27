@@ -8,12 +8,8 @@ import {
   RotateCcw,
   Zap,
   Gauge,
-  Sliders,
-  Layers,
-  Sparkles,
   Trash2,
   BookmarkPlus,
-  Eye,
 } from "lucide-react";
 import LatexMath from "@/components/ui/LatexMath";
 
@@ -25,7 +21,6 @@ interface SavedTrace {
   C_uF: number;
   E: number;
   tauPhysMs: number;
-  color: string;
 }
 
 export default function RCCircuitVirtualLab() {
@@ -41,22 +36,20 @@ export default function RCCircuitVirtualLab() {
   const [showTangent, setShowTangent] = useState<boolean>(false);
   const [savedTraces, setSavedTraces] = useState<SavedTrace[]>([]);
 
-  // Simulation Controls
+  // Simulation Controls: 10 seconds total window for exactly 5 Tau (1 Tau = 2.0s)
   const [isRunning, setIsRunning] = useState<boolean>(false);
   const [simSpeed, setSimSpeed] = useState<number>(1); // 0.5x, 1x, 2x
-  const [elapsedSec, setElapsedSec] = useState<number>(0); // Current elapsed time in seconds
+  const [elapsedSec, setElapsedSec] = useState<number>(0); // 0 to 10.0s
   const [initialVoltage, setInitialVoltage] = useState<number>(0); // Voltage at switch flip moment
 
   // Physical calculations
   const C_F = useMemo(() => C_uF * 1e-6, [C_uF]);
-  const tauPhysMs = useMemo(() => (R * C_uF) / 1000, [R, C_uF]); // ms
+  const tauPhysMs = useMemo(() => (R * C_uF) / 1000, [R, C_uF]); // ms: R * C / 1000
   const I0_mA = useMemo(() => (E / R) * 1000, [E, R]); // mA
-  const Qmax_uC = useMemo(() => C_uF * E, [C_uF, E]); // µC
 
-  // Scaled Visual Time Constant: Proportional to real (R * C)
-  // Baseline: 200 Ohm * 100 uF = 20ms -> tauVisual = 2.0s
-  const tauVisualSec = useMemo(() => 2.0 * ((R * C_uF) / 20000), [R, C_uF]);
-  const maxExperimentTimeSec = 10.0; // Total oscilloscope display window
+  // Simulation constants: Entire screen is strictly 5 Tau (tauSimSec = 2.0s, total = 10.0s)
+  const tauSimSec = 2.0;
+  const maxExperimentTimeSec = 10.0; // 5 * tauSimSec
 
   // ── 2. REAL-TIME 60FPS ANIMATION LOOP ──
   const lastTimeRef = useRef<number | null>(null);
@@ -90,20 +83,29 @@ export default function RCCircuitVirtualLab() {
     return () => cancelAnimationFrame(animId);
   }, [isRunning, simSpeed, maxExperimentTimeSec]);
 
-  // ── 3. INSTANTANEOUS PHYSICAL VALUES ──
-  const { uC_t, i_t_mA, q_t_uC, energy_mJ, chargePercentage, activeChargesCount } = useMemo(() => {
-    const tRatio = elapsedSec / (tauVisualSec || 1); // t / tau
+  // ── 3. INSTANTANEOUS PHYSICAL VALUES (EXACT PHYSICAL LAWS) ──
+  const { uC_t, i_t_mA, q_t_uC, energy_mJ, chargePercentage, activeChargesCount, physicalTimeMs } = useMemo(() => {
+    // Exact dimensionless progress parameter: theta = t / tau in [0, 5]
+    const theta = Math.min(elapsedSec / tauSimSec, 5.0);
+    const tPhysMs = theta * tauPhysMs;
+
     let u = 0;
     let i = 0;
 
     if (switchPos === "charge") {
-      // uC(t) = E - (E - u0) * e^(-t/tau)
-      u = E - (E - initialVoltage) * Math.exp(-tRatio);
-      i = ((E - initialVoltage) / R) * Math.exp(-tRatio) * 1000;
+      // uC(t) = E - (E - u0) * e^(-theta)
+      u = E - (E - initialVoltage) * Math.exp(-theta);
+      i = ((E - initialVoltage) / R) * Math.exp(-theta) * 1000;
     } else {
-      // uC(t) = u0 * e^(-t/tau)
-      u = initialVoltage * Math.exp(-tRatio);
-      i = -(initialVoltage / R) * Math.exp(-tRatio) * 1000;
+      // uC(t) = u0 * e^(-theta)
+      u = initialVoltage * Math.exp(-theta);
+      i = -(initialVoltage / R) * Math.exp(-theta) * 1000;
+    }
+
+    // Fix numerical epsilon near t=5tau in decharge
+    if (switchPos === "decharge" && theta >= 4.95) {
+      if (u < 0.08) u = 0.0;
+      if (Math.abs(i) < 0.1) i = 0.0;
     }
 
     const q = C_uF * u; // µC
@@ -118,8 +120,9 @@ export default function RCCircuitVirtualLab() {
       energy_mJ: ene,
       chargePercentage: pct,
       activeChargesCount: numCharges,
+      physicalTimeMs: tPhysMs,
     };
-  }, [elapsedSec, tauVisualSec, switchPos, E, initialVoltage, R, C_uF, C_F]);
+  }, [elapsedSec, tauSimSec, tauPhysMs, switchPos, E, initialVoltage, R, C_uF, C_F]);
 
   // Switch Toggle Handler
   const handleToggleSwitch = (newPos: "charge" | "decharge") => {
@@ -160,17 +163,17 @@ export default function RCCircuitVirtualLab() {
 
     for (let s = 0; s <= totalSteps; s++) {
       const tSec = s * dt;
-      const tRatio = tSec / (tauVisualSec || 1);
+      const theta = tSec / tauSimSec; // Exactly in [0, 5]
       const x = padL + (tSec / maxExperimentTimeSec) * plotW;
 
       let u = 0;
       let cur = 0;
       if (switchPos === "charge") {
-        u = E - (E - initialVoltage) * Math.exp(-tRatio);
-        cur = ((E - initialVoltage) / R) * Math.exp(-tRatio) * 1000;
+        u = E - (E - initialVoltage) * Math.exp(-theta);
+        cur = ((E - initialVoltage) / R) * Math.exp(-theta) * 1000;
       } else {
-        u = initialVoltage * Math.exp(-tRatio);
-        cur = -(initialVoltage / R) * Math.exp(-tRatio) * 1000;
+        u = initialVoltage * Math.exp(-theta);
+        cur = -(initialVoltage / R) * Math.exp(-theta) * 1000;
       }
 
       const y_uC = baseY - (u / (E || 1)) * plotH;
@@ -192,16 +195,15 @@ export default function RCCircuitVirtualLab() {
       curY_uC: currentY_uC,
       curY_i: currentY_i,
     };
-  }, [elapsedSec, tauVisualSec, maxExperimentTimeSec, plotW, padL, switchPos, E, initialVoltage, R, baseY, plotH, midY, uC_t, i_t_mA, I0_mA]);
+  }, [elapsedSec, tauSimSec, maxExperimentTimeSec, plotW, padL, switchPos, E, initialVoltage, R, baseY, plotH, midY, uC_t, i_t_mA, I0_mA]);
 
-  // Tangent coordinates at t=0
-  const tangentX_tau = padL + (tauVisualSec / maxExperimentTimeSec) * plotW;
+  // Tangent at t=0 coordinates: exactly cuts at the 1tau vertical grid marker (1/5th of plot width)
+  const tangentX_tau = padL + (1 / 5) * plotW;
+  const shouldShowTangent = showTangent && (elapsedSec >= tauSimSec || (!isRunning && elapsedSec > 0.2));
 
-  // Save current curve for superposition comparison
+  // Save current curve for superposition comparison (faded ghost color)
   const handleSaveTrace = () => {
     if (!activePath_uC) return;
-    const colors = ["#f59e0b", "#a855f7", "#3b82f6", "#10b981"];
-    const chosenColor = colors[savedTraces.length % colors.length];
     const newTrace: SavedTrace = {
       id: String(Date.now()),
       path_uC: activePath_uC,
@@ -210,7 +212,6 @@ export default function RCCircuitVirtualLab() {
       C_uF,
       E,
       tauPhysMs,
-      color: chosenColor,
     };
     setSavedTraces((prev) => [...prev, newTrace]);
   };
@@ -225,53 +226,51 @@ export default function RCCircuitVirtualLab() {
   const particleSpeedDuration = currentFraction > 0.015 ? `${Math.max(1.0 / currentFraction, 0.8).toFixed(2)}s` : "0s";
 
   return (
-    <div className="rounded-3xl bg-slate-950 border border-cyan-500/30 p-4 sm:p-5 space-y-4 shadow-2xl shadow-cyan-950/20">
-      {/* ── 1. COMPACT HEADER & UNIFIED SINGLE-ROW TOOLBAR ── */}
-      <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3 border-b border-slate-800/80 pb-3">
+    <div className="rounded-3xl bg-slate-950 border border-cyan-500/30 p-3 sm:p-4 space-y-3 shadow-2xl shadow-cyan-950/20">
+      {/* ── 1. SLEEK COMPACT SINGLE-ROW HEADER & TOOLBAR ── */}
+      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800/80 pb-2.5">
         {/* Title */}
-        <div className="flex items-center gap-2">
-          <div className="p-1.5 rounded-lg bg-cyan-500/15 border border-cyan-500/30 text-cyan-300">
-            <Zap className="w-4 h-4" />
+        <div className="flex items-center gap-1.5 shrink-0">
+          <div className="p-1 rounded-lg bg-cyan-500/15 border border-cyan-500/30 text-cyan-300">
+            <Zap className="w-3.5 h-3.5" />
           </div>
-          <div>
-            <h3 className="text-sm sm:text-base font-bold text-white tracking-wide">
-              Laboratoire Virtuel : Circuit RC
-            </h3>
-          </div>
+          <h3 className="text-xs sm:text-sm font-bold text-white tracking-wide whitespace-nowrap">
+            Lab Circuit RC
+          </h3>
         </div>
 
-        {/* Unified Single-Row Toolbar */}
-        <div className="flex items-center flex-wrap gap-2">
+        {/* Compact Single-Row Toolbar */}
+        <div className="flex items-center flex-wrap gap-1.5">
           {/* Position Selector (Charge / Décharge) */}
-          <div className="flex items-center p-0.5 rounded-xl bg-slate-900 border border-slate-800 text-xs">
+          <div className="flex items-center p-0.5 rounded-lg bg-slate-900 border border-slate-800 text-[11px]">
             <button
               onClick={() => handleToggleSwitch("charge")}
-              className={`px-2.5 py-1.5 rounded-lg transition-all flex items-center gap-1.5 cursor-pointer text-xs font-semibold ${
+              className={`px-2 py-1 rounded-md transition-all flex items-center gap-1 cursor-pointer font-semibold ${
                 switchPos === "charge"
                   ? "bg-cyan-500/20 text-cyan-300 border border-cyan-500/50 shadow-sm shadow-cyan-500/20"
                   : "text-slate-400 hover:text-slate-200"
               }`}
             >
               <span className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
-              <span>(1) Charge</span>
+              <span>Charge</span>
             </button>
             <button
               onClick={() => handleToggleSwitch("decharge")}
-              className={`px-2.5 py-1.5 rounded-lg transition-all flex items-center gap-1.5 cursor-pointer text-xs font-semibold ${
+              className={`px-2 py-1 rounded-md transition-all flex items-center gap-1 cursor-pointer font-semibold ${
                 switchPos === "decharge"
                   ? "bg-purple-500/20 text-purple-300 border border-purple-500/50 shadow-sm shadow-purple-500/20"
                   : "text-slate-400 hover:text-slate-200"
               }`}
             >
               <span className="w-1.5 h-1.5 rounded-full bg-purple-400" />
-              <span>(2) Décharge</span>
+              <span>Décharge</span>
             </button>
           </div>
 
           {/* Start / Pause Button */}
           <button
             onClick={() => setIsRunning(!isRunning)}
-            className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer border ${
+            className={`px-2.5 py-1 rounded-lg text-[11px] font-bold flex items-center gap-1 transition-all cursor-pointer border ${
               isRunning
                 ? "bg-amber-500/15 text-amber-300 border-amber-500/30 hover:bg-amber-500/25"
                 : "bg-emerald-500/20 text-emerald-300 border-emerald-500/40 hover:bg-emerald-500/30 shadow-sm shadow-emerald-500/10"
@@ -279,12 +278,12 @@ export default function RCCircuitVirtualLab() {
           >
             {isRunning ? (
               <>
-                <Pause className="w-3.5 h-3.5" />
+                <Pause className="w-3 h-3" />
                 <span>Pause</span>
               </>
             ) : (
               <>
-                <Play className="w-3.5 h-3.5 fill-current" />
+                <Play className="w-3 h-3 fill-current" />
                 <span>{elapsedSec === 0 ? "Lancer" : "Reprendre"}</span>
               </>
             )}
@@ -293,10 +292,10 @@ export default function RCCircuitVirtualLab() {
           {/* Reset / Empty Button */}
           <button
             onClick={handleReset}
-            className="px-2.5 py-1.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-400 hover:text-slate-200 hover:border-slate-700 text-xs font-medium flex items-center gap-1.5 transition-colors cursor-pointer"
+            className="px-2 py-1 rounded-lg bg-slate-900 border border-slate-800 text-slate-400 hover:text-slate-200 hover:border-slate-700 text-[11px] font-medium flex items-center gap-1 transition-colors cursor-pointer"
             title="Vider et réinitialiser"
           >
-            <RotateCcw className="w-3.5 h-3.5" />
+            <RotateCcw className="w-3 h-3" />
             <span>Vider</span>
           </button>
 
@@ -304,35 +303,35 @@ export default function RCCircuitVirtualLab() {
           <button
             onClick={handleSaveTrace}
             disabled={!activePath_uC}
-            className={`px-2.5 py-1.5 rounded-xl border text-xs font-medium flex items-center gap-1.5 transition-colors cursor-pointer ${
+            className={`px-2 py-1 rounded-lg border text-[11px] font-medium flex items-center gap-1 transition-colors cursor-pointer ${
               activePath_uC
                 ? "bg-indigo-500/15 text-indigo-300 border-indigo-500/30 hover:bg-indigo-500/25"
                 : "opacity-40 cursor-not-allowed bg-slate-900 border-slate-800 text-slate-500"
             }`}
             title="Mémoriser cette courbe pour comparer"
           >
-            <BookmarkPlus className="w-3.5 h-3.5" />
-            <span>Garder la courbe</span>
+            <BookmarkPlus className="w-3 h-3" />
+            <span>Garder</span>
           </button>
 
-          {/* Clear comparison traces if any */}
+          {/* Clear comparison traces */}
           {savedTraces.length > 0 && (
             <button
               onClick={handleClearSavedTraces}
-              className="p-1.5 rounded-xl bg-slate-900 border border-rose-500/30 text-rose-400 hover:bg-rose-500/10 text-xs transition-colors cursor-pointer"
+              className="p-1 rounded-lg bg-slate-900 border border-rose-500/30 text-rose-400 hover:bg-rose-500/10 text-xs transition-colors cursor-pointer"
               title="Effacer les courbes mémorisées"
             >
-              <Trash2 className="w-3.5 h-3.5" />
+              <Trash2 className="w-3 h-3" />
             </button>
           )}
 
           {/* Speed Selector */}
-          <div className="flex items-center p-0.5 rounded-xl bg-slate-900 border border-slate-800 text-[11px] font-mono">
+          <div className="flex items-center p-0.5 rounded-lg bg-slate-900 border border-slate-800 text-[10px] font-mono">
             {[0.5, 1, 2].map((spd) => (
               <button
                 key={spd}
                 onClick={() => setSimSpeed(spd)}
-                className={`px-2 py-1 rounded-md transition-colors cursor-pointer ${
+                className={`px-1.5 py-0.5 rounded transition-colors cursor-pointer ${
                   simSpeed === spd
                     ? "bg-indigo-500/30 text-indigo-300 font-bold"
                     : "text-slate-400 hover:text-slate-200"
@@ -345,10 +344,10 @@ export default function RCCircuitVirtualLab() {
         </div>
       </div>
 
-      {/* ── 2. REAL-TIME INTERACTIVE SLIDERS (E, R, C) & TANGENT TOGGLE ── */}
-      <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 p-3 rounded-2xl bg-slate-900/60 border border-slate-800/80 items-center text-xs">
+      {/* ── 2. COMPACT SLIDERS (E, R, C) & TANGENT TOGGLE ── */}
+      <div className="grid grid-cols-1 sm:grid-cols-12 gap-2.5 p-2.5 rounded-xl bg-slate-900/60 border border-slate-800/80 items-center text-[11px]">
         {/* Slider E */}
-        <div className="sm:col-span-3 space-y-1">
+        <div className="sm:col-span-3 space-y-0.5">
           <div className="flex items-center justify-between font-bold">
             <span className="text-slate-400 flex items-center gap-1">
               <span>Générateur</span>
@@ -371,7 +370,7 @@ export default function RCCircuitVirtualLab() {
         </div>
 
         {/* Slider R */}
-        <div className="sm:col-span-3 space-y-1">
+        <div className="sm:col-span-3 space-y-0.5">
           <div className="flex items-center justify-between font-bold">
             <span className="text-slate-400 flex items-center gap-1">
               <span>Résistance</span>
@@ -394,7 +393,7 @@ export default function RCCircuitVirtualLab() {
         </div>
 
         {/* Slider C */}
-        <div className="sm:col-span-3 space-y-1">
+        <div className="sm:col-span-3 space-y-0.5">
           <div className="flex items-center justify-between font-bold">
             <span className="text-slate-400 flex items-center gap-1">
               <span>Capacité</span>
@@ -417,17 +416,17 @@ export default function RCCircuitVirtualLab() {
         </div>
 
         {/* Tangent Checkbox & Real Tau Info */}
-        <div className="sm:col-span-3 flex flex-col justify-center space-y-1.5 pl-0 sm:pl-2 border-t sm:border-t-0 sm:border-l border-slate-800">
-          <label className="flex items-center gap-2 cursor-pointer select-none text-slate-300 hover:text-white">
+        <div className="sm:col-span-3 flex flex-col justify-center space-y-1 pl-0 sm:pl-2 border-t sm:border-t-0 sm:border-l border-slate-800">
+          <label className="flex items-center gap-1.5 cursor-pointer select-none text-slate-300 hover:text-white">
             <input
               type="checkbox"
               checked={showTangent}
               onChange={(e) => setShowTangent(e.target.checked)}
-              className="w-3.5 h-3.5 rounded bg-slate-900 border-slate-700 text-amber-500 focus:ring-amber-500/20 accent-amber-400 cursor-pointer"
+              className="w-3 h-3 rounded bg-slate-900 border-slate-700 text-amber-500 accent-amber-400 cursor-pointer"
             />
-            <span className="text-xs font-semibold text-amber-300">Tangente à l&apos;origine</span>
+            <span className="text-[11px] font-semibold text-amber-300">Tangente à l&apos;origine</span>
           </label>
-          <div className="text-[11px] font-mono text-cyan-300 flex items-center justify-between">
+          <div className="text-[10px] font-mono text-cyan-300 flex items-center justify-between">
             <span>τ = RC =</span>
             <span className="font-bold">{tauPhysMs.toFixed(1)} ms</span>
           </div>
@@ -435,11 +434,11 @@ export default function RCCircuitVirtualLab() {
       </div>
 
       {/* ── 3. MAIN PANELS: CIRCUIT + CAPACITOR TANK + OSCILLOSCOPE ── */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-stretch">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 items-stretch">
         {/* ── LEFT PANEL (6 COLS): CIRCUIT SCHEMATIC & CHARGE ACCUMULATION TANK ── */}
-        <div className="lg:col-span-6 rounded-2xl bg-slate-900/80 border border-slate-800 p-3.5 space-y-3 flex flex-col justify-between shadow-xl">
-          <div className="flex items-center justify-between text-xs font-bold text-slate-300 border-b border-slate-800 pb-2">
-            <span className="flex items-center gap-1.5">
+        <div className="lg:col-span-6 rounded-2xl bg-slate-900/80 border border-slate-800 p-3 space-y-2.5 flex flex-col justify-between shadow-xl">
+          <div className="flex items-center justify-between text-xs font-bold text-slate-300 border-b border-slate-800 pb-1.5">
+            <span className="flex items-center gap-1.5 text-[11px]">
               <span
                 className={`w-2 h-2 rounded-full ${
                   switchPos === "charge" ? "bg-cyan-400 animate-pulse" : "bg-purple-400 animate-pulse"
@@ -448,7 +447,7 @@ export default function RCCircuitVirtualLab() {
               <span>Circuit & Réservoir de Charge</span>
             </span>
             <span className="text-[10px] font-mono text-cyan-300 bg-cyan-500/10 px-2 py-0.5 rounded-full border border-cyan-500/20">
-              {chargePercentage < 5 ? "Condensateur Déchargé" : chargePercentage > 98 ? "Condensateur Chargé" : switchPos === "charge" ? "En cours de charge..." : "En cours de décharge..."}
+              {chargePercentage < 1 ? "Condensateur Déchargé (0%)" : chargePercentage > 99 ? "Condensateur Chargé (100%)" : switchPos === "charge" ? "En cours de charge..." : "En cours de décharge..."}
             </span>
           </div>
 
@@ -456,7 +455,7 @@ export default function RCCircuitVirtualLab() {
           <div className="relative">
             <svg
               viewBox="0 0 340 240"
-              className="w-full h-auto max-w-[340px] mx-auto select-none"
+              className="w-full h-auto max-w-[320px] mx-auto select-none"
               style={{ fontFamily: "Cambria Math, 'Times New Roman', serif" }}
             >
               <defs>
@@ -653,16 +652,16 @@ export default function RCCircuitVirtualLab() {
             </svg>
           </div>
 
-          {/* Reservoir Progress Gauge */}
-          <div className="p-2.5 rounded-xl bg-slate-950 border border-slate-800 space-y-1.5">
-            <div className="flex items-center justify-between text-xs font-bold">
-              <span className="text-slate-300 flex items-center gap-1">
-                <Gauge className="w-3.5 h-3.5 text-cyan-400" />
-                <span>Remplissage du Condensateur :</span>
+          {/* Stylized Progress Gauge */}
+          <div className="p-2 rounded-xl bg-slate-950 border border-slate-800 space-y-1">
+            <div className="flex items-center justify-between text-[11px] font-bold">
+              <span className="text-slate-400 flex items-center gap-1">
+                <Gauge className="w-3 h-3 text-cyan-400" />
+                <span>Remplissage Condensateur :</span>
               </span>
-              <span className="text-cyan-300 font-mono">{chargePercentage.toFixed(1)} %</span>
+              <span className="text-cyan-300 font-mono text-xs">{chargePercentage.toFixed(1)} %</span>
             </div>
-            <div className="w-full h-2 rounded-full bg-slate-900 overflow-hidden border border-slate-800">
+            <div className="w-full h-1.5 rounded-full bg-slate-900 overflow-hidden border border-slate-800">
               <div
                 className="h-full bg-gradient-to-r from-cyan-500 via-sky-400 to-indigo-500 rounded-full"
                 style={{ width: `${chargePercentage}%` }}
@@ -672,9 +671,9 @@ export default function RCCircuitVirtualLab() {
         </div>
 
         {/* ── RIGHT PANEL (6 COLS): SYNCHRONIZED OSCILLOSCOPE ── */}
-        <div className="lg:col-span-6 rounded-2xl bg-slate-900/80 border border-slate-800 p-3.5 space-y-3 flex flex-col justify-between shadow-xl">
-          <div className="flex items-center justify-between text-xs font-bold border-b border-slate-800 pb-2">
-            <div className="flex items-center gap-3">
+        <div className="lg:col-span-6 rounded-2xl bg-slate-900/80 border border-slate-800 p-3 space-y-2.5 flex flex-col justify-between shadow-xl">
+          <div className="flex items-center justify-between text-xs font-bold border-b border-slate-800 pb-1.5">
+            <div className="flex items-center gap-2.5 text-[11px]">
               <span className="text-cyan-300 flex items-center gap-1">
                 <span className="w-2 h-2 rounded-full bg-cyan-400 shadow-sm shadow-cyan-400/50" />
                 <span>CH1: <LatexMath math="u_C(t)" /></span>
@@ -684,8 +683,8 @@ export default function RCCircuitVirtualLab() {
                 <span>CH2: <LatexMath math="i(t)" /></span>
               </span>
             </div>
-            <span className="font-mono text-[11px] text-amber-300 bg-amber-500/10 px-2.5 py-0.5 rounded-md border border-amber-500/20">
-              t = {elapsedSec.toFixed(2)} s / 10.0 s
+            <span className="font-mono text-[10px] text-amber-300 bg-amber-500/10 px-2 py-0.5 rounded-md border border-amber-500/20">
+              t = {physicalTimeMs.toFixed(1)} ms / {(5 * tauPhysMs).toFixed(1)} ms ({((elapsedSec / tauSimSec)).toFixed(1)}τ)
             </span>
           </div>
 
@@ -710,7 +709,7 @@ export default function RCCircuitVirtualLab() {
               
               {/* Horizontal Center line i=0 */}
               <line x1={padL} y1={midY} x2={padL + plotW} y2={midY} stroke="#1e293b" strokeWidth="1" strokeDasharray="3 3" />
-              <text x={padL - 4} y={midY + 3} fill="#64748b" fontSize="9" fontStyle="italic" textAnchor="end">0 mA</text>
+              <text x={padL - 4} y={midY + 3} fill="#64748b" fontSize="8.5" fontStyle="italic" textAnchor="end">0 mA</text>
 
               {/* Vertical time division grid lines (1τ, 2τ, 3τ, 4τ, 5τ) */}
               {[1, 2, 3, 4, 5].map((tUnit) => {
@@ -718,7 +717,7 @@ export default function RCCircuitVirtualLab() {
                 return (
                   <g key={tUnit}>
                     <line x1={posX} y1={padT} x2={posX} y2={baseY} stroke="#1e293b" strokeWidth="0.8" strokeDasharray="2 2" />
-                    <text x={posX} y={baseY + 14} fill={tUnit === 1 ? "#fbbf24" : "#64748b"} fontSize="10" fontStyle="italic" textAnchor="middle">
+                    <text x={posX} y={baseY + 14} fill={tUnit === 1 ? "#fbbf24" : "#64748b"} fontSize="9.5" fontStyle="italic" textAnchor="middle">
                       {tUnit}τ
                     </text>
                   </g>
@@ -727,24 +726,24 @@ export default function RCCircuitVirtualLab() {
 
               {/* Voltage Asymptote E (10V) */}
               <line x1={padL} y1={padT} x2={padL + plotW} y2={padT} stroke="#00f0ff" strokeWidth="0.8" strokeDasharray="3 3" opacity="0.35" />
-              <text x={padL - 4} y={padT + 4} fill="#00f0ff" fontSize="10" fontStyle="italic" fontWeight="bold" textAnchor="end">{E}V</text>
-              <text x={padL - 4} y={baseY + 3} fill="#64748b" fontSize="9" fontStyle="italic" textAnchor="end">0V</text>
+              <text x={padL - 4} y={padT + 4} fill="#00f0ff" fontSize="9.5" fontStyle="italic" fontWeight="bold" textAnchor="end">{E}V</text>
+              <text x={padL - 4} y={baseY + 3} fill="#64748b" fontSize="8.5" fontStyle="italic" textAnchor="end">0V</text>
 
-              {/* ── SAVED SUPERPOSITION COMPARISON TRACES ── */}
+              {/* ── SAVED SUPERPOSITION COMPARISON TRACES (DIMMED/FADED GHOST TRACES) ── */}
               {savedTraces.map((trace, idx) => (
-                <g key={trace.id} opacity={0.65}>
+                <g key={trace.id} opacity={0.45}>
                   <path
                     d={trace.path_uC}
                     fill="none"
-                    stroke={trace.color}
-                    strokeWidth="1.8"
+                    stroke="#94a3b8"
+                    strokeWidth="1.6"
                     strokeDasharray="4 3"
                   />
                   <text
                     x={oscPadRightMarkerX(idx, plotW, padL)}
                     y={padT + 12 + idx * 11}
-                    fill={trace.color}
-                    fontSize="8.5"
+                    fill="#94a3b8"
+                    fontSize="8"
                     fontFamily="monospace"
                   >
                     τ={trace.tauPhysMs.toFixed(1)}ms
@@ -752,53 +751,53 @@ export default function RCCircuitVirtualLab() {
                 </g>
               ))}
 
-              {/* ── 1. TANGENT AT ORIGIN (IF CHECKED) ── */}
-              {showTangent && (
+              {/* ── TANGENT AT ORIGIN (APPEARS PROGRESSIVELY WHEN REACHING TAU OR FINISHED) ── */}
+              {shouldShowTangent && (
                 <g>
                   {switchPos === "charge" ? (
                     <>
-                      {/* Tangent line from (0,0) to (tau, E) */}
+                      {/* Tangent line from (0,0) to (1tau, E) */}
                       <line
                         x1={padL}
                         y1={baseY}
                         x2={tangentX_tau}
                         y2={padT}
                         stroke="#f59e0b"
-                        strokeWidth="1.5"
+                        strokeWidth="1.4"
                         strokeDasharray="3 2"
                       />
-                      {/* Vertical dotted line from (tau, E) to tau on axis */}
+                      {/* Vertical dotted line from (1tau, E) to 1tau on axis */}
                       <line
                         x1={tangentX_tau}
                         y1={padT}
                         x2={tangentX_tau}
                         y2={baseY}
                         stroke="#f59e0b"
-                        strokeWidth="1"
+                        strokeWidth="0.9"
                         strokeDasharray="2 2"
                         opacity={0.8}
                       />
-                      {/* Intersection Point */}
+                      {/* Intersection Point at (1tau, E) */}
                       <circle cx={tangentX_tau} cy={padT} r="3.5" fill="#f59e0b" />
-                      <text x={tangentX_tau} y={padT - 6} fill="#f59e0b" fontSize="9" fontStyle="italic" fontWeight="bold" textAnchor="middle">
+                      <text x={tangentX_tau} y={padT - 5} fill="#f59e0b" fontSize="8.5" fontStyle="italic" fontWeight="bold" textAnchor="middle">
                         (τ, E)
                       </text>
                     </>
                   ) : (
                     <>
-                      {/* Tangent line in Decharge from (0,E) to (tau, 0) */}
+                      {/* Tangent line in Decharge from (0,E) to (1tau, 0V) */}
                       <line
                         x1={padL}
                         y1={padT}
                         x2={tangentX_tau}
                         y2={baseY}
                         stroke="#f59e0b"
-                        strokeWidth="1.5"
+                        strokeWidth="1.4"
                         strokeDasharray="3 2"
                       />
-                      {/* Intersection Point on axis */}
+                      {/* Intersection Point on axis at (1tau, 0V) */}
                       <circle cx={tangentX_tau} cy={baseY} r="3.5" fill="#f59e0b" />
-                      <text x={tangentX_tau} y={baseY - 6} fill="#f59e0b" fontSize="9" fontStyle="italic" fontWeight="bold" textAnchor="middle">
+                      <text x={tangentX_tau} y={baseY - 5} fill="#f59e0b" fontSize="8.5" fontStyle="italic" fontWeight="bold" textAnchor="middle">
                         t = τ
                       </text>
                     </>
@@ -808,12 +807,12 @@ export default function RCCircuitVirtualLab() {
 
               {/* ── LIVE ACTIVE TRACED CURVE CH1: uC(t) (GLOWING CYAN) ── */}
               {activePath_uC && (
-                <path d={activePath_uC} fill="none" stroke="#00f0ff" strokeWidth="2.6" strokeLinecap="round" filter="url(#glow-cyan)" />
+                <path d={activePath_uC} fill="none" stroke="#00f0ff" strokeWidth="2.4" strokeLinecap="round" filter="url(#glow-cyan)" />
               )}
 
               {/* ── LIVE ACTIVE TRACED CURVE CH2: i(t) (GLOWING ROSE) ── */}
               {activePath_i && (
-                <path d={activePath_i} fill="none" stroke="#fb7185" strokeWidth="2.2" strokeLinecap="round" filter="url(#glow-rose)" />
+                <path d={activePath_i} fill="none" stroke="#fb7185" strokeWidth="2" strokeLinecap="round" filter="url(#glow-rose)" />
               )}
 
               {/* Animated Laser Beam Vertical Cursor */}
@@ -830,30 +829,30 @@ export default function RCCircuitVirtualLab() {
               {/* Laser Head Points */}
               {elapsedSec > 0.05 && (
                 <>
-                  <circle cx={curX} cy={curY_uC} r="4.5" fill="#00f0ff" stroke="#ffffff" strokeWidth="1.5" />
-                  <circle cx={curX} cy={curY_i} r="4.5" fill="#fb7185" stroke="#ffffff" strokeWidth="1.5" />
+                  <circle cx={curX} cy={curY_uC} r="4" fill="#00f0ff" stroke="#ffffff" strokeWidth="1.2" />
+                  <circle cx={curX} cy={curY_i} r="4" fill="#fb7185" stroke="#ffffff" strokeWidth="1.2" />
                 </>
               )}
             </svg>
           </div>
 
-          {/* ── INSTANTANEOUS PHYSICAL READOUT METRICS ── */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center text-xs">
-            <div className="p-2 rounded-xl bg-slate-950 border border-cyan-500/30">
-              <span className="text-[10px] text-slate-400 block font-sans">Tension <LatexMath math="u_C(t)" /></span>
-              <span className="text-cyan-300 font-bold font-mono text-sm">{uC_t.toFixed(2)} V</span>
+          {/* ── STYLIZED COMPACT INSTANTANEOUS PHYSICAL METRICS ── */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 text-center text-xs">
+            <div className="p-1.5 rounded-lg bg-slate-950 border border-cyan-500/30 space-y-0.5">
+              <span className="text-[9.5px] text-slate-400 block font-sans">Tension <LatexMath math="u_C(t)" /></span>
+              <span className="text-cyan-300 font-bold font-mono text-xs">{uC_t.toFixed(2)} V</span>
             </div>
-            <div className="p-2 rounded-xl bg-slate-950 border border-rose-500/30">
-              <span className="text-[10px] text-slate-400 block font-sans">Courant <LatexMath math="i(t)" /></span>
-              <span className="text-rose-300 font-bold font-mono text-sm">{i_t_mA.toFixed(1)} mA</span>
+            <div className="p-1.5 rounded-lg bg-slate-950 border border-rose-500/30 space-y-0.5">
+              <span className="text-[9.5px] text-slate-400 block font-sans">Courant <LatexMath math="i(t)" /></span>
+              <span className="text-rose-300 font-bold font-mono text-xs">{i_t_mA.toFixed(1)} mA</span>
             </div>
-            <div className="p-2 rounded-xl bg-slate-950 border border-purple-500/30">
-              <span className="text-[10px] text-slate-400 block font-sans">Charge <LatexMath math="q(t)" /></span>
-              <span className="text-purple-300 font-bold font-mono text-sm">{q_t_uC.toFixed(1)} µC</span>
+            <div className="p-1.5 rounded-lg bg-slate-950 border border-purple-500/30 space-y-0.5">
+              <span className="text-[9.5px] text-slate-400 block font-sans">Charge <LatexMath math="q(t)" /></span>
+              <span className="text-purple-300 font-bold font-mono text-xs">{q_t_uC.toFixed(1)} µC</span>
             </div>
-            <div className="p-2 rounded-xl bg-slate-950 border border-amber-500/30">
-              <span className="text-[10px] text-slate-400 block font-sans">Énergie <LatexMath math="\mathcal{E}_C" /></span>
-              <span className="text-amber-300 font-bold font-mono text-sm">{energy_mJ.toFixed(2)} mJ</span>
+            <div className="p-1.5 rounded-lg bg-slate-950 border border-amber-500/30 space-y-0.5">
+              <span className="text-[9.5px] text-slate-400 block font-sans">Énergie <LatexMath math="\mathcal{E}_C" /></span>
+              <span className="text-amber-300 font-bold font-mono text-xs">{energy_mJ.toFixed(2)} mJ</span>
             </div>
           </div>
         </div>
@@ -864,5 +863,5 @@ export default function RCCircuitVirtualLab() {
 
 // Helper for positioning superposition trace labels in SVG
 function oscPadRightMarkerX(idx: number, plotW: number, padL: number) {
-  return padL + plotW - 65;
+  return padL + plotW - 60;
 }
