@@ -2,19 +2,15 @@ import Link from "next/link";
 import Image from "next/image";
 import { ThemeToggle } from "@/components/theme-toggle";
 import MusicPlayer from "@/components/MusicPlayer";
-import Background3D from "@/components/Background3D";
-import { BookOpen, CheckCircle, Lightbulb, ArrowRight } from "lucide-react";
+import HomeParticles from "@/components/HomeParticles";
+import { BookOpen, GraduationCap, Target, Users, Award, Mail, Phone, MapPin, Send } from "lucide-react";
 
 export default function Home() {
   return (
-    <div className="min-h-screen flex flex-col font-sans selection:bg-primary/20 relative">
-      {/* Arrière-plan élégant (Fixé en fond pour toute la page) */}
-      <div className="fixed inset-0 z-0">
-        <Background3D />
-      </div>
-
-      {/* Navbar Ultra Minimalist & Responsive (Plus fine) */}
-      <header className="w-full px-4 sm:px-6 py-2 sm:py-3 flex justify-between items-center bg-background/70 backdrop-blur-md sticky top-0 z-50 border-b border-border/40">
+    <div className="min-h-screen flex flex-col font-sans selection:bg-primary/20 relative bg-background">
+      
+      {/* Navbar Ultra Minimalist */}
+      <header className="w-full px-4 sm:px-6 py-2 sm:py-3 flex justify-between items-center bg-background/80 backdrop-blur-md sticky top-0 z-50 border-b border-border/40">
         <div className="flex items-center gap-2">
           <Image src="/logo.png" alt="Sersif Académie Logo" width={28} height={28} className="rounded-md object-contain shadow-sm" />
           <h1 className="text-sm sm:text-base font-bold tracking-tight text-foreground ml-1">
@@ -23,152 +19,251 @@ export default function Home() {
         </div>
         
         <div className="flex items-center gap-3 sm:gap-5">
-          <nav>
-            <ul className="flex space-x-3 sm:space-x-5 text-xs sm:text-sm font-semibold">
-              <li>
-                <Link href="/physique" className="text-muted-foreground hover:text-foreground transition-colors">
-                  Physique
-                </Link>
-              </li>
-              <li>
-                <Link href="/chimie" className="text-muted-foreground hover:text-foreground transition-colors">
-                  Chimie
-                </Link>
-              </li>
+          <nav className="hidden md:block">
+            <ul className="flex space-x-6 text-sm font-semibold">
+              <li><a href="#parcours" className="text-muted-foreground hover:text-foreground transition-colors">Parcours</a></li>
+              <li><a href="#about" className="text-muted-foreground hover:text-foreground transition-colors">À Propos</a></li>
+              <li><a href="#contact" className="text-muted-foreground hover:text-foreground transition-colors">Contact</a></li>
             </ul>
           </nav>
-          <div className="h-3 sm:h-4 w-px bg-border"></div>
+          <div className="h-4 w-px bg-border hidden md:block"></div>
           <MusicPlayer />
           <ThemeToggle />
         </div>
       </header>
 
-      {/* Contenu principal de la page */}
-      <main className="flex-1 flex flex-col w-full z-10">
+      {/* --- HERO SECTION --- */}
+      <section id="parcours" className="relative flex flex-col items-center justify-center w-full min-h-[90vh] z-10 px-4 sm:px-8 py-12">
+        {/* Arrière-plan animé */}
+        <div className="absolute inset-0 z-[-1]">
+          <HomeParticles />
+        </div>
         
-        {/* --- Hero Section --- */}
-        <section className="flex flex-col items-center justify-center py-8 sm:py-12 px-4 sm:px-8 text-center w-full min-h-[calc(100vh-60px)]">
-          <div className="w-full max-w-4xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-1000 flex flex-col items-center">
-            
-            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight mb-3 text-foreground leading-[1.15]">
-              Préparez-vous avec <br className="hidden sm:block" />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-indigo-500">Sersif Académie</span>
+        <div className="w-full max-w-5xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-1000 flex flex-col items-center text-center">
+          
+          <div className="inline-block px-3 py-1 mb-6 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs sm:text-sm font-semibold tracking-wide backdrop-blur-sm">
+            LA RÉFÉRENCE DE L'EXCELLENCE
+          </div>
+
+          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight mb-4 text-foreground leading-[1.15]">
+            Bienvenue sur <br className="hidden sm:block" />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-indigo-500">Sersif Académie</span>
+          </h2>
+          
+          <p className="text-sm sm:text-base md:text-lg text-muted-foreground mb-12 max-w-2xl mx-auto leading-relaxed font-medium">
+            Choisissez votre parcours pour accéder aux ressources pédagogiques adaptées à vos objectifs, que ce soit pour le concours de l'enseignement ou vos études universitaires.
+          </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-4xl">
+            {/* Carte Concours */}
+            <Link href="/concours" className="group block text-left w-full h-full">
+              <div className="h-full bg-card/60 backdrop-blur-xl border border-border/60 rounded-3xl overflow-hidden hover:border-primary/60 hover:shadow-2xl hover:shadow-primary/20 transition-all duration-500 transform group-hover:-translate-y-2 flex flex-col">
+                <div className="relative w-full h-48 sm:h-56 overflow-hidden flex-shrink-0 bg-black">
+                  <Image 
+                    src="/real-concours.jpg" 
+                    alt="Concours de l'Enseignement" 
+                    fill 
+                    className="object-cover opacity-80 group-hover:scale-110 transition-transform duration-700 ease-in-out group-hover:opacity-100"
+                    priority
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-background via-background/20 to-transparent"></div>
+                  <div className="absolute top-4 left-4 bg-primary/90 text-primary-foreground p-2.5 rounded-full shadow-lg backdrop-blur-md">
+                    <BookOpen size={28} />
+                  </div>
+                </div>
+                <div className="p-6 sm:p-8 flex-grow flex flex-col justify-between">
+                  <div>
+                    <h3 className="text-2xl sm:text-3xl font-bold mb-3 tracking-tight group-hover:text-primary transition-colors">
+                      Concours de l'Enseignement
+                    </h3>
+                    <p className="text-muted-foreground text-sm sm:text-base leading-relaxed">
+                      Préparez-vous de manière optimale pour le concours des enseignants avec nos cours, résumés et exercices corrigés en Physique et Chimie.
+                    </p>
+                  </div>
+                  <div className="mt-6 flex items-center text-primary font-semibold text-sm">
+                    <span>Découvrir le programme</span>
+                    <svg className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
+                  </div>
+                </div>
+              </div>
+            </Link>
+
+            {/* Carte Etudes Universitaires */}
+            <Link href="/faculte" className="group block text-left w-full h-full">
+              <div className="h-full bg-card/60 backdrop-blur-xl border border-border/60 rounded-3xl overflow-hidden hover:border-emerald-500/60 hover:shadow-2xl hover:shadow-emerald-500/20 transition-all duration-500 transform group-hover:-translate-y-2 flex flex-col">
+                <div className="relative w-full h-48 sm:h-56 overflow-hidden flex-shrink-0 bg-black">
+                  <Image 
+                    src="/real-faculte.jpg" 
+                    alt="Études Universitaires" 
+                    fill 
+                    className="object-cover opacity-80 group-hover:scale-110 transition-transform duration-700 ease-in-out group-hover:opacity-100"
+                    priority
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-background via-background/20 to-transparent"></div>
+                  <div className="absolute top-4 left-4 bg-emerald-500/90 text-white p-2.5 rounded-full shadow-lg backdrop-blur-md">
+                    <GraduationCap size={28} />
+                  </div>
+                </div>
+                <div className="p-6 sm:p-8 flex-grow flex flex-col justify-between">
+                  <div>
+                    <h3 className="text-2xl sm:text-3xl font-bold mb-3 tracking-tight group-hover:text-emerald-500 transition-colors">
+                      Études Universitaires (La Fac)
+                    </h3>
+                    <p className="text-muted-foreground text-sm sm:text-base leading-relaxed">
+                      Accédez aux ressources académiques pour votre parcours universitaire : filières SMPC, FST, SMAI et bien d'autres spécialités scientifiques.
+                    </p>
+                  </div>
+                  <div className="mt-6 flex items-center text-emerald-500 font-semibold text-sm">
+                    <span>Explorer les filières</span>
+                    <svg className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
+                  </div>
+                </div>
+              </div>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* --- ABOUT US SECTION --- */}
+      <section id="about" className="py-24 px-4 sm:px-8 bg-muted/30 border-y border-border/40">
+        <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center gap-12">
+          <div className="w-full md:w-1/2">
+            <div className="inline-flex items-center gap-2 px-3 py-1 mb-4 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-500 text-sm font-semibold">
+              <Target size={16} /> À PROPOS DE NOUS
+            </div>
+            <h2 className="text-3xl sm:text-4xl font-extrabold mb-6 leading-tight">
+              Votre partenaire d'excellence pour la réussite.
             </h2>
-            
-            <p className="text-xs sm:text-sm md:text-base text-muted-foreground mb-6 max-w-xl mx-auto leading-relaxed font-medium">
-              Et maximisez considérablement vos chances de réussite au concours de l'enseignement en <span className="text-foreground">Physique</span> et <span className="text-foreground">Chimie</span>.
+            <p className="text-muted-foreground leading-relaxed mb-6">
+              Sersif Académie est née de la volonté d'accompagner les étudiants marocains vers l'excellence. Que vous visiez la réussite au concours des enseignants ou l'obtention de vos diplômes universitaires, nous mettons à votre disposition des ressources pédagogiques de haute qualité.
             </p>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 w-full max-w-3xl">
-              <Link href="/physique" className="group block text-left w-full">
-                <div className="h-full bg-card/70 backdrop-blur-md border border-border/80 rounded-2xl overflow-hidden hover:border-primary/50 hover:shadow-xl hover:shadow-primary/10 transition-all duration-300 transform group-hover:-translate-y-1">
-                  <div className="relative w-full h-40 sm:h-44 md:h-48 bg-muted overflow-hidden">
-                    <Image 
-                      src="/physics.png" 
-                      alt="Physique" 
-                      fill 
-                      className="object-cover group-hover:scale-105 transition-transform duration-500"
-                      priority
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
-                    <div className="absolute bottom-4 left-4 text-white z-10">
-                      <h3 className="text-lg sm:text-xl font-bold mb-1 tracking-tight">Physique</h3>
-                      <p className="text-white/80 text-xs font-medium line-clamp-1">Mécanique, Électromagnétisme, Thermodynamique...</p>
-                    </div>
-                  </div>
-                </div>
-              </Link>
-
-              <Link href="/chimie" className="group block text-left w-full">
-                <div className="h-full bg-card/70 backdrop-blur-md border border-border/80 rounded-2xl overflow-hidden hover:border-emerald-500/50 hover:shadow-xl hover:shadow-emerald-500/10 transition-all duration-300 transform group-hover:-translate-y-1">
-                  <div className="relative w-full h-40 sm:h-44 md:h-48 bg-muted overflow-hidden">
-                    <Image 
-                      src="/chemistry.png" 
-                      alt="Chimie" 
-                      fill 
-                      className="object-cover group-hover:scale-105 transition-transform duration-500"
-                      priority
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
-                    <div className="absolute bottom-4 left-4 text-white z-10">
-                      <h3 className="text-lg sm:text-xl font-bold mb-1 tracking-tight">Chimie</h3>
-                      <p className="text-white/80 text-xs font-medium line-clamp-1">Atomistique, Cinétique, Thermochimie...</p>
-                    </div>
-                  </div>
-                </div>
-              </Link>
+            <p className="text-muted-foreground leading-relaxed mb-8">
+              Notre approche se base sur la clarté, la pratique et l'actualisation continue de nos contenus pour répondre parfaitement aux exigences des programmes nationaux.
+            </p>
+            <div className="flex items-center gap-4">
+              <a href="#parcours" className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold py-3 px-6 rounded-full transition-all shadow-lg shadow-primary/25">
+                Explorer nos parcours
+              </a>
+              <a href="#contact" className="bg-muted hover:bg-muted/80 text-foreground font-semibold py-3 px-6 rounded-full transition-all border border-border/50">
+                Nous contacter
+              </a>
             </div>
           </div>
-        </section>
-
-        {/* --- Section: Pourquoi Nous Choisir ? --- */}
-        <section className="py-20 px-4 sm:px-8 bg-card/30 backdrop-blur-sm border-y border-border/40">
-          <div className="max-w-5xl mx-auto text-center">
-            <h2 className="text-2xl sm:text-3xl font-bold mb-12">Pourquoi choisir <span className="text-primary">Sersif Académie</span> ?</h2>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {/* Feature 1 */}
-              <div className="flex flex-col items-center p-6 bg-background/50 rounded-2xl border border-border/50 hover:shadow-lg transition-shadow">
-                <div className="w-12 h-12 bg-blue-500/10 text-blue-500 rounded-full flex items-center justify-center mb-4">
-                  <BookOpen size={24} />
-                </div>
-                <h3 className="text-lg font-semibold mb-2">Cours Détaillés</h3>
-                <p className="text-sm text-muted-foreground">Des résumés clairs et complets pour chaque module, focalisés sur l'essentiel pour le concours.</p>
+          
+          <div className="w-full md:w-1/2 grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div className="bg-card border border-border/50 p-6 rounded-2xl shadow-sm">
+              <div className="w-12 h-12 bg-blue-500/10 text-blue-500 rounded-xl flex items-center justify-center mb-4">
+                <BookOpen size={24} />
               </div>
-
-              {/* Feature 2 */}
-              <div className="flex flex-col items-center p-6 bg-background/50 rounded-2xl border border-border/50 hover:shadow-lg transition-shadow">
-                <div className="w-12 h-12 bg-emerald-500/10 text-emerald-500 rounded-full flex items-center justify-center mb-4">
-                  <CheckCircle size={24} />
-                </div>
-                <h3 className="text-lg font-semibold mb-2">Exercices Corrigés</h3>
-                <p className="text-sm text-muted-foreground">Entraînez-vous avec des séries d'exercices et d'anciens examens avec corrections détaillées.</p>
+              <h3 className="font-bold text-lg mb-2">Cours Détaillés</h3>
+              <p className="text-sm text-muted-foreground">Des résumés clairs focalisés sur l'essentiel pour gagner du temps.</p>
+            </div>
+            <div className="bg-card border border-border/50 p-6 rounded-2xl shadow-sm translate-y-0 sm:translate-y-8">
+              <div className="w-12 h-12 bg-emerald-500/10 text-emerald-500 rounded-xl flex items-center justify-center mb-4">
+                <Award size={24} />
               </div>
-
-              {/* Feature 3 */}
-              <div className="flex flex-col items-center p-6 bg-background/50 rounded-2xl border border-border/50 hover:shadow-lg transition-shadow">
-                <div className="w-12 h-12 bg-amber-500/10 text-amber-500 rounded-full flex items-center justify-center mb-4">
-                  <Lightbulb size={24} />
-                </div>
-                <h3 className="text-lg font-semibold mb-2">Astuces & Méthodologie</h3>
-                <p className="text-sm text-muted-foreground">Apprenez à gérer votre temps et découvrez les secrets pour réussir les épreuves écrites et orales.</p>
+              <h3 className="font-bold text-lg mb-2">Qualité Garantie</h3>
+              <p className="text-sm text-muted-foreground">Un contenu rédigé et vérifié par des experts du domaine.</p>
+            </div>
+            <div className="bg-card border border-border/50 p-6 rounded-2xl shadow-sm">
+              <div className="w-12 h-12 bg-amber-500/10 text-amber-500 rounded-xl flex items-center justify-center mb-4">
+                <Users size={24} />
               </div>
+              <h3 className="font-bold text-lg mb-2">Communauté</h3>
+              <p className="text-sm text-muted-foreground">Rejoignez des milliers d'étudiants qui préparent les mêmes objectifs.</p>
             </div>
           </div>
-        </section>
+        </div>
+      </section>
+
+      {/* --- CONTACT SECTION --- */}
+      <section id="contact" className="py-24 px-4 sm:px-8 bg-background relative overflow-hidden">
+        {/* Decorative blur */}
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[100px] -z-10 pointer-events-none translate-x-1/2 -translate-y-1/2"></div>
         
-      </main>
+        <div className="max-w-4xl mx-auto text-center mb-16">
+          <h2 className="text-3xl sm:text-4xl font-extrabold mb-4">Contactez-nous</h2>
+          <p className="text-muted-foreground">Une question ? Un besoin d'accompagnement ? Notre équipe est là pour vous aider.</p>
+        </div>
 
-      {/* --- Footer Complet --- */}
-      <footer className="w-full py-12 px-6 bg-background border-t border-border/40 z-10 relative">
-        <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+        <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-5 gap-12">
+          {/* Info Contact */}
+          <div className="md:col-span-2 space-y-8">
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 bg-primary/10 text-primary rounded-full flex items-center justify-center flex-shrink-0">
+                <Mail size={20} />
+              </div>
+              <div>
+                <h4 className="font-bold text-lg mb-1">Email</h4>
+                <p className="text-muted-foreground text-sm">contact@sersif-academie.ma</p>
+                <p className="text-muted-foreground text-sm">support@sersif-academie.ma</p>
+              </div>
+            </div>
+            
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 bg-green-500/10 text-green-500 rounded-full flex items-center justify-center flex-shrink-0">
+                <Phone size={20} />
+              </div>
+              <div>
+                <h4 className="font-bold text-lg mb-1">WhatsApp / Téléphone</h4>
+                <p className="text-muted-foreground text-sm">+212 6 94 40 28 47</p>
+                <a href="https://wa.me/212694402847" target="_blank" rel="noopener noreferrer" className="text-green-500 text-sm font-semibold hover:underline mt-1 inline-block">Discuter sur WhatsApp &rarr;</a>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 bg-indigo-500/10 text-indigo-500 rounded-full flex items-center justify-center flex-shrink-0">
+                <MapPin size={20} />
+              </div>
+              <div>
+                <h4 className="font-bold text-lg mb-1">Emplacement</h4>
+                <p className="text-muted-foreground text-sm">Disponible en ligne 24/7</p>
+                <p className="text-muted-foreground text-sm">Partout au Maroc</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Formulaire */}
+          <div className="md:col-span-3">
+            <form className="bg-card/50 backdrop-blur-sm border border-border/50 p-8 rounded-3xl shadow-sm">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
+                <div className="space-y-2">
+                  <label htmlFor="name" className="text-sm font-medium">Nom complet</label>
+                  <input type="text" id="name" placeholder="John Doe" className="w-full bg-background border border-border/50 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all" />
+                </div>
+                <div className="space-y-2">
+                  <label htmlFor="email" className="text-sm font-medium">Adresse Email</label>
+                  <input type="email" id="email" placeholder="john@example.com" className="w-full bg-background border border-border/50 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all" />
+                </div>
+              </div>
+              <div className="space-y-2 mb-6">
+                <label htmlFor="subject" className="text-sm font-medium">Sujet</label>
+                <input type="text" id="subject" placeholder="Comment pouvons-nous vous aider ?" className="w-full bg-background border border-border/50 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all" />
+              </div>
+              <div className="space-y-2 mb-8">
+                <label htmlFor="message" className="text-sm font-medium">Message</label>
+                <textarea id="message" rows={4} placeholder="Votre message..." className="w-full bg-background border border-border/50 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all resize-none"></textarea>
+              </div>
+              <button type="button" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold py-3 px-6 rounded-xl flex items-center justify-center gap-2 transition-all">
+                Envoyer le message <Send size={18} />
+              </button>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      {/* --- FOOTER --- */}
+      <footer className="w-full py-12 px-6 bg-muted/50 border-t border-border/40">
+        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
           
           {/* Brand */}
-          <div className="flex flex-col items-center md:items-start text-center md:text-left">
+          <div className="md:col-span-2">
             <div className="flex items-center gap-2 mb-4">
-              <Image src="/logo.png" alt="Sersif Académie Logo" width={32} height={32} className="rounded-md object-contain shadow-sm" />
-              <span className="text-lg font-bold">Sersif Académie</span>
+              <Image src="/logo.png" alt="Sersif Académie Logo" width={36} height={36} className="rounded-md object-contain shadow-sm" />
+              <span className="text-xl font-bold tracking-tight">Sersif Académie</span>
             </div>
-            <p className="text-sm text-muted-foreground max-w-xs">
-              Votre partenaire d'excellence pour la préparation au concours de l'enseignement en Physique-Chimie au Maroc.
-            </p>
-          </div>
-
-          {/* Navigation Rapide */}
-          <div className="flex flex-col items-center md:items-start text-center md:text-left">
-            <h4 className="font-semibold mb-4">Navigation Rapide</h4>
-            <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><Link href="/" className="hover:text-primary transition-colors">Accueil</Link></li>
-              <li><Link href="/physique" className="hover:text-primary transition-colors">Module Physique</Link></li>
-              <li><Link href="/chimie" className="hover:text-primary transition-colors">Module Chimie</Link></li>
-            </ul>
-          </div>
-
-          {/* Contact & Socials */}
-          <div className="flex flex-col items-center md:items-start text-center md:text-left">
-            <h4 className="font-semibold mb-4">Contactez-nous</h4>
-            <p className="text-sm text-muted-foreground mb-4">
-              Rejoignez notre communauté pour ne rien rater des nouveautés.
+            <p className="text-sm text-muted-foreground max-w-sm mb-6 leading-relaxed">
+              Votre plateforme e-learning de référence pour exceller dans vos études universitaires et réussir le concours de l'enseignement au Maroc.
             </p>
             <div className="flex gap-4">
               {/* WhatsApp Button */}
@@ -185,10 +280,33 @@ export default function Home() {
               </a>
             </div>
           </div>
+
+          {/* Navigation */}
+          <div>
+            <h4 className="font-bold mb-6">Navigation</h4>
+            <ul className="space-y-3 text-sm text-muted-foreground">
+              <li><Link href="/" className="hover:text-primary transition-colors">Accueil</Link></li>
+              <li><Link href="/concours" className="hover:text-primary transition-colors">Concours Enseignement</Link></li>
+              <li><Link href="/faculte" className="hover:text-primary transition-colors">Études Universitaires</Link></li>
+              <li><a href="#about" className="hover:text-primary transition-colors">À Propos de nous</a></li>
+            </ul>
+          </div>
+
+          {/* Légal */}
+          <div>
+            <h4 className="font-bold mb-6">Légal</h4>
+            <ul className="space-y-3 text-sm text-muted-foreground">
+              <li><Link href="#" className="hover:text-primary transition-colors">Conditions d'utilisation</Link></li>
+              <li><Link href="#" className="hover:text-primary transition-colors">Politique de confidentialité</Link></li>
+              <li><Link href="#" className="hover:text-primary transition-colors">Mentions légales</Link></li>
+            </ul>
+          </div>
+
         </div>
 
-        <div className="pt-8 border-t border-border/40 text-center text-xs font-medium text-muted-foreground">
-          &copy; {new Date().getFullYear()} Sersif Académie. Révision &bull; Accompagnement &bull; Réussite.
+        <div className="pt-8 border-t border-border/40 flex flex-col md:flex-row items-center justify-between gap-4 text-xs font-medium text-muted-foreground">
+          <p>&copy; {new Date().getFullYear()} Sersif Académie. Tous droits réservés.</p>
+          <p>Révision &bull; Accompagnement &bull; Réussite</p>
         </div>
       </footer>
     </div>
