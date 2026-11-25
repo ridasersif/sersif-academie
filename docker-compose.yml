@@ -1,0 +1,32 @@
+services:
+  # ==============================================================================
+  # 🎓 SERSIF ACADÉMIE FACULTÉ & 3D — Next.js 16 Platform (Port 3003)
+  # ==============================================================================
+  faculte-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: faculte-sersifacademie
+    restart: unless-stopped
+    ports:
+      - "3003:3003"
+    env_file:
+      - .env.local
+    environment:
+      - PORT=3003
+      - NODE_ENV=production
+    deploy:
+      resources:
+        limits:
+          cpus: "2.0"
+          memory: 2048M
+        reservations:
+          cpus: "0.2"
+          memory: 256M
+    networks:
+      - sersif-net
+
+networks:
+  sersif-net:
+    name: taalim-sersifacademie_default
+    external: true

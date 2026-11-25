@@ -1,0 +1,10 @@
+node_modules
+.next
+.git
+.github
+*.log
+.DS_Store
+__tests__
+__mocks__
+eslint-report.json
+tsconfig.tsbuildinfo

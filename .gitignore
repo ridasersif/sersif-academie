@@ -39,3 +39,10 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Safety: Ignore master confidential documentation and backup tools
+DOCUMENTATION_OFFICIELLE_SERSIF/
+emergency_recovery_kit/
+*.sql.gz.enc
+*.sql.gz
+SERSIF_EMERGENCY_RECOVERY_TOOLKIT.zip
